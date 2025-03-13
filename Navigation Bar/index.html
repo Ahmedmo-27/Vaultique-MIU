@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Navigation Bar/Landing-page.css">
+    <link rel="icon" type="image/x-icon" href="/images/Logo.png">
+    <link rel="stylesheet" href="/Navigation Bar/nav-bar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="/Navigation Bar/nav-bar.js"></script>
+    <title>Vaultique | Home</title>
+</head>
+
+<body>
+    <!--Nav-Bar-->
+    <header class="header-unscrolled">
+        <div class="header-top-unscrolled" id="header-top" style="display: none;">
+            <div class="store-services" id="store-services">
+                <nav class="navigation">
+                    <a href="/User/Location">
+                        <i class='fas fa-map-marker-alt'></i>
+                        <p>Location</p>
+                    </a>
+
+                    <a href="/User/Contact-Us">
+                        <i class='fas fa-phone-alt'></i>
+                        <p>Contact Us</p>
+                    </a>
+                </nav>
+
+                <div class="search-button-unscrolled" id="search-button" style="display: none;">
+                    <input type="search" id="searchField" class="searchField" placeholder="Search">
+                    <button id="search" class="search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="user-data">
+                <nav class="navigation">
+                    <a href="/User/Account">
+                        <i class='fas fa-user-alt'></i>
+                        <p>Account</p>
+                    </a>
+
+                    <a href="/User/WishList">
+                        <i class='fas fa-heart'></i>
+                        <p>WishList</p>
+                    </a>
+
+                    <a href="/User/Shopping-Cart">
+                        <i class='fas fa-shopping-cart'></i>
+                        <p>Cart</p>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="header-middle-unscrolled" id="header-middle" style="justify-content: center;">
+            <div class="responsive">
+                <a class="side-icon" id="side-icon" style="color: #000;">
+                    <i class="fa fa-bars" id="ham-whatever"></i>
+                </a>
+            </div>
+
+            <a href="/Navigation Bar/index.html" class="logo-unscrolled" id="logo">Vaultique</a>
+            <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+                <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
+                    <input type="search" id="searchField2" class="searchField" placeholder="Search">
+                    <button id="search2" class="search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+
+                <nav class="navigation">
+                    <a href="/User/Location" style="display: none;">
+                        <i class='fas fa-map-marker-alt'></i>
+                    </a>
+
+                    <a href="/User/Contact-Us" style="display: none;">
+                        <i class='fas fa-phone-alt'></i>
+                    </a>
+
+                    <a href="/User/Account" style="display: none;">
+                        <i class='fas fa-user-alt'></i>
+                    </a>
+
+                    <a href="/User/WishList" style="display: none;">
+                        <i class='fas fa-heart'></i>
+                    </a>
+
+                    <a href="/User/Shopping-Cart" style="display: none;">
+                        <i class='fas fa-shopping-cart'></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="header-bottom-unscrolled" id="header-bottom">
+            <nav class="navigation">
+                <a href="/Navigation Bar/index.html">Home</a>
+                <a href="/User/Collections" id="collections-anchor-with-extension" class="extension">Collections</a>
+                <a href="/user/shopAll?category=Bracelet" data-category="Bracelets">Brands</a>
+                <a href="/user/Customize">Recommendation System</a>
+            </nav>
+        </div>
+
+        <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
+
+            <div id="collections-extension">
+                <div class="collection-anchors">
+                    <h4><b>Collections</b></h4>
+                    <br>
+                    <a href="/User/Dress"> Classic & Dress </a>
+                    <br>
+                    <a href="/User/Casual"> Casual & Everyday </a>
+                    <br>
+                    <a href="/User/Sports"> Sports & Adventure </a>
+                    <br>
+                    <a href="#"> Aviation & Travel </a>
+                    <br>
+                    <a href="#"> Luxury & Heritage </a>
+                </div>
+                
+                <div class="collection-extension">
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Models/Cartier Tank.jpg" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Classic & Dress</h4>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="collection-extension">
+                    <div class="collection-extension">
+                        <a class="extension-item" href="/user/collections/egyptian">
+                            <img src="/Models/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text"> Casual & Everyday</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="collection-extension">
+                    <div class="collection-extension">
+                        <a class="extension-item" href="/user/collections/egyptian">
+                            <img src="/Models/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.avif" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Sports & Adventure</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="collection-extension">
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Models/Rolesx Air King Roger Federer.avif" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Aviation & Travel</h4>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="collection-extension">
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Luxury & Heritage</h4>
+                        </div>
+                    </a>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
+            <div id="bracelets-extension">
+                <div class="bracelets-anchors">
+                    <h4><b>Brands</b></h4>
+                    <br>
+                    <a href="/User/Brands/Rolex">Rolex </a>
+                    <br>
+                    <a href="/User/Brands/Rolex">Omega</a>
+                    <br>
+                    <a href="/User/Brands/Rolex">Audemars Piguet</a>
+                    <br>
+                    <a href="/User/Brands/Rolex">Cartier</a>
+                    <br>
+                    <a href="/User/Brands/Rolex">Tissot</a>
+                        </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/silver">
+                        <img src="/Brands Logos/Rolex - with name.png" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Rolex Collection</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/gold">
+                        <img src="/Brands Logos/Cartier.png" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Cartier Collection</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/diamond">
+                        <img src="/Brands Logos/Omega.png" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Omega Collection</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/gold">
+                        <img src="/Brands Logos/audemars-piguet-logo.svg" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Audemars Piguet</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/gold">
+                        <img src="/Brands Logos/Tissot.png" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Tissot Collection</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-extension" id="search-extension">
+            <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
+            <h3>Products</h3>
+            <div id="search-results" class="search-results">
+            </div>
+        </div>
+
+    </header>
+
+<div id="mySidepanel" class="sidepanel" style="width: 0px;">
+    
+    <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+    <a href="/Home">Home</a>
+    <a href="/User/Contact-Us">Contact Us</a>
+    <a href="/User/Account">Account</a>
+    <a href="/User/WishList">WishList</a>
+    <a href="/User/Shopping-Cart">Cart</a>
+
+    <div class="dropdown">
+        <a href="#" class="dropbtn">Collections</a>
+        <div class="dropdown-content">
+            <a href="/User/Dress"> Classic & Dress <br> Collection</a>
+            <a href="/User/Casual"> Sports & Adventure <br> Collection</a>
+            <a href="/User/Sports"> Aviation & Travel <br> Collection</a>
+            <a href="#"> Casual & Everyday <br> Collection</a>
+            <a href="#"> Luxury & Heritage <br> Collection</a>
+        </div>
+    </div>
+
+    <br>
+    <div class="dropdown">
+        <a href="#" class="dropbtn">Brands</a>
+        <div class="dropdown-content">
+            <a href="/User/Brands/Rolex">Rolex </a>
+            <a href="/User/Brands/Rolex">Omega</a>
+            <a href="/User/Brands/Rolex">Audemars Piguet</a>
+            <a href="/User/Brands/Rolex">Cartier</a>
+            <a href="/User/Brands/Rolex">Tissot</a>
+        </div>
+    </div>
+
+    <a href="#">Recommendation System </a>
+    
+</div>
+
+
+    <section class="main" id="main">
+        <video src="/videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop=""
+            muted=""></video>
+        <div class="main-text">
+            <h1>Your Signature in Time</h1>
+            <a class="button" href="/user/quiz">TAKE THE QUIZ</a>
+        </div>
+    </section>
+
+    <section class="categories" id="categories">
+        <h1 class="headers">Explore the collection</h1>
+        <div class="categories-container">
+            <div class="item">
+                <a href="/User/Collection/Dress"></a>
+                <img src="/" alt="" class="" style="opacity: 0;">
+                <img src="/" alt="" class="" style="opacity: 1;">
+                <div class="button">Discover Dress</div>
+            </div>
+
+            <div class="item">
+                <a href="/User/Collection/Dress"></a>
+                <img src="/" alt="" class="" style="opacity: 0;">
+                <img src="/" alt="" class="" style="opacity: 1;">
+                <div class="button">Discover Casual</div>
+            </div>
+
+            <div class="item">
+                <a href="/User/Collection/Dress"></a>
+                <img src="/" alt="" class="" style="opacity: 0;">
+                <img src="/" alt="" class="" style="opacity: 1;">
+                <div class="button">Discover Sports</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="best-sellers">
+
+    </section>
+
+</body>
+
+</html>
