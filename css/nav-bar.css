@@ -10,7 +10,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Didact+Gothic&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 * {
-    font-family: 'Nunito Sans', 'PT Sans', 'Didact Gothic', 'Garet', sans-serif;
+    font-family: 'Arial', 'PT Sans', 'Didact Gothic', 'Garet', sans-serif;
     font-weight: 100px;
     padding: 0px;
     margin: 0px;
@@ -97,7 +97,7 @@ header:hover .side-icon {
 
 .side-icon {
     display: none;
-    color: #000080;
+    color: #F6E8C0;
     text-decoration: none;
     font-size: 20px;
     position: relative;
@@ -106,7 +106,7 @@ header:hover .side-icon {
 }
 
 .navigation a {
-    color: #000080;
+    color: #F6E8C0;
     font-size: 1.1em;
     font-weight: 500;
     text-decoration: none;
@@ -114,7 +114,7 @@ header:hover .side-icon {
 }
 
 .logo-unscrolled {
-    color: #000080;
+    color: #F6E8C0;
     text-decoration: none;
     text-transform: uppercase;
     font-size: 40px;
@@ -192,7 +192,7 @@ header:hover .side-icon {
 
 /*Collection Extension*/
 
-#collections-extension {
+/*#collections-extension {
     display: flex;
     flex-direction: row;
     justify-content: baseline;
@@ -263,7 +263,117 @@ header:hover .side-icon {
     justify-content: center;
     align-items: flex-start;
     margin: 0 -10px;
+}*/
+
+
+#collections-extension {
+    display: flex;
+    flex-direction: row;
+    justify-content: baseline;
+    align-items: flex-start;
+    padding-bottom: 10px;
 }
+
+.collection-extension .extension-item 
+{
+    width: 220px;
+    height: 350px;
+    overflow: hidden;
+    text-decoration: none;
+    align-items: center;
+    display: block;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.extension-item:hover img {
+    filter: brightness(0.7);
+    scale: 1.05;
+}
+
+.extension-img {
+    object-fit: contain;
+    z-index: -1;
+}
+
+.category-img 
+{
+    
+    width: 100%;
+    height: 90%;
+    object-fit: cover;
+}
+
+.extension-text {
+    font-family: 'futura pt';
+    margin-top: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    color: #000;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 17px;
+}
+
+.collection-anchors {
+    display: flex;
+    flex-direction: column;
+    height: 316px;
+    border-right: 1px solid #818181;
+    margin: 10px 30px;
+}
+
+.collection-anchors h4,
+.collection-anchors a {
+    padding-right: 20px;
+    color: #000;
+    text-transform: uppercase;
+    font-family: 'futura pt', sans-serif;
+    font-weight: 400;
+    text-decoration: none;
+}
+
+.collection-anchors h4:hover,
+.collection-anchors a:hover {
+    scale: 1.05;
+}
+
+.collection-extension 
+{
+    width: 100%;
+    display: flex;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 0 -10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*Brands Extension
 
@@ -360,12 +470,19 @@ header:hover .side-icon {
 
 .bracelets-anchors h4, .bracelets-anchors a {
     padding: 5px;
-    padding-right: 50px;
+    padding-right: 20px;
     color: #000;
     text-transform: uppercase;
     font-family: 'futura pt', sans-serif;
     font-weight: 400;
     text-decoration: none;
+}
+
+
+.bracelets-anchors h4,
+.bracelets-anchors a:hover 
+{
+    scale: 1.05;
 }
 
 .bracelets-extension {
@@ -378,8 +495,8 @@ header:hover .side-icon {
 }
 
 .bracelets-extension .extension-item {
-    width: 300px;
-    height: 390px;
+    width: 200px;
+    height: 150px;
     overflow: hidden;
     text-decoration: none;
     margin: 10px 0;
@@ -388,21 +505,18 @@ header:hover .side-icon {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-bottom: 10px; /* Add or adjust this padding to match the collections section */
+    margin-right: 20px;
 }
 
 
 .bracelets-extension .extension-img {
     object-fit: cover;
     z-index: -1;
+    width: 180px;
+    height: 100px;
 }
 
-.bracelets-extension .category-img {
-    width: 250px;
-    height: 316px;
-    object-fit: cover;
-    z-index: -1;
-}
+
 
 .bracelets-extension .extension-text {
     font-family: 'futura pt';
@@ -413,7 +527,7 @@ header:hover .side-icon {
     text-transform: uppercase;
     text-align: center;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 17px;
     padding-bottom: 10px; /* Add or adjust this padding to match the collections section */
 }
 
@@ -571,8 +685,8 @@ header:hover .side-icon {
 }
 
 .search-button-unscrolled {
-    color: #000080;
-    border-color: #000080;
+    color: #F6E8C0;
+    border-color: #F6E8C0;
     border-radius: 20px;
     background-color: rgb(0, 0, 0, 0.3);
     width: 40px;
@@ -600,7 +714,7 @@ header:hover .side-icon {
 
 .searchField {
     padding: 10px;
-    color: #000080;
+    color: #F6E8C0;
     border-color: transparent;
     background-color: transparent;
     height: 30px;
@@ -616,11 +730,11 @@ header:hover .side-icon {
 }
 
 .searchField::placeholder {
-    color: #000080;
+    color: #F6E8C0;
 }
 
 .search {
-    color: #000080;
+    color: #F6E8C0;
     font-size: 15px;
     background-color: transparent;
     border-color: transparent;
@@ -662,7 +776,7 @@ header:hover .side-icon {
 }
 
 .sidepanel a:hover {
-    color: rgb(254, 248, 241);
+    color: black;
 }
   
 .sidepanel .closebtn {

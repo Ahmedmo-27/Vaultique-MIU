@@ -27,8 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    
+
     //nav bar scroll
-    window.addEventListener('scroll', function () {
+    /*window.addEventListener('scroll', function () {
         const headerTop = document.getElementById('header-top');
         const sideicon = document.getElementById('side-icon');
         const logo = document.getElementById('logo');
@@ -87,6 +89,84 @@ document.addEventListener('DOMContentLoaded', function () {
             logo.classList.remove('logo-scrolled');
             logo.classList.add('logo-unscrolled');
 
+            headerBottom.classList.add('header-bottom-unscrolled');
+            headerBottom.classList.remove('header-bottom-scrolled');
+        }
+    });*/
+
+
+
+    window.addEventListener('scroll', function () {
+        const headerTop = document.getElementById('header-top');
+        const sideicon = document.getElementById('side-icon');
+        const logo = document.getElementById('logo');
+    
+        if (window.scrollY > 0) {
+            header.classList.remove('header-unscrolled');
+            header.classList.add('header-scrolled');
+    
+            // Ensure the logo stays on the left
+            logo.style.position = 'relative';
+            logo.style.left = '50px'; // Adjust this value as needed
+            logo.style.top = '50%';
+            logo.style.transform = 'translateY(-10%)';
+    
+            // Ensure the icons stay on the right
+            headerMiddle.style.justifyContent = 'flex-end';
+            headerMiddle.style.paddingRight = '50px'; // Adjust this value as needed
+    
+            // Show all icons
+            middleDiv.style.display = 'flex';
+            middleDivanchors.forEach(anchor => {
+                anchor.style.display = 'inline';
+            });
+    
+            // Other scroll-related changes
+            searchButton.style.display = 'none';
+            searchButton2.classList.remove('search-button-unscrolled');
+            searchButton2.classList.add('search-button-scrolled');
+            sideicon.style.color = 'black';
+            headerTop.style.display = 'none';
+            middleDiv.classList.remove('header-top-unscrolled');
+            middleDiv.classList.add('header-top-scrolled');
+            logo.classList.remove('logo-unscrolled');
+            logo.classList.add('logo-scrolled');
+            headerBottom.classList.remove('header-bottom-unscrolled');
+            headerBottom.classList.add('header-bottom-scrolled');
+        } else {
+            header.classList.remove('header-scrolled');
+            header.classList.add('header-unscrolled');
+    
+            // Reset the logo position
+            logo.style.position = 'static';
+            logo.style.left = 'auto';
+            logo.style.top = 'auto';
+            logo.style.transform = 'none';
+    
+            // Reset the icons position
+            headerMiddle.style.justifyContent = 'center';
+            headerMiddle.style.paddingRight = '0';
+    
+            if (window.innerWidth > 1100) {
+                searchButton.style.display = 'flex';
+                middleDiv.style.display = 'none';
+            } else {
+                middleDivanchors.forEach(anchor => {
+                    anchor.style.display = 'none';
+                });
+                headerMiddle.style.justifyContent = 'center';
+            }
+    
+            // Other unscroll-related changes
+            searchButton2.classList.remove('search-button-scrolled');
+            searchButton2.classList.add('search-button-unscrolled');
+            sideicon.style.color = 'white';
+            headerTop.style.display = 'flex';
+            middleDiv.classList.remove('header-top-unscrolled');
+            middleDiv.classList.remove('header-top-scrolled');
+            headerMiddle.style.justifyContent = 'center';
+            logo.classList.remove('logo-scrolled');
+            logo.classList.add('logo-unscrolled');
             headerBottom.classList.add('header-bottom-unscrolled');
             headerBottom.classList.remove('header-bottom-scrolled');
         }
@@ -311,7 +391,7 @@ if (exitButton) {
         }
     }
 
-    searchField.addEventListener('input', async () => {
+    /*searchField.addEventListener('input', async () => {
         const query = searchField.value.trim();
         if (query.length > 2) {
             headerBottom.style.display = 'none';
@@ -335,6 +415,39 @@ if (exitButton) {
             }
         } else {
             searchExtension.style.display = 'none';
+            header.classList.remove('header-scrolled');
+            header.classList.add('header-unscrolled');
+        }
+    });*/
+
+
+
+    searchField.addEventListener('input', async () => {
+        const query = searchField.value.trim();
+        if (query.length > 2) {
+            headerBottom.style.display = 'none'; // Hide the headerBottom when searching
+            header.classList.remove('header-unscrolled');
+            header.classList.add('header-scrolled');
+            searchExtension.style.display = 'flex';
+            if (query.length > 0) {
+                const response = await fetch('/user/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+    
+                const { products } = await response.json();
+                displaySearchResults(products);
+            } else {
+                searchResultsDiv.innerHTML = ''; // Clear results if input is empty
+                searchExtension.style.display = 'none'; // Hide the extension
+                headerBottom.style.display = 'flex'; // Show the headerBottom again
+            }
+        } else {
+            searchExtension.style.display = 'none';
+            headerBottom.style.display = 'flex'; // Show the headerBottom when search is cleared
             header.classList.remove('header-scrolled');
             header.classList.add('header-unscrolled');
         }
@@ -374,9 +487,17 @@ if (exitButton) {
         searchExtension.style.display = 'flex';
     }
 
+    /*document.getElementById('exit-search-extension-button').addEventListener('click', () => {
+        searchExtension.style.display = 'none';
+        searchField.value = '';
+        header.classList.remove('header-scrolled');
+        header.classList.add('header-unscrolled');
+    });*/
+
     document.getElementById('exit-search-extension-button').addEventListener('click', () => {
         searchExtension.style.display = 'none';
         searchField.value = '';
+        headerBottom.style.display = 'flex'; // Show the headerBottom when search is canceled
         header.classList.remove('header-scrolled');
         header.classList.add('header-unscrolled');
     });
