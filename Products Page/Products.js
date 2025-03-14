@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function ()
     const price_range_to = document.getElementById('priceRangeTo');
     const dial_color_filter = document.querySelectorAll('.dial-color');
     const sortButtons = document.querySelectorAll('[data-sort]');
+    const productGrid = document.querySelector('.product-grid');
+    let currentSort = 'default';
     
     sortButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -37,30 +39,46 @@ document.addEventListener('DOMContentLoaded', function ()
         });
     });
 
-    function sortProducts(sortType) 
+    const originalOrder = [...products];
+
+    const sortMethods = 
     {
-        const productGrid = document.querySelector('.product-grid');
-        const products = Array.from(productGrid.querySelectorAll('.product-card'));
+        'default': () => originalOrder,
+        'new': () => [...products].sort((a, b) => 
+            new Date(b.dataset.date) - new Date(a.dataset.date)),
+        'price-asc': () => [...products].sort((a, b) => 
+            parseFloat(a.dataset.price) - parseFloat(b.dataset.price)),
+        'price-desc': () => [...products].sort((a, b) => 
+            parseFloat(b.dataset.price) - parseFloat(a.dataset.price)),
+        'popularity': () => [...products].sort((a, b) => 
+            parseInt(b.dataset.views) - parseInt(a.dataset.views))
+    };
 
-        products.sort((a, b) => {
-            const priceA = parseFloat(a.dataset.price);
-            const priceB = parseFloat(b.dataset.price);
-
-            switch (sortType) 
-            {
-                case 'price-asc':
-                    return priceA - priceB;
-                case 'price-desc':
-                    return priceB - priceA;
-                default:
-                    return 0;
-            }
+    // Sort button handler
+    document.querySelectorAll('.sort-options button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const sortType = e.target.dataset.sort || 'default';
+            currentSort = sortType;
+            updateProductDisplay();
         });
+    });
 
-        products.forEach(product => productGrid.appendChild(product));
+    // Update display function
+    function updateProductDisplay() 
+    {
+        // Clear existing products
+        productGrid.innerHTML = '';
         
-        filterProducts();
+        // Get sorted products
+        const sortedProducts = sortMethods[currentSort]();
+        
+        // Re-insert products
+        sortedProducts.forEach(product => {
+            productGrid.appendChild(product);
+        });
     }
+
+    updateProductDisplay();
 
     function filterProducts() 
     {
