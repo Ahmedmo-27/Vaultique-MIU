@@ -6,21 +6,6 @@
 @import url('https://fonts.cdnfonts.com/css/futura-pt');
 
 header {
-    font-family: 'Nunito Sans', 'PT Sans', 'Didact Gothic', 'Garet', sans-serif;
-    font-weight: 100px;
-    padding: 0px;
-    margin: 0px;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-    transition: all .3s cubic-bezier(.39, .575, .565, 1);
-    -webkit-font-smoothing: antialiased;
-}
-
-body {
-    background-color: rgb(254, 248, 241);
-}
-
-header {
     width: 100%;
     position: fixed;
     z-index: 999;
@@ -30,6 +15,10 @@ header {
     align-items: center;
     padding: 10px 50px;
     text-transform: uppercase;
+}
+
+body {
+    background-color: rgb(254, 248, 241);
 }
 
 .header-scrolled {
@@ -50,7 +39,8 @@ header:hover {
 }
 
 header:hover a,
-header:hover .navigation p {
+header:hover .navigation p 
+{
     color: black;
 }
 
@@ -86,6 +76,11 @@ header:hover .side-icon {
     color: black;
 }
 
+.header-unscrolled:hover #side-icon 
+{
+    color: black;
+}
+
 .header-scrolled #search-button,
 #search-button2 {
     border-color: black;
@@ -113,6 +108,7 @@ header:hover .side-icon {
 
 .logo-unscrolled {
     color: #F6E8C0;
+    text-align: center;
     text-decoration: none;
     text-transform: uppercase;
     font-size: 40px;
@@ -124,6 +120,7 @@ header:hover .side-icon {
     color: black;
     text-decoration: none;
     text-transform: uppercase;
+    text-align: center;
     font-size: 35px;
     font-weight: 700;
     white-space: nowrap;
@@ -187,35 +184,33 @@ header:hover .side-icon {
     font-size: larger;
 }
 
-/* Collection Extension */
 #collections-extension {
-    margin-right: 60px;
-    display:grid;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap:20px;
+    gap: 10px;
+    padding-bottom: 20px;
+    margin-right: 70px;
+    justify-content: center; 
     align-items: flex-start;
-    padding-bottom: 10px;
 }
 
-#collections-extension  img
-{
-    gap:10px;
+.collection-extension {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center; 
 }
 
-.collection-extension .extension-item 
-{
-    width: 220px;
-    height: 350px;
+.extension-item {
+    width: 250px;
+    height: 370px;
     overflow: hidden;
     text-decoration: none;
-    align-items: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     box-sizing: border-box;
+    padding-bottom: 10px;
 }
 
 .extension-item:hover img {
@@ -223,16 +218,14 @@ header:hover .side-icon {
     scale: 1.05;
 }
 
-.extension-img 
-{
+.extension-img {
     width: 100%;
     height: 90%;
     object-fit: cover;
     z-index: -1;
 }
 
-.category-img 
-{   
+.category-img {
     width: 100%;
     height: 90%;
     object-fit: cover;
@@ -253,13 +246,13 @@ header:hover .side-icon {
     display: flex;
     flex-direction: column;
     height: 316px;
-    border-right: 1px solid #818181;
-    margin: 10px 0px;
+    border-right: 2px solid #818181;
+    margin: 10px 10px;
 }
 
 .collection-anchors h4,
 .collection-anchors a {
-    padding-right: 20px;
+    padding-right: 15px;
     color: #000;
     text-transform: uppercase;
     font-family: 'futura pt', sans-serif;
@@ -270,18 +263,6 @@ header:hover .side-icon {
 .collection-anchors h4:hover,
 .collection-anchors a:hover {
     scale: 1.05;
-}
-
-.collection-extension 
-{
-    width: 100%;
-    display: flex;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    margin: 0 -10px;
 }
 
 /* Bracelets Extension */
@@ -298,12 +279,13 @@ header:hover .side-icon {
     display: flex;
     flex-direction: column;
     height: 316px;
-    border-right: 1px solid #818181;
+    border-right: 2px solid #818181;
     margin: 10px 40px;
 }
 
 .bracelets-anchors h4,
-.bracelets-anchors a {
+.bracelets-anchors a 
+{
     padding: 5px;
     padding-right: 20px;
     color: #000;
@@ -462,7 +444,8 @@ header:hover .side-icon {
     justify-content: space-between;
 }
 
-.header-middle-scrolled .side-icon {
+.header-middle-scrolled .side-icon 
+{
     color: black;
 }
 
@@ -691,13 +674,27 @@ header:hover .side-icon {
     100% { opacity: 0; }
 }
 
-@media screen and (max-width: 1090px) {
-    header {
+@media screen and (max-width: 1090px) 
+{
+    header 
+    {
         width: 100%;
     }
-
-    .side-icon {
+ 
+    .side-icon
+    {
         display: block;
+    }
+ 
+    .header-middle-unscrolled
+    {
+        justify-content: space-between;
+        transform: translateX(10%);
+    }
+
+    .search-extension
+    {
+        width: 50px;
     }
 
     .navigation
@@ -705,28 +702,4 @@ header:hover .side-icon {
         display: none;    
     }
 
-    .logo {
-        margin-right: 0;
-    }
-
-    .responsive {
-        margin-right: 70px;
-    }
-
-    .navigation {
-        display: none;
-        position: absolute;
-        top: 50px;
-        left: 0;
-        background: white;
-        padding: 10px;
-        z-index: 999;
-    }
-
-    .navigation a {
-        display: block;
-        color: black;
-        text-decoration: none;
-        padding: 5px 0;
-    }
 }

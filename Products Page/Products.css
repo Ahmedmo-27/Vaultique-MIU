@@ -209,10 +209,13 @@ body
 
 .product-card img 
 {
+  width: 100%;
   height:380px;
   max-width: 100%;
   max-height: 100%;
+  background-size: cover;
   background-color: #D2B68A;
+  display: flex;
   object-fit: contain;
   overflow: hidden;
   transition: filter 0.3s ease;
