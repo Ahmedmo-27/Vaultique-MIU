@@ -683,6 +683,7 @@ header:hover .side-icon {
  
     .side-icon
     {
+        
         display: block;
     }
  
@@ -690,11 +691,6 @@ header:hover .side-icon {
     {
         justify-content: space-between;
         transform: translateX(10%);
-    }
-
-    .search-extension
-    {
-        width: 50px;
     }
 
     .navigation

@@ -26,6 +26,41 @@ document.addEventListener('DOMContentLoaded', function ()
     const price_range_from = document.getElementById('priceRangeFrom');
     const price_range_to = document.getElementById('priceRangeTo');
     const dial_color_filter = document.querySelectorAll('.dial-color');
+    const sortButtons = document.querySelectorAll('[data-sort]');
+    
+    sortButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sortType = this.dataset.sort;
+            sortProducts(sortType);
+            closeFilterPanel();
+        });
+    });
+
+    function sortProducts(sortType) 
+    {
+        const productGrid = document.querySelector('.product-grid');
+        const products = Array.from(productGrid.querySelectorAll('.product-card'));
+
+        products.sort((a, b) => {
+            const priceA = parseFloat(a.dataset.price);
+            const priceB = parseFloat(b.dataset.price);
+
+            switch (sortType) 
+            {
+                case 'price-asc':
+                    return priceA - priceB;
+                case 'price-desc':
+                    return priceB - priceA;
+                default:
+                    return 0;
+            }
+        });
+
+        products.forEach(product => productGrid.appendChild(product));
+        
+        filterProducts();
+    }
 
     function filterProducts() 
     {
