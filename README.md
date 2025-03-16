@@ -1,1 +1,1 @@
-  **VAULTIQUE** 
+**VAULTIQUE**
