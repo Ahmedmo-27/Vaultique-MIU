@@ -14,3 +14,4 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1000); // Match the fade-out transition duration
     }, 3000); // Adjust the loading delay as needed
 });
+
