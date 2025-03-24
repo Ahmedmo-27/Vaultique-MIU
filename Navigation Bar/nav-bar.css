@@ -5,6 +5,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Didact+Gothic&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/futura-pt');
 
+.navbar-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+
 header {
     width: 100%;
     position: fixed;
@@ -15,10 +23,7 @@ header {
     align-items: center;
     padding: 10px 50px;
     text-transform: uppercase;
-}
-
-body {
-    background-color: rgb(254, 248, 241);
+    transition: background-color 0.5s ease;
 }
 
 .header-scrolled {
@@ -185,6 +190,7 @@ header:hover .side-icon {
 }
 
 #collections-extension {
+    margin-top: 10px;
     display: flex;
     gap: 10px;
     padding-bottom: 20px;
@@ -202,7 +208,7 @@ header:hover .side-icon {
 
 .extension-item {
     width: 250px;
-    height: 370px;
+    height: 400px;
     overflow: hidden;
     text-decoration: none;
     display: flex;
@@ -267,6 +273,7 @@ header:hover .side-icon {
 
 /* Bracelets Extension */
 #bracelets-extension {
+    margin-top: 10px;
     display: flex;
     flex-direction: row;
     justify-content: baseline;
