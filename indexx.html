@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Recommendation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Find Your Perfect Watch</h1>
+    <p>Answer a few questions, and we'll recommend watches that match your style, color preferences, budget, and material.</p>
+
+    <!-- Questionnaire -->
+    <div class="questionnaire">
+      <div class="question" id="question-1">
+        <p>What is your preferred watch style?</p>
+        <select id="watchStyle" onchange="nextQuestion()">
+          <option value="">Select Style</option>
+          <option value="Sport">Sport</option>
+          <option value="Classic">Classic</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Luxury">Luxury</option>
+        </select>
+      </div>
+
+      <div class="question" id="question-2" style="display: none;">
+        <p>What is your favorite watch color?</p>
+        <select id="watchColor" onchange="nextQuestion()">
+          <option value="">Select Color</option>
+          <option value="Black">Black</option>
+          <option value="Silver">Silver</option>
+          <option value="Gold">Gold</option>
+          <option value="Blue">Blue</option>
+          <option value="Brown">Brown</option>
+        </select>
+      </div>
+
+      <div class="question" id="question-3" style="display: none;">
+        <p>What's your budget?</p>
+        <select id="budget" onchange="nextQuestion()">
+          <option value="">Select Budget</option>
+          <option value="Under50">Under $50</option>
+          <option value="50to100">$50 - $100</option>
+          <option value="100to200">$100 - $200</option>
+          <option value="Over200">Over $200</option>
+        </select>
+      </div>
+
+      <div class="question" id="question-4" style="display: none;">
+        <p>What is your preferred material?</p>
+        <select id="material" onchange="nextQuestion()">
+          <option value="">Select Material</option>
+          <option value="Leather">Leather</option>
+          <option value="Metal">Metal</option>
+          <option value="Silicone">Silicone</option>
+          <option value="Plastic">Plastic</option>
+          <option value="Ceramic">Ceramic</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div id="recommendations" class="recommendations" style="display: none;">
+      <h2>Recommended Watches for You</h2>
+      <div id="watch-list"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
