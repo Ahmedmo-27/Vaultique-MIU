@@ -167,7 +167,7 @@ header:hover .side-icon {
     background-color: white;
     border-top: 0.01em solid gainsboro;
     width: 100vw;
-    height: 55vh;
+    height: auto;
     z-index: -1;
 }
 
@@ -251,7 +251,7 @@ header:hover .side-icon {
 .collection-anchors {
     display: flex;
     flex-direction: column;
-    height: 316px;
+    height: 400px;
     border-right: 2px solid #818181;
     margin: 10px 10px;
 }

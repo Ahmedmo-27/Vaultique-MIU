@@ -1,12 +1,15 @@
-* {
+*
+{
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scroll-behavior: smooth;
+  transition: all .3s cubic-bezier(.39,.575,.565,1);
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  font-family: 'Lora', serif;
-  font-size: 20px;
   background-color: #001F3F;
   color: #ffffff;
   padding: 50px;
@@ -16,18 +19,8 @@ body {
   line-height: 1.6;
 }
 
-.header {
-  text-align: center;
-  font-size: 52px;
-  font-weight: 700;
-  color: palegoldenrod;
-  margin-bottom: 60px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-family: 'Roboto Slab', serif;
-}
-
 .container {
+  margin-top: 100px;
   width: 100%;
   max-width: 850px;
   padding: 30px;
