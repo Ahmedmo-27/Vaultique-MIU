@@ -1,1 +1,1 @@
-All Products Page
+**VAULTIQUE**
