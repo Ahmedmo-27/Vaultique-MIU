@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const duration = 1000;
         let start = null;
 
-        function animation(currentTime) {
+        /*function animation(currentTime) {
             if (start === null) start = currentTime;
             const timeElapsed = currentTime - start;
             const run = ease(timeElapsed, startPosition, distance, duration);
@@ -49,7 +49,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         requestAnimationFrame(animation);
+    }*/
+
+        
+
+    function animation(currentTime) {
+        if (start === null) start = currentTime;
+        const timeElapsed = currentTime - start;
+        const run = ease(timeElapsed, startPosition, distance, duration);
+        window.scrollTo(0, run);
+
+        if (timeElapsed < duration) {
+            requestAnimationFrame(animation);
+        } else {
+            isScrolling = false;
+            currentSection = targetSection;
+            
+            // Automatically scroll to footer if it's the last section
+            if (currentSection === sections.length - 1) {
+                setTimeout(() => {
+                    smoothScrollTo(document.body.scrollHeight);
+                }, 500);
+            } else {
+                updateScrollIndicator();
+            }
+        }
     }
+
+    requestAnimationFrame(animation);
+}
+
 
     // Easing function for smooth scrolling
     function ease(t, b, c, d) {

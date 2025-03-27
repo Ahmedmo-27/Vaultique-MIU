@@ -1,1 +1,1 @@
-**VAULTIQUE**
+Welcome Page of Vaultique Watch Store 
