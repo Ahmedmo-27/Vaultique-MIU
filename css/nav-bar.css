@@ -4,25 +4,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Didact+Gothic&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Didact+Gothic&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/futura-pt');
-@import url('https://fonts.cdnfonts.com/css/garet');
-@import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Didact+Gothic&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Didact+Gothic&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-
-* {
-    font-family: 'Arial', 'PT Sans', 'Didact Gothic', 'Garet', sans-serif;
-    font-weight: 100px;
-    padding: 0px;
-    margin: 0px;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-    transition: all .3s cubic-bezier(.39, .575, .565, 1);
-    -webkit-font-smoothing: antialiased;
-}
-
-body {
-    background-color: rgb(15, 14, 14);
-}
 
 header {
     width: 100%;
@@ -34,6 +15,10 @@ header {
     align-items: center;
     padding: 10px 50px;
     text-transform: uppercase;
+}
+
+body {
+    background-color: rgb(254, 248, 241);
 }
 
 .header-scrolled {
@@ -54,7 +39,8 @@ header:hover {
 }
 
 header:hover a,
-header:hover .navigation p {
+header:hover .navigation p 
+{
     color: black;
 }
 
@@ -79,13 +65,19 @@ header:hover .side-icon {
 }
 
 .header-scrolled a,
-.header-scrolled .navigation p {
+.header-scrolled .navigation p 
+{
     color: black;
 }
 
 .header-scrolled .search,
 .header-scrolled .searchField,
 .header-scrolled .searchField::placeholder {
+    color: black;
+}
+
+.header-unscrolled:hover #side-icon 
+{
     color: black;
 }
 
@@ -113,8 +105,11 @@ header:hover .side-icon {
     margin-left: 20px;
 }
 
+
+
 .logo-unscrolled {
     color: #F6E8C0;
+    text-align: center;
     text-decoration: none;
     text-transform: uppercase;
     font-size: 40px;
@@ -126,6 +121,7 @@ header:hover .side-icon {
     color: black;
     text-decoration: none;
     text-transform: uppercase;
+    text-align: center;
     font-size: 35px;
     font-weight: 700;
     white-space: nowrap;
@@ -183,108 +179,39 @@ header:hover .side-icon {
     right: 30px;
     background-color: transparent;
     border: none;
-    cursor: pointer;
 }
 
 #exit-extension-button i {
     font-size: larger;
 }
 
-/*Collection Extension*/
-
-/*#collections-extension {
+#collections-extension {
     display: flex;
-    flex-direction: row;
-    justify-content: baseline;
+    gap: 5px;
+    padding-bottom: 20px;
+    margin-right: 70px;
+    justify-content: center; 
     align-items: flex-start;
-    margin: 10px 0;
-}
-
-.extension-item {
-    width: 300px;
-    height: 390px;
-    overflow: hidden;
-    text-decoration: none;
-    margin: 10px 0;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.extension-img {
-    object-fit: cover;
-    z-index: -1;
-}
-
-.category-img {
-    width: 250px;
-    height: 316px;
-    object-fit: cover;
-}
-
-.extension-text {
-    font-family: 'futura pt';
-    margin-top: 10px;
-    text-decoration: none;
-    font-weight: 500;
-    color: #000;
-    text-transform: uppercase;
-    text-align: center;
-    cursor: pointer;
-    font-size: 15px;
-}
-
-
-
-.collection-anchors {
-    display: flex;
-    flex-direction: column;
-    height: 316px;
-    border-right: 1px solid #818181;
-    margin: 10px 40px;
-}
-
-.collection-anchors h4,
-.collection-anchors a {
-    padding: 5px;
-    padding-right: 50px;
-    color: #000;
-    text-transform: uppercase;
-    font-family: 'futura pt', sans-serif;
-    font-weight: 400;
-    text-decoration: none;
 }
 
 .collection-extension {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    margin: 0 -10px;
-}*/
-
-
-#collections-extension {
-    display: flex;
-    flex-direction: row;
-    justify-content: baseline;
-    align-items: flex-start;
-    padding-bottom: 10px;
+    align-items: center;
+    text-align: center; 
 }
 
-.collection-extension .extension-item 
-{
-    width: 220px;
-    height: 350px;
+.extension-item {
+    width: 250px;
+    height: 370px;
     overflow: hidden;
     text-decoration: none;
-    align-items: center;
-    display: block;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    box-sizing: border-box;
+    padding-bottom: 10px;
 }
 
 .extension-item:hover img {
@@ -293,13 +220,13 @@ header:hover .side-icon {
 }
 
 .extension-img {
-    object-fit: contain;
+    width: 100%;
+    height: 90%;
+    object-fit: cover;
     z-index: -1;
 }
 
-.category-img 
-{
-    
+.category-img {
     width: 100%;
     height: 90%;
     object-fit: cover;
@@ -320,13 +247,13 @@ header:hover .side-icon {
     display: flex;
     flex-direction: column;
     height: 316px;
-    border-right: 1px solid #818181;
-    margin: 10px 30px;
+    border-right: 2px solid #818181;
+    margin: 10px 10px;
 }
 
 .collection-anchors h4,
 .collection-anchors a {
-    padding-right: 20px;
+    padding-right: 15px;
     color: #000;
     text-transform: uppercase;
     font-family: 'futura pt', sans-serif;
@@ -339,115 +266,6 @@ header:hover .side-icon {
     scale: 1.05;
 }
 
-.collection-extension 
-{
-    width: 100%;
-    display: flex;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    margin: 0 -10px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*Brands Extension
-
-#brands-extension {
-    display: flex;
-    flex-direction: row;
-    justify-content: baseline;
-    align-items: flex-start;
-    margin: 10px 0;
-}
-
-.brands-anchors {
-    display: flex;
-    flex-direction: column;
-    height: 316px;
-    border-right: 1px solid #818181;
-    margin: 10px 40px;
-}
-
-.brands-anchors h4, .brands-anchors a {
-    padding: 5px;
-    padding-right: 50px;
-    color: #000;
-    text-transform: uppercase;
-    font-family: 'futura pt', sans-serif;
-    font-weight: 400;
-    text-decoration: none;
-}
-
-.brands-extension {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    margin: 0 -10px;
-}
-
-.brands-extension .extension-img {
-    width: 300px;
-    height: 390px;
-    overflow: hidden;
-    text-decoration: none;
-    margin: 10px 0;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.brands-extension .extension-img {
-    object-fit: cover;
-    z-index: -1;
-}
-
-.brands-extension .category-img {
-    width: 250px;
-    height: 316px;
-    object-fit: cover;
-}
-
-.brands-extension .extension-text {
-    font-family: 'futura pt';
-    margin-top: 10px;
-    text-decoration: none;
-    font-weight: 500;
-    color: #000;
-    text-transform: uppercase;
-    text-align: center;
-    cursor: pointer;
-    font-size: 15px;
-}*/
-
-
 /* Bracelets Extension */
 #bracelets-extension {
     display: flex;
@@ -455,20 +273,20 @@ header:hover .side-icon {
     justify-content: baseline;
     align-items: flex-start;
     margin: 10px 0;
-    padding-bottom: 10px; /* Add or adjust this padding to match the collections section */
+    padding-bottom: 10px;
 }
-
-
 
 .bracelets-anchors {
     display: flex;
     flex-direction: column;
     height: 316px;
-    border-right: 1px solid #818181;
+    border-right: 2px solid #818181;
     margin: 10px 40px;
 }
 
-.bracelets-anchors h4, .bracelets-anchors a {
+.bracelets-anchors h4,
+.bracelets-anchors a 
+{
     padding: 5px;
     padding-right: 20px;
     color: #000;
@@ -477,7 +295,6 @@ header:hover .side-icon {
     font-weight: 400;
     text-decoration: none;
 }
-
 
 .bracelets-anchors h4,
 .bracelets-anchors a:hover 
@@ -491,7 +308,7 @@ header:hover .side-icon {
     justify-content: center;
     align-items: flex-start;
     margin: 0 -10px;
-    padding-bottom: 10px; /* Add or adjust this padding to match the collections section */
+    padding-bottom: 10px;
 }
 
 .bracelets-extension .extension-item {
@@ -508,15 +325,12 @@ header:hover .side-icon {
     margin-right: 20px;
 }
 
-
 .bracelets-extension .extension-img {
-    object-fit: cover;
+    object-fit: contain;
     z-index: -1;
-    width: 180px;
-    height: 100px;
+    width: 180px; /* Smaller logo size */
+    height: 100px; /* Smaller logo size */
 }
-
-
 
 .bracelets-extension .extension-text {
     font-family: 'futura pt';
@@ -526,13 +340,10 @@ header:hover .side-icon {
     color: #000;
     text-transform: uppercase;
     text-align: center;
-    cursor: pointer;
     font-size: 17px;
-    padding-bottom: 10px; /* Add or adjust this padding to match the collections section */
 }
 
-/*Search Extension Place*/
-
+/* Search Extension Place */
 .search-extension {
     display: none;
     flex-direction: column;
@@ -617,8 +428,7 @@ header:hover .side-icon {
     font-size: larger;
 }
 
-/*Scrolled Nav-Bar*/
-
+/* Scrolled Nav-Bar */
 .header-top-scrolled,
 .header-middle-scrolled,
 .header-bottom-scrolled {
@@ -635,7 +445,8 @@ header:hover .side-icon {
     justify-content: space-between;
 }
 
-.header-middle-scrolled .side-icon {
+.header-middle-scrolled .side-icon 
+{
     color: black;
 }
 
@@ -749,15 +560,15 @@ header:hover .side-icon {
 }
 
 .sidepanel {
-    height: 100%; 
-    width: 0; 
-    position: fixed; 
-    z-index: 9999999; 
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 9999999;
     top: 0;
     left: 0;
     background-color: black;
-    overflow-x: hidden; 
-    padding-top: 60px; 
+    overflow-x: hidden;
+    padding-top: 60px;
     transition: 0.5s;
 }
 
@@ -776,9 +587,9 @@ header:hover .side-icon {
 }
 
 .sidepanel a:hover {
-    color: black;
+    color: rgb(254, 248, 241);
 }
-  
+
 .sidepanel .closebtn {
     position: absolute;
     top: 0;
@@ -864,37 +675,28 @@ header:hover .side-icon {
     100% { opacity: 0; }
 }
 
-@media screen and (max-width: 1090px){
-    header {
+@media screen and (max-width: 1090px) 
+{
+    header 
+    {
         width: 100%;
     }
-
-    .side-icon {
+ 
+    .side-icon
+    {
+        
         display: block;
     }
-
-    .logo {
-        margin-right: 0;
+ 
+    .header-middle-unscrolled
+    {
+        justify-content: space-between;
+        transform: translateX(10%);
     }
 
-    .responsive {
-        margin-right: 70px;
+    .navigation
+    {
+        display: none;    
     }
 
-    .navigation {
-        display: none;
-        position: absolute;
-        top: 50px;
-        left: 0;
-        background: white;
-        padding: 10px;
-        z-index: 999;
-    }
-
-    .navigation a {
-        display: block;
-        color: black;
-        text-decoration: none;
-        padding: 5px 0;
-    }
-} 
+}

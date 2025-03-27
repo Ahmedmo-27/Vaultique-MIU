@@ -285,6 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    
+
     // Initialize videos
     initVideos();
 
