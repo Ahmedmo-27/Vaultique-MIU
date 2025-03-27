@@ -512,7 +512,7 @@ if (exitButton) {
         searchButtonclick2.addEventListener('click', expandSearch2);
     }
 
-    function expandSearch2() {
+    /*function expandSearch2() {
         if (buttonCount2 === 0) {
             if (window.innerWidth > 400) {
                 console.log('da5al hena2');
@@ -534,5 +534,81 @@ if (exitButton) {
         else {
             // alert("Hena its supposed to search");
         }
-    }
+    }*/
+
+        function expandSearch2() {
+            if (buttonCount2 === 0) {
+                if (window.innerWidth > 400) {
+                    console.log('da5al hena2');
+                    searchDiv2.style.width = '200px';
+                    searchField2.style.width = '200px';
+                } else {
+                    console.log('da5al hena');
+                    searchDiv2.style.width = '100px';
+                    searchField2.style.width = '100px';
+                }
+                searchDiv2.style.border = '1px solid black';
+                buttonCount2++;
+            } else if (buttonCount2 === 1 && searchField2.value == "") {
+                searchDiv2.style.border = 'none';
+                searchField2.style.width = '0px';
+                searchDiv2.style.width = '40px';
+                buttonCount2--;
+            }
+        }
+        
+        // Add search functionality for second search field
+        searchField2.addEventListener('input', async () => {
+            const query = searchField2.value.trim();
+            if (query.length > 2) {
+                headerBottom.style.display = 'none';
+                header.classList.remove('header-unscrolled');
+                header.classList.add('header-scrolled');
+                searchExtension.style.display = 'flex';
+                if (query.length > 0) {
+                    const response = await fetch('/user/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ query })
+                    });
+            
+                    const { products } = await response.json();
+                    displaySearchResults(products);
+                } else {
+                    searchResultsDiv.innerHTML = '';
+                    searchExtension.style.display = 'none';
+                    headerBottom.style.display = 'flex';
+                }
+            } else {
+                searchExtension.style.display = 'none';
+                headerBottom.style.display = 'flex';
+                header.classList.remove('header-scrolled');
+                header.classList.add('header-unscrolled');
+            }
+        });
+        
+        // Add click handler for second search button
+        searchButtonclick2.addEventListener('click', () => {
+            if (searchField2.value.trim().length > 2) {
+                const query = searchField2.value.trim();
+                headerBottom.style.display = 'none';
+                header.classList.remove('header-unscrolled');
+                header.classList.add('header-scrolled');
+                searchExtension.style.display = 'flex';
+                
+                fetch('/user/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                })
+                .then(response => response.json())
+                .then(({ products }) => {
+                    displaySearchResults(products);
+                });
+            }
+        }); 
 });

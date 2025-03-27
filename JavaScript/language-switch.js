@@ -100,6 +100,8 @@ function setLanguage(lang) {
 
     // Store selected language in localStorage
     localStorage.setItem('selectedLanguage', lang);
+    
+   
 }
 
 // Initialize language selector

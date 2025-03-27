@@ -29,25 +29,72 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    
 }
-
 .button {
-    border: .0625rem solid #FFFFFF;
+    border: 0.0625rem solid #FFFFFF;
     background-color: transparent;
     color: #fff;
     font-family: futura-pt, sans-serif;
     font-size: 0.95rem;
     font-weight: 500;
-    letter-spacing: .0625rem;
+    letter-spacing: 0.0625rem;
     line-height: 1.5rem;
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: .65rem 1.75rem;
+    padding: 0.65rem 1.75rem;
     text-transform: uppercase;
-    transition: background-color ease-in-out .2s;
+    transition: all 0.3s ease-in-out;
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Glow effect on hover */
+.button:hover {
+    box-shadow: 0 0 15px rgba(13, 13, 13, 0.8), 
+                0 0 25px rgba(2, 2, 2, 0.6);
+    text-shadow: 0 0 8px rgba(14, 13, 13, 0.8);
+}
+
+/* Optional: Animated border glow */
+.button::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 1px solid transparent;
+    border-radius: inherit;
+    animation: pulse 2s infinite;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.button:hover::before {
+    opacity: 1;
+    border-color: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
 }
 
 #video-background {
@@ -73,6 +120,8 @@ html, body {
     transform: translateY(0);
     scroll-snap-align: start;
     scroll-snap-stop: always;
+    
+    
 }
 
 .section.visible {
@@ -143,6 +192,8 @@ p::-webkit-scrollbar {
     opacity: 0.5;
 }
 
+
+
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
         transform: translateY(0) rotate(180deg);
@@ -204,3 +255,93 @@ p::-webkit-scrollbar {
         padding: 0 2rem;
     }
 } 
+
+.content-link {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    padding: 20px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.content-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.content-link h1,
+.content-link h2 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    color: #f6e8c0; /* Matching your gold color */
+    text-transform: uppercase; /* Matching your style */
+    font-family: 'Futura PT', sans-serif;
+}
+
+.content-link p {
+    font-size: 1.5rem;
+    margin-top: 0;
+    transition: all 0.3s ease;
+    color: #f6e8c0;
+}
+
+.content-link:hover h1,
+.content-link:hover h2 {
+    text-shadow: 0 0 10px rgba(246, 232, 192, 0.8); /* Gold glow */
+    transform: translateY(-2px);
+}
+
+.content-link:hover p {
+    text-shadow: 0 0 5px #f6e8c0;
+    transform: translateY(-1px);
+}
+
+.content-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: all 0.4s ease;
+    pointer-events: none;
+}
+
+.content-link:hover::before {
+    border-color: #f6e8c0; /* Gold border */
+    box-shadow: 0 0 10px #f6e8c0; /* Gold glow */
+}
+
+/* Pulse animation for headings */
+@keyframes text-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.content-link:hover h1,
+.content-link:hover h2 {
+    animation: text-pulse 1.5s infinite;
+}
+
+/* Section-specific adjustments to match your layout */
+.section .content-link {
+    margin-top: 450px; /* Matching your main-text position */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.section .content-link h1 {
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+    line-height: 2.5rem;
+    font-weight: 600;
+}
+
