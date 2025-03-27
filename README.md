@@ -1,3 +1,1 @@
-Haw haw haw
-
-naw naw naw
+Welcome Page of Vaultique Watch Store 
