@@ -7,6 +7,7 @@
     z-index: 100;
     opacity: 0;
     transition: opacity 0.5s ease;
+    pointer-events: auto;
   }
   
   .scroll-indicator.visible {
@@ -24,6 +25,7 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    pointer-events: none;
   }
   
   .scroll-circle:hover {
@@ -59,11 +61,19 @@
     stroke:#F6E8C0;;
   }
   
-  .scroll-indicator.hidden {
+ /* .scroll-indicator.hidden {
     opacity: 0;
     pointer-events: none;
     transform: translateX(-50%) translateY(20px);
-  }
+  }*/
+
+  /* Remove transform from hidden state */
+.scroll-indicator.hidden {
+  opacity: 0;
+  pointer-events: none;
+  /* Remove transform here and use margin-top instead */
+  margin-top: 20px;
+}
   
   @keyframes rotate {
     from {
@@ -74,7 +84,7 @@
     }
   }
   
-  @keyframes bounce {
+  /*@keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
         transform: translateY(0);
     }
@@ -84,7 +94,19 @@
     60% {
         transform: translateY(-4px);
     }
-  }
+  }*/
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        margin-top: 0;
+    }
+    40% {
+        margin-top: -8px;
+    }
+    60% {
+        margin-top: -4px;
+    }
+}
   
   .scroll-indicator.animate {
     animation: bounce 2s infinite;

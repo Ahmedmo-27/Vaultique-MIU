@@ -119,3 +119,4 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
     setLanguage(savedLanguage);
 }); 
+

@@ -31,6 +31,7 @@
     <!--Scroll Arrow-->
     <div class="scroll-indicator">
         <div class="scroll-circle">
+            <div class="scroll-indicator-inner"></div>
             <div class="scroll-progress"></div>
             <div class="scroll-arrow">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,8 +130,10 @@
         <div class="header-bottom-unscrolled" id="header-bottom">
             <nav class="navigation">
                 <a href="/welcome.html" data-translate="home">Home</a>
-                <a href="/User/Collections" id="collections-anchor-with-extension" class="extension" data-translate="collection">Collections</a>
+                <a href="/User/Collections" id="collections-anchor-with-extension" class="extension"
+                    data-translate="collection">Collections</a>
                 <a href="/user/shopAll?category=Bracelet" data-category="Bracelets" data-translate="brands">Brands</a>
+                <a href="/user/shop" data-translate="shopall">Shop All</a>
                 <!--- <a href="/User/Brands?category=Brands" data-category="Brands">Brands</a>-->
                 <a href="/user/Customize" data-translate="recommendationSystem">Recommendation System</a>
             </nav>
@@ -279,6 +282,7 @@
         <a href="/User/Account" data-translate="account">Account</a>
         <a href="/User/WishList" data-translate="wishlist">WishList</a>
         <a href="/User/Shopping-Cart" data-translate="cart">Cart</a>
+        <a href="/user/shop" data-translate="shopall">Shop All</a>
 
 
 
@@ -318,9 +322,9 @@
         </div>
     </section>
 
-   
 
-     <!-- Main Content -->
+
+    <!-- Main Content -->
     <!--- <main>
         <section class="section hero">
             <video autoplay muted loop playsinline>
@@ -377,206 +381,240 @@
         </section>-->
 
 
-        <main>
-            <!-- Classic & Dress Section -->
-            <section class="section hero">
-                <video autoplay muted loop playsinline>
-                    <source src="videos/Patek Philippe - Golden Ellipse Ref. 5738-1R-001 Rose Gold.mp4" type="video/mp4">
-                </video>
-                <div class="content hover-text" data-href="/classic-dress">
-                    <h1 data-translate="classicDressSection">Classic & Dress</h1>
-                    <p data-translate="classicDressDesc">Timeless elegance, modern allure</p>
-                </div>
-            </section>
-        
-            <!-- Casual & Everyday Section -->
-            <section class="section collection">
-                <video autoplay muted loop playsinline>
-                    <source src="videos/Bvlgari Octo Finissimo The Ultimate Swiss Made Luxury Watch for Men - Art Of Time.mp4" type="video/mp4">
-                </video>
-                <div class="content hover-text" data-href="/casual-everyday">
-                    <h2 data-translate="casualEverydaySection">Casual & Everyday</h2>
-                    <p data-translate="casualEverydayDesc">Comfy meets cool</p>
-                </div>
-            </section>
-        
-            <!-- Sports & Adventure Section -->
-            <section class="section topic">
-                <video autoplay muted loop playsinline>
-                    <source src="videos/Rolex Submariner - The divers’ watch.webm">
-                </video>
-                <div class="content hover-text" data-href="/sports-adventure">
-                    <h2 data-translate="sportsAdventureSection">Sports & Adventure</h2>
-                    <p data-translate="sportsAdventureDesc">Built for the bold. Gear up and go!</p>
-                </div>
-            </section>
-            
-            <!-- Aviation & Travel Section -->
-            <section class="section speak">
-                <video autoplay muted loop playsinline>
-                    <source src="videos/Breitling   Navitimer GMT & Automatic 41.mp4">
-                </video>
-                <div class="content hover-text" data-href="/aviation-travel">
-                    <h2 data-translate="aviationTravelSection">Aviation & Travel</h2>
-                    <p data-translate="aviationTravelDesc">Fly further, explore freer</p>
-                </div>
-            </section>
-            
-            <!-- Luxury & Heritage Section -->
-            <section class="section talk">
-                <video autoplay muted loop playsinline>
-                    <source src="videos/Jacob&C0. Billionaire III Diamonds & Rubies.mp4">
-                </video>
-                <div class="content hover-text" data-href="/luxury-heritage">
-                    <h2 data-translate="luxuryHeritageSection">Luxury & Heritage</h2>
-                    <p data-translate="luxuryHeritageDesc">Crafted with legacy, designed for timeless elegance</p>
-                </div>
-            </section>
-        </main>
-        
-        <style>
-            /* Hover effect for all text sections */
-            .hover-text {
-                cursor: pointer;
-                display: inline-block;
-                position: relative;
-                padding: 5px 10px;
-                border-radius: 4px;
-                transition: all 0.3s ease;
+    <main>
+        <!-- Classic & Dress Section -->
+        <section class="section hero">
+            <video autoplay muted loop playsinline>
+                <source src="videos/Patek Philippe - Golden Ellipse Ref. 5738-1R-001 Rose Gold.mp4" type="video/mp4">
+            </video>
+            <div class="content hover-text" data-href="/classic-dress">
+                <h1 data-translate="classicDressSection">Classic & Dress</h1>
+                <p data-translate="classicDressDesc1">Timeless sophistication meets refined elegance</p>
+                <p data-translate="classicDressDesc2">in this collection, designed for those who appreciate</p>
+                <p data-translate="classicDressDesc3">understated luxury. With sleek profiles, precious metals,</p>
+                <p data-translate="classicDressDesc4">and minimalist dials, these watches exude class,</p>
+                <p data-translate="classicDressDesc5">perfect for formal occasions and black-tie events</p>
+            </div>
+        </section>
+
+        <!-- Casual & Everyday Section -->
+        <section class="section collection">
+            <video autoplay muted loop playsinline>
+                <source
+                    src="videos/Bvlgari Octo Finissimo The Ultimate Swiss Made Luxury Watch for Men - Art Of Time.mp4"
+                    type="video/mp4">
+            </video>
+            <div class="content hover-text" data-href="/casual-everyday">
+                <h2 data-translate="casualEverydaySection">Casual & Everyday</h2>
+                <p data-translate="casualEverydayDesc1">this collection is crafted for those</p>
+                <p data-translate="casualEverydayDesc2">who appreciate sophistication in their daily wear.</p>
+                <p data-translate="casualEverydayDesc3">With ultra-thin engineering, minimalist aesthetics,</p>
+                <p data-translate="casualEverydayDesc4">and versatile styling,</p>
+                <p data-translate="casualEverydayDesc5">these timepieces are the perfect companion for any occasion</p>
+            </div>
+        </section>
+
+        <!-- Sports & Adventure Section -->
+        <section class="section topic">
+            <video autoplay muted loop playsinline>
+                <source src="videos/Rolex Submariner - The divers’ watch.webm">
+            </video>
+            <div class="content hover-text" data-href="/sports-adventure">
+                <h2 data-translate="sportsAdventureSection">Sports & Adventure</h2>
+                <p data-translate="sportsAdventureDesc1">Engineered for performance and resilience.</p>
+                <p data-translate="sportsAdventureDesc2">This collection is designed for those who push boundaries,</p>
+                <p data-translate="sportsAdventureDesc3">featuring robust timepieces built to</p>
+                <p data-translate="sportsAdventureDesc4">withstand extreme conditions.</p>
+                <p data-translate="sportsAdventureDesc5">Whether exploring the depths of the ocean</p>
+                <p data-translate="sportsAdventureDesc6">or conquering rugged terrains, these watches</p>
+                <p data-translate="sportsAdventureDesc7">combine technical excellence with striking aesthetics.</p>
+            </div>
+        </section>
+
+        <!-- Aviation & Travel Section -->
+        <section class="section speak">
+            <video autoplay muted loop playsinline>
+                <source src="videos/Breitling   Navitimer GMT & Automatic 41.mp4">
+            </video>
+            <div class="content hover-text" data-href="/aviation-travel">
+                <h2 data-translate="aviationTravelSection">Aviation & Travel</h2>
+                <p data-translate="aviationTravelDesc1">Inspired by the precision of flight instruments,</p>
+                <p data-translate="aviationTravelDesc2">this collection is crafted</p>
+                <p data-translate="aviationTravelDesc3">for adventurers and jet-setters.</p>
+                <p data-translate="aviationTravelDesc4">With world-time functions, GMT complications,</p>
+                <p data-translate="aviationTravelDesc5">and robust build quality,</p>
+                <p data-translate="aviationTravelDesc6">these watches ensure you</p>
+                <p data-translate="aviationTravelDesc7">stay on time wherever you go.</p>
+            </div>
+        </section>
+
+        <!-- Luxury & Heritage Section -->
+        <section class="section talk">
+            <video autoplay muted loop playsinline>
+                <source src="videos/Jacob&C0. Billionaire III Diamonds & Rubies.mp4">
+            </video>
+            <div class="content hover-text" data-href="/luxury-heritage">
+                <h2 data-translate="luxuryHeritageSection">Luxury & Heritage</h2>
+                <p data-translate="luxuryHeritageDesc1">A testament to masterful craftsmanship,</p>
+                <p data-translate="luxuryHeritageDesc2">this collection showcases the pinnacle of haute horology</p>
+                <p data-translate="luxuryHeritageDesc3">Adorned with precious gems, intricate complications,</p>
+                <p data-translate="luxuryHeritageDesc4">and bold designs,</p>
+                <p data-translate="luxuryHeritageDesc5">these timepieces represent exclusivity and prestige.</p>
+            </div>
+        </section>
+    </main>
+
+    <style>
+        /* Hover effect for all text sections */
+        .hover-text {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .hover-text:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hover-text h1,
+        .hover-text h2,
+        .hover-text p {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Glow effect on headings */
+        .hover-text:hover h1,
+        .hover-text:hover h2 {
+            text-shadow: 0 0 10px rgba(7, 7, 7, 0.8);
+            transform: translateY(-2px);
+        }
+
+        /* Subtle glow on descriptions */
+        .hover-text:hover p {
+            text-shadow: 0 0 5px rgba(30, 30, 30, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* Animated border effect */
+        .hover-text::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+
+        .hover-text:hover::before {
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Pulse animation on hover */
+        @keyframes text-pulse {
+            0% {
+                transform: scale(1);
             }
-        
-            .hover-text:hover {
-                background: rgba(255, 255, 255, 0.1);
+
+            50% {
+                transform: scale(1.02);
             }
-        
-            .hover-text h1,
-            .hover-text h2,
-            .hover-text p {
-                transition: all 0.3s ease;
-                position: relative;
+
+            100% {
+                transform: scale(1);
             }
-        
-            /* Glow effect on headings */
-            .hover-text:hover h1,
-            .hover-text:hover h2 {
-                text-shadow: 0 0 10px rgba(7, 7, 7, 0.8);
-                transform: translateY(-2px);
-            }
-        
-            /* Subtle glow on descriptions */
-            .hover-text:hover p {
-                text-shadow: 0 0 5px rgba(30, 30, 30, 0.6);
-                transform: translateY(-1px);
-            }
-        
-            /* Animated border effect */
-            .hover-text::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                border: 1px solid transparent;
-                border-radius: 4px;
-                transition: all 0.4s ease;
-                pointer-events: none;
-            }
-        
-            .hover-text:hover::before {
-                border-color: rgba(255, 255, 255, 0.5);
-                box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            }
-        
-            /* Pulse animation on hover */
-            @keyframes text-pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.02); }
-                100% { transform: scale(1); }
-            }
-        
-            .hover-text:hover h1,
-            .hover-text:hover h2 {
-                animation: text-pulse 1.5s infinite;
-            }
-        </style>
-        
-        <script>
-            // Click navigation for all text sections
-            document.querySelectorAll('.hover-text').forEach(textElement => {
-                textElement.addEventListener('click', () => {
-                    window.location.href = textElement.getAttribute('data-href');
-                });
+        }
+
+        .hover-text:hover h1,
+        .hover-text:hover h2 {
+            animation: text-pulse 1.5s infinite;
+        }
+    </style>
+
+    <script>
+        // Click navigation for all text sections
+        document.querySelectorAll('.hover-text').forEach(textElement => {
+            textElement.addEventListener('click', () => {
+                window.location.href = textElement.getAttribute('data-href');
             });
-        </script>
-     
-        
-      
+        });
+    </script>
 
-        <footer class="footer">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <a href="#" class="logo" data-translate="logo">Vaultique</a>
-                </div>
-                
-                <div class="footer-nav">
-                    <div class="nav-column">
-                        <a href="#" data-translate="brand">Classic & Dress</a>
-                        <a href="#" data-translate="savoirFaire">Casual & Everyday</a>
-                        <a href="#" data-translate="collections">Sports & Adventure</a>
-                        <a href="#" data-translate="friendsPartners">Aviation & Travel</a>
-                        <a href="#" data-translate="storeLocator">Luxury & Heritage</a>
-                        
-                    </div>
 
-                    <div class="nav-column">
-                        <a href="#" data-translate="rolex">Rolex</a>
-                        <a href="#" data-translate="cartier">Cartier</a>
-                        <a href="#" data-translate="tissot">Tissot</a>
-                        <a href="#" data-translate="audemarsPiguet">Audemars Piquet</a>
-                        <a href="#" data-translate="omega">Omega</a>
-                    </div>
-                    
-                   
+
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo" data-translate="logo">Vaultique</a>
+            </div>
+
+            <div class="footer-nav">
+                <div class="nav-column">
+                    <a href="#" data-translate="brand">Classic & Dress</a>
+                    <a href="#" data-translate="savoirFaire">Casual & Everyday</a>
+                    <a href="#" data-translate="collections">Sports & Adventure</a>
+                    <a href="#" data-translate="friendsPartners">Aviation & Travel</a>
+                    <a href="#" data-translate="storeLocator">Luxury & Heritage</a>
+
                 </div>
-    
-                <div class="footer-bottom">
-                    <div class="footer-info">
-                        <div class="info-column">
-                            <p data-translate="followUs">Follow us</p>
-                            <div class="social-links">
-                                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#"><i class="fab fa-twitter"></i></a>
-                                <a href="#"><i class="fab fa-instagram"></i></a>
-                                
-                            </div>
-                        </div>
-                        
-                        <div class="info-column">
-                            <a href="#" data-translate="contact">Contact</a>
-                            <a href="#" data-translate="legals">Legals</a>
-                        </div>
-                        
-                        
-                    </div>
-    
+
+                <div class="nav-column">
+                    <a href="#" data-translate="rolex">Rolex</a>
+                    <a href="#" data-translate="cartier">Cartier</a>
+                    <a href="#" data-translate="tissot">Tissot</a>
+                    <a href="#" data-translate="audemarsPiguet">Audemars Piquet</a>
+                    <a href="#" data-translate="omega">Omega</a>
+                </div>
+
+
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-info">
                     <div class="info-column">
-                        <p data-translate="copyright">© Vaultique 2025</p>
-                        <div class="language-selector">
-                            <a href="#" data-lang="en" class="active">EN</a>
-                            
-                            <a href="#" data-lang="ar">AR</a>
-                            
+                        <p data-translate="followUs">Follow us</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+
                         </div>
+                    </div>
+
+                    <div class="info-column">
+                        <a href="#" data-translate="contact">Contact</a>
+                        <a href="#" data-translate="legals">Legals</a>
+                    </div>
+
+
+                </div>
+
+                <div class="info-column">
+                    <p data-translate="copyright">© Vaultique 2025</p>
+                    <div class="language-selector">
+                        <a href="#" data-lang="en" class="active">EN</a>
+
+                        <a href="#" data-lang="ar">AR</a>
+
                     </div>
                 </div>
             </div>
-        </footer>
-        <script src="JavaScript/translations.js"></script>
-        <script src="JavaScript/language-switch.js"></script>
+        </div>
+    </footer>
+    <script src="JavaScript/translations.js"></script>
+    <script src="JavaScript/language-switch.js"></script>
 
-        
-    
+
+
 
 </body>
 
