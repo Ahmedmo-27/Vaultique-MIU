@@ -5,6 +5,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Didact+Gothic&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/futura-pt');
 
+.navbar-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+
 header {
     width: 100%;
     position: fixed;
@@ -13,12 +21,9 @@ header {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 50px;
+    padding: 10px 50px;
     text-transform: uppercase;
-}
-
-body {
-    background-color: rgb(254, 248, 241);
+    transition: background-color 0.5s ease;
 }
 
 .header-scrolled {
@@ -30,7 +35,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 50px;
+    padding: 10px 50px;
     text-transform: uppercase;
 }
 
@@ -94,7 +99,6 @@ header:hover .side-icon {
     font-size: 20px;
     position: relative;
     margin-left: -40px;
-    cursor: pointer;
 }
 
 .navigation a {
@@ -112,9 +116,9 @@ header:hover .side-icon {
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;
-    font-size: 30px;
+    font-size: 40px;
     font-weight: 700;
-    margin: 5px 0;
+    margin: 8px 0;
 }
 
 .logo-scrolled {
@@ -122,7 +126,7 @@ header:hover .side-icon {
     text-decoration: none;
     text-transform: uppercase;
     text-align: center;
-    font-size: 25px;
+    font-size: 35px;
     font-weight: 700;
     white-space: nowrap;
 }
@@ -163,7 +167,7 @@ header:hover .side-icon {
     background-color: white;
     border-top: 0.01em solid gainsboro;
     width: 100vw;
-    height: 55vh;
+    height: auto;
     z-index: -1;
 }
 
@@ -186,8 +190,9 @@ header:hover .side-icon {
 }
 
 #collections-extension {
+    margin-top: 10px;
     display: flex;
-    gap: 5px;
+    gap: 10px;
     padding-bottom: 20px;
     margin-right: 70px;
     justify-content: center; 
@@ -203,7 +208,7 @@ header:hover .side-icon {
 
 .extension-item {
     width: 250px;
-    height: 370px;
+    height: 400px;
     overflow: hidden;
     text-decoration: none;
     display: flex;
@@ -246,7 +251,7 @@ header:hover .side-icon {
 .collection-anchors {
     display: flex;
     flex-direction: column;
-    height: 316px;
+    height: 400px;
     border-right: 2px solid #818181;
     margin: 10px 10px;
 }
@@ -268,6 +273,7 @@ header:hover .side-icon {
 
 /* Bracelets Extension */
 #bracelets-extension {
+    margin-top: 10px;
     display: flex;
     flex-direction: row;
     justify-content: baseline;
