@@ -111,7 +111,8 @@ html, body {
 }
 
 .section {
-    height: 100vh;
+    min-height: calc(100vh - 100px); /* Full viewport minus header */
+    height: 100%;
     display: flex;
     align-items: center;
     padding: 0 5%;
@@ -140,16 +141,26 @@ html, body {
     transform: translateY(100%);
 }
 
+.video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 85%;
+    z-index: -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .section video {
     position: absolute;
     top: 50%;
     left: 50%;
     min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
+    min-height:100%;
     transform: translateX(-50%) translateY(-50%);
-    object-fit: cover;
+    object-fit: contain;
     z-index: -1;
 }
 
@@ -333,7 +344,7 @@ p::-webkit-scrollbar {
 
 /* Section-specific adjustments to match your layout */
 .section .content-link {
-    margin-top: 450px; /* Matching your main-text position */
+    margin-top: 50%; /* Matching your main-text position */
     display: flex;
     flex-direction: column;
     justify-content: center;
