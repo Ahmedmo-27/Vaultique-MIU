@@ -6,8 +6,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/Ahmed/Brands Pages/Rolex.css">
         <link rel="stylesheet" href="/Ahmed/Navigation Bar/nav-bar.css">
+        <link rel="stylesheet" href="/Ahmed/Brands Pages/Slider.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script rel="script" src="/Ahmed/Brands Pages/Slider.js"></script>
         <script rel ="script" src="/Ahmed/Navigation Bar/nav-bar.js"></script>
+        <script rel="script" src="/Ahmed/Products Page/Products.js"></script>
     </head>
     <body>
         <div class="navbar-wrapper">
@@ -266,19 +269,117 @@
             </div>
         </div>
 
-        <div class="background-video">
-            <video autoplay muted loop id="myVideo">
-                <source src="/Ahmed/Videos/The Rolex Watch Collection - Rolex®.mp4" type="video/webm">
-            </video>
-        </div>
-
-        <div class="container">
-            <h1 class="brand-logo"> <img src="/Ahmed/Brands Logos/Rolex - with name.png"></h1>
-            <div class="brand-description">
-                <p>Rolex, a brand synonymous with luxury, precision, and craftsmanship, has been producing exceptional timepieces since its inception in 1905. With a diverse range of models and materials, designed for various purposes and lifestyles, Rolex watches have become a symbol of success, prestige, and reliability.</p>
-                <p>Explore some of the most iconic Rolex models, including the Datejust, Day-Date, Daytona, Explorer, GMT Master II, Oyster Perpetual, Sky-Dweller, Submariner, and Yacht-Master.</p>
+        <section class="section topic">
+            <div class="video-container">
+                <video autoplay muted loop playsinline>
+                    <source src="/Ahmed/Videos/The Rolex Watch Collection - Rolex®.mp4">
+                </video>
             </div>
-        </div>        
+            <div class="content hover-text">
+                <h2><img src="/Ahmed/Brands Logos/Rolex.png"></h2>
+                <p>
+                Rolex, a brand synonymous with luxury, precision, and craftsmanship, has been producing exceptional timepieces since its inception in 1905. With a diverse range of models and materials, designed for various purposes and lifestyles, Rolex watches have become a symbol of success, prestige, and reliability.
+                Explore some of the most iconic Rolex models, including the Datejust, Day-Date, Daytona, Explorer, GMT Master II, Oyster Perpetual, Sky-Dweller, Submariner, and Yacht-Master.
+                </p>
+            </div>
+        </section>
+
+        <main class="main-content">
+            <!-- Slider Section -->
+            <div class="slider-container">
+                
+    
+                <!-- Slides -->
+                <div class="slides-wrapper">
+                    <!-- Datejust Slide -->
+                    <div class="slide active" data-model="datejust">
+                        <div class="slide-content">
+                            <div class="watch-info">
+                                <h1 class="watch-title">Datejust</h1>
+                                <h2 class="watch-tagline">Make a date of a day</h2>
+                                <p class="watch-description">
+                                    The epitome of the classic watch by Rolex, the Datejust has spanned eras while retaining the enduring aesthetic characteristics that make it so easily recognizable. With a wide range of dials, it offers the most varied combinations in the collection.
+                                </p>
+                            </div>
+                            <div class="watch-image-container">
+                                <img src="https://content.rolex.com/dam/2022-11/upright-bba-with-shadow/m126233-0039.png" alt="Rolex Datejust" class="watch-image">
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Submariner Slide -->
+                    <div class="slide" data-model="submariner">
+                        <div class="slide-content">
+                            <div class="watch-info">
+                                <h1 class="watch-title">Submariner</h1>
+                                <h2 class="watch-tagline">The reference among divers' watches</h2>
+                                <p class="watch-description">
+                                    The Submariner's design has been entirely in keeping with its function. Its 41 mm case, waterproof to a depth of 300 metres (1,000 feet), provides the perfect housing for a movement of the highest precision and is crowned with a unidirectional rotatable bezel with a Cerachrom insert that helps divers monitor their underwater time.
+                                </p>
+                            </div>
+                            <div class="watch-image-container">
+                                <img src="https://content.rolex.com/dam/2022-11/upright-bba-with-shadow/m124060-0001.png" alt="Rolex Submariner" class="watch-image">
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Daytona Slide -->
+                    <div class="slide" data-model="daytona">
+                        <div class="slide-content">
+                            <div class="watch-info">
+                                <h1 class="watch-title">Cosmograph Daytona</h1>
+                                <h2 class="watch-tagline">Born to race</h2>
+                                <p class="watch-description">
+                                    The Cosmograph Daytona is designed for those with a passion for driving and speed. Introduced in 1963, this iconic chronograph allows drivers to measure elapsed time and read average speeds on its signature tachymetric bezel.
+                                </p>
+                            </div>
+                            <div class="watch-image-container">
+                                <img src="https://content.rolex.com/dam/2022-11/upright-bba-with-shadow/m116500ln-0001.png" alt="Rolex Cosmograph Daytona" class="watch-image">
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Day-Date Slide -->
+                    <div class="slide" data-model="day-date">
+                        <div class="slide-content">
+                            <div class="watch-info">
+                                <h1 class="watch-title">Day-Date</h1>
+                                <h2 class="watch-tagline">The ultimate watch of prestige</h2>
+                                <p class="watch-description">
+                                    The Day-Date was the first wristwatch to display the date and day of the week spelled out in full in a window on the dial. With the President bracelet, originally created specially for it, the Day-Date continues to be the watch par excellence of influential people.
+                                </p>
+                            </div>
+                            <div class="watch-image-container">
+                                <img src="https://content.rolex.com/dam/2022-11/upright-bba-with-shadow/m228236-0012.png" alt="Rolex Day-Date" class="watch-image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Navigation Arrows -->
+                <button id="prevSlide" class="nav-arrow nav-arrow-left" aria-label="Previous slide">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+                <button id="nextSlide" class="nav-arrow nav-arrow-right" aria-label="Next slide">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+    
+                <!-- Pagination Dots -->
+                <div class="pagination">
+                    <button class="dot active" data-index="0" aria-label="Go to slide 1"></button>
+                    <button class="dot" data-index="1" aria-label="Go to slide 2"></button>
+                    <button class="dot" data-index="2" aria-label="Go to slide 3"></button>
+                    <button class="dot" data-index="3" aria-label="Go to slide 4"></button>
+          
+                
+                </div>
+            </div>
+        </main>
+
         <section class="product-container">
             <div class="product-grid">
         
@@ -388,5 +489,112 @@
                 </div>
             </div>
         </section>
+
+        <button class="filter-btn" onclick="openFilterPanel()">
+            <span>Filters and Sorting</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="12" y1="4" x2="12" y2="8" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="8" y1="10" x2="8" y2="14" />    
+                <line x1="4" y1="18" x2="20" y2="18" />
+                <line x1="16" y1="16" x2="16" y2="20" />
+            </svg>
+        </button>
+        
+        <div class="overlay" id="overlay" onclick="closeFilterPanel()"></div>
+        
+        <div class="filter-panel" id="filterPanel">
+            <button class="close-btn" onclick="closeFilterPanel()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            
+            <div class="sort-options">
+                <h3>Sort By</h3>
+                <br>
+                <button data-sort='default'> Default </button>
+                <br>
+                <button data-sort="new"> New </button>
+                <button data-sort="price-asc"> Price ↑ </button>
+                <br>
+                <button data-sort="price-desc"> Price ↓ </button>
+                <button data-sort="popularity"> Popularity </button>
+                <br>
+            </div>
+        
+            <div class="filters">
+                <h3>Filters</h3>
+        
+                <label> Strap Material: </label>
+                <select id="Strap_Material" class="tag">
+                    <option value="All">All</option>
+                    <option value="Leather">Leather</option>
+                    <option value="Metal">Metal</option>
+                    <option value="Rubber">Rubber</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Rose Gold">Rose Gold</option>
+                    <option value="White Gold">White Gold</option>
+                    <option value="Else">Else</option>
+                </select>
+        
+                <label> Movement: </label>
+                <select id="Movement" class="tag">
+                    <option value="All">All</option>
+                    <option value="Automatic">Automatic</option>
+                    <option value="Quartz">Quartz</option>
+                    <option value="Manual">Manual</option>
+                </select>
+        
+                <label> Water Resistance: </label>
+                <select id="Water_Resistance" class="tag">
+                    <option value="All">All</option>
+                    <option value="30m">30m</option>
+                    <option value="50m">50m</option>
+                    <option value="100m">100m</option>
+                    <option value="200m">200m</option>
+                </select>
+        
+                <label> Case Material: </label>
+                <select id="Case_Material" class="tag">
+                    <option value="All">All</option>
+                    <option value="Stainless Steel">Stainless Steel</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Rose Gold">Rose Gold</option>
+                    <option value="White Gold">White Gold</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Titanium">Titanium</option>
+                    <option value="Platinum">Platinum</option>
+                    <option value="Ceramic">Ceramic</option>
+                    <option value="Else">Else</option>
+                </select>
+            </div>
+        
+            <br>
+            <h3>Price Range</h3>
+            <input type="text" id="priceRangeFrom" class="priceRangeValue" placeholder="From" value="0">
+            <input type="text" id="priceRangeTo" class="priceRangeValue" placeholder="To" value="50000000">
+            <br>
+            <br>
+            
+            <div class="filter-options">
+                <h3>Dial Color</h3>
+                <label><input type="checkbox" value="All" class="dial-color"> All </label>
+                <label><input type="checkbox" value="Black" class="dial-color"> Black </label>
+                <label><input type="checkbox" value="Silver" class="dial-color"> Silver </label>
+                <label><input type="checkbox" value="Gold" class="dial-color"> Gold </label>
+                <label><input type="checkbox" value="Blue" class="dial-color"> Blue </label>
+                <label><input type="checkbox" value="White" class="dial-color"> White </label>
+                <label><input type="checkbox" value="Green" class="dial-color"> Green </label>
+                <label><input type="checkbox" value="Else" class="dial-color"> Else </label>
+            </div>
+        
+            <button value="submit" class="submit" onclick="filterProducts()">Submit</button>
+            <button value="reset" class="clear" onclick="clearFilters()">Clear All</button>
+        
+        </div>
+        
     </body>
 </html>
