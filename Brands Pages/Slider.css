@@ -265,50 +265,50 @@
   }
 }
 
-.slide[data-model="datejust"] {
+.slide[data-model="1"] {
   background: linear-gradient(to right, #5a7d6f, #8ba89e);
 }
 
-.slide[data-model="submariner"] {
+.slide[data-model="2"] {
   background: linear-gradient(to right, #00264d, #004d99);
 }
 
-.slide[data-model="daytona"] {
+.slide[data-model="3"] {
   background: linear-gradient(to right, #4d0000, #990000);
 }
 
-.slide[data-model="day-date"] {
+.slide[data-model="4"] {
   background: linear-gradient(to right, #4d4d00, #999900);
 }
 
-.slide[data-model="oyster-perpetual"]
+.slide[data-model="5"]
 {
   background: linear-gradient(to right, #3a4a5a, #6b7d8e);
 }
 
-.slide[data-model="1908"]
+.slide[data-model="6"]
 {
   background: linear-gradient(to right, #4a3a2a, #7d6b5a);
 }
 
-.slide[data-model="air-king"]
+.slide[data-model="7"]
 {
   background: linear-gradient(to right, #2a3a4a, #5a6b7d);
 }
 
-.slide[data-model="explorer"] {
+.slide[data-model="8"] {
   background: linear-gradient(to right, #2a2a2a, #5a5a5a);
 }
 
-.slide[data-model="gmt-master"] {
+.slide[data-model="9"] {
   background: linear-gradient(to right, #4a2a2a, #7d5a5a);
 }
 
-.slide[data-model="sky-dweller"] {
+.slide[data-model="10"] {
   background: linear-gradient(to right, #2a4a4a, #5a7d7d);
 }
 
-.slide[data-model="yacht-master"] {
+.slide[data-model="11"] {
   background: linear-gradient(to right, #3a3a5a, #6b6b8e);
 }
 

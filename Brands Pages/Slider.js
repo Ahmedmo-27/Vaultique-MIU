@@ -12,17 +12,17 @@ document.addEventListener('DOMContentLoaded', function() {
   
     // Define background colors for each watch model
     const backgroundColors = {
-      datejust: "linear-gradient(to right, #5a7d6f, #8ba89e)",
-      submariner: "linear-gradient(to right, #00264d, #004d99)",
-      'oyster-perpetual': "linear-gradient(to right, #3a4a5a, #6b7d8e)",
-      '1908': "linear-gradient(to right, #4a3a2a, #7d6b5a)",
-      'air-king': "linear-gradient(to right, #2a3a4a, #5a6b7d)",
-      explorer: "linear-gradient(to right, #2a2a2a, #5a5a5a)",
-      'gmt-master': "linear-gradient(to right, #4a2a2a, #7d5a5a)",
-      'sky-dweller': "linear-gradient(to right, #2a4a4a, #5a7d7d)",
-      'yacht-master': "linear-gradient(to right, #3a3a5a, #6b6b8e)",
-      daytona: "linear-gradient(to right, #4d0000, #990000)",
-      'day-date': "linear-gradient(to right, #4d4d00, #999900)"
+      1: "linear-gradient(to right, #5a7d6f, #8ba89e)",
+      2: "linear-gradient(to right, #00264d, #004d99)",
+      '3': "linear-gradient(to right, #3a4a5a, #6b7d8e)",
+      '4': "linear-gradient(to right, #4a3a2a, #7d6b5a)",
+      '5': "linear-gradient(to right, #2a3a4a, #5a6b7d)",
+      6: "linear-gradient(to right, #2a2a2a, #5a5a5a)",
+      '7': "linear-gradient(to right, #4a2a2a, #7d5a5a)",
+      '8': "linear-gradient(to right, #2a4a4a, #5a7d7d)",
+      '9': "linear-gradient(to right, #3a3a5a, #6b6b8e)",
+      10: "linear-gradient(to right, #4d0000, #990000)",
+      '11': "linear-gradient(to right, #4d4d00, #999900)"
     };
   
     // Update slides and background
