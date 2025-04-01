@@ -281,6 +281,38 @@
   background: linear-gradient(to right, #4d4d00, #999900);
 }
 
+.slide[data-model="oyster-perpetual"]
+{
+  background: linear-gradient(to right, #3a4a5a, #6b7d8e);
+}
+
+.slide[data-model="1908"]
+{
+  background: linear-gradient(to right, #4a3a2a, #7d6b5a);
+}
+
+.slide[data-model="air-king"]
+{
+  background: linear-gradient(to right, #2a3a4a, #5a6b7d);
+}
+
+.slide[data-model="explorer"] {
+  background: linear-gradient(to right, #2a2a2a, #5a5a5a);
+}
+
+.slide[data-model="gmt-master"] {
+  background: linear-gradient(to right, #4a2a2a, #7d5a5a);
+}
+
+.slide[data-model="sky-dweller"] {
+  background: linear-gradient(to right, #2a4a4a, #5a7d7d);
+}
+
+.slide[data-model="yacht-master"] {
+  background: linear-gradient(to right, #3a3a5a, #6b6b8e);
+}
+
+
 /* Update the slider container to have no background by default */
 .slider-container {
   background: none !important;
