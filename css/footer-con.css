@@ -7,8 +7,8 @@
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    background: white;
-    color: black;
+    background: #000;
+    color: beige;
 }
 
 /* RTL Support */
@@ -36,10 +36,13 @@ body {
 .footer-content {
     max-width: 1400px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .footer-brand {
-    margin-bottom: 40px;
+    margin-bottom: 100px;
+    align-self: flex-start; /* Forces logo to top-left */
 }
 
 .logo {
@@ -48,6 +51,8 @@ body {
     color: #fff;
     text-decoration: none;
     letter-spacing: 1px;
+    display: inline-block;
+    margin-left: -650px;
 }
 
 .footer-nav {
@@ -215,4 +220,4 @@ body {
     .footer-copyright p {
         font-size: 11px;
     }
-} 
+}

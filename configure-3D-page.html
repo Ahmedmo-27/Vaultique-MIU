@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luxury Watch 3D Configurator</title>
+  <link rel="stylesheet" href="css/configure-3D.css">
+  <link rel="stylesheet" href="css/nav-bar.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Import Three.js directly from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="JavaScript/nav-bar.js"></script>
+  <script src="JavaScript/configure-3D.js"></script>
+</head>
+<body>
+  <!--Nav-Bar-->
+  <div class="navbar-wrapper">
+    <header class="header-unscrolled">
+      <div class="header-top-unscrolled" id="header-top" style="display: none;">
+        <div class="store-services" id="store-services">
+          <nav class="navigation">
+            <a href="/User/Location">
+              <i class='fas fa-map-marker-alt'></i>
+              <p data-translate="location">Location</p>
+            </a>
+
+            <a href="/User/Contact-Us">
+              <i class='fas fa-phone-alt'></i>
+              <p data-translate="contactUs">Contact Us</p>
+            </a>
+          </nav>
+
+          <div class="search-button-unscrolled" id="search-button" style="display: none;">
+            <input type="search" id="searchField" class="searchField" placeholder="Search">
+            <button id="search" class="search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="user-data">
+          <nav class="navigation">
+            <a href="/User/Account">
+              <i class='fas fa-user-alt'></i>
+              <p data-translate="account">Account</p>
+            </a>
+
+            <a href="/User/WishList">
+              <i class='fas fa-heart'></i>
+              <p data-translate="wishlist">WishList</p>
+            </a>
+
+            <a href="/Cart + Recommendation System/Cart.html">
+              <i class='fas fa-shopping-cart'></i>
+              <p data-translate="cart">Cart</p>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="header-middle-unscrolled" id="header-middle">
+        <div class="responsive">
+          <a class="side-icon" id="side-icon" style="color: #f6e8c0;">
+            <i class="fa fa-bars" id="ham-whatever"></i>
+          </a>
+        </div>
+
+        <a href="welcome.html" class="logo-unscrolled" id="logo" data-translate="logo">Vaultique</a>
+        <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+          <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
+            <input type="search" id="searchField2" class="searchField" placeholder="Search">
+            <button id="search2" class="search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+
+          <nav class="navigation">
+            <a href="/User/Location" style="display: none;">
+              <i class='fas fa-map-marker-alt'></i>
+            </a>
+
+            <a href="/User/Contact-Us" style="display: none;">
+              <i class='fas fa-phone-alt'></i>
+            </a>
+
+            <a href="/User/Account" style="display: none;">
+              <i class='fas fa-user-alt'></i>
+            </a>
+
+            <a href="/User/WishList" style="display: none;">
+              <i class='fas fa-heart'></i>
+            </a>
+
+            <a href="/User/Shopping-Cart" style="display: none;">
+              <i class='fas fa-shopping-cart'></i>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="header-bottom-unscrolled" id="header-bottom">
+        <nav class="navigation">
+          <a href="welcome.html" data-translate="home">Home</a>
+          <a href="/Ahmed/Products Page/Products.html" data-translate="shopall">Shop All</a>
+          <a href="/User/Collections" id="collections-anchor-with-extension" class="extension" data-translate="collection">Collections</a>
+          <a href="/user/shopAll?category=Bracelet" data-category="Bracelets" data-translate="brands">Brands</a>
+          <a href="/Cart + Recommendation System/Recommendation.html" data-translate="recommendationSystem">Recommendation System</a>
+        </nav>
+      </div>
+
+      <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
+        <div id="collections-extension">
+          <div class="collection-anchors">
+            <h4><b data-translate="colly">Collections</b></h4>
+            <br>
+            <a href="/User/Dress" data-translate="classicDress"> Classic & <br>Dress </a>
+            <br>
+            <a href="/User/Casual" data-translate="casualEveryday"> Casual & <br>Everyday </a>
+            <br>
+            <a href="/User/Sports" data-translate="sportsAdventure"> Sports & <br>Adventure </a>
+            <br>
+            <a href="#" data-translate="aviationTravel"> Aviation & <br>Travel </a>
+            <br>
+            <a href="#" data-translate="luxuryHeritage"> Luxury & <br>Heritage </a>
+          </div>
+      
+          <a class="extension-item" href="/User/Collections/Dress">
+            <img src="images/Cartier Tank.jpg" alt="" class="category-img extension-img">
+            <div>
+              <h4 class="extension-text" data-translate="classicDress">Classic & Dress</h4>
+            </div>
+          </a>
+      
+          <a class="extension-item" href="/user/collections/egyptian">
+            <img src="images/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt="" class="category-img extension-img">
+            <div>
+              <h4 class="extension-text" data-translate="casualEveryday">Casual & Everyday</h4>
+            </div>
+          </a>
+      
+          <a class="extension-item" href="/user/collections/egyptian">
+            <img src="images/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg" alt="" class="category-img extension-img">
+            <div>
+              <h4 class="extension-text" data-translate="sportsAdventure">Sports & Adventure</h4>
+            </div>
+          </a>
+      
+          <a class="extension-item" href="/User/Collections/Dress">
+            <img src="images/Charlize Breitling.webp" alt="" class="category-img extension-img">
+            <div>
+              <h4 class="extension-text" data-translate="aviationTravel">Aviation & Travel</h4>
+            </div>
+          </a>
+      
+          <a class="extension-item" href="/User/Collections/Dress">
+            <img src="images/Patek Philippe Grand Master Chime Jay Z .jpg" alt="" class="category-img extension-img">
+            <div>
+              <h4 class="extension-text" data-translate="luxuryHeritage">Luxury & Heritage</h4>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
+        <div id="bracelets-extension">
+          <div class="bracelets-anchors">
+            <h4><b data-translate="brandy">Brands</b></h4>
+            <br>
+            <a href="/User/Brands/Rolex" data-translate="rolex">Rolex </a>
+            <br>
+            <a href="/User/Brands/Rolex" data-translate="omega">Omega</a>
+            <br>
+            <a href="/User/Brands/Rolex" data-translate="audemarsPiguet">Audemars Piguet</a>
+            <br>
+            <a href="/User/Brands/Rolex" data-translate="cartier">Cartier</a>
+            <br>
+            <a href="/User/Brands/Rolex" data-translate="tissot">Tissot</a>
+          </div>
+          <div class="bracelets-extension">
+            <a class="extension-item" href="/user/bracelets/silver">
+              <img src="images/Rolex - with name.png" alt=""
+                class="category-img extension-img">
+              <div>
+                <h4 class="extension-text" data-translate="rolexCollection">Rolex Collection</h4>
+              </div>
+            </a>
+          </div>
+          <div class="bracelets-extension">
+            <a class="extension-item" href="/user/bracelets/gold">
+              <img src="images/Cartier.png" alt=""
+                class="category-img extension-img">
+              <div>
+                <h4 class="extension-text" data-translate="cartierCollection">Cartier Collection</h4>
+              </div>
+            </a>
+          </div>
+          <div class="bracelets-extension">
+            <a class="extension-item" href="/user/bracelets/diamond">
+              <img src="images/Omega.png" alt=""
+                class="category-img extension-img">
+              <div>
+                <h4 class="extension-text" data-translate="omegaCollection">Omega Collection</h4>
+              </div>
+            </a>
+          </div>
+          <div class="bracelets-extension">
+            <a class="extension-item" href="/user/bracelets/gold">
+              <img src="images/Audemars Piguet Logo.png" alt=""
+                class="category-img extension-img">
+              <div>
+                <h4 class="extension-text" data-translate="audemarsPiguetCollection">Audemars Piguet Collection</h4>
+              </div>
+            </a>
+          </div>
+          <div class="bracelets-extension">
+            <a class="extension-item" href="/user/bracelets/gold">
+              <img src="images/Tissot.png" alt=""
+                class="category-img extension-img">
+              <div>
+                <h4 class="extension-text" data-translate="tissotCollection">Tissot Collection</h4>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!--Search-->
+      <div class="search-extension" id="search-extension">
+        <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
+        <h3>Products</h3>
+        <div id="search-results" class="search-results">
+
+        </div>
+      </div>
+    </header>
+
+    <!--Side-Panel-->
+    <div id="mySidepanel" class="sidepanel" style="width: 0px;">
+      <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+      <a href="/welcome.html" data-translate="home">Home</a>
+      <a href="/User/Contact-Us" data-translate="contactUs">Contact Us</a>
+      <a href="/User/Account" data-translate="account">Account</a>
+      <a href="/User/WishList" data-translate="wishlist">WishList</a>
+      <a href="/User/Shopping-Cart" data-translate="cart">Cart</a>
+
+      <div class="dropdown">
+        <a href="#" class="dropbtn" data-translate="colly">Collections</a>
+        <div class="dropdown-content">
+          <a href="/User/Dress" data-translate="classicDress"> Classic & Dress</a>
+          <a href="/User/Casual" data-translate="sportsAdventure"> Sports & Adventure</a>
+          <a href="/User/Sports" data-translate="aviationTravel"> Aviation & Travel</a>
+          <a href="#" data-translate="casualEveryday"> Casual & Everyday</a>
+          <a href="#" data-translate="luxuryHeritage"> Luxury & Heritage</a>
+        </div>
+      </div>
+    
+      <br>
+      <div class="dropdown">
+        <a href="#" class="dropbtn" data-translate="brandy">Brands</a>
+        <div class="dropdown-content">
+          <a href="/User/Brands/Rolex" data-translate="rolex">Rolex </a>
+          <a href="/User/Brands/Rolex" data-translate="omega">Omega</a>
+          <a href="/User/Brands/Rolex" data-translate="audemarsPiguet">Audemars Piguet</a>
+          <a href="/User/Brands/Rolex" data-translate="cartier">Cartier</a>
+          <a href="/User/Brands/Rolex" data-translate="tissot">Tissot</a>
+        </div>
+      </div>
+
+      <a href="#" data-translate="recommendationSystem">Recommendation System </a>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- Main Content -->
+    <main class="main">
+      <div class="container">
+        <div class="grid">
+          <!-- Left Column - 3D Configurator -->
+          <div class="configurator-column">
+            <h1 class="title">Submariner</h1>
+            <div class="watch-specs-horizontal">
+              <div class="spec-item">
+                  <i class="fas fa-clock"></i>
+                  <span id="movement-spec">3235 Calibre</span>
+              </div>
+              <div class="spec-item">
+                  <i class="fas fa-tint"></i>
+                  <span id="water-spec">300m Water Resistant</span>
+              </div>
+              <div class="spec-item">
+                  <i class="fas fa-battery-full"></i>
+                  <span id="power-spec">70h Power Reserve</span>
+              </div>
+          </div>
+            
+            <!-- 3D Watch Viewer -->
+            <div class="watch-viewer">
+              <div id="watch-canvas-container" class="watch-canvas-container">
+                <!-- 3D canvas will be inserted here by JavaScript -->
+                <div class="controls-hint">
+                  Drag to rotate • Scroll to zoom
+                </div>
+              </div>
+            </div>
+
+            <!-- Configuration Options -->
+            <div class="config-tabs">
+              <div class="tabs-list">
+                <button class="tab-trigger active" data-tab="dial">Dial</button>
+                <button class="tab-trigger" data-tab="bracelet">Bracelet</button>
+                <button class="tab-trigger" data-tab="material">Material</button>
+                <button class="tab-trigger" data-tab="bezel">Bezel</button>
+              </div>
+              
+              <!-- Dial options -->
+              <div class="tab-content active" id="dial-tab">
+                <h3 class="option-title">Select Dial Color</h3>
+                <div class="option-grid">
+                  <div class="option-item">
+                    <input type="radio" name="dial" id="dial-black" value="black" checked class="option-input">
+                    <label for="dial-black" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/dials/black.jpg" alt="Black Dial" class="option-image">
+                      </div>
+                      <span class="option-name">Black</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="dial" id="dial-blue" value="blue" class="option-input">
+                    <label for="dial-blue" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/dials/blue.jpg" alt="Blue Dial" class="option-image">
+                      </div>
+                      <span class="option-name">Blue</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="dial" id="dial-green" value="green" class="option-input">
+                    <label for="dial-green" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/dials/green.jpg" alt="Green Dial" class="option-image">
+                      </div>
+                      <span class="option-name">Green</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="dial" id="dial-silver" value="silver" class="option-input">
+                    <label for="dial-silver" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/dials/silver.jpg" alt="Silver Dial" class="option-image">
+                      </div>
+                      <span class="option-name">Silver</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Bracelet options -->
+              <div class="tab-content" id="bracelet-tab">
+                <h3 class="option-title">Select Bracelet Style</h3>
+                <div class="option-grid">
+                  <div class="option-item">
+                    <input type="radio" name="bracelet" id="bracelet-oyster" value="oyster" checked class="option-input">
+                    <label for="bracelet-oyster" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/bracelets/oyster.jpg" alt="Oyster Bracelet" class="option-image">
+                      </div>
+                      <span class="option-name">Oyster</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="bracelet" id="bracelet-jubilee" value="jubilee" class="option-input">
+                    <label for="bracelet-jubilee" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/bracelets/jubilee.jpg" alt="Jubilee Bracelet" class="option-image">
+                      </div>
+                      <span class="option-name">Jubilee</span>
+                      <span class="option-price">+$500</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="bracelet" id="bracelet-leather" value="leather" class="option-input">
+                    <label for="bracelet-leather" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/bracelets/leather.jpg" alt="Leather Bracelet" class="option-image">
+                      </div>
+                      <span class="option-name">Leather</span>
+                      <span class="option-price">+$800</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="bracelet" id="bracelet-oysterflex" value="oysterflex" class="option-input">
+                    <label for="bracelet-oysterflex" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/bracelets/oysterflex.jpg" alt="Oysterflex Bracelet" class="option-image">
+                      </div>
+                      <span class="option-name">Oysterflex</span>
+                      <span class="option-price">+$1,200</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Material options -->
+              <div class="tab-content" id="material-tab">
+                <h3 class="option-title">Select Case Material</h3>
+                <div class="option-grid">
+                  <div class="option-item">
+                    <input type="radio" name="material" id="material-steel" value="steel" checked class="option-input">
+                    <label for="material-steel" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/materials/steel.jpg" alt="Oystersteel" class="option-image">
+                      </div>
+                      <span class="option-name">Oystersteel</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="material" id="material-yellow-gold" value="yellow-gold" class="option-input">
+                    <label for="material-yellow-gold" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/materials/yellow-gold.jpg" alt="Yellow Gold" class="option-image">
+                      </div>
+                      <span class="option-name">Yellow Gold</span>
+                      <span class="option-price">+$12,000</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="material" id="material-white-gold" value="white-gold" class="option-input">
+                    <label for="material-white-gold" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/materials/white-gold.jpg" alt="White Gold" class="option-image">
+                      </div>
+                      <span class="option-name">White Gold</span>
+                      <span class="option-price">+$14,000</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="material" id="material-everose" value="everose" class="option-input">
+                    <label for="material-everose" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/materials/everose.jpg" alt="Everose Gold" class="option-image">
+                      </div>
+                      <span class="option-name">Everose Gold</span>
+                      <span class="option-price">+$16,000</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Bezel options -->
+              <div class="tab-content" id="bezel-tab">
+                <h3 class="option-title">Select Bezel Type</h3>
+                <div class="option-grid">
+                  <div class="option-item">
+                    <input type="radio" name="bezel" id="bezel-black" value="black" checked class="option-input">
+                    <label for="bezel-black" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/bezels/black.jpg" alt="Black Ceramic Bezel" class="option-image">
+                      </div>
+                      <span class="option-name">Black Ceramic</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="bezel" id="bezel-blue" value="blue" class="option-input">
+                    <label for="bezel-blue" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/bezels/blue.jpg" alt="Blue Ceramic Bezel" class="option-image">
+                      </div>
+                      <span class="option-name">Blue Ceramic</span>
+                      <span class="option-price">+$500</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="bezel" id="bezel-green" value="green" class="option-input">
+                    <label for="bezel-green" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/bezels/green.jpg" alt="Green Ceramic Bezel" class="option-image">
+                      </div>
+                      <span class="option-name">Green Ceramic</span>
+                      <span class="option-price">+$800</span>
+                    </label>
+                  </div>
+                  <div class="option-item">
+                    <input type="radio" name="bezel" id="bezel-fluted" value="fluted" class="option-input">
+                    <label for="bezel-fluted" class="option-label">
+                      <div class="option-image-container">
+                        <img src="images/bezels/fluted.jpg" alt="Fluted Bezel" class="option-image">
+                      </div>
+                      <span class="option-name">Fluted</span>
+                      <span class="option-price">+$2,000</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column - Details -->
+          <div class="details-column">
+            <div class="watch-details">
+              <h2 class="subtitle">Submariner</h2>
+              <p class="description">
+                The Submariner's robust and functional design has made it an iconic timepiece. The 41 mm Oystersteel
+                case, distinctive dial with large luminescent hour markers, and unidirectional rotatable bezel with
+                Cerachrom insert make the Submariner immediately recognizable.
+              </p>
+              
+            </div>
+
+            <!-- Configuration Summary -->
+            <div class="config-summary">
+              <h3 class="summary-title">Your Configuration</h3>
+              <div class="summary-details">
+                <div class="summary-row">
+                  <span class="summary-label">Model</span>
+                  <span class="summary-value">Submariner</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Dial</span>
+                  <span id="summary-dial" class="summary-value">Black</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Bracelet</span>
+                  <span id="summary-bracelet" class="summary-value">Oyster</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Material</span>
+                  <span id="summary-material" class="summary-value">Oystersteel</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Bezel</span>
+                  <span id="summary-bezel" class="summary-value">Black Ceramic</span>
+                </div>
+                <div class="summary-row summary-total">
+                  <span class="summary-label">Estimated Price</span>
+                  <span id="summary-price" class="summary-value price">$10,000</span>
+                </div>
+              </div>
+              <div class="summary-actions">
+                <button class="btn btn-primary btn-large">
+                    <span>Add To Cart</span>
+                    <i class="fas fa-shopping-cart"></i>
+                </button>
+                <button class="btn btn-out btn-large">
+                    <span>Continue Shopping</span>
+                    
+                </button>
+            </div>
+            </div>
+
+            <!-- Controls Guide -->
+          
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+          <div class="footer-brand">
+              <a href="/Wael/welcome.html" class="logo" data-translate="logo">Vaultique</a>
+          </div>
+
+          <div class="footer-nav">
+              <div class="nav-column">
+                  <a href="#" data-translate="brand">Classic & Dress</a>
+                  <a href="#" data-translate="savoirFaire">Casual & Everyday</a>
+                  <a href="#" data-translate="collections">Sports & Adventure</a>
+                  <a href="#" data-translate="friendsPartners">Aviation & Travel</a>
+                  <a href="#" data-translate="storeLocator">Luxury & Heritage</a>
+
+              </div>
+
+              <div class="nav-column">
+                  <a href="#" data-translate="rolex">Rolex</a>
+                  <a href="#" data-translate="cartier">Cartier</a>
+                  <a href="#" data-translate="tissot">Tissot</a>
+                  <a href="#" data-translate="audemarsPiguet">Audemars Piquet</a>
+                  <a href="#" data-translate="omega">Omega</a>
+              </div>
+
+
+          </div>
+
+          <div class="footer-bottom">
+              <div class="footer-info">
+                  <div class="info-column">
+                      <p data-translate="followUs">Follow us</p>
+                      <div class="social-links">
+                          <a href="#"><i class="fab fa-facebook-f"></i></a>
+                          <a href="#"><i class="fab fa-twitter"></i></a>
+                          <a href="#"><i class="fab fa-instagram"></i></a>
+
+                      </div>
+                  </div>
+
+                  <div class="info-column">
+                      <a href="#" data-translate="contact">Contact</a>
+                      <a href="#" data-translate="legals">Legals</a>
+                  </div>
+
+
+              </div>
+
+              <div class="info-column">
+                  <p data-translate="copyright">© Vaultique 2025</p>
+                  <div class="language-selector">
+                      <a href="#" data-lang="en" class="active">EN</a>
+
+                      <a href="#" data-lang="ar">AR</a>
+
+                  </div>
+              </div>
+
+              
+          </div>
+      </div>
+  </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
