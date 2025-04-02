@@ -151,68 +151,97 @@ body {
 
 @media (max-width: 768px) {
     .footer {
-        padding: 40px 20px;
+        padding: 30px 20px;
     }
 
     .footer-nav {
         grid-template-columns: 1fr;
-        gap: 30px;
+        gap: 20px;
+        margin-bottom: 30px;
     }
 
     .footer-info {
         grid-template-columns: 1fr;
-        gap: 30px;
-    }
-
-    .nav-column {
-        text-align: center;
+        gap: 20px;
     }
 
     .info-column {
+        align-items: center;
         text-align: center;
     }
 
     .social-links {
         justify-content: center;
-        margin-top: 20px;
     }
 
     .footer-copyright {
         flex-direction: column;
-        gap: 20px;
+        gap: 15px;
         text-align: center;
+        padding-top: 20px;
     }
 
     .language-selector {
         justify-content: center;
     }
-
-    [dir="rtl"] .footer-copyright {
-        flex-direction: column;
-    }
 }
 
-@media (max-width: 480px) {
-    .footer {
-        padding: 30px 15px;
-    }
+@media (max-width: 576px) {
 
-    .footer-brand {
-        margin-bottom: 30px;
+    .footer 
+    {
+        padding: 31px 15px; /* Reduced padding */
         text-align: center;
     }
-
-    .nav-column a,
-    .info-column a,
-    .info-column p {
-        font-size: 14px;
+    
+    .footer-brand {
+        margin-bottom: 15px; /* Reduced margin */
     }
-
+    
+    .footer-brand .logo {
+        font-size: 1.3rem; /* Slightly smaller logo */
+        margin-bottom: 10px;
+    }
+    
+    .footer-nav {
+        gap: 15px; /* Reduced gap between columns */
+        margin-bottom: 15px;
+    }
+    
+    .nav-column h3 {
+        font-size: 1rem; /* Smaller heading */
+        margin-bottom: 8px;
+    }
+    
+    .nav-column a {
+        margin: 0.3rem 0; /* Tighter spacing */
+        font-size: 0.8rem; /* Smaller font */
+    }
+    
+    .footer-bottom {
+        padding-top: 15px; /* Reduced padding */
+    }
+    
+    .footer-info {
+        gap: 10px; /* Tighter gap */
+        margin-bottom: 15px;
+    }
+    
     .social-links {
-        flex-wrap: wrap;
+        gap: 0.8rem; /* Tighter social icons */
+        margin: 0.8rem 0;
     }
-
+    
+    .social-links a {
+        font-size: 1rem; /* Smaller icons */
+    }
+    
     .footer-copyright p {
-        font-size: 11px;
+        font-size: 0.7rem; /* Smaller copyright text */
     }
-} 
+    
+    .language-selector {
+        gap: 0.8rem; /* Tighter language selector */
+        margin-top: 0.8rem;
+    }
+}

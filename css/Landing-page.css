@@ -1,3 +1,9 @@
+*
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 html, body {
     overflow-x: hidden;
@@ -14,6 +20,7 @@ html, body {
     align-items: top;
     overflow: hidden;
     padding-top: 60px;
+    margin-left: -1px;
 }
 
 .main h1 {
@@ -108,24 +115,53 @@ html, body {
     height: 100%; 
     object-fit: cover; 
     z-index: -1; 
+    margin-left: -2px;
 }
 
-.section {
-    min-height: calc(100vh - 100px); /* Full viewport minus header */
-    height: 100%;
+.section 
+{
+    width: 100%;
+    height:638px;
     display: flex;
     align-items: center;
     padding: 0 5%;
-    position: relative;
-    overflow: hidden;
     will-change: transform;
     transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
     opacity: 1;
     transform: translateY(0);
     scroll-snap-align: start;
     scroll-snap-stop: always;
+}
+
+@media screen and (max-width: 576px) {
+    .scroll-indicator {
+        bottom: 1rem;
+    }
     
+    .section video {
+        object-fit: fill; /* Changed from 'fill' to 'cover' for better aspect ratio */
+        min-height: calc(100vh - 75px); /* Set to full viewport height */
+        margin-left: 2px;
+    }
     
+    .section {
+        min-height: calc(100vh - 75px);
+        margin-left: 2px;
+    }
+
+    .button {
+        font-size: 0.8rem;
+        padding: 0.5rem 1.5rem;
+    }
+    
+    #video-background
+    {
+        margin-left: 1px;
+    }
+
+    .main-text {
+        margin-top: 500px;
+    }
 }
 
 .section.visible {
@@ -141,27 +177,17 @@ html, body {
     transform: translateY(100%);
 }
 
-.video-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 85%;
-    z-index: -1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .section video {
+    min-width: 100%;
+    width: 100%;
+    height: 638px;
     position: absolute;
     top: 50%;
     left: 50%;
-    min-width: 100%;
-    min-height:100%;
     transform: translateX(-50%) translateY(-50%);
-    object-fit: contain;
+    object-fit: fill;
     z-index: -1;
+    margin-left:-1px;
 }
 
 p::-webkit-scrollbar {
@@ -357,4 +383,9 @@ p::-webkit-scrollbar {
     font-size: 1.6rem;
     line-height: 2.5rem;
     font-weight: 600;
+}
+
+footer
+{
+    margin-left: -2px;
 }
