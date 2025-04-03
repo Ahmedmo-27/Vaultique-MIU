@@ -8,25 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const headerBottom = document.getElementById('header-bottom');
     const header = document.querySelector('header');
 
-    window.addEventListener('resize', () => {
-        if (window.innerWidth < 1100) {
-            logo.style.position = 'static';
-            searchButton.style.display = 'none';
-            searchButton2.style.marginLeft = '50px';
-            middleDiv.style.display = 'flex';
-            middleDivanchors.forEach(anchor => {
-                anchor.style.display = 'none';
-            });
-            headerMiddle.style.justifyContent = 'center';
-        } else {
-            searchButton.style.display = 'flex';
-            middleDiv.style.display = 'none';
-            middleDivanchors.forEach(anchor => {
-                anchor.style.display = 'inline';
-            });
-            closeNav();
-        }
-    });
 
     window.addEventListener('scroll', function () 
     {
@@ -34,17 +15,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const sideicon = document.getElementById('side-icon');
         const logo = document.getElementById('logo');
     
-        if (window.scrollY > 0) 
-            {
+        if (window.scrollY > 0&& window.innerWidth > 1100) 
+        {
             header.classList.remove('header-unscrolled');
             header.classList.add('header-scrolled');
-    
+
             // Ensure the logo stays on the left
             logo.style.position = 'relative';
             logo.style.left = '50px'; // Adjust this value as needed
             logo.style.top = '50%';
             logo.style.transform = 'translateY(-10%)';
-    
+            
             // Ensure the icons stay on the right
             headerMiddle.style.justifyContent = 'flex-end';
             headerMiddle.style.paddingRight = '50px'; // Adjust this value as needed
@@ -69,6 +50,20 @@ document.addEventListener('DOMContentLoaded', function () {
             headerBottom.classList.add('header-bottom-scrolled');
         } 
         
+        else if (window.scrollY > 0 && window.innerWidth <= 1100)
+        {
+            header.classList.remove('header-unscrolled');
+            header.classList.add('header-scrolled');
+            middleDiv.classList.remove('header-top-unscrolled');
+            middleDiv.classList.add('header-top-scrolled');
+            sideicon.style.color = 'black';
+            headerBottom.classList.remove('header-bottom-unscrolled');
+            headerBottom.classList.add('header-bottom-scrolled');
+            headerTop.style.display = 'none';
+            logo.style.marginLeft='75px';
+            logo.style.fontSize='30px';
+        }
+
         else 
         {
             header.classList.remove('header-scrolled');
@@ -97,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Other unscroll-related changes
             searchButton2.classList.remove('search-button-scrolled');
             searchButton2.classList.add('search-button-unscrolled');
-            sideicon.style.color = 'white';
+            sideicon.style.color = '#F6E8C0';
             headerTop.style.display = 'flex';
             middleDiv.classList.remove('header-top-unscrolled');
             middleDiv.classList.remove('header-top-scrolled');
@@ -106,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
             logo.classList.add('logo-unscrolled');
             headerBottom.classList.add('header-bottom-unscrolled');
             headerBottom.classList.remove('header-bottom-scrolled');
+            
         }
     });
 
@@ -132,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const navigationLinks = document.querySelectorAll('#header-bottom .navigation .extension');
     const headerExtension = document.getElementById('header-bottom-anchor-extension');
     const exitButton = document.getElementById('exit-extension-button');
-    let mouseOverLink = false; //in case el user alternated between el links besor3a msh 3aizeen flickering
+    let mouseOverLink = false; // To prevent flickering
 
     const braceletsLink = document.querySelector('a[data-category="Bracelets"]');
     const braceletsExtension = document.getElementById('header-bottom-bracelets-extension');
@@ -174,8 +170,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
-
-        
 
     if (exitButton) {
         exitButton.addEventListener('click', () => {
@@ -231,12 +225,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function expandSearch() {
         if (buttonCount === 0) {
-            if (window.innerWidth > 210) {
+            if (window.innerWidth < 700) {
                 searchDiv.style.width = '200px';
                 searchField.style.width = '200px';
             } else {
-                searchDiv.style.width = '40px';
-                searchField.style.width = '40px';
+                searchDiv.style.width = '200px';
+                searchField.style.width = '200px';
             }
             searchDiv.style.border = '1px solid black';
             buttonCount++;
@@ -333,25 +327,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function expandSearch2() {
         if (buttonCount2 === 0) {
-            if (window.innerWidth > 400) {
-                console.log('da5al hena2');
-                searchDiv2.style.width = '200px';
-                searchField2.style.width = '200px';
-            } else {
-                console.log('da5al hena');
+            if (window.innerWidth < 700) {
+                console.log('Enter Here');
                 searchDiv2.style.width = '100px';
                 searchField2.style.width = '100px';
+            } else {
+                console.log('Enter Here');
+                searchDiv2.style.width = '200px';
+                searchField2.style.width = '200px';
             }
             searchDiv2.style.border = '1px solid black';
             buttonCount2++;
         } else if (buttonCount2 === 1 && searchField2.value == "") {
             searchDiv2.style.border = 'none';
             searchField2.style.width = '0px';
-            searchDiv2.style.width = '40px';
+            searchDiv2.style.width = '30px';
             buttonCount2--;
         }
         else {
-            // alert("Hena its supposed to search");
         }
     }
 });

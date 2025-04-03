@@ -169,6 +169,7 @@ header:hover .side-icon {
     width: 100vw;
     height: auto;
     z-index: -1;
+    animation: extension 0.7s ease 0s 1 normal forwards;
 }
 
 #header-bottom .navigation a:hover {
@@ -193,7 +194,6 @@ header:hover .side-icon {
     margin-top: 10px;
     display: flex;
     gap: 10px;
-    padding-bottom: 20px;
     margin-right: 70px;
     justify-content: center; 
     align-items: flex-start;
@@ -272,6 +272,27 @@ header:hover .side-icon {
 }
 
 /* Bracelets Extension */
+
+.header-bottom-bracelets-extension
+{
+    border-top: 0.01em solid gainsboro;
+    margin-top: 10px;
+    padding-bottom: 20px;
+    animation: extension 0.7s ease 0s 1 normal forwards;
+}
+
+@keyframes extension {
+	0% {
+		opacity: 0;
+		transform: translateY(-50px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 #bracelets-extension {
     margin-top: 10px;
     display: flex;
@@ -584,7 +605,7 @@ header:hover .side-icon {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 15px;
-    color: #818181;
+    color: #999999;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -615,7 +636,7 @@ header:hover .side-icon {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 15px;
-    color: #818181;
+    color: #999999;
     display: flex;
     align-items: center;
     transition: 0.3s;
@@ -632,7 +653,7 @@ header:hover .side-icon {
 .sidepanel .dropdown-content a {
     padding: 12px 16px;
     display: block;
-    color: #818181;
+    color: #999999;
     text-decoration: none;
     font-size: 15px;
 }
@@ -650,30 +671,6 @@ header:hover .side-icon {
     color: rgb(254, 248, 241);
 }
 
-.popup-container {
-    display: none;
-    position: fixed;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    scroll-behavior: unset;
-}
-
-#exit-popup-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    margin-left: 100%;
-    margin-top: -20px;
-}
-
-#exit-popup-button i {
-    font-size: larger;
-}
-
 @keyframes fadeinout {
     0% { opacity: 0; }
     10% { opacity: 1; }
@@ -681,28 +678,82 @@ header:hover .side-icon {
     100% { opacity: 0; }
 }
 
-@media screen and (max-width: 1090px) 
-{
-    header 
-    {
+@media screen and (max-width: 1090px) {
+    /* General header adjustments */
+    header {
+        padding: 10px 20px;
+        position: fixed;
         width: 100%;
     }
- 
-    .side-icon
-    {
-        
-        display: block;
+    
+    /* Force side icon to display on mobile without any negative offset */
+    .side-icon {
+        display: block !important;
+        margin-left: 0;             /* Remove negative margin */
+        font-size: 24px;            /* Increase for touch devices */
+        color: #F6E8C0;             /* Original color; hover rules will adjust if needed */
+        z-index: 1000;
+        transition: none;           /* Remove any hover transitions that might hide it */
     }
- 
-    .header-middle-unscrolled
-    {
+    
+    /* Unscrolled header: center the logo and space elements evenly */
+    .header-unscrolled {
+        display: flex;
         justify-content: space-between;
-        transform: translateX(10%);
+        align-items: center;
+        padding: 10px 20px;
+    }
+    
+    .header-unscrolled .logo-unscrolled {
+        flex-grow: 1;
+        text-align: center;
+        font-size: 28px;            /* Adjust size for mobile */
+        margin: 0;
+        margin-left:50px ;       /* Center logo on mobile */
+        z-index: 1000;
+    }
+    
+    /* Scrolled header: similar adjustments for consistency */
+    .header-scrolled {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 20px;
+    }
+    
+    .header-scrolled .side-icon {
+        margin-left: 0;             /* Ensure icon is flush with the left edge */
+        font-size: 24px;
+        z-index: 1000;
+    }
+    
+    .header-scrolled .logo-scrolled {
+        flex-grow: 1;
+        text-align: center;
+        font-size: 24px;
+        margin-left: 40px;
+        z-index: 1000;
     }
 
-    .navigation
-    {
-        display: none;    
+    /* Hide main navigation on mobile to rely on the side panel */
+    .navigation {
+        display: none !important;
     }
-
+    
+    /* Adjust the header middle container, if used */
+    .header-middle-unscrolled {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+    }
+    
+    /* Ensure any hover rule that might affect the side icon does not hide it */
+    .header-unscrolled:hover .side-icon,
+    .header-scrolled:hover .side-icon {
+        opacity: 1;
+        color: black !important;
+    }
+            
 }
