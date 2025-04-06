@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Secure Checkout || Vaultique</title>
+    <style>
+      /* Updated 3D card styles */
+      .card-flip-container {
+        width: 350px;
+        height: 200px;
+        perspective: 1000px;
+        margin: 20px auto 10px;
+      }
+
+      #flip-card {
+        width: 100%;
+        height: 100%;
+        color: white;
+        transition: transform 1s;
+        position: relative;
+        border-radius: 15px;
+        font-family: "Arial", sans-serif;
+        transform-style: preserve-3d;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      #flip-card.flipped {
+        transform: rotateY(180deg);
+      }
+
+      #flip-front,
+      #flip-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 15px;
+        backface-visibility: hidden;
+        padding: 25px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      #flip-front {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+      }
+
+      #flip-back {
+        background: linear-gradient(135deg, #16213e, #0f3460);
+        transform: rotateY(180deg);
+        justify-content: flex-end;
+      }
+
+      .card-header {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .bank-name {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .card-holder {
+        font-size: 14px;
+        margin-top: 5px;
+      }
+
+      .card-number {
+        font-size: 18px;
+        letter-spacing: 2px;
+        word-spacing: 10px;
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .expiry-date {
+        font-size: 14px;
+        text-align: right;
+      }
+
+      .card-stripe {
+        background-color: #000;
+        height: 40px;
+        margin: 0 -25px;
+      }
+
+      .card-signature {
+        background-color: #fff;
+        color: #000;
+        height: 30px;
+        width: 80%;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+        font-style: italic;
+      }
+
+      .card-cvv {
+        text-align: right;
+        font-size: 14px;
+      }
+
+      .flip-card-btn {
+        padding: 10px 20px;
+        background: #050a30;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+        display: block;
+        margin: 10px auto 20px;
+        width: fit-content;
+      }
+
+      .flip-card-btn:hover {
+        background: #1a237e;
+      }
+
+      /* Complete Purchase Button - Updated to match image */
+      .complete-purchase-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin: 30px auto 0;
+        background-color: #050a30;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .complete-purchase-btn:hover {
+        background-color: #1a237e;
+      }
+
+      /* Validation styles */
+      .error {
+        color: #ff0000;
+        font-size: 12px;
+        margin-top: 5px;
+        display: none;
+      }
+
+      input.invalid {
+        border-color: #ff0000;
+      }
+
+      input.valid {
+        border-color: #00cc00;
+      }
+
+      /* Add these to your existing style.css or in the style tag */
+      .input-line input.invalid {
+        border-color: #ff0000;
+      }
+
+      .input-line input.valid {
+        border-color: #00cc00;
+      }
+
+      .login-message-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .login-message-popup i {
+        font-size: 50px;
+        margin-top: 15px;
+        color: #4caf50;
+      }
+
+      .input-container {
+        display: flex;
+        gap: 20px;
+      }
+
+      .input-container .input-line {
+        flex: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <br />
+    <a href="/" class="logo" id="logo">Vaultique</a>
+    <br />
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="step completed">
+          <span class="circle">&#10003;</span>
+          <span class="label">Payment</span>
+        </div>
+        <div class="step completed">
+          <span class="circle">&#10003;</span>
+          <span class="label">Shipping</span>
+        </div>
+        <div class="step active">
+          <span class="circle"></span>
+          <span class="label">Leave a review!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-container">
+      <h2 class="form-title">Payment</h2>
+      <form action="" class="checkout-form" id="checkoutForm">
+        <div class="input-line">
+          <label for="name">FULL NAME</label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            placeholder="Your name and surname"
+            value="Mohamed Mekawy"
+          />
+        </div>
+        <div class="input-line">
+          <label for="card-number">Credit Card Number</label>
+          <input
+            type="text"
+            name="card-number"
+            id="card-number"
+            placeholder="1234 5678 9012 3456"
+            value=""
+            maxlength="19"
+          />
+        </div>
+
+        <!-- Added Bank Name Field -->
+        <div class="input-line">
+          <label for="bank-name">BANK NAME</label>
+          <input
+            type="text"
+            name="bank-name"
+            id="bank-name"
+            placeholder="Your bank name"
+            value=""
+          />
+        </div>
+
+        <div class="input-container">
+          <div class="input-line">
+            <label for="cvv">CVV</label>
+            <input
+              type="text"
+              name="cvv"
+              id="cvv"
+              placeholder="123"
+              value=""
+              maxlength="4"
+              class="cvv-input"
+            />
+            <p class="error" id="cvvError">
+              Please enter a valid 3 or 4 digit CVV
+            </p>
+          </div>
+
+          <div class="input-line">
+            <label for="expiry">Expiry (MM/YY)</label>
+            <input
+              type="text"
+              name="expiry"
+              id="expiry"
+              placeholder="MM/YY"
+              value=""
+              maxlength="5"
+              class="expiry-input"
+            />
+            <p class="error" id="expiryError">
+              Please enter a valid expiry date in MM/YY format
+            </p>
+          </div>
+        </div>
+
+        <button type="button" class="flip-card-btn" id="flip-card-btn">
+          View Card Details
+        </button>
+        <!-- 3D Flip Card Component -->
+        <div class="card-flip-container">
+          <div id="flip-card">
+            <div id="flip-front">
+              <div class="card-header">
+                <div class="bank-name" id="display-bank-name">BANK NAME</div>
+                <div class="card-holder" id="display-card-holder">
+                  FULL NAME
+                </div>
+              </div>
+              <div class="card-number" id="display-card-number">
+                ################
+              </div>
+              <div class="card-footer">
+                <div class="expiry-date" id="display-expiry">MM/YY</div>
+              </div>
+            </div>
+            <div id="flip-back">
+              <div class="card-stripe"></div>
+              <div class="card-signature">Authorized Signature</div>
+              <div class="card-cvv" id="display-cvv">CVV</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Popup messages -->
+        <div class="login-message-popup" id="login-message-popup">
+          <h2>Payment Successful</h2>
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="login-message-popup" id="login-message-error-popup">
+          <h2></h2>
+          <i class="fa-solid fa-circle-xmark" style="color: #d60000"></i>
+        </div>
+
+        <!-- Updated Complete Purchase Button -->
+        <a href="/prototype.html" target="_self">
+          <button
+            type="button"
+            class="complete-purchase-btn"
+            onclick="handleFormSubmission(event)"
+          >
+            Complete purchase
+          </button>
+        </a>
+      </form>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+<a href="/prototype.html"></a>

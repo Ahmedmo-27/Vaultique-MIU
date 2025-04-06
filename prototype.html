@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="Checkout_scripting.js" />
+    <!--    
+  
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    -->
+    <link rel="stylesheet" href="Checkout_styles.css" />
+    <link rel="icon" type="image /x-icon" href="/images/logo.ico" />
+
+    <title>Secure Checkout || Vaultique</title>
+  </head>
+
+  <body>
+    <a href="/" class="logo" id="logo">Vaultique</a>
+    <br />
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="step completed">
+          <span class="circle">&#10003;</span>
+          <span class="label">Payment</span>
+        </div>
+        <div class="step completed">
+          <span class="circle">&#10003;</span>
+          <span class="label">Shipping</span>
+        </div>
+        <div class="step active">
+          <span class="circle"></span>
+          <span class="label">Leave a review!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="container hidden">
+      <div class="card-container">
+        <div class="front">
+          <div class="image">
+            <img src="../images/Checkout/chip.png" alt="" />
+            <img src="../images/Checkout/visa.png" alt="" />
+          </div>
+          <div class="card-number-box">################</div>
+          <div class="flexbox">
+            <div class="box">
+              <span>CARD HOLDER</span>
+              <div class="card-holder-name">FULL NAME</div>
+            </div>
+            <div class="box">
+              <span>EXPIRES</span>
+              <div class="expiration">
+                <span class="exp-month">MM</span>
+                <span class="exp-year">YY</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="back">
+          <div class="stripe"></div>
+          <div class="box">
+            <span>cvv</span>
+            <div class="cvv-box"></div>
+            <img src="../images/Checkout/visa.png" alt="" />
+          </div>
+        </div>
+      </div>
+
+      <form action="" class="payment-form">
+        <div class="inputBox">
+          <span>CARD NUMBER</span>
+          <input type="text" maxlength="19" class="card-number-input" />
+          <p class="card-length-message"></p>
+        </div>
+        <div class="inputBox">
+          <span>CARD HOLDER</span>
+          <input type="text" class="card-holder-input" />
+          <p class="error-message"></p>
+        </div>
+        <div class="flexbox">
+          <div class="inputBox">
+            <span>EXPIRATION MM</span>
+            <select name="" id="" class="month-input">
+              <option value="month" select disabled>month</option>
+              <option value="01">01</option>
+              <option value="02">02</option>
+              <option value="03">03</option>
+              <option value="04">04</option>
+              <option value="05">05</option>
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
+          </div>
+          <div class="inputBox">
+            <span>EXPIRATION YY</span>
+            <select name="" id="" class="year-input">
+              <option value="month" select disabled>year</option>
+              <option value="01">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+              <option value="2029">2029</option>
+              <option value="2030">2030</option>
+            </select>
+          </div>
+          <div class="inputBox">
+            <span>cvv</span>
+            <input type="text" maxlength="4" class="cvv-input" />
+            <p class="error-message"></p>
+          </div>
+        </div>
+        <input
+          type="submit"
+          value="PAY EGP 0"
+          class="submit-btn"
+          id="final-checkout-btn"
+          onclick="handlePaymentFormSubmission()"
+        />
+        <input
+          value="Back"
+          class="submit-btn"
+          onclick="window.history.back()"
+        />
+      </form>
+    </div>
+
+    <div class="form-container">
+      <h2 class="form-title">BILLING ADDRESS</h2>
+      <form action="" class="checkout-form">
+        <div class="input-line">
+          <label for="name">FULL NAME</label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            placeholder="Your name and surname"
+            value="Mohamed Mekawy"
+          />
+        </div>
+        <div class="input-line">
+          <label for="Email">Email:</label>
+          <input
+            type="text"
+            name="Email"
+            id="Email"
+            placeholder="example@example.com"
+            value="mmekawy427@gmail.com"
+          />
+        </div>
+        <div class="input-line">
+          <label for="Address">Full Address:</label>
+          <input
+            type="text"
+            name="Address"
+            id="Address"
+            placeholder="room-street-locality"
+            value=""
+          />
+        </div>
+        <div class="input-line">
+          <label for="City">City</label>
+          <input
+            type="text"
+            name="City"
+            id="City"
+            placeholder="Cairo"
+            value=""
+          />
+        </div>
+        <div class="input-container">
+          <div class="input-line">
+            <label for="State">State: </label>
+            <input
+              type="text"
+              name="State"
+              id="State"
+              placeholder="California"
+              value=""
+            />
+          </div>
+          <div class="input-line">
+            <label for="Zipcode">Postal Code: </label>
+            <input
+              type="text"
+              name="Zipcode"
+              id="Zipcode"
+              placeholder="123 456"
+              value=""
+            />
+          </div>
+        </div>
+        <input
+          style="background-color: #050a30; border-width: 50"
+          type="button"
+          value="Complete purchase"
+          onclick="handleFormSubmission(event)"
+        />
+      </form>
+    </div>
+    <script src="Checkout_scripting.js"></script>
+  </body>
+  <div class="login-message-popup" id="login-message-popup">
+    <h2>Login Successful</h2>
+    <i class="fa-solid fa-circle-check"></i>
+  </div>
+  <div class="login-message-popup" id="login-message-error-popup">
+    <h2></h2>
+    <i class="fa-solid fa-circle-xmark" style="color: #d60000"></i>
+  </div>
+</html>
