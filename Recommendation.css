@@ -1,0 +1,92 @@
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #001F3F; 
+  color: #ffffff; 
+}
+
+.container {
+  width: 80%;
+  margin-left: 220px;
+  margin-top: 200px;
+  text-align: center;
+}
+
+h1,
+h2 {
+  color: #F6E8C0; 
+}
+
+.questionnaire {
+  background-color: rgba(255, 255, 255, 0.1); 
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 20px 0;
+  color: #F6E8C0;
+}
+
+.question {
+  margin-bottom: 20px;
+}
+
+.question select {
+  padding: 10px;
+  width: 220px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #001F3F;
+}
+
+.recommendations {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-top: 30px;
+}
+
+.recommendation-card {
+  width: 250px;
+  margin: 10px;
+  padding: 15px;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  background-color: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  color: #ffffff;
+}
+
+.recommendation-card img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+.recommendation-card h3 {
+  color: #ffffff;
+  font-size: 1.2em;
+  margin: 10px 0;
+}
+
+.recommendation-card p {
+  color: #dddddd;
+  font-size: 0.9em;
+}
+
+.recommendation-card button {
+  background-color: #B38B29;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.recommendation-card button:hover {
+  background-color: #B38B29;
+}
