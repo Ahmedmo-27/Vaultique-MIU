@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Product</title>
+    <link rel="stylesheet" href="CreateProduct.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <a href="AdminHubHomePage.html" class="back-btn">Back to Dashboard</a>
+        <div class="form-container">
+            <h2>Create New Product</h2>
+            <form id="productForm">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" name="productName" required>
+
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
+
+                <label for="price">Price</label>
+                <input type="text" id="price" name="price" required>
+
+                <label for="watchCategory">Watch Category</label>
+                <select id="watchCategory" name="watchCategory">
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="Classic & Dress">Classic & Dress</option>
+                    <option value="Casual & Everyday">Casual & Everyday</option>
+                    <option value="Sports & Adventure">Sports & Adventure</option>
+                    <option value="Aviation & Travel">Aviation & Travel</option>
+                    <option value="Luxury & Heritage">Luxury & Heritage</option>
+                </select>
+
+                <label for="brandType">Brand Type</label>
+                <select id="brandType" name="brandType">
+                    <option value="" disabled selected>Select watch brand</option>
+                    <option value="Rolex">Rolex</option>
+                    <option value="Cartier">Cartier</option>
+                    <option value="Audemars Piguet">Audemars Piguet</option>
+                    <option value="Omega">Omega</option>
+                    <option value="Tissot">Tissot</option>
+                </select>
+
+                <button type="button" class="upload-btn" onclick="uploadImage()">Upload Image</button>
+                <input type="file" id="imageUpload" style="display: none;">
+
+                <button type="submit" class="create-btn">Create Product</button>
+            </form>
+        </div>
+    </div>
+    <script src="CreateProduct.js"></script>
+</body>
+
+</html>

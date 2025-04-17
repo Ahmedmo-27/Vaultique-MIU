@@ -1,0 +1,123 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="analytics.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header>
+<a href="AdminHubHomePage.html" class="back-button">← Back to Dashboard</a>
+<div>🔔 👤</div>
+    </header>
+
+    <div class="container">
+        <div class="card dark">
+            <h2>Active Users</h2>
+            <p class="large">72</p>
+           
+        </div>
+
+        
+           
+
+        </div>
+
+        <div class="card">
+            <h3>Sales Overview</h3>
+            <canvas id="trafficChart" width="20" height="10"></canvas>
+        </div>
+
+        <div class="card stats-box">
+            <p>Users</p>
+            <h3>15K</h3>
+            <p class="positive">↑ 268%</p>
+        </div>
+
+        <div class="card stats-box">
+            <p>Sessions</p>
+            <h3>17K</h3>
+            <p class="positive">↑ 268%</p>
+        </div>
+
+        <div class="card stats-box">
+            <p>Bounce Rate</p>
+            <h3>62.57%</h3>
+            <p class="negative">↑ 19.6%</p>
+        </div>
+
+        <div class="card stats">
+            <p>Session Duration</p>
+            <h3>1m 37s</h3>
+            <p class="negative">↓ 29.7%</p>
+        </div>
+
+        <div class="card alert">
+            <span class="alert-icon">🔔</span>
+            <div>
+                <strong>No alerts set</strong>
+                <p>Get notified when your data drastically changes</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>(Most selling brands    )</h3>
+            <p> Rolex | 26%</p>
+            <div class="bar" style="width:  26%"></div>
+            <p>Cartier | 17%</p>
+            <div class="bar" style="width: 17%"></div>
+            <p>Audemars Piguet | 22%</p>
+            <div class="bar" style="width: 22%"></div>
+            <p> Omega | 19%</p>
+            <div class="bar" style="width: 19%"></div>
+            <p> Tissot | 16%</p>
+            <div class="bar" style="width: 16%"></div>
+           
+        </div>
+
+        <div class="card">
+            <h3>Most selling collections</h3>
+            <p> Classic & Dress | 28%</p>
+            <div class="bar" style="width:  28%"></div>
+            <p>Casual & Everyday | 22%</p>
+            <div class="bar" style="width: 22%"></div>
+            <p>Sports & Adventure | 19%</p>
+            <div class="bar" style="width: 19%"></div>
+            <p> Aviation & Travel | 17%</p>
+            <div class="bar" style="width: 17%"></div>
+            <p> Luxury & Heritage| 14%</p>
+            <div class="bar" style="width: 14%"></div>
+        </div>
+
+        <div class="card">
+            <h3>Top pages</h3>
+            <ul class="top-pages">
+                <li>/ - 23,956</li>
+                <li>/about - 565</li>
+                <li>/license - 477</li>
+                <li class="selected">/posts/sketch-help... - 458</li>
+                <li>/posts/sketch-pricing... - 447</li>
+                <li>/posts/sketch-stats... - 785</li>
+                <li>/posts/sketch-dark... - 962</li>
+                <li>/posts/sketch-messages... - 558</li>
+                <li>/posts/sketch-modal... - 486</li>
+            </ul>
+        </div>
+
+        <div class="card highlight">
+          
+            <h2>Vaultique</h2>
+            
+        </div>
+    </div>
+
+    <script src="analytics.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup Form</title>
+    <link rel="stylesheet" href="LoginSignup.css">
+        <link rel="stylesheet" href="/Website/Login/Ahmed/Navigation Bar/nav-bar.css">
+        <script src="/Website/Login/Ahmed/Navigation Bar/nav-bar.js"></script>
+    <script defer src="LoginSignup.js"></script>
+</head>
+
+<body>
+
+        <div class="navbar-wrapper">
+            <header class="header-unscrolled">
+                <div class="header-top-unscrolled" id="header-top" style="display: none;">
+                    <div class="store-services" id="store-services">
+                        <nav class="navigation">
+                            <a href="/User/Location">
+                                <i class='fas fa-map-marker-alt'></i>
+                                <p>Location</p>
+                            </a>
+        
+                            <a href="/User/Contact-Us">
+                                <i class='fas fa-phone-alt'></i>
+                                <p>Contact Us</p>
+                            </a>
+                        </nav>
+        
+                        <div class="search-button-unscrolled" id="search-button" style="display: none;">
+                            <input type="search" id="searchField" class="searchField" placeholder="Search">
+                            <button id="search" class="search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </div>
+                    </div>
+        
+                    <div class="user-data">
+                        <nav class="navigation">
+                            <a href="/User/Account">
+                                <i class='fas fa-user-alt'></i>
+                                <p>Account</p>
+                            </a>
+        
+                            <a href="/User/WishList">
+                                <i class='fas fa-heart'></i>
+                                <p>WishList</p>
+                            </a>
+        
+                            <a href="/Cart + Recommendation System/Cart.html">
+                                <i class='fas fa-shopping-cart'></i>
+                                <p>Cart </p>
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+        
+                <div class="header-middle-unscrolled" id="header-middle">
+                    <div class="responsive">
+                        <a class="side-icon" id="side-icon">
+                            <i class="fa fa-bars" id="ham-whatever"></i>
+                        </a>
+                    </div>
+        
+                    <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
+                    <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+                        <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
+                            <input type="search" id="searchField2" class="searchField" placeholder="Search">
+                            <button id="search2" class="search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </div>
+        
+                        <nav class="navigation">
+                            <a href="/User/Location" style="display: none;">
+                                <i class='fas fa-map-marker-alt'></i>
+                            </a>
+        
+                            <a href="/User/Contact-Us" style="display: none;">
+                                <i class='fas fa-phone-alt'></i>
+                            </a>
+        
+                            <a href="/User/Account" style="display: none;">
+                                <i class='fas fa-user-alt'></i>
+                            </a>
+        
+                            <a href="/User/WishList" style="display: none;">
+                                <i class='fas fa-heart'></i>
+                            </a>
+        
+                            <a href="/User/Shopping-Cart" style="display: none;">
+                                <i class='fas fa-shopping-cart'></i>
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+        
+                <div class="header-bottom-unscrolled" id="header-bottom">
+                    <nav class="navigation">
+                        <a href="/welcome.html">Home</a>
+                        <a href="/Products Page/Products.html">Shop All</a>
+                        <a href="/User/Collections" id="collections-anchor-with-extension" class="extension">Collections</a>
+                        <a href="/user/shopAll?category=Bracelet" data-category="Bracelets">Brands</a>
+                        <a href="/Cart + Recommendation System/Recommendation.html">Recommendation System</a>
+                    </nav>
+                </div>
+        
+                <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
+                    <div id="collections-extension">
+                        <div class="collection-anchors">
+                            <h4><b>Collections</b></h4>
+                            <br>
+                            <a href="/User/Dress"> Classic & <br>Dress </a>
+                            <br>
+                            <a href="/User/Casual"> Casual & <br>Everyday </a>
+                            <br>
+                            <a href="/User/Sports"> Sports & <br>Adventure </a>
+                            <br>
+                            <a href="#"> Aviation & <br>Travel </a>
+                            <br>
+                            <a href="#"> Luxury & <br>Heritage </a>
+                        </div>
+        
+                        <a class="extension-item" href="/User/Collections/Dress">
+                            <img src="/Ahmed/Models/Cartier Tank.jpg" alt="" class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Classic & Dress</h4>
+                            </div>
+                        </a>
+        
+                        <a class="extension-item" href="/user/collections/egyptian">
+                            <img src="/Ahmed/Models/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Casual & Everyday</h4>
+                            </div>
+                        </a>
+        
+                        <a class="extension-item" href="/user/collections/egyptian">
+                            <img src="/Ahmed/Models/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg"
+                                alt="" class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Sports & Adventure</h4>
+                            </div>
+                        </a>
+        
+                        <a class="extension-item" href="/User/Collections/Dress">
+                            <img src="/Ahmed/Models/Charlize Breitling.webp" alt="" class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Aviation & Travel</h4>
+                            </div>
+                        </a>
+        
+                        <a class="extension-item" href="/User/Collections/Dress">
+                            <img src="/Ahmed/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Luxury & Heritage</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
+                    <div id="bracelets-extension">
+                        <div class="bracelets-anchors">
+                            <h4><b>Brands</b></h4>
+                            <br>
+                            <a href="/Ahmed/Brands Pages/Rolex.html">Rolex </a>
+                            <br>
+                            <a href="/User/Brands/Rolex">Omega</a>
+                            <br>
+                            <a href="/User/Brands/Rolex">Audemars Piguet</a>
+                            <br>
+                            <a href="/User/Brands/Rolex">Cartier</a>
+                            <br>
+                            <a href="/User/Brands/Rolex">Tissot</a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                                <img src="/Ahmed/Brands Logos/Rolex - with name.png" alt="" class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Rolex Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/user/bracelets/gold">
+                                <img src="/Ahmed/Brands Logos/Cartier.png" alt="" class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Cartier Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/user/bracelets/diamond">
+                                <img src="/Ahmed/Brands Logos/Omega.png" alt="" class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Omega Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/user/bracelets/gold">
+                                <img src="/Ahmed/Brands Logos/audemars-piguet-logo.svg" alt=""
+                                    class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Audemars Piguet Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/user/bracelets/gold">
+                                <img src="/Ahmed/Brands Logos/Tissot.png" alt="" class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Tissot Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+        
+                <!--Search-->
+                <div class="search-extension" id="search-extension">
+                    <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
+                    <h3>Products</h3>
+                    <div id="search-results" class="search-results">
+        
+                    </div>
+                </div>
+            </header>
+        
+            <!--Side-Panel-->
+            <div id="mySidepanel" class="sidepanel" style="width: 0px;">
+                <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+                <a href="/welcome.html">Home</a>
+                <a href="/User/Contact-Us">Contact Us</a>
+                <a href="/User/Account">Account</a>
+                <a href="/User/WishList">WishList</a>
+                <a href="/User/Shopping-Cart">Cart</a>
+                <a href="/Ahmed/Products Page/Products.html" data-translate="shopall">Shop All</a>
+        
+                <div class="dropdown">
+                    <a href="#" class="dropbtn">Collections</a>
+                    <div class="dropdown-content">
+                        <a href="/User/Dress"> Classic & Dress</a>
+                        <a href="/User/Casual"> Sports & Adventure</a>
+                        <a href="/User/Sports"> Aviation & Travel</a>
+                        <a href="#"> Casual & Everyday</a>
+                        <a href="#"> Luxury & Heritage</a>
+                    </div>
+                </div>
+        
+                <br>
+                <div class="dropdown">
+                    <a href="#" class="dropbtn">Brands</a>
+                    <div class="dropdown-content">
+                        <a href="/User/Brands/Rolex">Rolex </a>
+                        <a href="/User/Brands/Rolex">Omega</a>
+                        <a href="/User/Brands/Rolex">Audemars Piguet</a>
+                        <a href="/User/Brands/Rolex">Cartier</a>
+                        <a href="/User/Brands/Rolex">Tissot</a>
+                    </div>
+                </div>
+        
+                <a href="#">Recommendation System </a>
+        
+            </div>
+        </div>
+
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline class="bg-video">
+        <source src="BackgroundVideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Flipping Container -->
+    <div class="flip-container">
+        <div class="inner-container">
+            <!-- Login Form -->
+            <div id="login-form" class="form-container">
+                <h2>Login</h2>
+                <form id="login-form-id">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="options">
+                        <label><input type="checkbox"> Remember me</label>
+                        <a href="#" id="forgot-password">Forgot Password?</a>
+                    </div>
+                    <button type="submit">Login</button>
+                    <p>Don't have an account? <a href="/Wael/welcome.html" id="register-link">Register</a></p>
+
+                    <!-- Login as Admin (Hyperlink-style button) -->
+                    <a href="Admin Dashboard/AdminHubHomePage.html" id="admin-login-link" class="admin-login-btn">Login as Admin</a>
+                </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signup-form" class="form-container">
+                <h2>Sign Up</h2>
+                <form>
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter your username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email-signup">Email</label>
+                        <input type="email" id="email-signup" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password-signup">Password</label>
+                        <input type="password" id="password-signup" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit">Sign Up</button>
+                    <p>Already have an account? <a href="#" id="login-link">Login</a></p>
+                </form>
+            </div>
+
+            <!-- Forgot Password Container (Hidden initially) -->
+            <div id="forgot-password-container" class="forgot-password-container">
+                <div class="forgot-password-box">
+                    <h3>Enter your email</h3>
+                    <input type="email" id="forgot-email" placeholder="Your email">
+                    <button id="send-reset-link">Send Reset Link</button>
+                    <button id="close-forgot-password">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
