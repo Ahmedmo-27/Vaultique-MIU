@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/Ahmed/3D Models/Cartier-3d-model.css">
   <link rel="stylesheet" href="/Ahmed/Navigation Bar/nav-bar.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="/Ahmed/Navigation Bar/nav-bar.js"></script>
   <title>Cartier Santos Watch 3D Model</title>
   <!-- Import the model-viewer component -->
-  <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 </head>
 <body>
     <!--Nav-Bar-->
@@ -319,7 +316,7 @@
       // Model loading progress
       modelViewer.addEventListener('progress', (event) => {
         const progressBar = document.querySelector('.progress-bar');
-        progressBar.style.setProperty('--progress', `${event.detail.totalProgress * 100}%`);
+        progressBar.style.setProperty('--progress', event.detail.totalProgress * 100+'%');
       });
       
       // Model loaded successfully
