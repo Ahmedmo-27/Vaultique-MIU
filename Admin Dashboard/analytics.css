@@ -1,0 +1,127 @@
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fbfc;
+    color: #0f172a;
+}
+
+header {
+    background-color: #0f172a;
+    padding: 20px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header nav a {
+    margin: 13px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.container {
+    padding: 20px;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.card.dark {
+    background-color: #0f172a;
+    color: white;
+}
+
+.bar {
+    background-color: #0f172a;
+    height: 40px;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    background: #fffbe6;
+    color: #663c00;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.alert-icon {
+    margin-right: 10px;
+}
+
+.stats-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.stats-box {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f1f5f9;
+    text-align: center;
+}
+
+.highlight {
+    background-color: #6366f1;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.top-pages li {
+    list-style: none;
+    padding: 5px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.top-pages li.selected {
+    background-color: #e0e7ff;
+}
+
+.selected {
+    background-color:white;
+}
+
+.large {
+    font-size: 2em;
+}
+
+.positive {
+    color: green;
+}
+
+.negative {
+    color: red;
+}
+.back-button {
+    display: inline-block;
+    background-color: white;
+    color: black;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    transition: background 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #e2e8f0;
+    /* Add a hover effect */
+}
