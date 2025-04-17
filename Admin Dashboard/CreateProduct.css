@@ -1,0 +1,89 @@
+body {
+    background-color: #1a2b47;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+}
+
+.back-btn {
+    display: inline-block;
+    background-color: white;
+    color: black;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    transition: background 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.form-container {
+    background-color: white;
+    color: black;
+    padding: 25px;
+    border-radius: 10px;
+    width: 320px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 7px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.upload-btn,
+.create-btn {
+    width: 100%;
+    background-color: #1a2b47;
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    border: none;
+    border-radius: 5px;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.upload-btn:hover,
+.create-btn:hover {
+    background-color: #0e1b2f;
+}
