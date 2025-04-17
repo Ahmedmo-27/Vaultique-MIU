@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+    <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>    
+    <link rel="stylesheet" href="/Ahmed/Products Page/Loading Screen.css">
+    <link rel="stylesheet" href="/Ahmed/Navigation Bar/nav-bar.css">
+    <link rel="stylesheet" href="/Ahmed/Products Page/Products.css">
+    <link rel="stylesheet" href="/Wael/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="/Ahmed/Navigation Bar/nav-bar.js"></script>
+    <script src="/Ahmed/Products Page/Loading Screen.js"></script>
+    <script src="/Ahmed/Products Page/Products.js"></script>
+    <script src="/Wael/JavaScript/footer.js"></script>
+</head>
+<body>
+    
+    <!--Loading Screen-->
+    <div class="loading-screen">
+        <div class="logo">
+            <h1>Vaultique</h1>
+        </div>
+    </div>
+
+    <!--Nav-Bar-->
+    <div class="navbar-wrapper">
+    <header class="header-unscrolled">
+        <div class="header-top-unscrolled" id="header-top" style="display: none;">
+            <div class="store-services" id="store-services">
+                <nav class="navigation">
+                    <a href="/User/Location">
+                        <i class='fas fa-map-marker-alt'></i>
+                        <p>Location</p>
+                    </a>
+
+                    <a href="/User/Contact-Us">
+                        <i class='fas fa-phone-alt'></i>
+                        <p>Contact Us</p>
+                    </a>
+                </nav>
+
+                <div class="search-button-unscrolled" id="search-button" style="display: none;">
+                    <input type="search" id="searchField" class="searchField" placeholder="Search">
+                    <button id="search" class="search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="user-data">
+                <nav class="navigation">
+                    <a href="/User/Account">
+                        <i class='fas fa-user-alt'></i>
+                        <p>Account</p>
+                    </a>
+
+                    <a href="/User/WishList">
+                        <i class='fas fa-heart'></i>
+                        <p>WishList</p>
+                    </a>
+
+                    <a href="/Cart + Recommendation System/Cart.html">
+                        <i class='fas fa-shopping-cart'></i>
+                        <p>Cart </p>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="header-middle-unscrolled" id="header-middle">
+            <div class="responsive">
+                <a class="side-icon" id="side-icon">
+                    <i class="fa fa-bars" id="ham-whatever"></i>
+                </a>
+            </div>
+
+            <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
+            <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+                <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
+                    <input type="search" id="searchField2" class="searchField" placeholder="Search">
+                    <button id="search2" class="search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+
+                <nav class="navigation">
+                    <a href="/User/Location" style="display: none;">
+                        <i class='fas fa-map-marker-alt'></i>
+                    </a>
+
+                    <a href="/User/Contact-Us" style="display: none;">
+                        <i class='fas fa-phone-alt'></i>
+                    </a>
+
+                    <a href="/User/Account" style="display: none;">
+                        <i class='fas fa-user-alt'></i>
+                    </a>
+
+                    <a href="/User/WishList" style="display: none;">
+                        <i class='fas fa-heart'></i>
+                    </a>
+
+                    <a href="/User/Shopping-Cart" style="display: none;">
+                        <i class='fas fa-shopping-cart'></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="header-bottom-unscrolled" id="header-bottom">
+            <nav class="navigation">
+                <a href="/welcome.html">Home</a>
+                <a href="/Products Page/Products.html">Shop All</a>
+                <a href="/User/Collections" id="collections-anchor-with-extension" class="extension">Collections</a>
+                <a href="/user/shopAll?category=Bracelet" data-category="Bracelets">Brands</a>
+                <a href="/Cart + Recommendation System/Recommendation.html">Recommendation System</a>
+            </nav>
+        </div>
+
+        <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
+            <div id="collections-extension">
+                <div class="collection-anchors">
+                    <h4><b>Collections</b></h4>
+                    <br>
+                    <a href="/User/Dress"> Classic & <br>Dress </a>
+                    <br>
+                    <a href="/User/Casual"> Casual & <br>Everyday </a>
+                    <br>
+                    <a href="/User/Sports"> Sports & <br>Adventure </a>
+                    <br>
+                    <a href="#"> Aviation & <br>Travel </a>
+                    <br>
+                    <a href="#"> Luxury & <br>Heritage </a>
+                </div>
+        
+                <a class="extension-item" href="/User/Collections/Dress">
+                    <img src="/Ahmed/Models/Cartier Tank.jpg" alt="" class="category-img extension-img">
+                    <div>
+                        <h4 class="extension-text">Classic & Dress</h4>
+                    </div>
+                </a>
+        
+                <a class="extension-item" href="/user/collections/egyptian">
+                    <img src="/Ahmed/Models/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt="" class="category-img extension-img">
+                    <div>
+                        <h4 class="extension-text">Casual & Everyday</h4>
+                    </div>
+                </a>
+        
+                <a class="extension-item" href="/user/collections/egyptian">
+                    <img src="/Ahmed/Models/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg" alt="" class="category-img extension-img">
+                    <div>
+                        <h4 class="extension-text">Sports & Adventure</h4>
+                    </div>
+                </a>
+        
+                <a class="extension-item" href="/User/Collections/Dress">
+                    <img src="/Ahmed/Models/Charlize Breitling.webp" alt="" class="category-img extension-img">
+                    <div>
+                        <h4 class="extension-text">Aviation & Travel</h4>
+                    </div>
+                </a>
+        
+                <a class="extension-item" href="/User/Collections/Dress">
+                    <img src="/Ahmed/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt="" class="category-img extension-img">
+                    <div>
+                        <h4 class="extension-text">Luxury & Heritage</h4>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
+            <div id="bracelets-extension">
+                <div class="bracelets-anchors">
+                    <h4><b>Brands</b></h4>
+                    <br>
+                    <a href="/Ahmed/Brands Pages/Rolex.html">Rolex </a>
+                    <br>
+                    <a href="/User/Brands/Rolex">Omega</a>
+                    <br>
+                    <a href="/User/Brands/Rolex">Audemars Piguet</a>
+                    <br>
+                    <a href="/User/Brands/Rolex">Cartier</a>
+                    <br>
+                    <a href="/User/Brands/Rolex">Tissot</a>
+                        </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                        <img src="/Ahmed/Brands Logos/Rolex - with name.png" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Rolex Collection</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/gold">
+                        <img src="/Ahmed/Brands Logos/Cartier.png" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Cartier Collection</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/diamond">
+                        <img src="/Ahmed/Brands Logos/Omega.png" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Omega Collection</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/gold">
+                        <img src="/Ahmed/Brands Logos/audemars-piguet-logo.svg" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Audemars Piguet Collection</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/user/bracelets/gold">
+                        <img src="/Ahmed/Brands Logos/Tissot.png" alt=""
+                            class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Tissot Collection</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!--Search-->
+        <div class="search-extension" id="search-extension">
+            <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
+            <h3>Products</h3>
+            <div id="search-results" class="search-results">
+
+            </div>
+        </div>
+    </header>
+
+    <!--Side-Panel-->
+    <div id="mySidepanel" class="sidepanel" style="width: 0px;">
+        <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+        <a href="/welcome.html">Home</a>
+        <a href="/User/Contact-Us">Contact Us</a>
+        <a href="/User/Account">Account</a>
+        <a href="/User/WishList">WishList</a>
+        <a href="/User/Shopping-Cart">Cart</a>
+        <a href="/Ahmed/Products Page/Products.html" data-translate="shopall">Shop All</a>
+
+        <div class="dropdown">
+            <a href="#" class="dropbtn">Collections</a>
+            <div class="dropdown-content">
+                <a href="/User/Dress"> Classic & Dress</a>
+                <a href="/User/Casual"> Sports & Adventure</a>
+                <a href="/User/Sports"> Aviation & Travel</a>
+                <a href="#"> Casual & Everyday</a>
+                <a href="#"> Luxury & Heritage</a>
+            </div>
+        </div>
+    
+        <br>
+        <div class="dropdown">
+            <a href="#" class="dropbtn">Brands</a>
+            <div class="dropdown-content">
+                <a href="/User/Brands/Rolex">Rolex </a>
+                <a href="/User/Brands/Rolex">Omega</a>
+                <a href="/User/Brands/Rolex">Audemars Piguet</a>
+                <a href="/User/Brands/Rolex">Cartier</a>
+                <a href="/User/Brands/Rolex">Tissot</a>
+            </div>
+        </div>
+
+        <a href="#">Recommendation System </a>
+
+    </div>
+    </div>
+
+<button class="filter-btn" onclick="openFilterPanel()">
+    <span>Filters and Sorting</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6" />
+        <line x1="12" y1="4" x2="12" y2="8" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="8" y1="10" x2="8" y2="14" />    
+        <line x1="4" y1="18" x2="20" y2="18" />
+        <line x1="16" y1="16" x2="16" y2="20" />
+    </svg>
+</button>
+
+<div class="overlay" id="overlay" onclick="closeFilterPanel()"></div>
+
+<div class="filter-panel" id="filterPanel">
+    <button class="close-btn" onclick="closeFilterPanel()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 6L18 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+    
+    <div class="sort-options">
+        <h3>Sort By</h3>
+        <br>
+        <button data-sort='default'> Default </button>
+        <br>
+        <button data-sort="new"> New </button>
+        <button data-sort="price-asc"> Price ↑ </button>
+        <br>
+        <button data-sort="price-desc"> Price ↓ </button>
+        <button data-sort="popularity"> Popularity </button>
+        <br>
+    </div>
+
+    <div class="filters">
+        <h3>Filters</h3>
+        <label> Brand: </label>
+        <select id="brand" class="tag">
+            <option value="All">All</option>
+            <option value="Rolex">Rolex</option>
+            <option value="Omega">Omega</option>
+            <option value="Tissot">Tissot</option>
+            <option value="Cartier">Cartier</option>
+            <option value="Audemars Piguet">Audemars Piguet</option>
+        </select>
+
+        <label> Strap Material: </label>
+        <select id="Strap_Material" class="tag">
+            <option value="All">All</option>
+            <option value="Leather">Leather</option>
+            <option value="Metal">Metal</option>
+            <option value="Rubber">Rubber</option>
+            <option value="Gold">Gold</option>
+            <option value="Rose Gold">Rose Gold</option>
+            <option value="White Gold">White Gold</option>
+            <option value="Else">Else</option>
+        </select>
+
+        <label> Movement: </label>
+        <select id="Movement" class="tag">
+            <option value="All">All</option>
+            <option value="Automatic">Automatic</option>
+            <option value="Quartz">Quartz</option>
+            <option value="Manual">Manual</option>
+        </select>
+
+        <label> Water Resistance: </label>
+        <select id="Water_Resistance" class="tag">
+            <option value="All">All</option>
+            <option value="30m">30m</option>
+            <option value="50m">50m</option>
+            <option value="100m">100m</option>
+            <option value="200m">200m</option>
+        </select>
+
+        <label> Case Material: </label>
+        <select id="Case_Material" class="tag">
+            <option value="All">All</option>
+            <option value="Stainless Steel">Stainless Steel</option>
+            <option value="Gold">Gold</option>
+            <option value="Rose Gold">Rose Gold</option>
+            <option value="White Gold">White Gold</option>
+            <option value="Silver">Silver</option>
+            <option value="Titanium">Titanium</option>
+            <option value="Platinum">Platinum</option>
+            <option value="Ceramic">Ceramic</option>
+            <option value="Else">Else</option>
+        </select>
+    </div>
+
+    <br>
+    <h3>Price Range</h3>
+    <input type="text" id="priceRangeFrom" class="priceRangeValue" placeholder="From" value="0">
+    <input type="text" id="priceRangeTo" class="priceRangeValue" placeholder="To" value="50000000">
+    <br>
+    <br>
+    
+    <div class="filter-options">
+        <h3>Dial Color</h3>
+        <label><input type="checkbox" value="All" class="dial-color"> All </label>
+        <label><input type="checkbox" value="Black" class="dial-color"> Black </label>
+        <label><input type="checkbox" value="Silver" class="dial-color"> Silver </label>
+        <label><input type="checkbox" value="Gold" class="dial-color"> Gold </label>
+        <label><input type="checkbox" value="Blue" class="dial-color"> Blue </label>
+        <label><input type="checkbox" value="White" class="dial-color"> White </label>
+        <label><input type="checkbox" value="Green" class="dial-color"> Green </label>
+        <label><input type="checkbox" value="Else" class="dial-color"> Else </label>
+    </div>
+
+    <button value="submit" class="submit" onclick="filterProducts()">Submit</button>
+    <button value="reset" class="clear" onclick="clearFilters()">Clear All</button>
+
+</div>
+
+<section class="product-container">
+    <div class="product-grid">
+
+        <!-- Rolex Submariner -->
+        <div class="product-card" data-brand="Rolex" data-strap-material="Metal" data-movement="Automatic" data-water-resistance="300m" data-case-material="Stainless Steel" data-dial-color="Black" data-price="52000">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/submariner.png" alt="submariner">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Rolex Submariner</h4>
+            <p class="price">$52,000</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Rolex Cosmograph Daytona -->
+        <div class="product-card" data-brand="Rolex" data-strap-material="Metal" data-movement="Automatic" data-water-resistance="100m" data-case-material="Platinum" data-dial-color="Blue" data-price="38300">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Rolex Cosmograph Daytona.png" alt="Rolex Cosmograph Daytona">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Rolex Cosmograph Daytona</h4>
+            <p class="price">$38,300</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Rolex 1908 -->
+        <div class="product-card" data-brand="Rolex" data-strap-material="Leather" data-movement="Automatic" data-water-resistance="50m" data-case-material="White Gold" data-dial-color="White" data-price="52400">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Rolex 1908.png" alt="Rolex 1908">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Rolex 1908</h4>
+            <p class="price">$52,400</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Rolex DateJust 40 -->
+        <div class="product-card" data-brand="Rolex" data-strap-material="White Gold" data-movement="Automatic" data-water-resistance="100m" data-case-material="White Gold" data-dial-color="Blue" data-price="40600">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/watches/Rolex Day-Date 40.png" alt="Rolex Day-Date 40">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Rolex Datejust 40</h4>
+            <p class="price">$40,600</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Rolex Lady-Datejust -->
+        <div class="product-card" data-brand="Rolex" data-strap-material="White Gold" data-movement="Automatic" data-water-resistance="100m" data-case-material="White Gold" data-dial-color="Else" data-price="13650">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Rolex Lady Datejust.png" alt="Rolex Lady-Datejust">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Rolex Lady-Datejust</h4>
+            <p class="price">$13,650</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Omega Speedmaster Moonwatch Professional -->
+        <div class="product-card" data-brand="Omega" data-strap-material="Leather" data-movement="Manual" data-water-resistance="50m" data-case-material="Rose Gold" data-dial-color="Green" data-price="8150">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Omega Speedmaster Moonwatch Professional-Green.png" alt="Omega Speedmaster Moonwatch">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Omega Speedmaster Moonwatch Professional</h4>
+            <p class="price">$8,150</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Omega Speedmaster Moonwatch Steel-On-Steel -->
+        <div class="product-card" data-brand="Omega" data-strap-material="Metal" data-movement="Manual" data-water-resistance="50m" data-case-material="Stainless Steel" data-dial-color="Black" data-price="8150">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Omega Speedmaster Moonwatch Steel-On-Steel.png" alt="Omega Speedmaster Moonwatch">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Omega Speedmaster Moonwatch Professional</h4>
+            <p class="price">$8,150</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Omega De Ville Tresor -->
+        <div class="product-card" data-brand="Omega" data-strap-material="Leather" data-movement="Automatic" data-water-resistance="50m" data-case-material="Rose Gold" data-dial-color="Black" data-price="5500">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/De Ville Tresor.png" alt="Omega De Ville Tresor">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Omega Omega De Ville Tresor</h4>
+            <p class="price">$5,500</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+
+        <!-- Omega Seamaster Aqua Terra -->
+        <div class="product-card" data-brand="Omega" data-strap-material="Leather" data-movement="Automatic" data-water-resistance="150m" data-case-material="Stainless Steel" data-dial-color="Blue" data-price="7050">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Omega Seamaster Aqua Terra.png" alt="Omega Seamaster Aqua Terra">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Omega Seamaster Aqua Terra</h4>
+            <p class="price">$7,050</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Omega Constellation Co-Axial Master Chronometer -->
+        <div class="product-card" data-brand="Omega" data-strap-material="Metal" data-movement="Automatic" data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="White" data-price="7150">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Omega Constellation Co-Axial Master Chronometer.png" alt="Omega Constellation">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Omega Constellation Co-Axial Master Chronometer</h4>
+            <p class="price">$7,150</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Tissot Chrono XL Classic -->
+        <div class="product-card" data-brand="Tissot" data-strap-material="Metal" data-movement="Quartz" data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="Silver" data-price="415">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Tissot Chrono XL Classic.png" alt="Tissot Chrono XL Classic" class="tissot-img">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Tissot Chrono XL Classic</h4>
+            <p class="price">$415</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Tissot PR 100 -->
+        <div class="product-card" data-brand="Tissot" data-strap-material="Leather" data-movement="Quartz" data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="Grey" data-price="415">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Tissot PR 100.png" alt="Tissot PR 100">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Tissot PR 100</h4>
+            <p class="price">$415</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Tissot PRX Automatic Chronograph 42mm -->
+        <div class="product-card" data-brand="Tissot" data-strap-material="Metal" data-movement="Automatic" data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="White" data-price="2150">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Tissot PRX Automatic Chronograph 42mm.png" alt="Tissot PRX Automatic Chronograph">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Tissot PRX Automatic Chronograph 42mm</h4>
+            <p class="price">$2,150</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Tissot PRX Powermatic 80 -->
+        <div class="product-card" data-brand="Tissot" data-strap-material="Metal" data-movement="Automatic" data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="Blue" data-price="1100">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Tissot PRX Powermatic 80.png" alt="Tissot PRX Powermatic 80">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Tissot PRX Powermatic 80</h4>
+            <p class="price">$1,100</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Tissot Everytime 40mm -->
+        <div class="product-card" data-brand="Tissot" data-strap-material="Metal" data-movement="Quartz" data-water-resistance="30m" data-case-material="Stainless Steel" data-dial-color="Green" data-price="255">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Tissot Everytime 40mm.png" alt="Tissot Everytime 40mm">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Tissot Everytime 40mm</h4>
+            <p class="price">$255</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Cartier Santos de Cartier -->
+        <div class="product-card" data-brand="Cartier" data-strap-material="Metal" data-movement="Automatic" data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="White" data-price="8600">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Santos de Cartier.png" alt="Cartier Santos de Cartier">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Santos de Cartier</h4>
+            <p class="price">$8,600</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Cartier Tank Must -->
+        <div class="product-card" data-brand="Cartier" data-strap-material="Leather" data-movement="Manual" data-water-resistance="30m" data-case-material="Stainless Steel" data-dial-color="Black" data-price="3350">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Cartier Tank Must.png" alt="Cartier Tank Must">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Cartier Tank Must</h4>
+            <p class="price">$3,350</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Cartier Panthère de Cartier -->
+        <div class="product-card" data-brand="Cartier" data-strap-material="Metal" data-movement="Manual" data-water-resistance="30m" data-case-material="Stainless Steel" data-dial-color="White" data-price="4850">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Panthère de Cartier.png" alt="Cartier Panthère de Cartier">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Panthère de Cartier</h4>
+            <p class="price">$4,850</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Cartier Tank Louis Cartier -->
+        <div class="product-card" data-brand="Cartier" data-strap-material="Leather" data-movement="Manual" data-water-resistance="30m" data-case-material="Silver" data-dial-color="White" data-price="13550">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Tank Louis Cartier.png" alt="Cartier Tank Louis Cartier">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Tank Louis Cartier</h4>
+            <p class="price">$13,550</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Cartier Santos de Cartier Skeleton -->
+        <div class="product-card" data-brand="Cartier" data-strap-material="Metal" data-movement="Automatic" data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="Else" data-price="32000">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Santos de Cartier Skeleton.png" alt="Cartier Santos de Cartier Skeleton">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Santos de Cartier Skeleton</h4>
+            <p class="price">$32,000</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Audemars Piguet Royal Oak Openworked "Cactus Jack" -->
+        <div class="product-card" data-brand="Audemars Piguet" data-strap-material="Leather" data-movement="Automatic" data-water-resistance="50m" data-case-material="Ceramic" data-dial-color="Else" data-price="221000">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Audemars Piguet Royal Oak Openworked Cactus Jack.png" alt="Audemars Piguet Royal Oak Openworked Cactus Jack">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Audemars Piguet Royal Oak Openworked "Cactus Jack"</h4>
+            <p class="price">$221,000</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Audemars Piguet Royal Oak Flying Tourbillon -->
+        <div class="product-card" data-brand="Audemars Piguet" data-strap-material="White Gold" data-movement="Automatic" data-water-resistance="50m" data-case-material="White Gold" data-dial-color="Red" data-price="201000">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Audemars Piguet Royal Oak Flying Tourbillon.png" alt="Audemars Piguet Royal Oak Flying Tourbillon">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Audemars Piguet Royal Oak Flying Tourbillon</h4>
+            <p class="price">$201,000</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Audemars Piguet Royal Oak Offshore Diver -->
+        <div class="product-card" data-brand="Audemars Piguet" data-strap-material="Rubber" data-movement="Automatic" data-water-resistance="300m" data-case-material="Stainless Steel" data-dial-color="Green" data-price="36200">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Audemars Piguet Royal Oak Offshore Diver.png" alt="Audemars Piguet Royal Oak Offshore Diver">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Audemars Piguet Royal Oak Offshore Diver</h4>
+            <p class="price">$36,200</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Audemars Piguet Royal Oak Offshore -->
+        <div class="product-card" data-brand="Audemars Piguet" data-strap-material="Rubber" data-movement="Automatic" data-water-resistance="100m" data-case-material="Rose Gold" data-dial-color="Blue" data-price="50500">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Audemars Piguet Royal Oak Offshore.png" alt="Audemars Piguet Royal Oak Offshore">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Audemars Piguet Royal Oak Offshore</h4>
+            <p class="price">$50,500</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+
+        <!-- Audemars Piguet Royal Oak -->
+        <div class="product-card" data-brand="Audemars Piguet" data-strap-material="Rose Gold" data-movement="Automatic" data-water-resistance="50m" data-case-material="Rose Gold" data-dial-color="Green" data-price="82800">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="#">
+                    <img src="/Ahmed/Watches/Audemars Piguet Royal Oak.png" alt="Audemars Piguet Royal Oak">
+                    <div class="hover-buttons">
+                        <button class="quick-view">Quick View</button>
+                        <button class="compare">Compare</button>
+                    </div>
+                </a>
+            </div>
+            <h4>Audemars Piguet Royal Oak</h4>
+            <p class="price">$82,800</p>
+            <p class="stock in-stock">In Stock</p>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <a href="/Wael/welcome.html" class="logo" data-translate="logo">Vaultique</a>
+        </div>
+
+        <div class="footer-nav">
+            <div class="nav-column">
+                <a href="#" data-translate="brand">Classic & Dress</a>
+                <a href="#" data-translate="savoirFaire">Casual & Everyday</a>
+                <a href="#" data-translate="collections">Sports & Adventure</a>
+                <a href="#" data-translate="friendsPartners">Aviation & Travel</a>
+                <a href="#" data-translate="storeLocator">Luxury & Heritage</a>
+
+            </div>
+
+            <div class="nav-column">
+                <a href="#" data-translate="rolex">Rolex</a>
+                <a href="#" data-translate="cartier">Cartier</a>
+                <a href="#" data-translate="tissot">Tissot</a>
+                <a href="#" data-translate="audemarsPiguet">Audemars Piquet</a>
+                <a href="#" data-translate="omega">Omega</a>
+            </div>
+
+
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-info">
+                <div class="info-column">
+                    <p data-translate="followUs">Follow us</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+
+                    </div>
+                </div>
+
+                <div class="info-column">
+                    <a href="#" data-translate="contact">Contact</a>
+                    <a href="#" data-translate="legals">Legals</a>
+                </div>
+
+
+            </div>
+
+            <div class="info-column">
+                <p data-translate="copyright">© Vaultique 2025</p>
+                <div class="language-selector">
+                    <a href="#" data-lang="en" class="active">EN</a>
+
+                    <a href="#" data-lang="ar">AR</a>
+
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</footer>
+
+    <script>
+    if(history.scrollRestoration)
+    {
+        history.scrollRestoration='manual';
+    }
+    
+    window.onbeforeunload = function () 
+    {
+        window.scrollTo(0, 0);
+    };
+    </script>
+
+</body>
+</html>
