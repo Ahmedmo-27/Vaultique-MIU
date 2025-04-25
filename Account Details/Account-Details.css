@@ -1,0 +1,1186 @@
+* {
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    transition: all .3s cubic-bezier(.39,.575,.565,1);
+    -webkit-font-smoothing: antialiased;
+}
+
+body 
+{
+    background-color: #1C2E4A;
+}
+
+.account-container {
+    margin-top: 135px;
+    margin-bottom: 40px;
+    margin-left: 150px;
+    display: flex;
+    max-width: 1200px;
+    height:600px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar {
+    width: 250px;
+    padding: 20px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.sidebar-item {
+    padding: 15px 0;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-item i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-item.active {
+    font-weight: bold;
+    color: #1C2E4A;
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    color: #000;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    max-width: 500px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-value {
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.edit-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.edit-link:hover {
+    text-decoration: underline;
+}
+
+/* Phone Input Styles */
+.phone-input-container {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.country-select {
+    width: 150px;
+    padding: 8px;
+    border: none;
+    border-right: 1px solid #ddd;
+    background-color: #f8f8f8;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 15px;
+    cursor: pointer;
+}
+
+.country-select option {
+    padding: 5px;
+}
+
+#phoneNumber {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    outline: none;
+}
+
+.country-flag {
+    margin-right: 8px;
+    width: 20px;
+    display: inline-block;
+    text-align: center;
+}
+
+/* Language Select */
+#languageSelect {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Password Modal Styles */
+.password-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.password-modal .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.password-modal .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.password-modal h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.password-modal .form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.password-modal label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.password-modal input {
+    width: 100%;
+    padding: 8px 35px 8px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.password-modal button {
+    background-color: #1C2E4A;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+}
+
+.password-modal button:hover {
+    background-color: #0055aa;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .account-container {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .account-container {
+        flex-direction: column;
+        margin: 100px 20px 20px;
+    }
+    
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    .sidebar-item {
+        width: 48%;
+        padding: 10px 0;
+    }
+
+    .phone-input-container {
+        flex-direction: column;
+    }
+
+    .country-select {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar-item {
+        width: 100%;
+    }
+}
+
+/* Addresses Tab Styles */
+.address-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.address-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    position: relative;
+}
+
+.address-card.default {
+    border-color: #1C2E4A;
+    background-color: #f8f9fa;
+}
+
+.address-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.address-header h4 {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.default-badge {
+    background-color: #1C2E4A;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.address-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.address-actions button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.address-actions button:hover {
+    background-color: #f0f0f0;
+}
+
+.address-actions .set-default {
+    background-color: #1C2E4A;
+    color: white;
+    border-color: #1C2E4A;
+}
+
+.add-address-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+}
+
+.add-address-btn:hover {
+    border-color: #1C2E4A;
+    color: #1C2E4A;
+}
+
+/* Orders Tab Styles */
+.order-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.order-filters select, .order-filters input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.order-filters input {
+    flex-grow: 1;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+#order-product-image
+{
+    transform: scale(1.5);
+    width: 45px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.order-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-id {
+    font-weight: bold;
+    color: #1C2E4A;
+}
+
+.order-date {
+    color: #666;
+    font-size: 14px;
+}
+
+.order-status {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.order-status.pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.order-status.shipped {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.order-status.delivered {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.order-status.cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.order-total {
+    margin-left: auto;
+    font-weight: bold;
+}
+
+.order-products {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.order-product {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.order-product img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.product-info h5 {
+    margin: 0 0 5px;
+    font-size: 15px;
+}
+
+.product-info p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.order-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.order-actions button {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.order-actions button:hover {
+    background-color: #f0f0f0;
+}
+
+.order-actions .track-order {
+    background-color: #1C2E4A;
+    color: white;
+    border-color: #1C2E4A;
+}
+
+/* Wishlist Tab Styles */
+.wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.wishlist-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.wishlist-image {
+    position: relative;
+    height: 200px;
+    background-color: #f8f8f8;
+}
+
+.wishlist-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.remove-wishlist {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    color: #666;
+}
+
+.remove-wishlist:hover {
+    color: #ff0000;
+}
+
+.wishlist-details {
+    padding: 15px;
+}
+
+.wishlist-details h5 {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+.wishlist-price {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #1C2E4A;
+}
+
+.add-to-cart {
+    width: 100%;
+    padding: 8px;
+    background-color: #1C2E4A;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-to-cart:hover {
+    background-color: #0d1f3d;
+}
+
+/* Refunds Tab Styles */
+.refunds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.refund-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.refund-card.pending {
+    border-left: 4px solid #ffc107;
+}
+
+.refund-card.completed {
+    border-left: 4px solid #28a745;
+}
+
+.refund-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.refund-id {
+    font-weight: bold;
+    color: #1C2E4A;
+}
+
+.refund-status {
+    font-weight: bold;
+}
+
+.refund-card.pending .refund-status {
+    color: #ffc107;
+}
+
+.refund-card.completed .refund-status {
+    color: #28a745;
+}
+
+.refund-details {
+    margin-bottom: 15px;
+}
+
+.refund-details p {
+    margin: 5px 0;
+}
+
+.refund-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.refund-actions button {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.refund-actions button:hover {
+    background-color: #f0f0f0;
+}
+
+.refund-actions .view-details {
+    background-color: #1C2E4A;
+    color: white;
+    border-color: #1C2E4A;
+}
+
+/* Payment Methods Tab Styles */
+.payment-methods-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.payment-method-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.payment-method-card.default {
+    border-color: #1C2E4A;
+    background-color: #f8f9fa;
+}
+
+.payment-method-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.payment-method-type {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1;
+    font-weight: bold;
+}
+
+.payment-method-type i {
+    font-size: 24px;
+}
+
+.payment-method-details {
+    margin-bottom: 15px;
+}
+
+.payment-method-details p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.payment-method-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.payment-method-actions button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.payment-method-actions button:hover {
+    background-color: #f0f0f0;
+}
+
+.payment-method-actions .set-default {
+    background-color: #1C2E4A;
+    color: white;
+    border-color: #1C2E4A;
+}
+
+.add-payment-method {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+}
+
+.add-payment-method:hover {
+    border-color: #1C2E4A;
+    color: #1C2E4A;
+}
+
+/* Reviews Tab Styles */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.review-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.review-product {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.review-product img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.review-product h5 {
+    margin: 0;
+}
+
+.review-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.stars {
+    color: #ffc107;
+}
+
+.review-date {
+    color: #666;
+    font-size: 12px;
+}
+
+.review-content h6 {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+.review-content p {
+    margin: 0;
+    color: #555;
+}
+
+.review-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.review-actions button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.review-actions button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Tab Switching Functionality */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+/* Improved Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(3px);
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-container {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(30px);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-overlay.show .modal-container {
+    transform: translateY(0);
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    border-radius: 12px 12px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1C2E4A;
+}
+
+.close-modal {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background-color: #f9f9f9;
+    border-radius: 0 0 12px 12px;
+    position: sticky;
+    bottom: 0;
+}
+
+.modal-footer button {
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    min-width: 100px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-footer button i {
+    font-size: 0.9em;
+}
+
+.cancel-btn {
+    background-color: white;
+    border: 1px solid #ddd;
+    color: #555;
+}
+
+.cancel-btn:hover {
+    background-color: #f5f5f5;
+    border-color: #ccc;
+}
+
+.confirm-btn {
+    background-color: #1C2E4A;
+    color: white;
+    border: 1px solid #1C2E4A;
+}
+
+.confirm-btn:hover {
+    background-color: #0d1f3d;
+    border-color: #0d1f3d;
+}
+
+.cancel-request-btn {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+}
+
+.cancel-request-btn:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+.track-order {
+    background-color: #17a2b8;
+    color: white;
+    border: 1px solid #17a2b8;
+}
+
+.track-order:hover {
+    background-color: #138496;
+    border-color: #138496;
+}
+
+/* Form Elements in Modals */
+.modal-body .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-body label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.modal-body input[type="text"],
+.modal-body input[type="password"],
+.modal-body input[type="email"],
+.modal-body input[type="tel"],
+.modal-body input[type="number"],
+.modal-body select,
+.modal-body textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+}
+
+.modal-body input[type="text"]:focus,
+.modal-body input[type="password"]:focus,
+.modal-body input[type="email"]:focus,
+.modal-body input[type="tel"]:focus,
+.modal-body input[type="number"]:focus,
+.modal-body select:focus,
+.modal-body textarea:focus {
+    outline: none;
+    border-color: #1C2E4A;
+    box-shadow: 0 0 0 3px rgba(28, 46, 74, 0.1);
+}
+
+.modal-body textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.modal-body .form-control {
+    width: 100%;
+}
+
+/* Checkbox and Radio Styles */
+.modal-body input[type="checkbox"],
+.modal-body input[type="radio"] {
+    margin-right: 8px;
+}
+
+/* Star Rating */
+.star-rating {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.star-rating i {
+    font-size: 1.5rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.star-rating i.active {
+    color: #ffc107;
+}
+
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+    background: none;
+    border: none;
+    padding: 0 5px;
+}
+
+.password-toggle:hover {
+    color: #666;
+}
+
+/* Tracking Progress */
+.tracking-progress {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: 20px 0 40px;
+    margin: 20px 0;
+}
+
+.tracking-progress::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 10%;
+    right: 10%;
+    height: 4px;
+    background-color: #eee;
+    z-index: 1;
+}
+
+.tracking-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 25%;
+    position: relative;
+    z-index: 2;
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.step-label {
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+}
+
+.step-date {
+    font-size: 0.75rem;
+    color: #777;
+    text-align: center;
+}
+
+.tracking-step.completed .step-icon {
+    background-color: #28a745;
+    color: white;
+}
+
+.tracking-step.active .step-icon {
+    background-color: #1C2E4A;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .modal-container {
+        width: 95%;
+    }
+    
+    .modal-header {
+        padding: 15px;
+    }
+    
+    .modal-body {
+        padding: 20px 15px;
+    }
+    
+    .modal-footer {
+        padding: 12px 15px;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .modal-footer button {
+        width: 100%;
+    }
+    
+    .tracking-progress {
+        padding: 15px 0 30px;
+    }
+    
+    .step-label {
+        font-size: 0.75rem;
+    }
+}
+
+/* Animation for Modal Content */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-body > * {
+    animation: fadeInUp 0.3s ease forwards;
+}
+
+.modal-body > *:nth-child(1) { animation-delay: 0.1s; }
+.modal-body > *:nth-child(2) { animation-delay: 0.15s; }
+.modal-body > *:nth-child(3) { animation-delay: 0.2s; }
+.modal-body > *:nth-child(4) { animation-delay: 0.25s; }
+.modal-body > *:nth-child(5) { animation-delay: 0.3s; }
