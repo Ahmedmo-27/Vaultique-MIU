@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Products</title>    
+        <link rel="stylesheet" href="/Ahmed/Products Page/Client/Loading Screen.css">
+        <link rel="stylesheet" href="/Ahmed/Navigation Bar/nav-bar.css">
+        <link rel="stylesheet" href="/Ahmed/Products Page/Client/Products.css">
+        <link rel="stylesheet" href="/Wael/css/footer.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script src="/Ahmed/Navigation Bar/nav-bar.js"></script>
+        <!-- <script src="/Ahmed/Products Page/Client/Loading Screen.js"></script> -->
+        <script src="/Ahmed/Products Page/Client/Products.js"></script>
+        <script src="/Ahmed/Products Page/Client/Light-Mode.js"></script>
+        <script src="/Wael/JavaScript/footer.js"></script>
+    </head>
+    <body>
+        
+    <!-- Loading Screen
+    <div class="loading-screen">
+        <div class="logo">
+            <h1>Vaultique</h1>
+        </div>
+    </div> -->
+    
+    <!--Nav-Bar-->
+    <div class="navbar-wrapper">
+        <header class="header-unscrolled">
+            <div class="header-top-unscrolled" id="header-top" style="display: none;">
+                <div class="store-services" id="store-services">
+
+                    <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
+                        <i class="fa-solid fa-sun"></i>
+                        <i class="fa-solid fa-moon"></i>
+                        <span class="toggle-button-slider"></span>
+                    </a>
+
+                    <nav class="navigation">
+        
+                        <a href="">
+                            <i class="fa-solid fa-globe"></i>
+                            <p>Language</p>
+                        </a>
+                        <select id="language" class="tag">
+                            <option value="en">EN</option>
+                            <option value="ar">AR</option>
+                        </select>
+
+                        
+                        <a href="/User/Contact-Us">
+                            <i class='fas fa-phone-alt'></i>
+                            <p>Contact Us</p>
+                        </a>
+                    </nav>
+
+                    <div class="search-button-unscrolled" id="search-button" style="display: none;">
+                        <input type="search" id="searchField" class="searchField" placeholder="Search">
+                        <button id="search" class="search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                </div>
+    
+                <div class="user-data">
+                    <nav class="navigation">
+                        <a href="/User/Account">
+                            <i class='fas fa-user-alt'></i>
+                            <p>Account</p>
+                        </a>
+    
+                        <a href="/User/WishList">
+                            <i class='fas fa-heart'></i>
+                            <p>WishList</p>
+                        </a>
+    
+                        <a href="/Cart + Recommendation System/Cart.html">
+                            <i class='fas fa-shopping-cart'></i>
+                            <p>Cart </p>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+    
+            <div class="header-middle-unscrolled" id="header-middle">
+                <div class="responsive">
+                    <a class="side-icon" id="side-icon">
+                        <i class="fa fa-bars" id="ham-whatever"></i>
+                    </a>
+                </div>
+    
+                <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
+                <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+                    <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
+                        <input type="search" id="searchField2" class="searchField" placeholder="Search">
+                        <button id="search2" class="search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+    
+                    <nav class="navigation">
+                        <a href="/User/Location" style="display: none;">
+                            <i class='fas fa-map-marker-alt'></i>
+                        </a>
+    
+                        <a href="/User/Contact-Us" style="display: none;">
+                            <i class='fas fa-phone-alt'></i>
+                        </a>
+    
+                        <a href="/User/Account" style="display: none;">
+                            <i class='fas fa-user-alt'></i>
+                        </a>
+    
+                        <a href="/User/WishList" style="display: none;">
+                            <i class='fas fa-heart'></i>
+                        </a>
+    
+                        <a href="/User/Shopping-Cart" style="display: none;">
+                            <i class='fas fa-shopping-cart'></i>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+    
+            <div class="header-bottom-unscrolled" id="header-bottom">
+                <nav class="navigation">
+                    <a href="/welcome.html">Home</a>
+                    <a href="/Products Page/Products.html">Shop All</a>
+                    <a href="/User/Collections" id="collections-anchor-with-extension" class="extension">Collections</a>
+                    <a href="/user/shopAll?category=Bracelet" data-category="Bracelets">Brands</a>
+                    <a href="/Cart + Recommendation System/Recommendation.html">Recommendation System</a>
+                </nav>
+            </div>
+    
+            <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
+                <div id="collections-extension">
+                    <div class="collection-anchors">
+                        <h4><b>Collections</b></h4>
+                        <br>
+                        <a href="/User/Dress"> Classic & <br>Dress </a>
+                        <br>
+                        <a href="/User/Casual"> Casual & <br>Everyday </a>
+                        <br>
+                        <a href="/User/Sports"> Sports & <br>Adventure </a>
+                        <br>
+                        <a href="#"> Aviation & <br>Travel </a>
+                        <br>
+                        <a href="#"> Luxury & <br>Heritage </a>
+                    </div>
+            
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Ahmed/Models/Cartier Tank.jpg" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Classic & Dress</h4>
+                        </div>
+                    </a>
+            
+                    <a class="extension-item" href="/user/collections/egyptian">
+                        <img src="/Ahmed/Models/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Casual & Everyday</h4>
+                        </div>
+                    </a>
+            
+                    <a class="extension-item" href="/user/collections/egyptian">
+                        <img src="/Ahmed/Models/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Sports & Adventure</h4>
+                        </div>
+                    </a>
+            
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Ahmed/Models/Charlize Breitling.webp" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Aviation & Travel</h4>
+                        </div>
+                    </a>
+            
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Ahmed/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Luxury & Heritage</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
+                <div id="bracelets-extension">
+                    <div class="bracelets-anchors">
+                        <h4><b>Brands</b></h4>
+                        <br>
+                        <a href="/Ahmed/Brands Pages/Rolex.html">Rolex </a>
+                        <br>
+                        <a href="/User/Brands/Rolex">Omega</a>
+                        <br>
+                        <a href="/User/Brands/Rolex">Audemars Piguet</a>
+                        <br>
+                        <a href="/User/Brands/Rolex">Cartier</a>
+                        <br>
+                        <a href="/User/Brands/Rolex">Tissot</a>
+                            </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Rolex - with name.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Rolex Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/gold">
+                            <img src="/Ahmed/Brands Logos/Cartier.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Cartier Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/diamond">
+                            <img src="/Ahmed/Brands Logos/Omega.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Omega Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/gold">
+                            <img src="/Ahmed/Brands Logos/audemars-piguet-logo.svg" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Audemars Piguet Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/gold">
+                            <img src="/Ahmed/Brands Logos/Tissot.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Tissot Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+    
+            <!--Search-->
+            <div class="search-extension" id="search-extension">
+                <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
+                <h3>Products</h3>
+                <div id="search-results" class="search-results">
+    
+                </div>
+            </div>
+        </header>
+    
+        <!--Side-Panel-->
+        <div id="mySidepanel" class="sidepanel" style="width: 0px;">
+            <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+            <a href="/welcome.html">Home</a>
+            <a href="/User/Contact-Us">Contact Us</a>
+            <a href="/User/Account">Account</a>
+            <a href="/User/WishList">WishList</a>
+            <a href="/User/Shopping-Cart">Cart</a>
+            <a href="/Ahmed/Products Page/Products.html" data-translate="shopall">Shop All</a>
+    
+            <div class="dropdown">
+                <a href="#" class="dropbtn">Collections</a>
+                <div class="dropdown-content">
+                    <a href="/User/Dress"> Classic & Dress</a>
+                    <a href="/User/Casual"> Sports & Adventure</a>
+                    <a href="/User/Sports"> Aviation & Travel</a>
+                    <a href="#"> Casual & Everyday</a>
+                    <a href="#"> Luxury & Heritage</a>
+                </div>
+            </div>
+        
+            <br>
+            <div class="dropdown">
+                <a href="#" class="dropbtn">Brands</a>
+                <div class="dropdown-content">
+                    <a href="/User/Brands/Rolex">Rolex </a>
+                    <a href="/User/Brands/Rolex">Omega</a>
+                    <a href="/User/Brands/Rolex">Audemars Piguet</a>
+                    <a href="/User/Brands/Rolex">Cartier</a>
+                    <a href="/User/Brands/Rolex">Tissot</a>
+                </div>
+            </div>
+    
+            <a href="#">Recommendation System </a>
+    
+            <a id="toggle-button-side" class="toggle-button" onclick="toggleLightDarkMode()">
+                <i class="fa-solid fa-sun"></i>
+                <i class="fa-solid fa-moon"></i>
+                <span class="toggle-button-slider"></span>
+            </a>
+
+        </div>
+    </div>
+        
+    <!-- Filter Button -->
+    <button class="filter-btn" onclick="openFilterPanel()">
+        <span>Filters and Sorting</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="12" y1="4" x2="12" y2="8" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="8" y1="10" x2="8" y2="14" />    
+            <line x1="4" y1="18" x2="20" y2="18" />
+            <line x1="16" y1="16" x2="16" y2="20" />
+        </svg>
+    </button>
+
+    <div class="overlay" id="overlay" onclick="closeFilterPanel()"></div>
+
+    <div class="filter-panel" id="filterPanel">
+        <button class="close-btn" onclick="closeFilterPanel()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 6L18 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        
+        <div class="sort-options">
+            <h3>Sort By</h3>
+            <br>
+            <button data-sort='default'> Default </button>
+            <br>
+            <button data-sort="new"> New </button>
+            <button data-sort="price-asc"> Price ↑ </button>
+            <br>
+            <button data-sort="price-desc"> Price ↓ </button>
+            <button data-sort="popularity"> Popularity </button>
+            <br>
+        </div>
+    
+        <div class="filters">
+            <h3>Filters</h3>
+
+            <label> Collection: </label>
+            <select id="collection" class="tag">
+                <option value="All">All</option>
+                <option value="Classic & Dress">Classic & Dress</option>
+                <option value="Casual & Everyday">Casual & Everyday</option>
+                <option value="Sports & Adventure">Sports & Adventure</option>
+                <option value="Aviation & Travel">Aviation & Travel</option>
+                <option value="Luxury & Heritage">Luxury & Heritage</option>
+            </select>
+
+            <label> Brand: </label>
+            <select id="brand" class="tag">
+                <option value="All">All</option>
+                <option value="Rolex">Rolex</option>
+                <option value="Omega">Omega</option>
+                <option value="Tissot">Tissot</option>
+                <option value="Cartier">Cartier</option>
+                <option value="Patek Philippe">Patek Philippe</option>
+                <option value="Audemars Piguet">Audemars Piguet</option>
+                <option value="Breitling">Breitling</option>                
+            </select>
+    
+            <label> Gender: </label>
+            <select id="gender" class="tag">
+                <option value="All">All</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Unisex">Unisex</option>
+            </select>
+
+            <label> Strap Material: </label>
+            <select id="Strap_Material" class="tag">
+                <option value="All">All</option>
+                <option value="Leather">Leather</option>
+                <option value="Metal">Metal</option>
+                <option value="Rubber">Rubber</option>
+                <option value="Gold">Gold</option>
+                <option value="Rose Gold">Rose Gold</option>
+                <option value="White Gold">White Gold</option>
+                <option value="Else">Else</option>
+            </select>
+    
+            <label> Movement: </label>
+            <select id="Movement" class="tag">
+                <option value="All">All</option>
+                <option value="Automatic">Automatic</option>
+                <option value="Quartz">Quartz</option>
+                <option value="Manual">Manual</option>
+            </select>
+    
+            <label> Water Resistance: </label>
+            <select id="Water_Resistance" class="tag">
+                <option value="All">All</option>
+                <option value="30m">30m</option>
+                <option value="50m">50m</option>
+                <option value="100m">100m</option>
+                <option value="200m">200m</option>
+            </select>
+    
+            <label> Case Material: </label>
+            <select id="Case_Material" class="tag">
+                <option value="All">All</option>
+                <option value="Stainless Steel">Stainless Steel</option>
+                <option value="Gold">Gold</option>
+                <option value="Rose Gold">Rose Gold</option>
+                <option value="White Gold">White Gold</option>
+                <option value="Silver">Silver</option>
+                <option value="Titanium">Titanium</option>
+                <option value="Platinum">Platinum</option>
+                <option value="Ceramic">Ceramic</option>
+                <option value="Else">Else</option>
+            </select>
+        </div>
+    
+        <br>
+        <h3>Price Range</h3>
+        <input type="text" id="priceRangeFrom" class="priceRangeValue" placeholder="From" value="0">
+        <input type="text" id="priceRangeTo" class="priceRangeValue" placeholder="To" value="50000000">
+        <br>
+        <br>
+        
+        <div class="filter-options">
+            <h3>Dial Color</h3>
+            <label><input type="checkbox" value="All" class="dial-color"> All </label>
+            <label><input type="checkbox" value="Black" class="dial-color"> Black </label>
+            <label><input type="checkbox" value="Silver" class="dial-color"> Silver </label>
+            <label><input type="checkbox" value="Gold" class="dial-color"> Gold </label>
+            <label><input type="checkbox" value="Blue" class="dial-color"> Blue </label>
+            <label><input type="checkbox" value="White" class="dial-color"> White </label>
+            <label><input type="checkbox" value="Green" class="dial-color"> Green </label>
+            <label><input type="checkbox" value="Else" class="dial-color"> Else </label>
+        </div>
+    
+        <button value="submit" class="submit" onclick="filterProducts()">Submit</button>
+        <button value="reset" class="clear" onclick="clearFilters()">Clear All</button>
+    
+    </div>
+    
+    <!-- Product Grid -->
+    <section class="product-container">
+        <div class="product-grid" id="productGrid">
+            <!-- Products will be inserted here by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <button id="prevPage">Previous</button>
+        <span id="pageInfo">Page 1 of 1</span>
+        <button id="nextPage">Next</button>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="/Wael/welcome.html" class="logo" data-translate="logo">Vaultique</a>
+            </div>
+    
+            <div class="footer-nav">
+                <div class="nav-column">
+                    <a href="#" data-translate="brand">Classic & Dress</a>
+                    <a href="#" data-translate="savoirFaire">Casual & Everyday</a>
+                    <a href="#" data-translate="collections">Sports & Adventure</a>
+                    <a href="#" data-translate="friendsPartners">Aviation & Travel</a>
+                    <a href="#" data-translate="storeLocator">Luxury & Heritage</a>
+    
+                </div>
+    
+                <div class="nav-column">
+                    <a href="#" data-translate="rolex">Rolex</a>
+                    <a href="#" data-translate="cartier">Cartier</a>
+                    <a href="#" data-translate="tissot">Tissot</a>
+                    <a href="#" data-translate="audemarsPiguet">Audemars Piquet</a>
+                    <a href="#" data-translate="omega">Omega</a>
+                </div>
+    
+    
+            </div>
+    
+            <div class="footer-bottom">
+                <div class="footer-info">
+                    <div class="info-column">
+                        <p data-translate="followUs">Follow us</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+    
+                        </div>
+                    </div>
+    
+                    <div class="info-column">
+                        <a href="#" data-translate="contact">Contact</a>
+                        <a href="#" data-translate="legals">Legals</a>
+                    </div>
+    
+    
+                </div>
+    
+                <div class="info-column">
+                    <p data-translate="copyright">© Vaultique 2025</p>
+                    <div class="language-selector">
+                        <a href="#" data-lang="en" class="active">EN</a>
+    
+                        <a href="#" data-lang="ar">AR</a>
+    
+                    </div>
+                </div>
+    
+                
+            </div>
+        </div>
+    </footer>
+    
+        <script>
+        if(history.scrollRestoration)
+        {
+            history.scrollRestoration='manual';
+        }
+        
+        window.onbeforeunload = function () 
+        {
+            window.scrollTo(0, 0);
+        };
+        </script>
+    </body>
+
+</html>
