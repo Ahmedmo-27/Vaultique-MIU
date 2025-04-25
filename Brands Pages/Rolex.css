@@ -16,9 +16,10 @@ body
 
 .hover-text img
 {
+  margin-top: 5px;
   margin-left: 45%;
-  width: 10%;
-  height: 10%;
+  width: 8%;
+  height: 8%;
 }
 
 .section {
@@ -74,17 +75,12 @@ body
 }
 
 .hover-text {
-  font-size: 18px;
-  color:#f6e8c0;
+  font-size: 28px;
+  color:#23395c;
   display: inline-block;
-  position: relative;
   padding: 5px 15px;
-  border-radius: 5px;
   transition: all 0.3s ease;
-  background-color: rgba(8, 8, 8, 0.429);
-  margin-left: 18%;
-  margin-top: 30%;
-  margin-right: 18%;
+  background-color:#f6e8c0;
 }
 
 .hover-text h1,
@@ -92,6 +88,9 @@ body
 .hover-text p {
     transition: all 0.3s ease;
     position: relative;
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-bottom: 5px;
 }
 
 /* Glow effect on headings */
