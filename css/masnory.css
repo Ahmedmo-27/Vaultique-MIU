@@ -1,0 +1,269 @@
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #1C2E4A;
+}
+
+/* Container and section styles */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.section-padding {
+    padding: 60px 0;
+}
+
+.pt-0 {
+    padding-top: 0;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+/* Text alignment */
+.text-center {
+    text-align: center;
+}
+
+.no-bold {
+    font-weight: 300;
+}
+
+/* Masonry grid layout - exact match to Cleopatra Ceramics */
+.masonry-grid {
+    display: flex;
+    width: 100%;
+    gap: 20px; /* Reduced from 30px */
+    margin-top: 30px;
+}
+
+.masonry-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.left-column {
+    width: 50%;
+}
+
+.right-column {
+    width: 50%;
+}
+
+.masonry-row {
+    display: flex;
+    gap: 20px; /* Reduced from 30px */
+    margin-bottom: 20px; /* Reduced from 30px */
+}
+
+.masonry-row:last-child {
+    margin-bottom: 0;
+}
+
+.masonry-cell {
+    position: relative;
+}
+
+/* Cell sizes - adjusted smaller */
+.big-cell {
+    width: 50%;
+    height: 280px; /* Reduced from 360px */
+}
+
+.small-cell {
+    width: 50%;
+    height: 180px; /* Reduced from 230px */
+}
+
+.wide-cell {
+    width: 100%;
+    height: 180px; /* Reduced from 230px */
+    margin-bottom: 20px; /* Reduced from 30px */
+}
+
+.wide-cell:last-child {
+    margin-bottom: 0;
+}
+
+/* Cell wrapper styles - matching Cleopatra Ceramics */
+.cell-wrapper {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    padding: 15px; /* Reduced from 25px */
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.cell-wrapper::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+    z-index: 1;
+}
+
+.cell-wrapper h3 {
+    position: relative;
+    z-index: 2;
+}
+
+/* Image container for brand logos */
+.img-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70%;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.brand-logo {
+    max-width: 70%; /* Reduced from 80% */
+    max-height: 70%; /* Reduced from 80% */
+    object-fit: contain;
+    display: block;
+    transform: scale(1.3); /* Reduced from 1.5 */
+    transform-origin: center;
+}
+
+.bg-placeholder {
+    background-color: #f5f5f5;
+}
+
+.cover-img {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.zoom-shadow {
+    transition: all 0.3s ease;
+}
+
+.zoom-shadow:hover {
+    transform: scale(1.03);
+}
+
+/* Typography - matching Cleopatra Ceramics */
+h2 {
+    font-size: 28px;
+    font-weight: 300;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+h2 b {
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 18px; /* Reduced from 20px */
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.mt-auto {
+    margin-top: auto;
+}
+
+/* Center the heading */
+.masonry-section .section-padding.pt-0 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+.masonry-section h2 {
+    position: relative;
+    display: inline-block;
+    font-size: 28px;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.masonry-section h2:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background-color: #fff;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 991px) {
+    .masonry-grid {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .left-column, .right-column {
+        width: 100%;
+    }
+    
+    .big-cell, .small-cell {
+        height: 200px; /* Reduced from 250px */
+    }
+    
+    .wide-cell {
+        height: 200px; /* Reduced from 250px */
+    }
+}
+
+@media (max-width: 767px) {
+    .masonry-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .big-cell, .small-cell {
+        width: 100%;
+        height: 150px; /* Reduced from 200px */
+    }
+    
+    .wide-cell {
+        height: 150px; /* Reduced from 200px */
+    }
+    
+    h2 {
+        font-size: 24px;
+    }
+    
+    h3 {
+        font-size: 16px; /* Reduced from 18px */
+    }
+    
+    .section-padding {
+        padding: 40px 0;
+    }
+}
