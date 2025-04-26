@@ -862,7 +862,7 @@ body.light-mode .header-unscrolled .navigation a {
   }
 
   body.light-mode .searchField,
-  body.light-mode .search {
+  body.light-mode .search,body.light-mode .searchField::placeholder {
     color: #1C2E4A;
   }
 
