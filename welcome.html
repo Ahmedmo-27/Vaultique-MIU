@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/Landing-page.css">
     <link rel="icon" type="image/x-icon" href="/images/Logo.png">
-    <link rel="stylesheet" href="css/nav-bar.css">
+    <link rel="stylesheet" href="/Ahmed/Navigation Bar/nav-bar.css">
     <link rel="stylesheet" href="css/loading-screen.css">
     <link rel="stylesheet" href="css/arrow.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="JavaScript/nav-bar.js"></script>
+    <script src="/Ahmed/Navigation Bar/nav-bar.js"></script>
     <script src="JavaScript/loading-screen.js"></script>
     <script src="JavaScript/arrow.js"></script>
     <script src="JavaScript/Landing-page.js"></script>
@@ -31,6 +31,7 @@
     <!--Scroll Arrow-->
     <div class="scroll-indicator">
         <div class="scroll-circle">
+            <div class="scroll-indicator-inner"></div>
             <div class="scroll-indicator-inner"></div>
             <div class="scroll-progress"></div>
             <div class="scroll-arrow">
@@ -67,10 +68,11 @@
                         </button>
                     </div>
                 </div>
-    
+
+                
                 <div class="user-data">
                     <nav class="navigation">
-                        <a href="/User/Account">
+                        <a href="/Website/Login/LoginSignup.html">
                             <i class='fas fa-user-alt'></i>
                             <p data-translate="account">Account</p>
                         </a>
@@ -80,14 +82,16 @@
                             <p data-translate="wishlist">WishList</p>
                         </a>
     
-                        <a href="/Cart + Recommendation System/Cart.html">
+                        <a href="/Sobhi/cart.html">
                             <i class='fas fa-shopping-cart'></i>
                             <p data-translate="cart">Cart</p>
                         </a>
                     </nav>
                 </div>
             </div>
-    
+
+            <!-- Middle header section with logo and responsive menu -->
+
             <div class="header-middle-unscrolled" id="header-middle">
                 <div class="responsive">
                     <a class="side-icon" id="side-icon">
@@ -95,7 +99,7 @@
                     </a>
                 </div>
     
-                <a href="welcome.html" class="logo-unscrolled" id="logo" data-translate="logo">Vaultique</a>
+                <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo" data-translate="logo">Vaultique</a>
                 <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
                     <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
                         <input type="search" id="searchField2" class="searchField" placeholder="Search">
@@ -113,7 +117,7 @@
                             <i class='fas fa-phone-alt'></i>
                         </a>
     
-                        <a href="/User/Account" style="display: none;">
+                        <a href="/Website/Login/LoginSignup.html" style="display: none;">
                             <i class='fas fa-user-alt'></i>
                         </a>
     
@@ -121,23 +125,26 @@
                             <i class='fas fa-heart'></i>
                         </a>
     
-                        <a href="/User/Shopping-Cart" style="display: none;">
+                        <a href="/Sobhi/cart.html" style="display: none;">
                             <i class='fas fa-shopping-cart'></i>
                         </a>
                     </nav>
                 </div>
             </div>
-    
+
+            <!-- Bottom header section with main navigation links -->
+
             <div class="header-bottom-unscrolled" id="header-bottom">
                 <nav class="navigation">
-                    <a href="/welcome.html" data-translate="home">Home</a>
+                    <a href="/Wael/welcome.html" data-translate="home">Home</a>
                     <a href="/Ahmed/Products Page/Products.html" data-translate="shopall">Shop All</a>
-                    <a href="/User/Collections" id="collections-anchor-with-extension" class="extension" data-translate="collection">Collections</a>
-                    <a href="/user/shopAll?category=Bracelet" data-category="Bracelets" data-translate="brands">Brands</a>
-                    <a href="/Cart + Recommendation System/Recommendation.html" data-translate="recommendationSystem">Recommendation System</a>
+                    <a href="/Collections" id="collections-anchor-with-extension" class="extension" data-translate="collection">Collections</a>
+                    <a href="/brands" data-category="Bracelets" data-translate="brands">Brands</a>
+                    <a href="/Sobhi/Recommendation.html" data-translate="recommendationSystem">Recommendation System</a>
                 </nav>
             </div>
-    
+
+            <!-- Collections dropdown extension -->
             <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
                 <div id="collections-extension">
                     <div class="collection-anchors">
@@ -154,21 +161,21 @@
                         <a href="#" data-translate="luxuryHeritage"> Luxury & <br>Heritage </a>
                     </div>
             
-                    <a class="extension-item" href="/User/Collections/Dress">
+                    <a class="extension-item" href="/Ahmed/Brands Pages/Cartier.html">
                         <img src="images/Cartier Tank.jpg" alt="" class="category-img extension-img">
                         <div>
                             <h4 class="extension-text" data-translate="classicDress">Classic & Dress</h4>
                         </div>
                     </a>
             
-                    <a class="extension-item" href="/user/collections/egyptian">
+                    <a class="extension-item" href="#">
                         <img src="images/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt="" class="category-img extension-img">
                         <div>
                             <h4 class="extension-text" data-translate="casualEveryday">Casual & Everyday</h4>
                         </div>
                     </a>
             
-                    <a class="extension-item" href="/user/collections/egyptian">
+                    <a class="extension-item" href="#">
                         <img src="images/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg" alt="" class="category-img extension-img">
                         <div>
                             <h4 class="extension-text" data-translate="sportsAdventure">Sports & Adventure</h4>
@@ -177,15 +184,19 @@
             
                     <a class="extension-item" href="/User/Collections/Dress">
                         <img src="images/Charlize Breitling.webp" alt="" class="category-img extension-img">
+                        <img src="images/Charlize Breitling.webp" alt="" class="category-img extension-img">
                         <div>
+                            <h4 class="extension-text" data-translate="aviationTravel">Aviation & Travel</h4>
                             <h4 class="extension-text" data-translate="aviationTravel">Aviation & Travel</h4>
                         </div>
                     </a>
             
+            
                     <a class="extension-item" href="/User/Collections/Dress">
                         <img src="images/Patek Philippe Grand Master Chime Jay Z .jpg" alt="" class="category-img extension-img">
+                        <img src="images/Patek Philippe Grand Master Chime Jay Z .jpg" alt="" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text" data-translate="luxuryHeritage">Luxury & Heritage</h4>
+                            <h4 class="extension-text" data-translate="luxuryHeritage" data-translate="luxuryHeritage">Luxury & Heritage</h4>
                         </div>
                     </a>
                 </div>
@@ -294,18 +305,130 @@
                     <a href="/User/Brands/Rolex" data-translate="cartier">Cartier</a>
                     <a href="/User/Brands/Rolex" data-translate="tissot">Tissot</a>
                 </div>
+                </div>
+            </div>
+
+            <!-- Brands dropdown extension -->
+            <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
+                <div id="bracelets-extension">
+                    <div class="bracelets-anchors">
+                        <h4><b data-translate="brandy">Brands</b></h4>
+                        <br>
+                        <a href="/Ahmed/Brands Pages/Rolex.html" data-translate="rolex">Rolex </a>
+                        <br>
+                        <a href="/User/Brands/Rolex" data-translate="omega">Omega</a>
+                        <br>
+                        <a href="/User/Brands/Rolex" data-translate="audemarsPiguet">Audemars Piguet</a>
+                        <br>
+                        <a href="/Ahmed/Brands Pages/Cartier.css" data-translate="cartier">Cartier</a>
+                        <br>
+                        <a href="/User/Brands/Rolex" data-translate="tissot">Tissot</a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="images/Rolex - with name.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text" data-translate="rolexCollection">Rolex Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Cartier.css">
+                            <img src="images/Cartier.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text" data-translate="cartierCollection">Cartier Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="#">
+                            <img src="images/Omega.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text" data-translate="omegaCollection">Omega Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="#">
+                            <img src="images/Audemars Piguet Logo.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text" data-translate="audemarsPiguetCollection">Audemars Piguet Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="#">
+                            <img src="images/Tissot.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text" data-translate="tissotCollection">Tissot Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+    
+            <!--Search-->
+            <div class="search-extension" id="search-extension">
+                <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
+                <h3>Products</h3>
+                <div id="search-results" class="search-results">
+    
+                </div>
+            </div>
+        </header>
+    
+        <!--Side-Panel-->
+        <div id="mySidepanel" class="sidepanel" style="width: 0px;">
+            <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+            <a href="/Wael/welcome.html" data-translate="home">Home</a>
+            <a href="#" data-translate="contactUs">Contact Us</a>
+            <a href="/Website/Login/LoginSignup.html" data-translate="account">Account</a>
+            <a href="#" data-translate="wishlist">WishList</a>
+            <a href="/Sobhi/cart.html" data-translate="cart">Cart</a>
+    
+            <div class="dropdown">
+                <a href="#" class="dropbtn" data-translate="colly">Collections</a>
+                <div class="dropdown-content">
+                    <a href="#" data-translate="classicDress"> Classic & Dress</a>
+                    <a href="#" data-translate="sportsAdventure"> Sports & Adventure</a>
+                    <a href="#" data-translate="aviationTravel"> Aviation & Travel</a>
+                    <a href="#" data-translate="casualEveryday"> Casual & Everyday</a>
+                    <a href="#" data-translate="luxuryHeritage"> Luxury & Heritage</a>
+                </div>
+            </div>
+        
+            <br>
+            <div class="dropdown">
+                <a href="#" class="dropbtn" data-translate="brandy">Brands</a>
+                <div class="dropdown-content">
+                    <a href="/Ahmed/Brands Pages/Rolex.html" data-translate="rolex">Rolex </a>
+                    <a href="#" data-translate="omega">Omega</a>
+                    <a href="#" data-translate="audemarsPiguet">Audemars Piguet</a>
+                    <a href="/Ahmed/Brands Pages/Cartier.html" data-translate="cartier">Cartier</a>
+                    <a href="#" data-translate="tissot">Tissot</a>
+                </div>
             </div>
     
             <a href="#" data-translate="recommendationSystem">Recommendation System </a>
     
+    
+            <a href="/Sobhi/Recommendation.html" data-translate="recommendationSystem">Recommendation System </a>
+    
         </div>
     </div>
     
+    
     <section class="main" id="main">
+        <video src="videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop="" muted=""></video>
         <video src="videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop="" muted=""></video>
         <div class="main-text">
             <h1>Your Signature in Time</h1>
-            <a class="button" href="/user/quiz">TAKE THE QUIZ</a>
+            <a class="button" href="/Sobhi/Recommendation.html">TAKE THE QUIZ</a>
         </div>
     </section>
 
@@ -370,7 +493,87 @@
                     <a class="button" data-href="/sports-adventure">See Sports & Adventure Collection</a>
                 </div>
             </section>
+        <main>
+            <!-- Classic & Dress Section -->
+            <section class="section hero">
+                <div class="video-container">
+                    <video autoplay muted loop playsinline>
+                        <source src="videos/Patek Philippe - Golden Ellipse Ref. 5738-1R-001 Rose Gold.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content hover-text">
+                    <h1 data-translate="classicDressSection">Classic & Dress</h1>
+                    <p data-translate="classicDressDesc1">
+                        Timeless elegance meets refined craftsmanship in this collection, designed for those who appreciate sophisticated simplicity. 
+                        Featuring sleek silhouettes, luxurious materials, and minimalist dials, these timepieces embody understated luxury. 
+                        Perfectly suited for formal occasions and black-tie events, they are the ultimate expression of class and distinction.
+                    </p>
+                    <sub data-translate="classicDressDesc6">(Background: Patek Philippe Golden Ellipse video, showcasing elegance and craftsmanship.)</sub>
+                    <br><br>
+                    <a class="button" data-href="/classic-dress">See Classic & Dress Collection</a>
+                </div>
+            </section>
         
+            <!-- Casual & Everyday Section -->
+            <section class="section collection">
+                <div class="video-container">
+                    <video autoplay muted loop playsinline>
+                        <source src="videos/Bvlgari Octo Finissimo The Ultimate Swiss Made Luxury Watch for Men - Art Of Time.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content hover-text">
+                    <h2 data-translate="casualEverydaySection">Casual & Everyday</h2>
+                    <p data-translate="casualEverydayDesc1">
+                        Effortless sophistication for daily wear. This collection blends versatility and elegance, 
+                        featuring ultra-thin engineering, clean aesthetics, and timeless designs. 
+                        Whether at work, out for the weekend, or attending social gatherings, these watches provide a seamless transition between style and comfort.
+                    </p>
+                    <sub data-translate="casualEverydayDesc7">(Background: Bvlgari Octo Finissimo video, showcasing elegance and versatility.)</sub>
+                    <br><br>
+                    <a class="button" data-href="/casual-everyday">See Casual & Everyday Collection</a>
+                </div>
+            </section>
+        
+            <!-- Sports & Adventure Section -->
+            <section class="section topic">
+                <div class="video-container">
+                    <video autoplay muted loop playsinline>
+                        <source src="videos/Rolex Submariner - The divers’ watch.webm">
+                    </video>
+                </div>
+                <div class="content hover-text">
+                    <h2 data-translate="sportsAdventureSection">Sports & Adventure</h2>
+                    <p data-translate="sportsAdventureDesc1">
+                        Built for endurance and performance, this collection is designed for explorers and thrill-seekers. 
+                        Featuring rugged materials, superior water resistance, and shockproof construction, 
+                        these timepieces excel in extreme conditions. Whether diving into the ocean depths or conquering the wild, 
+                        they are the perfect companion for any adventure.
+                    </p>
+                    <sub data-translate="sportsAdventureDesc8">(Background: Rolex Submariner video, showcasing durability and adventure.)</sub>
+                    <br><br>
+                    <a class="button" data-href="/sports-adventure">See Sports & Adventure Collection</a>
+                </div>
+            </section>
+        
+            <!-- Aviation & Travel Section -->
+            <section class="section speak">
+                <div class="video-container">
+                    <video autoplay muted loop playsinline>
+                        <source src="videos/Breitling   Navitimer GMT & Automatic 41.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content hover-text">
+                    <h2 data-translate="aviationTravelSection">Aviation & Travel</h2>
+                    <p data-translate="aviationTravelDesc1">
+                        Inspired by the world of aviation and global exploration, this collection is crafted for travelers and pilots alike. 
+                        Featuring GMT functions, dual-time displays, and precision chronometers, these watches ensure effortless timekeeping across time zones. 
+                        Whether crossing continents or navigating the skies, they embody the spirit of adventure and precision.
+                    </p>
+                    <sub data-translate="aviationTravelDesc8">(Background: Breitling Navitimer GMT & Automatic 41 video, symbolizing global exploration.)</sub>
+                    <br><br>
+                    <a class="button" data-href="/aviation-travel">See Aviation & Travel Collection</a>
+                </div>
+            </section>
             <!-- Aviation & Travel Section -->
             <section class="section speak">
                 <div class="video-container">
@@ -498,67 +701,73 @@
 
 
 
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <a href="/Wael/welcome.html" class="logo" data-translate="logo">Vaultique</a>
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <a href="/Wael/welcome.html" class="logo" data-translate="logo">Vaultique</a>
+        </div>
+
+        <div class="footer-nav">
+            <div class="nav-column">
+                <a href="#" data-translate="brand">Classic & Dress</a>
+                <a href="#" data-translate="savoirFaire">Casual & Everyday</a>
+                <a href="#" data-translate="collections">Sports & Adventure</a>
+                <a href="#" data-translate="friendsPartners">Aviation & Travel</a>
+                <a href="#" data-translate="storeLocator">Luxury & Heritage</a>
+
+            </div>
+
+            <div class="nav-column">
+                <a href="/Ahmed/Brands Pages/Rolex.html" data-translate="rolex">Rolex</a>
+                <a href="#" data-translate="cartier">Cartier</a>
+                <a href="#" data-translate="tissot">Tissot</a>
+                <a href="#" data-translate="audemarsPiguet">Audemars Piquet</a>
+                <a href="#" data-translate="omega">Omega</a>
+            </div>
+
+            <div class="nav-column">
+                <a href="/Ahmed/Brands Pages/Rolex.html" data-translate="rolex">Jacob</a>
+                <a href="#" data-translate="cartier">Richard Mille</a>
+                <a href="#" data-translate="tissot">Patek</a>
+                <a href="#" data-translate="audemarsPiguet">Breitling</a>
+                <a href="#" data-translate="omega">Vacheron</a>
             </div>
 
             <div class="footer-nav">
+                <!-- Existing columns (Classic & Dress, Rolex, etc.) -->
                 <div class="nav-column">
-                    <a href="#" data-translate="brand">Classic & Dress</a>
-                    <a href="#" data-translate="savoirFaire">Casual & Everyday</a>
-                    <a href="#" data-translate="collections">Sports & Adventure</a>
-                    <a href="#" data-translate="friendsPartners">Aviation & Travel</a>
-                    <a href="#" data-translate="storeLocator">Luxury & Heritage</a>
-
+                    <h3>Support</h3>
+                    <a href="#">Contact Us</a>
+                    <a href="#">FAQs</a>
+                    <a href="#">Cookie Policy</a>
+                    <a href="#">Terms & Conditions</a>
                 </div>
-
-                <div class="nav-column">
-                    <a href="#" data-translate="rolex">Rolex</a>
-                    <a href="#" data-translate="cartier">Cartier</a>
-                    <a href="#" data-translate="tissot">Tissot</a>
-                    <a href="#" data-translate="audemarsPiguet">Audemars Piquet</a>
-                    <a href="#" data-translate="omega">Omega</a>
-                </div>
-
-
+                <!-- Other columns (Follow Us, Language Selector) -->
             </div>
 
-            <div class="footer-bottom">
-                <div class="footer-info">
-                    <div class="info-column">
-                        <p data-translate="followUs">Follow us</p>
-                        <div class="social-links">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-
-                        </div>
-                    </div>
-
-                    <div class="info-column">
-                        <a href="#" data-translate="contact">Contact</a>
-                        <a href="#" data-translate="legals">Legals</a>
-                    </div>
-
+            <div class="info-column">
+                <p data-translate="followUs">Follow us</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
 
                 </div>
+            </div>
 
-                <div class="info-column">
-                    <p data-translate="copyright">© Vaultique 2025</p>
-                    <div class="language-selector">
-                        <a href="#" data-lang="en" class="active">EN</a>
+            
 
-                        <a href="#" data-lang="ar">AR</a>
 
-                    </div>
-                </div>
+        </div>
 
-                
+        <div class="footer-bottom">
+            <div class="info-column">
+                <p data-translate="copyright">© Vaultique 2025</p>
+               
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
     <script src="JavaScript/translations.js"></script>
     <script src="JavaScript/language-switch.js"></script>
     

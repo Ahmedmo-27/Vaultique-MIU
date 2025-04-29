@@ -77,6 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateScrollIndicator();
                 // Stop auto-scroll when reaching footer
                 clearTimeout(autoScrollTimeout);
+
+                
             }
         }
         requestAnimationFrame(animate);
@@ -182,4 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeunload', () => {
         clearTimeout(autoScrollTimeout);
     });
+
+    
 });
