@@ -95,7 +95,6 @@ header:hover .side-icon {
 
 .side-icon {
     display: none;
-    color: #F6E8C0;
     text-decoration: none;
     font-size: 20px;
     position: relative;
@@ -107,7 +106,7 @@ header:hover .side-icon {
     font-size: 1.1em;
     font-weight: 500;
     text-decoration: none;
-    margin-left: 20px;
+    margin-left: 15px;
 }
 
 .logo-unscrolled {
@@ -158,10 +157,22 @@ header:hover .side-icon {
     justify-content: center;
 }
 
+@keyframes extension {
+	0% {
+		opacity: 0;
+		transform: translateY(-50px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 .header-bottom-anchor-extension {
     display: none;
     position: relative;
-    padding: 10px;
+    padding-top: 10px;
     margin-top: 8px;
     background-color: white;
     border-top: 0.01em solid gainsboro;
@@ -193,7 +204,6 @@ header:hover .side-icon {
     margin-top: 10px;
     display: flex;
     gap: 10px;
-    margin-right: 70px;
     justify-content: center; 
     align-items: flex-start;
 }
@@ -215,7 +225,6 @@ header:hover .side-icon {
     align-items: center;
     justify-content: flex-start;
     box-sizing: border-box;
-    padding-bottom: 10px;
 }
 
 .extension-item:hover img {
@@ -250,7 +259,6 @@ header:hover .side-icon {
 .collection-anchors {
     display: flex;
     flex-direction: column;
-    height: 400px;
     border-right: 2px solid #818181;
     margin: 10px 10px;
 }
@@ -265,7 +273,6 @@ header:hover .side-icon {
     text-decoration: none;
 }
 
-.collection-anchors h4:hover,
 .collection-anchors a:hover {
     scale: 1.05;
 }
@@ -280,18 +287,6 @@ header:hover .side-icon {
     animation: extension 0.7s ease 0s 1 normal forwards;
 }
 
-@keyframes extension {
-	0% {
-		opacity: 0;
-		transform: translateY(-50px);
-	}
-
-	100% {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
 #bracelets-extension {
     margin-top: 10px;
     display: flex;
@@ -300,20 +295,28 @@ header:hover .side-icon {
     align-items: flex-start;
     margin: 10px 0;
     padding-bottom: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.brands-logos {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    column-gap: 20px;
 }
 
 .bracelets-anchors {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr ;
+    gap:10px 30px;
     height: 316px;
     border-right: 2px solid #818181;
-    margin: 10px 40px;
+    margin: 10px;
 }
 
 .bracelets-anchors h4,
 .bracelets-anchors a 
 {
-    padding: 5px;
     padding-right: 20px;
     color: #000;
     text-transform: uppercase;
@@ -322,7 +325,6 @@ header:hover .side-icon {
     text-decoration: none;
 }
 
-.bracelets-anchors h4,
 .bracelets-anchors a:hover 
 {
     scale: 1.05;
@@ -628,6 +630,7 @@ header:hover .side-icon {
 .sidepanel .dropdown {
     position: relative;
     display: inline-block;
+    animation: extension 0.7s ease 0s 1 normal forwards;
 }
 
 .sidepanel .dropbtn {
@@ -686,6 +689,11 @@ header:hover .side-icon {
         width: 100%;
     }
     
+    header .toggle-button 
+    {
+        display: none   !important;
+    }
+
     /* Force side icon to display on mobile without any negative offset */
     .side-icon {
         display: block !important;
@@ -696,6 +704,16 @@ header:hover .side-icon {
         transition: none;           /* Remove any hover transitions that might hide it */
     }
     
+    body.light-mode .side-icon 
+    {
+        color: #1C2E4A;
+    }
+
+    .toggle-button
+    {
+        padding: 0px 0px 0px 0px !important;
+    }
+
     /* Unscrolled header: center the logo and space elements evenly */
     .header-unscrolled {
         display: flex;
@@ -750,7 +768,6 @@ header:hover .side-icon {
     }
     
 
-
     /* Ensure any hover rule that might affect the side icon does not hide it */
     .header-unscrolled:hover .side-icon,
     .header-scrolled:hover .side-icon {
@@ -762,25 +779,25 @@ header:hover .side-icon {
 
 /* Theme Toggle Styles */
 .theme-toggle-container {
-display: flex;
-align-items: center;
-margin-left: 15px;
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
 }
 
 .toggle-button {
-position: relative;
-display: flex;
-align-items: center;
-justify-content: space-between;
-width: 60px;
-height: 30px;
-padding: 0 5px;
-background-color:#dfd2af90;
-border-radius: 15px;
-cursor: pointer;
-border: none;
-outline: none;
-transition: all 0.3s cubic-bezier(.39,.575,.565,1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 60px;
+    height: 30px;
+    padding: 0 5px;
+    background-color:#dfd2af90;
+    border-radius: 15px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: all 0.3s cubic-bezier(.39,.575,.565,1);
 }
 
 body.dark-mode #language 
@@ -789,6 +806,7 @@ body.dark-mode #language
     background-color: #dfd2af90;
     height: 25px;
     font-size: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 body.light-mode #language {
@@ -796,76 +814,77 @@ body.light-mode #language {
     background-color:#1c2e4a85;
     height: 25px;
     font-size: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 
 body.light-mode .toggle-button {
-background-color:#1c2e4a85;
+    background-color:#1c2e4a85;
 }
 
 .toggle-button .toggle-icon {
-width: 20px;
-height: 20px;
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 1;
-transition: all 0.3s ease;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: all 0.3s ease;
 }
 
 .toggle-button .toggle-icon svg {
-width: 16px;
-height: 16px;
+    width: 16px;
+    height: 16px;
 }
 
 .toggle-button .moon svg {
-stroke: #f1c40f;
-fill: transparent;
+    stroke: #f1c40f;
+    fill: transparent;
 }
 
 .toggle-button .sun svg {
-stroke: #f39c12;
-fill: transparent;
+    stroke: #f39c12;
+    fill: transparent;
 }
 
 .toggle-button-slider {
-position: absolute;
-top: 3px;
-left: 3px;
-width: 24px;
-height: 24px;
-background-color: white;
-border-radius: 50%;
-transition: transform 0.3s ease;
-z-index: 0;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    z-index: 0;
 }
 
 .toggle-button.dark .toggle-button-slider {
-transform: translateX(30px);
+    transform: translateX(30px);
 }
 
 /* Light Mode Styles */
 body.light-mode {
-background-color: #e8d9c4;
+    background-color: #e8d9c4;
 }
 
 body.light-mode .header-unscrolled .navigation a {
     color: #1C2E4A;
-  }
+}
   
-  body.light-mode .header-unscrolled .navigation a:hover {
+body.light-mode .header-unscrolled .navigation a:hover {
     color: #2a3f5f;
-  }
+}
   
-  body.light-mode .header-unscrolled .logo-unscrolled {
+body.light-mode .header-unscrolled .logo-unscrolled {
     color: #1C2E4A;
-  }
+}
 
-  body.light-mode .searchField,
-  body.light-mode .search,body.light-mode .searchField::placeholder {
+body.light-mode .searchField,
+body.light-mode .search,body.light-mode .searchField::placeholder {
     color: #1C2E4A;
-  }
+}
 
-  body.dark-mode {
+body.dark-mode {
     background-color: #1C2E4A;
-  }
+}

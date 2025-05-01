@@ -35,19 +35,20 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Ensure the icons stay on the right
             headerMiddle.style.justifyContent = 'flex-end';
-            headerMiddle.style.paddingRight = '50px'; // Adjust this value as needed
+            headerMiddle.style.paddingRight = '30px'; // Adjust this value as needed
     
+            const toggleTheme= document.querySelector('[data-theme-toggle]');
+
             // Show all icons
             middleDiv.style.display = 'flex';
             middleDivanchors.forEach(anchor => {
-                anchor.style.display = 'inline';
+                anchor.style.display = 'inline-flex';
             });
     
             // Other scroll-related changes
             searchButton.style.display = 'none';
             searchButton2.classList.remove('search-button-unscrolled');
             searchButton2.classList.add('search-button-scrolled');
-            sideicon.style.color = 'black';
             headerTop.style.display = 'none';
             middleDiv.classList.remove('header-top-unscrolled');
             middleDiv.classList.add('header-top-scrolled');
@@ -63,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
             header.classList.add('header-scrolled');
             middleDiv.classList.remove('header-top-unscrolled');
             middleDiv.classList.add('header-top-scrolled');
-            sideicon.style.color = 'black';
             headerBottom.classList.remove('header-bottom-unscrolled');
             headerBottom.classList.add('header-bottom-scrolled');
             headerTop.style.display = 'none';
@@ -99,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
             // Other unscroll-related changes
             searchButton2.classList.remove('search-button-scrolled');
             searchButton2.classList.add('search-button-unscrolled');
-            sideicon.style.color = '#F6E8C0';
             headerTop.style.display = 'flex';
             middleDiv.classList.remove('header-top-unscrolled');
             middleDiv.classList.remove('header-top-scrolled');
