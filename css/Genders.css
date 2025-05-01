@@ -127,7 +127,7 @@ body
 
 .male:hover,
 .female:hover {
-    flex: 1.5;
+    flex: 1.2;
 }
 
 #male-img,
@@ -138,11 +138,6 @@ body
     object-fit: cover;
     transition: transform 0.5s ease;
     z-index: 1; /* Ensure image stays visible */
-}
-
-.male:hover #male-img,
-.female:hover #female-img {
-    transform: scale(1.05);
 }
 
 /* Modified canvas for subtle movement effect */
