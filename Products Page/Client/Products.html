@@ -4,25 +4,25 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Products</title>    
-        <link rel="stylesheet" href="/Ahmed/Products Page/Client/Loading Screen.css">
+        <link rel="stylesheet" href="/Wael/css/loading-screen.css">
         <link rel="stylesheet" href="/Ahmed/Navigation Bar/nav-bar.css">
         <link rel="stylesheet" href="/Ahmed/Products Page/Client/Products.css">
         <link rel="stylesheet" href="/Wael/css/footer.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <script src="/Ahmed/Navigation Bar/nav-bar.js"></script>
-        <!-- <script src="/Ahmed/Products Page/Client/Loading Screen.js"></script> -->
+        <script src="/Wael/JavaScript/loading-screen.js"></script>
         <script src="/Ahmed/Products Page/Client/Products.js"></script>
         <script src="/Ahmed/Products Page/Client/Light-Mode.js"></script>
         <script src="/Wael/JavaScript/footer.js"></script>
     </head>
     <body>
         
-    <!-- Loading Screen
+    <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="logo">
             <h1>Vaultique</h1>
         </div>
-    </div> -->
+    </div>
     
     <!--Nav-Bar-->
     <div class="navbar-wrapper">
@@ -30,15 +30,14 @@
             <div class="header-top-unscrolled" id="header-top" style="display: none;">
                 <div class="store-services" id="store-services">
 
-                    <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
+                    <a id="toggle-button" class="toggle-button" data-theme-toggle>
                         <i class="fa-solid fa-sun"></i>
                         <i class="fa-solid fa-moon"></i>
                         <span class="toggle-button-slider"></span>
                     </a>
 
-                    <nav class="navigation">
-        
-                        <a href="">
+                    <nav class="navigation">    
+                        <a href="#">
                             <i class="fa-solid fa-globe"></i>
                             <p>Language</p>
                         </a>
@@ -46,7 +45,6 @@
                             <option value="en">EN</option>
                             <option value="ar">AR</option>
                         </select>
-
                         
                         <a href="/User/Contact-Us">
                             <i class='fas fa-phone-alt'></i>
@@ -90,19 +88,18 @@
                 </div>
     
                 <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
+               
                 <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+               
                     <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
                         <input type="search" id="searchField2" class="searchField" placeholder="Search">
                         <button id="search2" class="search">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </div>
-    
+
                     <nav class="navigation">
-                        <a href="/User/Location" style="display: none;">
-                            <i class='fas fa-map-marker-alt'></i>
-                        </a>
-    
+
                         <a href="/User/Contact-Us" style="display: none;">
                             <i class='fas fa-phone-alt'></i>
                         </a>
@@ -118,6 +115,20 @@
                         <a href="/User/Shopping-Cart" style="display: none;">
                             <i class='fas fa-shopping-cart'></i>
                         </a>
+
+                        <a id="toggle-button" class="toggle-button" data-theme-toggle style="display:none;">
+                            <i class="fa-solid fa-sun"></i>
+                            <i class="fa-solid fa-moon"></i>
+                            <span class="toggle-button-slider"></span>
+                        </a>
+
+                        <a style="display: none;">
+                            <select id="language" class="tag">
+                                <option value="en">EN</option>
+                                <option value="ar">AR</option>
+                            </select>
+                        </a>
+
                     </nav>
                 </div>
             </div>
@@ -125,7 +136,7 @@
             <div class="header-bottom-unscrolled" id="header-bottom">
                 <nav class="navigation">
                     <a href="/welcome.html">Home</a>
-                    <a href="/Products Page/Products.html">Shop All</a>
+                    <a href="/Ahmed/Products Page/Client/Products.html">Shop All</a>
                     <a href="/User/Collections" id="collections-anchor-with-extension" class="extension">Collections</a>
                     <a href="/user/shopAll?category=Bracelet" data-category="Bracelets">Brands</a>
                     <a href="/Cart + Recommendation System/Recommendation.html">Recommendation System</a>
@@ -184,23 +195,25 @@
                     </a>
                 </div>
             </div>
-            <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
+            <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none; ">
                 <div id="bracelets-extension">
                     <div class="bracelets-anchors">
                         <h4><b>Brands</b></h4>
                         <br>
-                        <a href="/Ahmed/Brands Pages/Rolex.html">Rolex </a>
-                        <br>
+                        <a href="/Ahmed/Products Page/Client/Rolex.html">Rolex </a>
                         <a href="/User/Brands/Rolex">Omega</a>
-                        <br>
-                        <a href="/User/Brands/Rolex">Audemars Piguet</a>
-                        <br>
                         <a href="/User/Brands/Rolex">Cartier</a>
-                        <br>
-                        <a href="/User/Brands/Rolex">Tissot</a>
-                            </div>
+                        <a href="/User/Brands/Rolex">Patek Philippe</a>
+                        <a href="/User/Brands/Rolex">Audemars <br> Piguet</a>
+                        <a href="/User/Brands/Rolex">A.Lange & <br> Söhne</a>
+                        <a href="/User/Brands/Rolex">Vacheron <br> Constantin</a>
+                        <a href="/User/Brands/Rolex">Jacob & Co</a>
+                        <a href="/User/Brands/Rolex">Richard Mille</a>
+                        <a href="/User/Brands/Rolex">Breitling</a>
+                    </div>
+                <div class="brands-logos">
                     <div class="bracelets-extension">
-                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                        <a class="extension-item" href="/Ahmed/Products Page/Client/Rolex.html">
                             <img src="/Ahmed/Brands Logos/Rolex - with name.png" alt=""
                                 class="category-img extension-img">
                             <div>
@@ -210,15 +223,6 @@
                     </div>
                     <div class="bracelets-extension">
                         <a class="extension-item" href="/user/bracelets/gold">
-                            <img src="/Ahmed/Brands Logos/Cartier.png" alt=""
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Cartier Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/user/bracelets/diamond">
                             <img src="/Ahmed/Brands Logos/Omega.png" alt=""
                                 class="category-img extension-img">
                             <div>
@@ -227,8 +231,26 @@
                         </a>
                     </div>
                     <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/diamond">
+                            <img src="/Ahmed/Brands Logos/Cartier.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Omega Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
                         <a class="extension-item" href="/user/bracelets/gold">
-                            <img src="/Ahmed/Brands Logos/audemars-piguet-logo.svg" alt=""
+                            <img src="/Ahmed/Brands Logos/Patek Philippe logo.png" alt="Patek Philippe logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Patek Philippe Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Audemars Piguet logo.png" alt="Audemars Piguet logo"
                                 class="category-img extension-img">
                             <div>
                                 <h4 class="extension-text">Audemars Piguet Collection</h4>
@@ -237,13 +259,50 @@
                     </div>
                     <div class="bracelets-extension">
                         <a class="extension-item" href="/user/bracelets/gold">
-                            <img src="/Ahmed/Brands Logos/Tissot.png" alt=""
+                            <img src="/Ahmed/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Sohne Logo"
                                 class="category-img extension-img">
                             <div>
-                                <h4 class="extension-text">Tissot Collection</h4>
+                                <h4 class="extension-text">A Lange & Söhne Collection</h4>
                             </div>
                         </a>
                     </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Vacheron Constantin logo.png" alt="Vacheron Constantin logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Vacheron Constantin Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Jacob & Co Logo.png" alt="Jacob & Co Logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Jacob & Co <br>Collection</h4>
+                            </div>
+                        </a>
+                    </div>                  
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Richard Mille Logo.png" alt="Richard Mille Logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Richard Mille Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Breitling Logo.png" alt="Breitling Logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Breitling Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>    
                 </div>
             </div>
     
@@ -279,20 +338,26 @@
             </div>
         
             <br>
+            
             <div class="dropdown">
                 <a href="#" class="dropbtn">Brands</a>
                 <div class="dropdown-content">
-                    <a href="/User/Brands/Rolex">Rolex </a>
+                    <a href="/Ahmed/Brands Pages/Rolex.html">Rolex </a>
                     <a href="/User/Brands/Rolex">Omega</a>
-                    <a href="/User/Brands/Rolex">Audemars Piguet</a>
                     <a href="/User/Brands/Rolex">Cartier</a>
-                    <a href="/User/Brands/Rolex">Tissot</a>
+                    <a href="/User/Brands/Rolex">Patek Philippe</a>
+                    <a href="/User/Brands/Rolex">Audemars <br> Piguet</a>
+                    <a href="/User/Brands/Rolex">A.Lange & <br> Söhne</a>
+                    <a href="/User/Brands/Rolex">Vacheron <br> Constantin</a>
+                    <a href="/User/Brands/Rolex">Jacob & Co</a>
+                    <a href="/User/Brands/Rolex">Richard Mille</a>
+                    <a href="/User/Brands/Rolex">Breitling</a>
                 </div>
             </div>
     
             <a href="#">Recommendation System </a>
     
-            <a id="toggle-button-side" class="toggle-button" onclick="toggleLightDarkMode()">
+            <a id="toggle-button-side" class="toggle-button" data-theme-toggle>
                 <i class="fa-solid fa-sun"></i>
                 <i class="fa-solid fa-moon"></i>
                 <span class="toggle-button-slider"></span>
@@ -352,14 +417,17 @@
 
             <label> Brand: </label>
             <select id="brand" class="tag">
-                <option value="All">All</option>
+                <option id="ALL" value="All">All</option>
                 <option value="Rolex">Rolex</option>
                 <option value="Omega">Omega</option>
-                <option value="Tissot">Tissot</option>
                 <option value="Cartier">Cartier</option>
                 <option value="Patek Philippe">Patek Philippe</option>
                 <option value="Audemars Piguet">Audemars Piguet</option>
-                <option value="Breitling">Breitling</option>                
+                <option value="A.Lange & Söhne">A.Lange & Söhne</option>
+                <option value="Vacheron Constantin">Vacheron Constantin</option>
+                <option value="Jacob & Co">Jacob & Co</option>
+                <option value="Richard Mille">Richard Mille</option>
+                <option value="Breitling">Breitling</option>
             </select>
     
             <label> Gender: </label>
@@ -469,51 +537,54 @@
                 </div>
     
                 <div class="nav-column">
-                    <a href="#" data-translate="rolex">Rolex</a>
+                    <a href="/Ahmed/Brands Pages/Rolex.html" data-translate="rolex">Rolex</a>
                     <a href="#" data-translate="cartier">Cartier</a>
                     <a href="#" data-translate="tissot">Tissot</a>
                     <a href="#" data-translate="audemarsPiguet">Audemars Piquet</a>
                     <a href="#" data-translate="omega">Omega</a>
                 </div>
     
+                <div class="nav-column">
+                    <a href="/Ahmed/Brands Pages/Rolex.html" data-translate="rolex">Jacob</a>
+                    <a href="#" data-translate="cartier">Richard Mille</a>
+                    <a href="#" data-translate="tissot">Patek</a>
+                    <a href="#" data-translate="audemarsPiguet">Breitling</a>
+                    <a href="#" data-translate="omega">Vacheron</a>
+                </div>
+    
+                <div class="footer-nav">
+                    <!-- Existing columns (Classic & Dress, Rolex, etc.) -->
+                    <div class="nav-column">
+                        <h3>Support</h3>
+                        <a href="#">Contact Us</a>
+                        <a href="#">FAQs</a>
+                        <a href="#">Cookie Policy</a>
+                        <a href="#">Terms & Conditions</a>
+                    </div>
+                    <!-- Other columns (Follow Us, Language Selector) -->
+                </div>
+    
+                <div class="info-column">
+                    <p data-translate="followUs">Follow us</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+    
+                    </div>
+                </div>
     
             </div>
     
             <div class="footer-bottom">
-                <div class="footer-info">
-                    <div class="info-column">
-                        <p data-translate="followUs">Follow us</p>
-                        <div class="social-links">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-    
-                        </div>
-                    </div>
-    
-                    <div class="info-column">
-                        <a href="#" data-translate="contact">Contact</a>
-                        <a href="#" data-translate="legals">Legals</a>
-                    </div>
-    
-    
-                </div>
-    
                 <div class="info-column">
                     <p data-translate="copyright">© Vaultique 2025</p>
-                    <div class="language-selector">
-                        <a href="#" data-lang="en" class="active">EN</a>
-    
-                        <a href="#" data-lang="ar">AR</a>
-    
-                    </div>
+                   
                 </div>
-    
-                
             </div>
         </div>
     </footer>
-    
+        
         <script>
         if(history.scrollRestoration)
         {

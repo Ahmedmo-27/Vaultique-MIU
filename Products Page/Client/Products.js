@@ -120,15 +120,34 @@ async function loadProducts() {
     
   } catch (error) {
     console.error('Error loading products:', error);
-    if (productGrid) {
-      productGrid.innerHTML = `
-        <p class="error">
-          Error loading products. ${error.message}
-          <button onclick="loadProducts()">Retry</button>
+    const errorContent = `
+      <div class="error">
+        <p class="error-message">
+          Error loading products.<br> ${error.message}
         </p>
-      `;
-    }
-  }
+      </div>
+    `;
+    
+    createModal(
+      'Error', 
+      errorContent,
+      [
+        {
+          text: 'Retry',
+          class: 'confirm-btn',
+          clickHandler: () => {
+            loadProducts();
+            closeModal(document.querySelector('.modal-overlay'));
+          }
+        },
+        {
+          text: 'Close',
+          class: 'cancel-btn',
+          clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
+        }
+      ]
+    );
+}
 }
 
 function renderProducts(products) {
@@ -224,9 +243,23 @@ function getSelectedDialColors() {
 }
 
 function resetFilters() {
+
+  const all=document.getElementById('ALL');
+  
+  if(!all)
+  {
+    const collectionValue = document.getElementById('collectionPage');
+    const brandValue = document.getElementById('brandPage');
+  }
+  else
+  {
+    collectionValue = 'All';
+    brandValue='All';
+  }
+
   const resetElements = [
-    { id: 'collection', value: 'All' },
-    { id: 'brand', value: 'All' },
+    { id: 'collection', value: collectionValue },
+    { id: 'brand', value: brandValue },
     { id: 'gender', value: 'All' },
     { id: 'Strap_Material', value: 'All' },
     { id: 'Movement', value: 'All' },
@@ -251,7 +284,7 @@ function resetFilters() {
 
 function toggleWishlist(element, productId) {
   element.classList.toggle('filled');
-  // Add your wishlist API call here
+  // wishlist API call here
   console.log(`Toggled wishlist for product ${productId}`);
 }
 
@@ -347,9 +380,73 @@ function toggleQuickView(product = null) {
   };
 }
 
+function createModal(title, content, buttons = []) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  
+  const modalContainer = document.createElement('div');
+  modalContainer.className = 'modal-container';
+  
+  const modalHeader = document.createElement('div');
+  modalHeader.className = 'modal-header';
+  modalHeader.innerHTML = `
+      <h3>${title}</h3>
+      <span class="close-modal">&times;</span>
+  `;
+  
+  const modalBody = document.createElement('div');
+  modalBody.className = 'modal-body';
+  modalBody.innerHTML = content;
+  
+  const modalFooter = document.createElement('div');
+  modalFooter.className = 'modal-footer';
+  
+  buttons.forEach(button => {
+      const btn = document.createElement('button');
+      btn.className = button.class || 'confirm-btn';
+      btn.textContent = button.text;
+      if (button.clickHandler) {
+          btn.addEventListener('click', button.clickHandler);
+      }
+      modalFooter.appendChild(btn);
+  });
+  
+  modalContainer.appendChild(modalHeader);
+  modalContainer.appendChild(modalBody);
+  modalContainer.appendChild(modalFooter);
+  modal.appendChild(modalContainer);
+  
+  document.body.appendChild(modal);
+  
+  // Show modal with animation
+  setTimeout(() => {
+      modal.classList.add('show');
+  }, 10);
+  
+  // Close modal handlers
+  modal.querySelector('.close-modal').addEventListener('click', () => {
+      closeModal(modal);
+  });
+  
+  modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+          closeModal(modal);
+      }
+  });
+  
+  return modal;
+}
+
+function closeModal(modal) {
+  modal.classList.remove('show');
+  setTimeout(() => {
+      modal.remove();
+  }, 300);
+}
+
 function addToCartFromQuickView(productId) {
   console.log(`Adding product ${productId} to cart`);
-  // Implement your cart addition logic here
+  // cart addition logic here
   toggleQuickView(); // Close the modal
 }
 
