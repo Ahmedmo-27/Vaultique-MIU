@@ -100,7 +100,7 @@ footer {
     transition: opacity 0.3s ease;
     display: inline-block;
     width: fit-content;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .nav-column a:hover {
@@ -162,7 +162,7 @@ footer {
     transition: opacity 0.3s ease;
     display: inline-block;
     width: fit-content;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .social-links a:hover {
