@@ -100,6 +100,97 @@ body
     text-align: center;
 }
 
+/* Updated Text Container Styles */
+.text-container {
+    position: absolute;
+    top: 4%;
+    width: 150%;
+    max-width: 500px;
+    z-index: 10;
+    color: #F6E8C0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* Female (left) side text alignment */
+.female .text-container {
+    left: 2%;
+    right: auto;
+    transform: none;
+    text-align: left;
+    padding-left: 20px;
+}
+
+/* Male (right) side text alignment */
+.male .text-container {
+    left: auto;
+    right: 10%;
+    transform: none;
+    text-align: right;
+    padding-right: 20px;
+}
+
+/* Smaller text sizes */
+.section-title {
+    font-size: 2rem; /* Reduced from 3rem */
+    font-weight: 700;
+    letter-spacing: 3px; /* Reduced from 4px */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 0.5rem; /* Reduced from 1rem */
+    text-transform: uppercase;
+}
+
+.section-description {
+    font-size: 1rem; /* Reduced from 1.2rem */
+    font-weight: 300;
+    letter-spacing: 0.5px; /* Reduced from 1px */
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* RTL (Arabic) Support - swapped left/right */
+[dir="rtl"] .female .text-container {
+    right: 10%;
+    left: auto;
+    text-align: right;
+    padding-right: 20px;
+    padding-left: 0;
+}
+
+[dir="rtl"] .male .text-container {
+    left: 10%;
+    right: auto;
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.5rem; /* Smaller on mobile */
+        letter-spacing: 2px;
+    }
+    
+    .section-description {
+        font-size: 0.9rem; /* Smaller on mobile */
+    }
+    
+    .female .text-container,
+    .male .text-container {
+        width: 90%;
+        left: 5%;
+        right: 5%;
+        text-align: center;
+        padding: 0;
+    }
+    
+    [dir="rtl"] .female .text-container,
+    [dir="rtl"] .male .text-container {
+        left: 5%;
+        right: 5%;
+    }
+}
+
 .text-overlay button {
     background: transparent;
     border: 2px solid white;
