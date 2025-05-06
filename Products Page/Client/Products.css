@@ -914,14 +914,6 @@ body.dark-mode .tag {
   cursor: pointer;
 }
 
-.hover-text img
-{
-  margin-top: 5px;
-  margin-left: 45%;
-  width: 8%;
-  height: 8%;
-}
-
 .section {
     min-height:100vh ;
     height: 100%;
@@ -938,109 +930,102 @@ body.dark-mode .tag {
     scroll-snap-stop: always;    
 }
 
-.section.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.section.prev {
-    transform: translateY(-100%);
-}
-
-.section.next {
-    transform: translateY(100%);
-}
-
 .video-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 85%;
+    height: 100%;
     z-index: -1;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.section video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height:100%;
-    transform: translateX(-50%) translateY(-50%);
-    object-fit: contain;
-    z-index: -1;
+.video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.hover-text {
-  font-size: 28px;
-  color:#23395c;
-  display: inline-block;
-  padding: 5px 15px;
-  transition: all 0.3s ease;
-  background-color:#f6e8c0;
+.image
+{
+  margin-top: 50px;
+  height: 400px;
+  width: auto;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
-.hover-text h1,
-.hover-text h2,
-.hover-text p {
-    transition: all 0.3s ease;
-    position: relative;
-    margin-right: 10px;
-    margin-left: 10px;
-    margin-bottom: 5px;
+.image img
+{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  filter: brightness(0.9);
 }
 
-/* Glow effect on headings */
-.hover-text:hover h1,
-.hover-text:hover h2 {
-    text-shadow: 0 0 10px rgba(7, 7, 7, 0.8);
-    transform: translateY(-2px);
+.brand-logo
+{
+  background-color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  color: #f6e8c0;
+  border-radius: 8px;
+  height: 80px;
+  width: 250px;
+  z-index: 1;
+  margin-top: 100px;
+  margin-left: 100px;
+  margin-bottom: 100px;
+  position: absolute;
 }
 
-/* Subtle glow on descriptions */
-.hover-text:hover p {
-    text-shadow: 0 0 5px rgba(30, 30, 30, 0.6);
-    transform: translateY(-1px);
+#brandLogo
+{
+  margin-top: 20px;
+  width: 100%;
+  height: 100%;
+  text-transform: capitalize;
 }
 
-/* Animated border effect */
-.hover-text::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    transition: all 0.4s ease;
-    pointer-events: none;
+.text-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #f6e8c0;
+  margin-left: 820px;
+  margin-right: 40px;
+  padding: 20px 20px;
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+  font-size: 1.2rem;
 }
 
-.hover-text:hover::before {
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+.text-overlay h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #f9e9b0;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 
-/* Pulse animation on hover */
-@keyframes text-pulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.02);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+.text-overlay p {
+  line-height: 1.6;
+  font-weight: 300;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
-.hover-text:hover h1,
-.hover-text:hover h2 {
-    animation: text-pulse 1.5s infinite;
+@media screen and (max-width: 768px) {
+  .text-overlay {
+      padding: 20px;
+      font-size: 1rem;
+  }
+
+  .text-overlay h2 {
+      font-size: 1.5rem;
+  }
+
+  .brand-logo {
+    width: 60px;
+  }
 }

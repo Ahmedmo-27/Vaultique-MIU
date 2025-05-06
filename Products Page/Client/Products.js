@@ -102,7 +102,7 @@ async function loadProducts() {
     updateCurrentFilters();
     
     const queryString = new URLSearchParams(currentFilters).toString();
-    const response = await fetch(`http://127.0.0.1:3000/api/products?${queryString}`);
+    const response = await fetch(`http://localhost:3000/api/products?${queryString}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -119,37 +119,35 @@ async function loadProducts() {
     renderProducts(result.data);
     
   } catch (error) {
-    console.error('Error loading products:', error);
+    console.error('Brand Page Loading Failed', error);
+    
     const errorContent = `
-      <div class="error">
-        <p class="error-message">
-          Error loading products.<br> ${error.message}
-        </p>
+      <div style="font-size: 1.1rem; color: #333; line-height: 1.6;">
+        Error loading products.<br>
+        ${error.message || 'Failed to fetch'}
       </div>
     `;
     
     createModal(
-      'Error', 
+      'Error',
       errorContent,
       [
         {
-          text: 'Retry',
-          class: 'confirm-btn',
+          text: 'Close',
+          class: 'cancel-btn',
           clickHandler: () => {
-            loadProducts();
-            closeModal(document.querySelector('.modal-overlay'));
+              closeModal(document.querySelector('.modal-overlay'));
           }
         },
         {
-          text: 'Close',
-          class: 'cancel-btn',
-          clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
+          text: 'Retry',
+          class: 'confirm-btn',
+          clickHandler: () => window.location.reload()
         }
       ]
     );
+  }
 }
-}
-
 function renderProducts(products) {
   productGrid.style.opacity = '0';
   productGrid.style.transition = 'opacity 0.2s ease';
@@ -209,7 +207,7 @@ function updatePaginationUI() {
 
 function updateCurrentFilters() {
   currentFilters = {
-    collection: document.getElementById('collection')?.value || 'All',
+    Vcollection: document.getElementById('collection')?.value || 'All',
     brand: document.getElementById('brand')?.value || 'All',
     gender: document.getElementById('gender')?.value || 'All',
     strapMaterial: document.getElementById('Strap_Material')?.value || 'All',
@@ -421,7 +419,7 @@ function createModal(title, content, buttons = []) {
   // Show modal with animation
   setTimeout(() => {
       modal.classList.add('show');
-  }, 10);
+  }, 2000);
   
   // Close modal handlers
   modal.querySelector('.close-modal').addEventListener('click', () => {

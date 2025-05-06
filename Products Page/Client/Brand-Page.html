@@ -1,30 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <title>Vaultique | </title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Products</title>    
-        <link rel="stylesheet" href="/Ahmed/Products Page/Client/Loading Screen.css">
+        <link rel ="stylesheet" href="/Ahmed/Products Page/Client/Loading Screen.css">
         <link rel="stylesheet" href="/Ahmed/Navigation Bar/nav-bar.css">
+        <link rel="stylesheet" href="/Ahmed/Brands Pages/Slider.css">
         <link rel="stylesheet" href="/Ahmed/Products Page/Client/Products.css">
         <link rel="stylesheet" href="/Wael/css/footer.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script src="/Ahmed/Products Page/Client/Loading Screen.js"></script>
         <script src="/Ahmed/Navigation Bar/nav-bar.js"></script>
-        <script src="/Wael/JavaScript/loading-screen.js"></script>
+        <script src="/Ahmed/Products Page/Client/Brand-Page.js"></script>
+        <script src="/Ahmed/Products Page/Client/Slider.js"></script>
         <script src="/Ahmed/Products Page/Client/Products.js"></script>
         <script src="/Ahmed/Products Page/Client/Brand-Navigation.js"></script>
         <script src="/Ahmed/Products Page/Client/Light-Mode.js"></script>
-        <script src="/Wael/JavaScript/footer.js"></script>
     </head>
     <body>
-        
+
     <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="logo">
             <h1>Vaultique</h1>
         </div>
     </div>
-    
+
     <!--Nav-Bar-->
     <div class="navbar-wrapper">
         <header class="header-unscrolled">
@@ -267,7 +269,7 @@
                     
                     <!-- A.Lange & Söhne -->
                     <div class="bracelets-extension">
-                        <a class="extension-item" href="/brands/a-lange-sohne" data-brand="A.Lange & Söhne">
+                        <a class="extension-item" href="/brands/a-lange-sohne" data-brand="A.Lange Sohne">
                             <img src="/Ahmed/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Söhne" class="category-img extension-img">
                             <div>
                                 <h4 class="extension-text">A.Lange & Söhne Collection</h4>
@@ -376,7 +378,53 @@
 
         </div>
     </div>
-        
+
+        <section class="section topic">
+            <div class="video-container">
+                <video autoplay muted loop playsinline>
+                    <source src="" id="brandVideoSource">
+                </video>
+            </div>
+        </section>
+
+        <!-- Slider Section -->
+        <div class="slider-container">
+            <!-- Slides will be dynamically inserted here -->
+            <div class="slides-wrapper" id="slidesWrapper">
+                <!-- Slides will be added by JavaScript -->
+            </div>
+
+            <!-- Navigation Arrows -->
+            <button id="prevSlide" class="nav-arrow nav-arrow-left" aria-label="Previous slide">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </button>
+            <button id="nextSlide" class="nav-arrow nav-arrow-right" aria-label="Next slide">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </button>
+
+            <!-- Pagination Dots -->
+            <div class="pagination-slider" id="paginationSlider">
+                <!-- Dots will be added by JavaScript -->
+            </div>
+        </div>
+
+        <div class="image" style="margin-bottom: -90px;">
+            <img src="/placeholder.svg" alt="Brand Image" id="brandCoverImage">
+            <div class="brand-logo">
+                <h1 id="brandLogo"> Loading Brand Name </h1>
+            </div>
+            <div class="text-overlay">
+                <h2 id="brandHeader">Loading brand header</h2>
+                <p id="brandDescription">
+                    Loading brand information...
+                </p>
+            </div>
+        </div>
+
     <!-- Filter Button -->
     <button class="filter-btn" onclick="openFilterPanel()">
         <span>Filters and Sorting</span>
@@ -440,7 +488,7 @@
                 <option value="Richard Mille">Richard Mille</option>
                 <option value="Breitling">Breitling</option>
             </select>
-    
+
             <label> Gender: </label>
             <select id="gender" class="tag">
                 <option value="All">All</option>
@@ -518,7 +566,7 @@
     </div>
     
     <!-- Product Grid -->
-    <section class="product-container">
+    <section class="product-container" style="margin-top: 0px; padding-top: 20px;">
         <div class="product-grid" id="productGrid">
             <!-- Products will be inserted here by JavaScript -->
         </div>
@@ -544,7 +592,6 @@
                     <a href="#" data-translate="collections">Sports & Adventure</a>
                     <a href="#" data-translate="friendsPartners">Aviation & Travel</a>
                     <a href="#" data-translate="storeLocator">Luxury & Heritage</a>
-    
                 </div>
     
                 <div class="nav-column">
@@ -564,7 +611,6 @@
                 </div>
     
                 <div class="footer-nav">
-                    <!-- Existing columns (Classic & Dress, Rolex, etc.) -->
                     <div class="nav-column">
                         <h3>Support</h3>
                         <a href="#">Contact Us</a>
@@ -572,7 +618,6 @@
                         <a href="#">Cookie Policy</a>
                         <a href="#">Terms & Conditions</a>
                     </div>
-                    <!-- Other columns (Follow Us, Language Selector) -->
                 </div>
     
                 <div class="info-column">
@@ -581,32 +626,16 @@
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
-    
                     </div>
                 </div>
-    
             </div>
     
             <div class="footer-bottom">
                 <div class="info-column">
                     <p data-translate="copyright">© Vaultique 2025</p>
-                   
                 </div>
             </div>
         </div>
-    </footer>
-        
-        <script>
-        if(history.scrollRestoration)
-        {
-            history.scrollRestoration='manual';
-        }
-        
-        window.onbeforeunload = function () 
-        {
-            window.scrollTo(0, 0);
-        };
-        </script>
+    </footer>        
     </body>
-
 </html>
