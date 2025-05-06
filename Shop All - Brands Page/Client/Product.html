@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/Landing-page.css" />
+    <link rel="icon" type="image/x-icon" href="/images/Logo.png" />
+    <link rel="stylesheet" href="css/loading-screen.css" />
+    <link rel="stylesheet" href="/Shawky/css/product-type.css" />
+    <link rel="stylesheet" href="/Ahmed/Navigation Bar/nav-bar.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="/Ahmed/Products Page/Client/Light-Mode.js"></script>
+    <script src="/Ahmed/Navigation Bar/nav-bar.js"></script>
+    <script src="JavaScript/loading-screen.js"></script>
+    <title>Audemars Piguet Offshore</title>
+  </head>
+
+  <body>
+    <div>
+
+    <!--Nav-Bar-->
+    <div class="navbar-wrapper">
+        <header class="header-unscrolled">
+            <div class="header-top-unscrolled" id="header-top" style="display: none;">
+                <div class="store-services" id="store-services">
+
+                    <a id="toggle-button" class="toggle-button" data-theme-toggle>
+                        <i class="fa-solid fa-sun"></i>
+                        <i class="fa-solid fa-moon"></i>
+                        <span class="toggle-button-slider"></span>
+                    </a>
+
+                    <nav class="navigation">    
+                        <a href="#">
+                            <i class="fa-solid fa-globe"></i>
+                            <p>Language</p>
+                        </a>
+                        <select id="language" class="tag">
+                            <option value="en">EN</option>
+                            <option value="ar">AR</option>
+                        </select>
+                        
+                        <a href="/User/Contact-Us">
+                            <i class='fas fa-phone-alt'></i>
+                            <p>Contact Us</p>
+                        </a>
+                    </nav>
+
+                    <div class="search-button-unscrolled" id="search-button" style="display: none;">
+                        <input type="search" id="searchField" class="searchField" placeholder="Search">
+                        <button id="search" class="search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                </div>
+    
+                <div class="user-data">
+                    <nav class="navigation">
+                        <a href="/User/Account">
+                            <i class='fas fa-user-alt'></i>
+                            <p>Account</p>
+                        </a>
+    
+                        <a href="/User/WishList">
+                            <i class='fas fa-heart'></i>
+                            <p>WishList</p>
+                        </a>
+    
+                        <a href="/Cart + Recommendation System/Cart.html">
+                            <i class='fas fa-shopping-cart'></i>
+                            <p>Cart </p>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+    
+            <div class="header-middle-unscrolled" id="header-middle">
+                <div class="responsive">
+                    <a class="side-icon" id="side-icon">
+                        <i class="fa fa-bars" id="ham-whatever"></i>
+                    </a>
+                </div>
+    
+                <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
+                
+                <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+                
+                    <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
+                        <input type="search" id="searchField2" class="searchField" placeholder="Search">
+                        <button id="search2" class="search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+
+                    <nav class="navigation">
+
+                        <a href="/User/Contact-Us" style="display: none;">
+                            <i class='fas fa-phone-alt'></i>
+                        </a>
+    
+                        <a href="/User/Account" style="display: none;">
+                            <i class='fas fa-user-alt'></i>
+                        </a>
+    
+                        <a href="/User/WishList" style="display: none;">
+                            <i class='fas fa-heart'></i>
+                        </a>
+    
+                        <a href="/User/Shopping-Cart" style="display: none;">
+                            <i class='fas fa-shopping-cart'></i>
+                        </a>
+
+                        <a id="toggle-button" class="toggle-button" data-theme-toggle style="display:none;">
+                            <i class="fa-solid fa-sun"></i>
+                            <i class="fa-solid fa-moon"></i>
+                            <span class="toggle-button-slider"></span>
+                        </a>
+
+                        <a style="display: none;">
+                            <select id="language" class="tag">
+                                <option value="en">EN</option>
+                                <option value="ar">AR</option>
+                            </select>
+                        </a>
+
+                    </nav>
+                </div>
+            </div>
+    
+            <div class="header-bottom-unscrolled" id="header-bottom">
+                <nav class="navigation">
+                    <a href="/welcome.html">Home</a>
+                    <a href="/Ahmed/Products Page/Client/Products.html">Shop All</a>
+                    <a href="/User/Collections" id="collections-anchor-with-extension" class="extension">Collections</a>
+                    <a href="/user/shopAll?category=Bracelet" data-category="Bracelets">Brands</a>
+                    <a href="/Cart + Recommendation System/Recommendation.html">Recommendation System</a>
+                </nav>
+            </div>
+    
+            <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
+                <div id="collections-extension">
+                    <div class="collection-anchors">
+                        <h4><b>Collections</b></h4>
+                        <br>
+                        <a href="/User/Dress"> Classic & <br>Dress </a>
+                        <br>
+                        <a href="/User/Casual"> Casual & <br>Everyday </a>
+                        <br>
+                        <a href="/User/Sports"> Sports & <br>Adventure </a>
+                        <br>
+                        <a href="#"> Aviation & <br>Travel </a>
+                        <br>
+                        <a href="#"> Luxury & <br>Heritage </a>
+                    </div>
+            
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Ahmed/Models/Cartier Tank.jpg" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Classic & Dress</h4>
+                        </div>
+                    </a>
+            
+                    <a class="extension-item" href="/user/collections/egyptian">
+                        <img src="/Ahmed/Models/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Casual & Everyday</h4>
+                        </div>
+                    </a>
+            
+                    <a class="extension-item" href="/user/collections/egyptian">
+                        <img src="/Ahmed/Models/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Sports & Adventure</h4>
+                        </div>
+                    </a>
+            
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Ahmed/Models/Charlize Breitling.webp" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Aviation & Travel</h4>
+                        </div>
+                    </a>
+            
+                    <a class="extension-item" href="/User/Collections/Dress">
+                        <img src="/Ahmed/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt="" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text">Luxury & Heritage</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none; ">
+                <div id="bracelets-extension">
+                    <div class="bracelets-anchors">
+                        <h4><b>Brands</b></h4>
+                        <br>
+                        <a href="/Ahmed/Products Page/Client/Rolex.html">Rolex </a>
+                        <a href="/User/Brands/Rolex">Omega</a>
+                        <a href="/User/Brands/Rolex">Cartier</a>
+                        <a href="/User/Brands/Rolex">Patek Philippe</a>
+                        <a href="/User/Brands/Rolex">Audemars <br> Piguet</a>
+                        <a href="/User/Brands/Rolex">A.Lange & <br> Söhne</a>
+                        <a href="/User/Brands/Rolex">Vacheron <br> Constantin</a>
+                        <a href="/User/Brands/Rolex">Jacob & Co</a>
+                        <a href="/User/Brands/Rolex">Richard Mille</a>
+                        <a href="/User/Brands/Rolex">Breitling</a>
+                    </div>
+                <div class="brands-logos">
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Products Page/Client/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Rolex - with name.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Rolex Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/gold">
+                            <img src="/Ahmed/Brands Logos/Omega.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Omega Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/diamond">
+                            <img src="/Ahmed/Brands Logos/Cartier.png" alt=""
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Omega Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/gold">
+                            <img src="/Ahmed/Brands Logos/Patek Philippe logo.png" alt="Patek Philippe logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Patek Philippe Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Audemars Piguet logo.png" alt="Audemars Piguet logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Audemars Piguet Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/user/bracelets/gold">
+                            <img src="/Ahmed/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Sohne Logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">A Lange & Söhne Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Vacheron Constantin logo.png" alt="Vacheron Constantin logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Vacheron Constantin Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Jacob & Co Logo.png" alt="Jacob & Co Logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Jacob & Co <br>Collection</h4>
+                            </div>
+                        </a>
+                    </div>                  
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Richard Mille Logo.png" alt="Richard Mille Logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Richard Mille Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="bracelets-extension">
+                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                            <img src="/Ahmed/Brands Logos/Breitling Logo.png" alt="Breitling Logo"
+                                class="category-img extension-img">
+                            <div>
+                                <h4 class="extension-text">Breitling Collection</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>    
+                </div>
+            </div>
+    
+            <!--Search-->
+            <div class="search-extension" id="search-extension">
+                <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
+                <h3>Products</h3>
+                <div id="search-results" class="search-results">
+    
+                </div>
+            </div>
+        </header>
+    
+        <!--Side-Panel-->
+        <div id="mySidepanel" class="sidepanel" style="width: 0px;">
+            <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+            <a href="/welcome.html">Home</a>
+            <a href="/User/Contact-Us">Contact Us</a>
+            <a href="/User/Account">Account</a>
+            <a href="/User/WishList">WishList</a>
+            <a href="/User/Shopping-Cart">Cart</a>
+            <a href="/Ahmed/Products Page/Products.html" data-translate="shopall">Shop All</a>
+    
+            <div class="dropdown">
+                <a href="#" class="dropbtn">Collections</a>
+                <div class="dropdown-content">
+                    <a href="/User/Dress"> Classic & Dress</a>
+                    <a href="/User/Casual"> Sports & Adventure</a>
+                    <a href="/User/Sports"> Aviation & Travel</a>
+                    <a href="#"> Casual & Everyday</a>
+                    <a href="#"> Luxury & Heritage</a>
+                </div>
+            </div>
+        
+            <br>
+            
+            <div class="dropdown">
+                <a href="#" class="dropbtn">Brands</a>
+                <div class="dropdown-content">
+                    <a href="/Ahmed/Brands Pages/Rolex.html">Rolex </a>
+                    <a href="/User/Brands/Rolex">Omega</a>
+                    <a href="/User/Brands/Rolex">Cartier</a>
+                    <a href="/User/Brands/Rolex">Patek Philippe</a>
+                    <a href="/User/Brands/Rolex">Audemars <br> Piguet</a>
+                    <a href="/User/Brands/Rolex">A.Lange & <br> Söhne</a>
+                    <a href="/User/Brands/Rolex">Vacheron <br> Constantin</a>
+                    <a href="/User/Brands/Rolex">Jacob & Co</a>
+                    <a href="/User/Brands/Rolex">Richard Mille</a>
+                    <a href="/User/Brands/Rolex">Breitling</a>
+                </div>
+            </div>
+    
+            <a href="#">Recommendation System </a>
+    
+            <a id="toggle-button-side" class="toggle-button" data-theme-toggle>
+                <i class="fa-solid fa-sun"></i>
+                <i class="fa-solid fa-moon"></i>
+                <span class="toggle-button-slider"></span>
+            </a>
+
+        </div>
+    </div>
+    
+
+    <main class="product-container">
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="#">Home</a> / <a href="#">Shop All</a> /
+        <span>Audemars Piguet Offshore Royal Oak</span>
+      </div>
+
+      <!-- Product Gallery Section -->
+      <section class="product-gallery">
+        <div class="all_image">
+        <div class="main-image">
+          <img
+            src="/Shawky/audemars piguet Royal Oak 4/Model.png"
+            alt="audemars piguet Offshore Royal OakWatch"
+            id="mainImage"
+          />
+          <div class="zoom-lens"></div>
+        </div>
+        <div class="thumbnail-container">
+          <div
+            class="thumbnail active"
+            data-image="/Shawky/audemars piguet Royal Oak 4/Model.png"
+          >
+            <img src="/Shawky/audemars piguet Royal Oak 4/Model.png" alt="Variation 1" />
+          </div>
+          <div class="thumbnail" data-image="audemars piguet Royal Oak 4/front_3.png">
+            <img src="/Shawky/audemars piguet Royal Oak 4/front_3.png" alt="Variation 2" />
+          </div>
+          <div class="thumbnail" data-image="audemars piguet Royal Oak 4/front_1.png">
+            <img src="/Shawky/audemars piguet Royal Oak 4/front_1.png" alt="Variation 3" />
+          </div>
+          <div class="thumbnail" data-image="audemars piguet Royal Oak 4/front_View.png">
+            <img src="/Shawky/audemars piguet Royal Oak 4/front_View.png" alt="Variation 4" />
+          </div>
+        </div>
+      </div>
+       
+      </section>
+
+      <!-- Product Info Section -->
+      <section class="product-info">
+        <div class="product-header">
+          <h1 style="color: #050a30;">Audemars Piguet Offshore Royal Oak</h1>
+          <div class="product-meta">
+            <div class="price">€ 120,00</div>
+            <div class="rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span>(4.5/5)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-actions">
+          <button class="wishlist-btn">
+            <i class="far fa-heart"></i>
+          </button>
+         <br><br>
+          <button class="add-to-cart">
+            <i class="fas fa-shopping-bag"></i>
+            Add to Cart
+          </button>
+          <button class="find-store">
+            <i class="fas fa-map-marker-alt"></i>
+            View 3D Model
+          </button>
+        </div>
+      
+       
+    </div>
+  </div>
+  <div class="container2">
+    <video  src="/Shawky/audemars piguet Royal Oak 4/ROO_15720ST-OO-A052CA-01_Mood_video_13s_16-9_No_logo_MP4 1920x1080.mp4" autoplay loop 
+    muted 
+    playsinline></video>
+ </div>
+
+ <div >
+ <div class="watch-container">
+     <!-- Tabs -->
+     <div class="tabs " style="color: #050a30;">
+         <button class="tab active" onclick="showTab(event, 'description')">Description</button>
+         <button class="tab" onclick="showTab(event, 'features')">Special Features</button>
+         <button class="tab" onclick="showTab(event, 'specifications')">Specifications</button>
+     </div>
+
+     <!-- Tab Content -->
+    <div class="tab-content">
+        <div id="description" class="tab-pane active">
+          <div class="luxury-description">
+            <p>The <span class="watch-brand">Audemars Piguet</span> <span class="watch-model">Royal Oak Offshore Diver</span> in <span class="highlight-color">khaki green</span> masterfully blends <span class="french-term">haute horlogerie</span> craftsmanship with professional diving capabilities. The distinctive <span class="feature-name">Méga Tapisserie dial</span>, accentuated by <span class="gold-accent">pink gold applications</span> and framed by a <span class="feature-name">black ceramic bezel</span>, embodies contemporary luxury with technical precision.</p>
+          </div>
+        </div>
+         <div id="features" class="tab-pane">
+          <ul class="feature-list">
+            <li class="feature-item">
+              <span class="feature-name">Professional Dive Engineering</span>
+              <span class="feature-desc">300m water resistance with screw-locked ceramic crowns and unidirectional rotating bezel</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-name">Signature Méga Tapisserie Dial</span>
+              <span class="feature-desc">Khaki green textured pattern with 18k pink gold applied hour-markers</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-name">Luminescent Excellence</span>
+              <span class="feature-desc">Super-LumiNova coated hands and markers for deep-water legibility</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-name">Dual-Strap Versatility</span>
+              <span class="feature-desc">Includes khaki green and black rubber straps with quick-release system</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-name">Manufacture Caliber 4308</span>
+              <span class="feature-desc">Self-winding movement with 60-hour power reserve and dive-time function</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-name">Premium Materials</span>
+              <span class="feature-desc">Stainless steel case with ceramic bezel and glareproofed sapphire crystal</span>
+            </li>
+          </ul>
+         </div>
+         <div id="specifications" class="tab-pane">
+          <div class="specs-container">
+            <ul class="specs-list">
+              <li class="spec-item">
+                <span class="spec-name">Diameter</span>
+                <span class="spec-value">34.00 mm</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Case Height</span>
+                <span class="spec-value">4.30 mm</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Lug-to-Lug</span>
+                <span class="spec-value">38.00 mm</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Material</span>
+                <span class="spec-value">Silicon</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Color</span>
+                <span class="spec-value">khaki green</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+     </div>
+
+     <!-- Watch Image -->
+     <div class="watch-image">
+         <img src="/Shawky/audemars piguet Royal Oak 4/front_View.png" alt="Watch Image">
+     </div>
+ </div>
+</div>
+
+    <script>
+        // Thumbnail click functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            const mainImage = document.getElementById('mainImage');
+            
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    // Remove active class from all thumbnails
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked thumbnail
+                    this.classList.add('active');
+                    
+                    // Update main image
+                    const newImageSrc = this.getAttribute('data-image');
+                    if (newImageSrc) {
+                        mainImage.src = newImageSrc;
+                    }
+                });
+            });
+        });
+
+        function showTab(event, tabId) {
+            // Hide all tab panes
+            let tabPanes = document.querySelectorAll(".tab-pane");
+            tabPanes.forEach(tab => tab.classList.remove("active"));
+
+            // Remove active class from all tabs
+            let tabs = document.querySelectorAll(".tab");
+            tabs.forEach(tab => tab.classList.remove("active"));
+
+            // Show the selected tab content
+            document.getElementById(tabId).classList.add("active");
+
+            // Highlight the clicked tab
+            event.currentTarget.classList.add("active");
+        }
+    </script>
+
+    </main>
+  </body>
+</html>

@@ -5,16 +5,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Didact+Gothic&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/futura-pt');
 
-*
-{
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    transition: all .3s cubic-bezier(.39,.575,.565,1);
-    -webkit-font-smoothing: antialiased;  
-}
-
 .navbar-wrapper {
     font-family: arial,sans-serif;
     position: fixed;
@@ -216,6 +206,7 @@ header:hover .side-icon {
     gap: 10px;
     justify-content: center; 
     align-items: flex-start;
+    margin-right: 70px;   
 }
 
 .collection-extension {
@@ -785,6 +776,13 @@ header:hover .side-icon {
         color: black !important;
     }
     
+}
+
+.tag
+{
+  padding: 5px;
+  border-radius: 4px;
+  box-shadow: #333 0px 0px 5px;
 }
 
 /* Theme Toggle Styles */
