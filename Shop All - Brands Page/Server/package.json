@@ -1,0 +1,26 @@
+{
+  "name": "Vaultique-Server",
+  "version": "1.0.0",
+  "description": "Vaultique Server",
+  "main": "Server.js",
+  "scripts": {
+    "start": "node Server.js",
+    "dev": "nodemon Server.js",
+    "seed": "node seeds/Seed.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "helmet": "^6.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.3",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
