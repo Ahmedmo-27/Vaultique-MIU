@@ -230,12 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollIndicator.classList.toggle('visible', !atFooter && currentSectionIndex !== -1);
     }
 
-    function handleHeaderVisibility() {
-        const currentScroll = window.scrollY;
-        header.classList.toggle('header-hidden', currentScroll > lastScrollTop && currentScroll > 100);
-        lastScrollTop = currentScroll;
-    }
-
     // Initialization Functions ---------------------------------------------
 
     function initVideos() {
@@ -272,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(scrollTimeout);
             resetAutoScrollTimer();
             handleHeaderVisibility();
-            scrollTimeout = setTimeout(() => lastScrollTime = Date.now(), 150);
+            scrollTimeout = setTimeout(() => lastScrollTime = Date.now(), 1500);
         });
 
         window.addEventListener('wheel', handleWheel, { passive: false });

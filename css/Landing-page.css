@@ -4,14 +4,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-html, body {
-    overflow-x: hidden;
-    max-width: 100%;
     transition: all .3s cubic-bezier(.39,.575,.565,1);
-    -webkit-font-smoothing: antialiased;  
-    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
 .main {
