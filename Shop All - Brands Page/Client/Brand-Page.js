@@ -21,15 +21,11 @@ function normalizeBrandName(name) {
 
 // Update the DOMContentLoaded event handler
 document.addEventListener("DOMContentLoaded", async () => {
-  // Add more robust error handling and debugging
   console.log("Brand page script starting...")
   console.log("Current URL:", window.location.href)
   console.log("Current pathname:", window.location.pathname)
 
-  const normalizedBrandName ='Rolex';
-
   try {
-    
     // Get brand name from URL with multiple fallback methods
     let brandName = extractBrandFromURL();
     
@@ -47,34 +43,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
     
-    const apiUrl = `http://127.0.0.1:3000/api/brands/name/${encodeURIComponent(normalizedBrandName)}`;
+    const apiUrl = `http://localhost:3000/api/brands/name/${encodeURIComponent(normalizedBrandName)}`;
     console.log('Fetching from:', apiUrl);
     
     const response = await fetch(apiUrl, {
+      method: 'GET',
       signal: controller.signal,
       headers: {
         'Accept': 'application/json',
-        'Cache-Control': 'no-cache'
-      }
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
     });
     
     clearTimeout(timeoutId);
     
     console.log('Response status:', response.status);
     
-    if (!response.ok) 
-    {
-      const errortext = await parseErrorResponse(response);
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorMessage;
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.message || `Server error: ${response.status}`;
+      } catch {
+        errorMessage = `Server error: ${response.status}`;
+      }
+
       const errorContent = `
-      <div class="error">
-        <p class="error-message">
-          Brand data request failed with status.<br> ${response.status}
-        </p>
-      </div>
+        <div class="error">
+          <p class="error-message">
+            ${errorMessage}
+          </p>
+        </div>
       `;
     
       createModal(
-        errortext, 
+        'Error', 
         errorContent,
         [
           {
@@ -82,6 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             class: 'confirm-btn',
             clickHandler: () => {
               closeModal(document.querySelector('.modal-overlay'));
+              window.location.reload();
             }
           },
           {
@@ -91,14 +97,16 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         ]
       );
+      return;
     }
     
-    const { data: brandData } = await response.json();
+    const result = await response.json();
     
-    if (!brandData) {
-      throw new Error('Received empty brand data from server');
+    if (!result.success || !result.data) {
+      throw new Error('Invalid response format from server');
     }
     
+    const brandData = result.data;
     console.log('Brand data:', brandData);
     console.groupEnd();
     
@@ -117,10 +125,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     updatePageMetadata(brandData);
     
   } catch (error) {
+    console.error('Brand page error:', error);
+    
+    let errorMessage = 'An unexpected error occurred';
+    if (error.name === 'AbortError') {
+      errorMessage = 'Request timed out. Please check your connection and try again.';
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
     const errorContent = `
       <div class="error">
         <p class="error-message">
-          Brand Page Loading Failed .<br> ${error.message}
+          ${errorMessage}
         </p>
       </div>
     `;
@@ -134,6 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           class: 'confirm-btn',
           clickHandler: () => {
             closeModal(document.querySelector('.modal-overlay'));
+            window.location.reload();
           }
         },
         {
@@ -144,71 +162,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       ]
     );
     
-    // Special handling for timeout errors
-    if (error.name === 'AbortError') {
-        const errorContent = `
-          <div class="error">
-            <p class="error-message">
-              Request timed out. Please check your connection and try again .<br>
-            </p>
-          </div>
-        `;
-        
-        createModal(
-          'Error', 
-          errorContent,
-          [
-            {
-              text: 'Retry',
-              clickHandler: () => {
-                closeModal(document.querySelector('.modal-overlay'));
-              }
-            },
-            {
-              text: 'Close',
-              class: 'cancel-btn',
-              clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
-            }
-          ]
-        );
-
-    } else {
-      const errorContent = `
-        <div class="error">
-          <p class="error-message">
-            Failed to load brand.<br> ${error.message}
-          </p>
-        </div>
-      `;
-      
-      createModal(
-        'Error', 
-        errorContent,
-        [
-          {
-            text: 'Retry',
-            class: 'confirm-btn',
-            clickHandler: () => {
-              closeModal(document.querySelector('.modal-overlay'));
-            }
-          },
-          {
-            text: 'Close',
-            class: 'cancel-btn',
-            clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
-          }
-        ]
-      );    
-    }
-    
     // Fallback to default brand if this wasn't already the default
     if (normalizedBrandName !== 'Rolex') {
       console.log('Attempting fallback to Rolex...');
       window.location.href = '/brands/rolex';
-      return;
     }
   }
-})
+});
 
 function extractBrandFromURL() {
   // Try pathname first (e.g., /brands/rolex)
@@ -232,15 +192,6 @@ function extractBrandFromURL() {
   
   console.log('No brand specified in URL, defaulting to Rolex');
   return 'Rolex';
-}
-
-async function parseErrorResponse(response) {
-  try {
-    const errorText = await response.text();
-    return JSON.parse(errorText);
-  } catch {
-    return { message: await response.text() };
-  }
 }
 
 function updatePageMetadata(brandData) {

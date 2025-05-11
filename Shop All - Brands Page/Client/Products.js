@@ -102,7 +102,13 @@ async function loadProducts() {
     updateCurrentFilters();
     
     const queryString = new URLSearchParams(currentFilters).toString();
-    const response = await fetch(`http://localhost:3000/api/products?${queryString}`);
+    const response = await fetch(`http://localhost:3000/api/products?${queryString}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    });
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -114,12 +120,17 @@ async function loadProducts() {
       throw new Error(result.error || 'API request failed');
     }
     
-    totalPages = result.pages;
+    // Update pagination info from the response
+    if (result.pagination) {
+      totalPages = result.pagination.totalPages;
+      currentPage = result.pagination.currentPage;
+    }
+    
     updatePaginationUI();
     renderProducts(result.data);
     
   } catch (error) {
-    console.error('Brand Page Loading Failed', error);
+    console.error('Error loading products:', error);
     
     const errorContent = `
       <div style="font-size: 1.1rem; color: #333; line-height: 1.6;">
@@ -148,48 +159,77 @@ async function loadProducts() {
     );
   }
 }
+
 function renderProducts(products) {
+  if (!productGrid) {
+    console.error('Product grid container not found');
+    return;
+  }
+
+  // Check if products is an array
+  if (!Array.isArray(products)) {
+    console.error('Invalid products data:', products);
+    productGrid.innerHTML = '<div class="error-message">Error: Invalid product data received</div>';
+    return;
+  }
+
+  // If products array is empty
+  if (products.length === 0) {
+    productGrid.innerHTML = '<div class="no-products">No products found matching your criteria.</div>';
+    return;
+  }
+
   productGrid.style.opacity = '0';
   productGrid.style.transition = 'opacity 0.2s ease';
 
   setTimeout(() => {
+    try {
       productGrid.innerHTML = products.map((product, index) => {
-          let stockBadge;
-          if (product.stock || product.stockCount > 0) {
-            stockBadge = `<p class="stock in-stock">In Stock</p>`;
-          } else {
-            stockBadge = '<p class="stock out-of-stock">Out of Stock</p>';
-          }
-                          
-          return `
-          <div class="product-card" style="animation-delay: ${index * 50}ms">
-              <div class="product-image-container">
-                  <div class="wishlist-icon" onclick="toggleWishlist(this, '${product._id}')">
-                      <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
-                      </svg>
-                  </div>
-                  <a href="${product.productPageUrl || '#'}">
-                      <img src="${product.image}" alt="${product.name}" loading="lazy">
-                  </a>
-              </div>
-              <div class="product-details">
-                  <a href="${product.productPageUrl || '#'}">
-                      <h4>${product.name}</h4>
-                  </a>
-                  <div class="hover-buttons">
-                      <button class="quick-view" onclick="toggleQuickView(${JSON.stringify(product).replace(/"/g, '&quot;')})">Quick View</button>
-                      <button class="compare">Compare</button>
-                  </div>
-                  <p class="price">$${product.price.toLocaleString()}</p>
-                  ${stockBadge}
-              </div>
-          </div>
-          `;
+        if (!product || typeof product !== 'object') {
+          console.warn('Invalid product data at index:', index);
+          return '';
+        }
+
+        let stockBadge;
+        if (product.stock || (product.stockCount && product.stockCount > 0)) {
+          stockBadge = `<p class="stock in-stock">In Stock</p>`;
+        } else {
+          stockBadge = '<p class="stock out-of-stock">Out of Stock</p>';
+        }
+                        
+        return `
+        <div class="product-card" style="animation-delay: ${index * 50}ms">
+            <div class="product-image-container">
+                <div class="wishlist-icon" onclick="toggleWishlist(this, '${product._id}')">
+                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <a href="${product.productPageUrl || '#'}">
+                    <img src="${product.image}" alt="${product.name}" loading="lazy">
+                </a>
+            </div>
+            <div class="product-details">
+                <a href="${product.productPageUrl || '#'}">
+                    <h4>${product.name}</h4>
+                </a>
+                <div class="hover-buttons">
+                    <button class="quick-view" onclick="toggleQuickView(${JSON.stringify(product).replace(/"/g, '&quot;')})">Quick View</button>
+                    <button class="compare">Compare</button>
+                </div>
+                <p class="price">$${product.price.toLocaleString()}</p>
+                ${stockBadge}
+            </div>
+        </div>
+        `;
       }).join('');
       
       void productGrid.offsetWidth;
       productGrid.style.opacity = '1';
+    } catch (error) {
+      console.error('Error rendering products:', error);
+      productGrid.innerHTML = '<div class="error-message">Error displaying products. Please try again.</div>';
+    }
   }, 200);
 }
 
@@ -199,9 +239,13 @@ function updatePaginationUI() {
   }
   if (prevPageBtn) {
     prevPageBtn.disabled = currentPage <= 1;
+    prevPageBtn.style.opacity = currentPage <= 1 ? '0.5' : '1';
+    prevPageBtn.style.cursor = currentPage <= 1 ? 'not-allowed' : 'pointer';
   }
   if (nextPageBtn) {
     nextPageBtn.disabled = currentPage >= totalPages;
+    nextPageBtn.style.opacity = currentPage >= totalPages ? '0.5' : '1';
+    nextPageBtn.style.cursor = currentPage >= totalPages ? 'not-allowed' : 'pointer';
   }
 }
 
@@ -214,8 +258,8 @@ function updateCurrentFilters() {
     movement: document.getElementById('Movement')?.value || 'All',
     waterResistance: document.getElementById('Water_Resistance')?.value || 'All',
     caseMaterial: document.getElementById('Case_Material')?.value || 'All',
-    minPrice: document.getElementById('priceRangeFrom')?.value || 0,
-    maxPrice: document.getElementById('priceRangeTo')?.value || 500000,
+    minPrice: document.getElementById('priceRangeFrom')?.value || '',
+    maxPrice: document.getElementById('priceRangeTo')?.value || '',
     dialColor: getSelectedDialColors(),
     inStock: document.getElementById('inStockFilter')?.checked || false,
     sort: currentSort,
@@ -242,22 +286,9 @@ function getSelectedDialColors() {
 
 function resetFilters() {
 
-  const all=document.getElementById('ALL');
-  
-  if(!all)
-  {
-    const collectionValue = document.getElementById('collectionPage');
-    const brandValue = document.getElementById('brandPage');
-  }
-  else
-  {
-    collectionValue = 'All';
-    brandValue='All';
-  }
-
   const resetElements = [
-    { id: 'collection', value: collectionValue },
-    { id: 'brand', value: brandValue },
+    { id: 'collection', value: 'All' },
+    { id: 'brand', value: 'All' },
     { id: 'gender', value: 'All' },
     { id: 'Strap_Material', value: 'All' },
     { id: 'Movement', value: 'All' },
