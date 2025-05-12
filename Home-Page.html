@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="css/limited.css">
     <link rel="stylesheet" href="css/masnory.css">
     <link rel="stylesheet" href="css/google-reviews.css">
-    <link rel="stylesheet" href="css/about-quick.css"> 
+    <link rel="stylesheet" href="css/about-quick.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="/Ahmed/Navigation Bar/nav-bar.js"></script>
     <script src="JavaScript/loading-screen.js"></script>
@@ -22,7 +22,7 @@
     <script src="JavaScript/footer.js"></script>
     <script src="JavaScript/Genders.js"></script>
     <script src="JavaScript/google-reviews.js"></script>
-    <script src="JavaScript/Light-Mode.js"></script>
+    <script src="/Ahmed/Shop All - Brands Page/Client/Light-Mode.js"></script>
 
     <title>Vaultique | Home</title>
 </head>
@@ -36,9 +36,16 @@
         </div>
     </div>
 
+    <!--Loading Screen
+     <div class="loading-screen">
+    <div class="logo">
+        <h1 data-translate="logo"><%= logoText || 'Vaultique' %></h1>
+    </div>
+     </div> -->
+
+   
     <!--Nav-Bar-->
-     <!--Nav-Bar-->
-     <div class="navbar-wrapper">
+    <div class="navbar-wrapper">
         <header class="header-unscrolled">
             <div class="header-top-unscrolled" id="header-top" style="display: none;">
                 <div class="store-services" id="store-services">
@@ -49,7 +56,7 @@
                         <span class="toggle-button-slider"></span>
                     </a>
 
-                    <nav class="navigation">    
+                    <nav class="navigation">
                         <a href="#">
                             <i class="fa-solid fa-globe"></i>
                             <p>Language</p>
@@ -58,7 +65,7 @@
                             <option value="en">EN</option>
                             <option value="ar">AR</option>
                         </select>
-                        
+
                         <a href="/User/Contact-Us">
                             <i class='fas fa-phone-alt'></i>
                             <p>Contact Us</p>
@@ -72,19 +79,19 @@
                         </button>
                     </div>
                 </div>
-    
+
                 <div class="user-data">
                     <nav class="navigation">
                         <a href="/User/Account">
                             <i class='fas fa-user-alt'></i>
                             <p>Account</p>
                         </a>
-    
+
                         <a href="/User/WishList">
                             <i class='fas fa-heart'></i>
                             <p>WishList</p>
                         </a>
-    
+
                         <a href="/Cart + Recommendation System/Cart.html">
                             <i class='fas fa-shopping-cart'></i>
                             <p>Cart </p>
@@ -92,18 +99,18 @@
                     </nav>
                 </div>
             </div>
-    
+
             <div class="header-middle-unscrolled" id="header-middle">
                 <div class="responsive">
                     <a class="side-icon" id="side-icon">
                         <i class="fa fa-bars" id="ham-whatever"></i>
                     </a>
                 </div>
-    
+
                 <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
-               
+
                 <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
-               
+
                     <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
                         <input type="search" id="searchField2" class="searchField" placeholder="Search">
                         <button id="search2" class="search">
@@ -116,15 +123,15 @@
                         <a href="/User/Contact-Us" style="display: none;">
                             <i class='fas fa-phone-alt'></i>
                         </a>
-    
+
                         <a href="/User/Account" style="display: none;">
                             <i class='fas fa-user-alt'></i>
                         </a>
-    
+
                         <a href="/User/WishList" style="display: none;">
                             <i class='fas fa-heart'></i>
                         </a>
-    
+
                         <a href="/User/Shopping-Cart" style="display: none;">
                             <i class='fas fa-shopping-cart'></i>
                         </a>
@@ -145,7 +152,7 @@
                     </nav>
                 </div>
             </div>
-    
+
             <div class="header-bottom-unscrolled" id="header-bottom">
                 <nav class="navigation">
                     <a href="/welcome.html">Home</a>
@@ -155,7 +162,7 @@
                     <a href="/Cart + Recommendation System/Recommendation.html">Recommendation System</a>
                 </nav>
             </div>
-    
+
             <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
                 <div id="collections-extension">
                     <div class="collection-anchors">
@@ -171,44 +178,48 @@
                         <br>
                         <a href="#"> Luxury & <br>Heritage </a>
                     </div>
-            
+
                     <a class="extension-item" href="/User/Collections/Dress">
                         <img src="/Ahmed/Models/Cartier Tank.jpg" alt="" class="category-img extension-img">
                         <div>
                             <h4 class="extension-text">Classic & Dress</h4>
                         </div>
                     </a>
-            
+
                     <a class="extension-item" href="/user/collections/egyptian">
-                        <img src="/Ahmed/Models/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt="" class="category-img extension-img">
+                        <img src="/Ahmed/Models/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt=""
+                            class="category-img extension-img">
                         <div>
                             <h4 class="extension-text">Casual & Everyday</h4>
                         </div>
                     </a>
-            
+
                     <a class="extension-item" href="/user/collections/egyptian">
-                        <img src="/Ahmed/Models/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg" alt="" class="category-img extension-img">
+                        <img src="/Ahmed/Models/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg"
+                            alt="" class="category-img extension-img">
                         <div>
                             <h4 class="extension-text">Sports & Adventure</h4>
                         </div>
                     </a>
-            
+
                     <a class="extension-item" href="/User/Collections/Dress">
                         <img src="/Ahmed/Models/Charlize Breitling.webp" alt="" class="category-img extension-img">
                         <div>
                             <h4 class="extension-text">Aviation & Travel</h4>
                         </div>
                     </a>
-            
+
                     <a class="extension-item" href="/User/Collections/Dress">
-                        <img src="/Ahmed/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt="" class="category-img extension-img">
+                        <img src="/Ahmed/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt=""
+                            class="category-img extension-img">
                         <div>
                             <h4 class="extension-text">Luxury & Heritage</h4>
                         </div>
                     </a>
                 </div>
             </div>
-            <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none; ">
+            <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension"
+                style="display: none; ">
                 <div id="bracelets-extension">
                     <div class="bracelets-anchors">
                         <h4><b>Brands</b></h4>
@@ -224,111 +235,109 @@
                         <a href="/User/Brands/Rolex">Richard Mille</a>
                         <a href="/User/Brands/Rolex">Breitling</a>
                     </div>
-                <div class="brands-logos">
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/Ahmed/Products Page/Client/Rolex.html">
-                            <img src="/Ahmed/Brands Logos/Rolex - with name.png" alt=""
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Rolex Collection</h4>
-                            </div>
-                        </a>
+                    <div class="brands-logos">
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/Ahmed/Products Page/Client/Rolex.html">
+                                <img src="/Ahmed/Brands Logos/Rolex - with name.png" alt=""
+                                    class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Rolex Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/user/bracelets/gold">
+                                <img src="/Ahmed/Brands Logos/Omega.png" alt="" class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Omega Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/user/bracelets/diamond">
+                                <img src="/Ahmed/Brands Logos/Cartier.png" alt="" class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Omega Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/user/bracelets/gold">
+                                <img src="/Ahmed/Brands Logos/Patek Philippe logo.png" alt="Patek Philippe logo"
+                                    class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Patek Philippe Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                                <img src="/Ahmed/Brands Logos/Audemars Piguet logo.png" alt="Audemars Piguet logo"
+                                    class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Audemars Piguet Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/user/bracelets/gold">
+                                <img src="/Ahmed/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Sohne Logo"
+                                    class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">A Lange & Söhne Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                                <img src="/Ahmed/Brands Logos/Vacheron Constantin logo.png"
+                                    alt="Vacheron Constantin logo" class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Vacheron Constantin Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                                <img src="/Ahmed/Brands Logos/Jacob & Co Logo.png" alt="Jacob & Co Logo"
+                                    class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Jacob & Co <br>Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                                <img src="/Ahmed/Brands Logos/Richard Mille Logo.png" alt="Richard Mille Logo"
+                                    class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Richard Mille Collection</h4>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="bracelets-extension">
+                            <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
+                                <img src="/Ahmed/Brands Logos/Breitling Logo.png" alt="Breitling Logo"
+                                    class="category-img extension-img">
+                                <div>
+                                    <h4 class="extension-text">Breitling Collection</h4>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/user/bracelets/gold">
-                            <img src="/Ahmed/Brands Logos/Omega.png" alt=""
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Omega Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/user/bracelets/diamond">
-                            <img src="/Ahmed/Brands Logos/Cartier.png" alt=""
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Omega Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/user/bracelets/gold">
-                            <img src="/Ahmed/Brands Logos/Patek Philippe logo.png" alt="Patek Philippe logo"
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Patek Philippe Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
-                            <img src="/Ahmed/Brands Logos/Audemars Piguet logo.png" alt="Audemars Piguet logo"
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Audemars Piguet Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/user/bracelets/gold">
-                            <img src="/Ahmed/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Sohne Logo"
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">A Lange & Söhne Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
-                            <img src="/Ahmed/Brands Logos/Vacheron Constantin logo.png" alt="Vacheron Constantin logo"
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Vacheron Constantin Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
-                            <img src="/Ahmed/Brands Logos/Jacob & Co Logo.png" alt="Jacob & Co Logo"
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Jacob & Co <br>Collection</h4>
-                            </div>
-                        </a>
-                    </div>                  
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
-                            <img src="/Ahmed/Brands Logos/Richard Mille Logo.png" alt="Richard Mille Logo"
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Richard Mille Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="bracelets-extension">
-                        <a class="extension-item" href="/Ahmed/Brands Pages/Rolex.html">
-                            <img src="/Ahmed/Brands Logos/Breitling Logo.png" alt="Breitling Logo"
-                                class="category-img extension-img">
-                            <div>
-                                <h4 class="extension-text">Breitling Collection</h4>
-                            </div>
-                        </a>
-                    </div>
-                </div>    
                 </div>
             </div>
-    
+
             <!--Search-->
             <div class="search-extension" id="search-extension">
                 <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
                 <h3>Products</h3>
                 <div id="search-results" class="search-results">
-    
+
                 </div>
             </div>
         </header>
-    
+
         <!--Side-Panel-->
         <div id="mySidepanel" class="sidepanel" style="width: 0px;">
             <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
@@ -338,7 +347,7 @@
             <a href="/User/WishList">WishList</a>
             <a href="/User/Shopping-Cart">Cart</a>
             <a href="/Ahmed/Products Page/Products.html" data-translate="shopall">Shop All</a>
-    
+
             <div class="dropdown">
                 <a href="#" class="dropbtn">Collections</a>
                 <div class="dropdown-content">
@@ -349,9 +358,9 @@
                     <a href="#"> Luxury & Heritage</a>
                 </div>
             </div>
-        
+
             <br>
-            
+
             <div class="dropdown">
                 <a href="#" class="dropbtn">Brands</a>
                 <div class="dropdown-content">
@@ -367,9 +376,9 @@
                     <a href="/User/Brands/Rolex">Breitling</a>
                 </div>
             </div>
-    
+
             <a href="#">Recommendation System </a>
-    
+
             <a id="toggle-button-side" class="toggle-button" data-theme-toggle>
                 <i class="fa-solid fa-sun"></i>
                 <i class="fa-solid fa-moon"></i>
@@ -388,6 +397,14 @@
             <a class="button" href="/Sobhi/Recommendation.html">TAKE THE QUIZ</a>
         </div>
     </section>
+
+    <!--<section class="main" id="main">
+    <video src="videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay loop muted></video>
+    <div class="main-text">
+        <h1><%= heading || 'Your Signature in Time' %></h1>
+        <a class="button" href="<%= quizLink || '/Sobhi/Recommendation.html' %>">TAKE THE QUIZ</a>
+    </div>
+</section>-->
 
     <!--Section For Him / For Her-->
     <section class="him-her">
@@ -409,6 +426,31 @@
             </div>
         </div>
     </section>
+
+    <!--Section For Him / For Her--
+<section class="him-her">
+    <div class="gender">
+        <div class="female">
+            <canvas id="female-fluid-canvas"></canvas>
+            <img id="female-img" src="<%= femaleImage || 'images/Charlize Breitling.webp' %>" alt="<%= femaleAlt || 'For Her Watches' %>">
+            <div class="text-overlay">
+                <button onclick="window.location.href='<%= femaleLink || 'watches-for-women.html' %>'">
+                    <%= femaleButton || 'For Her' %>
+                </button>
+            </div>
+        </div>
+
+        <div class="male">
+            <canvas id="male-fluid-canvas"></canvas>
+            <img id="male-img" src="<%= maleImage || 'images/Patek Philippe Grand Master Chime Jay Z.jpg' %>" alt="<%= maleAlt || 'For Him Watches' %>">
+            <div class="text-overlay">
+                <button onclick="window.location.href='<%= maleLink || 'watches-for-men.html' %>'">
+                    <%= maleButton || 'For Him' %>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>-->
 
 
 
@@ -505,6 +547,99 @@
             <div class="slider-dots" id="sliderDots"></div>
         </section>
     </section>
+
+   <!---- <section class="collections">
+    <h2><%= collectionsTitle || 'Collections' %></h2>
+
+    <section class="slider-container">
+        <div class="slider-wrapper">
+            <div class="slider" id="watchSlider">
+                <% const slides = collectionsSlides || [
+                    {
+                        cards: [
+                            {
+                                image: 'images/Cartier Tank.jpg',
+                                alt: 'Cartier Tank Watch',
+                                title: 'Classic & Dress Collection',
+                                description: 'Timeless elegance for formal occasions',
+                                link: '#'
+                            },
+                            {
+                                image: 'images/John-Legends-Omega-Seamaster-300m-007-Edition.jpg',
+                                alt: 'Patek Philippe Watch',
+                                title: 'Casual & Everyday Collection',
+                                description: 'Sophisticated timepieces for daily wear',
+                                link: '#'
+                            },
+                            {
+                                image: 'images/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.avif',
+                                alt: 'Omega Seamaster Watch',
+                                title: 'Sports & Adventure Collection',
+                                description: 'Robust watches for active lifestyles',
+                                link: '#'
+                            }
+                        ]
+                    },
+                    {
+                        cards: [
+                            {
+                                image: 'images/Charlize Breitling.webp',
+                                alt: 'Breitling Watch',
+                                title: 'Aviation & Travel Collection',
+                                description: 'Precision timepieces for global explorers',
+                                link: '#'
+                            },
+                            {
+                                image: 'images/Jay-Z-Patek-Philippe-Grandmaster-Chime-6300g-001.jpg',
+                                alt: 'Luxury Watch',
+                                title: 'Luxury & Heritage Collection',
+                                description: 'Prestigious timepieces with rich history',
+                                link: '#'
+                            }
+                        ]
+                    }
+                ]; %>
+                
+                <% slides.forEach((slide, slideIndex) => { %>
+                    <div class="slide">
+                        <div class="collection-grid">
+                            <% slide.cards.forEach((card, cardIndex) => { %>
+                                <div class="collection-card">
+                                    <div class="collection-image">
+                                        <img src="<%= card.image %>" alt="<%= card.alt %>">
+                                    </div>
+                                    <div class="collection-info">
+                                        <h3><%= card.title %></h3>
+                                        <p><%= card.description %></p>
+                                        <button class="explore-btn" 
+                                                onclick="window.location.href='<%= card.link %>'">
+                                            Explore
+                                        </button>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <button class="slider-arrow prev" id="prevBtn" aria-label="Previous slide">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+        <button class="slider-arrow next" id="nextBtn" aria-label="Next slide">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+
+        <div class="slider-dots" id="sliderDots"></div>
+    </section>
+</section> -->
 
 
 
@@ -641,6 +776,127 @@
         </div>
     </section>
 
+    <!--<section class="product-container">
+    <h2 class="hometitle">
+        <span class="has-paging__title"><%= sectionTitle || 'Limited Edition' %></span>
+    </h2>
+    
+    <div class="product-grid">
+        <% const products = productsData || [
+            {
+                brand: "Cartier",
+                model: "Santos de Cartier",
+                image: "/Ahmed/Watches/Santos de Cartier.png",
+                alt: "Cartier Santos de Cartier",
+                strapMaterial: "Metal",
+                movement: "Automatic",
+                waterResistance: "100m",
+                caseMaterial: "Stainless Steel",
+                dialColor: "White",
+                price: 8600,
+                stock: "In Stock",
+                link: "#"
+            },
+            {
+                brand: "Cartier",
+                model: "Cartier Tank Must",
+                image: "/Ahmed/Watches/Cartier Tank Must.png",
+                alt: "Cartier Tank Must",
+                strapMaterial: "Leather",
+                movement: "Manual",
+                waterResistance: "30m",
+                caseMaterial: "Stainless Steel",
+                dialColor: "Black",
+                price: 3350,
+                stock: "In Stock",
+                link: "#"
+            },
+            {
+                brand: "Cartier",
+                model: "Panthère de Cartier",
+                image: "/Ahmed/Watches/Panthère de Cartier.png",
+                alt: "Cartier Panthère de Cartier",
+                strapMaterial: "Metal",
+                movement: "Manual",
+                waterResistance: "30m",
+                caseMaterial: "Stainless Steel",
+                dialColor: "White",
+                price: 4850,
+                stock: "In Stock",
+                link: "#"
+            },
+            {
+                brand: "Cartier",
+                model: "Tank Louis Cartier",
+                image: "/Ahmed/Watches/Tank Louis Cartier.png",
+                alt: "Cartier Tank Louis Cartier",
+                strapMaterial: "Leather",
+                movement: "Manual",
+                waterResistance: "30m",
+                caseMaterial: "Silver",
+                dialColor: "White",
+                price: 13550,
+                stock: "In Stock",
+                link: "#"
+            },
+            {
+                brand: "Cartier",
+                model: "Santos de Cartier Skeleton",
+                image: "/Ahmed/Watches/Santos de Cartier Skeleton.png",
+                alt: "Cartier Santos de Cartier Skeleton",
+                strapMaterial: "Metal",
+                movement: "Automatic",
+                waterResistance: "100m",
+                caseMaterial: "Stainless Steel",
+                dialColor: "Else",
+                price: 32000,
+                stock: "In Stock",
+                link: "#"
+            }
+        ]; %>
+
+        <% products.forEach(product => { %>
+            <div class="product-card" 
+                 data-brand="<%= product.brand %>" 
+                 data-strap-material="<%= product.strapMaterial %>"
+                 data-movement="<%= product.movement %>"
+                 data-water-resistance="<%= product.waterResistance %>"
+                 data-case-material="<%= product.caseMaterial %>"
+                 data-dial-color="<%= product.dialColor %>"
+                 data-price="<%= product.price %>">
+                
+                <div class="product-image-container">
+                    <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                        <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="heart"
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z" />
+                        </svg>
+                    </div>
+                    <a href="<%= product.link %>">
+                        <img src="<%= product.image %>" alt="<%= product.alt %>">
+                        <div class="hover-buttons">
+                            <button class="quick-view">Quick View</button>
+                            <button class="compare">Compare</button>
+                        </div>
+                    </a>
+                </div>
+                <h4><%= product.model %></h4>
+                <p class="price">$<%= product.price.toLocaleString() %></p>
+                <p class="stock <%= product.stock.toLowerCase().includes('in stock') ? 'in-stock' : 'out-of-stock' %>">
+                    <%= product.stock %>
+                </p>
+            </div>
+        <% }); %>
+    </div>
+    
+    //Shop All Button 
+    <div class="button-container">
+        <a href="<%= shopAllLink || '/shop-all' %>" class="button">
+            <%= shopAllText || 'Shop All' %>
+        </a>
+    </div>
+</section> -->
+
 
     <section class="container section-padding masonry-section">
         <div class="section-padding pt-0">
@@ -650,23 +906,45 @@
         <div class="masonry-grid">
             <!-- Left column -->
             <div class="masonry-column left-column">
-                <!-- Top row with two big cells -->
+                <!-- Top row with two small cells -->
                 <div class="masonry-row">
                     <div data-aos="fade-in" class="masonry-cell small-cell">
                         <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
                             <div class="img-container">
                                 <img src="images/Rolex.png" alt="Rolex" class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Rolex</h3>
+                            <!--<h3 class="mt-auto">Rolex</h3>-->
                         </a>
                     </div>
 
                     <div data-aos="fade-in" class="masonry-cell small-cell">
                         <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
                             <div class="img-container">
+                                <img src="images/Omega.png" alt="Omega" class="brand-logo">
+                            </div>
+                            <!--<h3 class="mt-auto">Omega</h3>-->
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Middle row with two small cells -->
+                <div class="masonry-row">
+                    <div data-aos="fade-in" class="masonry-cell small-cell">
+                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                            <div class="img-container">
                                 <img src="images/Cartier.png" alt="Cartier" class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Cartier</h3>
+                            <!--<h3 class="mt-auto">Cartier</h3>-->
+                        </a>
+                    </div>
+
+                    <div data-aos="fade-in" class="masonry-cell small-cell">
+                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                            <div class="img-container">
+                                <img src="/Ahmed/Brands Logos/Patek Philippe logo.png" alt="Patek Philippe"
+                                    class="brand-logo">
+                            </div>
+                            <!--- <h3 class="mt-auto">Patek Philippe</h3>-->
                         </a>
                     </div>
                 </div>
@@ -676,65 +954,70 @@
                     <div data-aos="fade-in" class="masonry-cell small-cell">
                         <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
                             <div class="img-container">
-                                <img src="images/Omega.png" alt="Omega" class="brand-logo">
+                                <img src="/wael/images/Audemars Piguet Logo.png" alt="Audemars Piguet"
+                                    class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Omega</h3>
+                            <!--<h3 class="mt-auto">Audemars Piguet</h3>-->
                         </a>
                     </div>
 
                     <div data-aos="fade-in" class="masonry-cell small-cell">
                         <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
                             <div class="img-container">
-                                <img src="images/Tissot.png" alt="Tissot" class="brand-logo">
+                                <img src="/Ahmed/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Söhne Logo"
+                                    class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Tissot</h3>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="masonry-row">
-                    <div data-aos="fade-in" class="masonry-cell small-cell">
-                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
-                            <div class="img-container">
-                                <img src="images/Omega.png" alt="Omega" class="brand-logo">
-                            </div>
-                            <h3 class="mt-auto">Omega</h3>
-                        </a>
-                    </div>
-
-                    <div data-aos="fade-in" class="masonry-cell small-cell">
-                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
-                            <div class="img-container">
-                                <img src="images/Tissot.png" alt="Tissot" class="brand-logo">
-                            </div>
-                            <h3 class="mt-auto">Tissot</h3>
+                            <!--<h3 class="mt-auto">A Lange & Söhne</h3>-->
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Right column -->
+            <!-- Right column - Reordered to put Vacheron Constantin at the bottom -->
             <div class="masonry-column right-column">
+                <!-- First wide cell - Jacob & Co (moved up) -->
                 <div data-aos="fade-in" class="masonry-cell wide-cell">
-                    <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                    <a href="#" class="cell-wrapper bg-placeholder cover-img zoom-shadow">
                         <div class="img-container">
-                            <img src="images/Audemars Piguet Logo.png" alt="Audemars Piguet" class="brand-logo">
+                            <img src="/Ahmed/Brands Logos/Jacob & Co Logo.png" alt="Jacob & Co Logo" class="brand-logo">
                         </div>
-                        <h3 class="mt-auto">Audemars Piguet</h3>
+                        <!--<h3 class="mt-auto">Jacob & Co</h3>-->
                     </a>
                 </div>
 
+                <!-- Second wide cell - Richard Mille (moved up) -->
                 <div data-aos="fade-in" class="masonry-cell wide-cell">
                     <a href="#" class="cell-wrapper bg-placeholder cover-img zoom-shadow">
-                        <h3 class="mt-auto">Richard Mille</h3>
+                        <div class="img-container">
+                            <img src="/Ahmed/Brands Logos/Richard Mille Logo.png" alt="Richard Mille"
+                                class="brand-logo">
+                        </div>
+                        <!--<h3 class="mt-auto">Richard Mille</h3>-->
                     </a>
                 </div>
 
+                <!-- Third wide cell - Breitling (moved up) -->
                 <div data-aos="fade-in" class="masonry-cell wide-cell">
                     <a href="#" class="cell-wrapper bg-placeholder cover-img zoom-shadow">
-                        <h3 class="mt-auto">Jacob</h3>
+                        <div class="img-container">
+                            <img src="/Ahmed/Brands Logos/Breitling Logo.png" alt="Breitling Logo" class="brand-logo">
+                        </div>
+                        <!--- <h3 class="mt-auto">Breitling</h3>-->
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Vacheron Constantin stretched across the bottom - now stretched almost full width -->
+        <div class="masonry-row" style="margin-top: 20px; width: 100%;">
+            <div data-aos="fade-in" class="masonry-cell" style="width: 100%; margin-left: 0%; height: 180px;">
+                <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                    <div class="img-container">
+                        <img src="/Ahmed/Brands Logos/Vacheron Constantin logo.png" alt="Vacheron Constantin logo"
+                            class="brand-logo">
+                    </div>
+                    <!--<h3 class="mt-auto = text-center">Vacheron Constantin</h3>-->
+                </a>
             </div>
         </div>
 
@@ -744,12 +1027,125 @@
         </div>
     </section>
 
+    <!--<section class="container section-padding masonry-section">
+    <div class="section-padding pt-0">
+        <h2 class="text-center no-bold mb-0"><%= sectionTitle || 'Brands' %></h2>
+    </div>
+
+    <div class="masonry-grid">
+        <% 
+        const brandGroups = brandData || {
+            leftColumn: [
+                {
+                    smallCells: [
+                        { logo: "images/Rolex.png", alt: "Rolex", link: "#" },
+                        { logo: "images/Omega.png", alt: "Omega", link: "#" }
+                    ]
+                },
+                {
+                    smallCells: [
+                        { logo: "images/Cartier.png", alt: "Cartier", link: "#" },
+                        { logo: "/Ahmed/Brands Logos/Patek Philippe logo.png", alt: "Patek Philippe", link: "#" }
+                    ]
+                },
+                {
+                    smallCells: [
+                        { logo: "/wael/images/Audemars Piguet Logo.png", alt: "Audemars Piguet", link: "#" },
+                        { logo: "/Ahmed/Brands Logos/A.Lange & Sohne Logo.jpeg", alt: "A.Lange & Söhne Logo", link: "#" }
+                    ]
+                }
+            ],
+            rightColumn: [
+                { 
+                    logo: "/Ahmed/Brands Logos/Jacob & Co Logo.png", 
+                    alt: "Jacob & Co Logo", 
+                    link: "#",
+                    wide: true 
+                },
+                { 
+                    logo: "/Ahmed/Brands Logos/Richard Mille Logo.png", 
+                    alt: "Richard Mille", 
+                    link: "#",
+                    wide: true 
+                },
+                { 
+                    logo: "/Ahmed/Brands Logos/Breitling Logo.png", 
+                    alt: "Breitling Logo", 
+                    link: "#",
+                    wide: true 
+                }
+            ],
+            bottomRow: { 
+                logo: "/Ahmed/Brands Logos/Vacheron Constantin logo.png", 
+                alt: "Vacheron Constantin logo", 
+                link: "#" 
+            }
+        };
+        %> -->
+
+        <!-- Left column 
+        <div class="masonry-column left-column">
+            <% brandGroups.leftColumn.forEach((row, rowIndex) => { %>
+                <div class="masonry-row">
+                    <% row.smallCells.forEach((brand, brandIndex) => { %>
+                        <div data-aos="fade-in" class="masonry-cell small-cell">
+                            <a href="<%= brand.link %>" class="cell-wrapper bg-placeholder zoom-shadow">
+                                <div class="img-container">
+                                    <img src="<%= brand.logo %>" alt="<%= brand.alt %>" class="brand-logo">
+                                </div>
+                            </a>
+                        </div>
+                    <% }); %>
+                </div>
+            <% }); %>
+        </div> -->
+
+        <!-- Right column 
+        <div class="masonry-column right-column">
+            <% brandGroups.rightColumn.forEach((brand, index) => { %>
+                <div data-aos="fade-in" class="masonry-cell <%= brand.wide ? 'wide-cell' : 'small-cell' %>">
+                    <a href="<%= brand.link %>" class="cell-wrapper bg-placeholder <%= brand.wide ? 'cover-img' : '' %> zoom-shadow">
+                        <div class="img-container">
+                            <img src="<%= brand.logo %>" alt="<%= brand.alt %>" class="brand-logo">
+                        </div>
+                    </a>
+                </div>
+            <% }); %>
+        </div>
+    </div> -->
+
+    <!-- Bottom row -
+    <div class="masonry-row" style="margin-top: 20px; width: 100%;">
+        <div data-aos="fade-in" class="masonry-cell" style="width: 100%; margin-left: 0%; height: 180px;">
+            <a href="<%= brandGroups.bottomRow.link %>" class="cell-wrapper bg-placeholder zoom-shadow">
+                <div class="img-container">
+                    <img src="<%= brandGroups.bottomRow.logo %>" alt="<%= brandGroups.bottomRow.alt %>" class="brand-logo">
+                </div>
+            </a>
+        </div>
+    </div> -->
+
+    <!-- Shop All Button -
+    <div class="button-container">
+        <a href="<%= shopAllLink || '/shop-all' %>" class="button">
+            <%= shopAllText || 'See All' %>
+        </a>
+    </div>
+</section> -->
+
     <div class="reviews-header">
         <div class="reviews-title">
             <h2>Client Testimonials</h2>
             <p class="subtitle">Discover what our distinguished clients have to say about their experience</p>
         </div>
     </div>
+
+    <!--<div class="reviews-header">
+    <div class="reviews-title">
+        <h2><%= title || 'Client Testimonials' %></h2>
+        <p class="subtitle"><%= subtitle || 'Discover what our distinguished clients have to say about their experience' %></p>
+    </div>
+    </div> -->
 
     <div class="reviews-carousel">
         <div class="reviews-track" id="reviewsTrack">
@@ -1002,6 +1398,76 @@
         </div>
     </div>
 
+    <!--<div class="reviews-carousel">
+    <div class="reviews-track" id="reviewsTrack">
+        <% const reviews = reviewsData || [
+            {
+                initial: "J",
+                name: "James Wilson",
+                date: "2 weeks ago",
+                rating: 5,
+                content: "Exceptional service and an incredible selection of timepieces. I purchased a Patek Philippe Nautilus and couldn't be happier with the experience.",
+                watch: "Patek Philippe Nautilus"
+            },
+            {
+                initial: "C",
+                name: "Chris Anderson",
+                date: "1 week ago",
+                rating: 5,
+                content: "The attention to detail in their customer service is unmatched. I purchased a Cartier Santos-Dumont, and the entire process was seamless.",
+                watch: "Cartier Santos-Dumont"
+            },
+            {
+                initial: "A",
+                name: "Ava Martinez",
+                date: "3 weeks ago",
+                rating: 4.5,
+                content: "I had a wonderful experience purchasing a Breguet Classique. The staff was courteous, and the watch was delivered earlier than expected.",
+                watch: "Breguet Classique"
+            },
+            {
+                initial: "M",
+                name: "Mark Taylor",
+                date: "1 month ago",
+                rating: 5,
+                content: "Their trade-in program made upgrading my Omega Seamaster effortless. I received a fair offer and found my dream watch in no time.",
+                watch: "Omega Seamaster Diver 300M"
+            }
+        ]; %>
+
+        <% reviews.forEach(review => { %>
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial"><%= review.initial %></div>
+                        <div class="reviewer-name-date">
+                            <h4><%= review.name %></h4>
+                            <p class="review-date"><%= review.date %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-rating">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                        <% if (i <= Math.floor(review.rating)) { %>
+                            <span class="star">★</span>
+                        <% } else if (i === Math.ceil(review.rating) && review.rating % 1 !== 0) { %>
+                            <span class="half-star">★</span>
+                        <% } else { %>
+                            <span class="empty-star">★</span>
+                        <% } %>
+                    <% } %>
+                </div>
+                <div class="review-content">
+                    <p><%= review.content %></p>
+                </div>
+                <div class="review-watch">
+                    <span><%= review.watch %></span>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div> -->
+
     <div class="reviews-navigation">
         <button class="nav-button prev" id="prevButton">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1020,6 +1486,34 @@
         </button>
     </div>
 
+   <!--- <div class="reviews-navigation">
+    <button class="nav-button prev" id="prevButton" aria-label="Previous review">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                stroke-linejoin="round" />
+        </svg>
+    </button>
+    
+    <div class="reviews-dots" id="reviewsDots">
+        <% if (generateDots) { %>
+            <% const dotCount = reviewCount || 3; %>
+            <% for (let i = 0; i < dotCount; i++) { %>
+                <button class="dot <%= i === 0 ? 'active' : '' %>" 
+                        data-index="<%= i %>"
+                        aria-label="Go to review <%= i + 1 %>">
+                </button>
+            <% } %>
+        <% } %>
+    </div>
+    
+    <button class="nav-button next" id="nextButton" aria-label="Next review">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                stroke-linejoin="round" />
+        </svg>
+    </button>
+</div> -->
+
     <div class="reviews-footer">
         <a href="https://www.google.com/maps/place/Luxury+Watch+Store" target="_blank" class="view-all-button">
             View All Reviews
@@ -1029,6 +1523,21 @@
             </svg>
         </a>
     </div>
+
+    <!--<div class="reviews-footer">
+    <a href="<%= reviewLink || 'https://www.google.com/maps/place/Luxury+Watch+Store' %>" 
+       target="<%= reviewLinkTarget || '_blank' %>" 
+       class="view-all-button"
+       aria-label="<%= reviewLinkAria || 'View all customer reviews' %>">
+        
+        <%= reviewLinkText || 'View All Reviews' %>
+        
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2" 
+                  stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </a>
+</div> -->
 
     <section class="content-section">
         <div class="center">
@@ -1048,6 +1557,21 @@
 
         </div>
     </section>
+
+    <!--<section class="content-section">
+    <div class="center">
+        <h2><%= aboutTitle || 'About Vaultique' %></h2>
+        <div class="text-container">
+            <p><%= aboutText || 'At Vaultique, we understand that a watch is more than just a timepiece—it is a reflection of your style, personality, and ambitions. Whether you seek a statement piece, a reliable everyday watch, or a timepiece built for adventure, we make the search effortless and tailored to you.' %></p>
+        </div>
+
+        <div class="button-container">
+            <a href="<%= aboutButtonLink || '/shop-all' %>" class="button">
+                <%= aboutButtonText || 'Read more' %>
+            </a>
+        </div>
+    </div>
+</section> -->
 
     <footer class="footer">
         <div class="footer-content">
@@ -1099,22 +1623,18 @@
                 <div class="info-column">
                     <p data-translate="followUs"> Follow us</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i>   Facebook</a>
-                        <a href="#"><i class="fab fa-twitter"></i>      Twitter</a>
-                        <a href="#"><i class="fab fa-instagram"></i>    Instagram</a>
+                        <a href="#"><i class="fab fa-facebook-f"></i> Facebook</a>
+                        <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                        <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
 
                     </div>
                 </div>
-
-                
-
-
             </div>
 
             <div class="footer-bottom">
                 <div class="info-column">
                     <p data-translate="copyright">© Vaultique 2025</p>
-                   
+
                 </div>
             </div>
         </div>
