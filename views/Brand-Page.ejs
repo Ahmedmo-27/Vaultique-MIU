@@ -26,62 +26,247 @@
             </div>
         </div>
 
-        <!--Nav-Bar-->
-        <div class="navbar-wrapper">
-            <header class="header-unscrolled">
-                <%- include('partials/navigation') %>
-            </header>
-        </div>
-
-        <!-- Brand Content -->
-        <div class="brand-content">
-            <!-- Brand Header -->
-            <div class="brand-header">
-                <img src="<%= brand.logo %>" alt="<%= brand.name %>" class="brand-logo">
-                <h1><%= brand.name %></h1>
-                <p><%= brand.description %></p>
-            </div>
-
-            <!-- Products Grid -->
-            <div class="products-grid">
-                <% products.forEach(function(product) { %>
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="<%= product.image %>" alt="<%= product.name %>">
-                            <div class="product-overlay">
-                                <button class="quick-view" data-product-id="<%= product._id %>">
-                                    <i class="fas fa-eye"></i> Quick View
-                                </button>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3><%= product.name %></h3>
-                            <p class="brand"><%= product.brand %></p>
-                            <p class="price">$<%= product.price.toLocaleString() %></p>
-                            <div class="product-actions">
-                                <button class="add-to-cart" data-product-id="<%= product._id %>">
-                                    <i class="fas fa-shopping-cart"></i> Add to Cart
-                                </button>
-                                <button class="add-to-wishlist" data-product-id="<%= product._id %>">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                <% }); %>
-            </div>
-        </div>
-
-        <!-- Quick View Modal -->
-        <div id="quick-view-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <div id="quick-view-content">
-                    <!-- Content will be loaded dynamically -->
+            <%- include('partials/navigation') %>
+            <section class="section topic">
+                <div class="video-container">
+                    <video autoplay muted loop playsinline>
+                        <source src="" id="brandVideoSource">
+                    </video>
+                </div>
+            </section>
+    
+            <!-- Slider Section -->
+            <div class="slider-container">
+                <!-- Slides will be dynamically inserted here -->
+                <div class="slides-wrapper" id="slidesWrapper">
+                    <!-- Slides will be added by JavaScript -->
+                </div>
+    
+                <!-- Navigation Arrows -->
+                <button id="prevSlide" class="nav-arrow nav-arrow-left" aria-label="Previous slide">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+                <button id="nextSlide" class="nav-arrow nav-arrow-right" aria-label="Next slide">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+    
+                <!-- Pagination Dots -->
+                <div class="pagination-slider" id="paginationSlider">
+                    <!-- Dots will be added by JavaScript -->
                 </div>
             </div>
+    
+            <div class="image" style="margin-bottom: -90px;">
+                <img src="/placeholder.svg" alt="Brand Image" id="brandCoverImage">
+                <div class="brand-logo">
+                    <h1 id="brandLogo"> Loading Brand Name </h1>
+                </div>
+                <div class="text-overlay">
+                    <h2 id="brandHeader">Loading brand header</h2>
+                    <p id="brandDescription">
+                        Loading brand information...
+                    </p>
+                </div>
+            </div>
+    
+        <!-- Filter Button -->
+        <button class="filter-btn" onclick="openFilterPanel()">
+            <span>Filters and Sorting</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="12" y1="4" x2="12" y2="8" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="8" y1="10" x2="8" y2="14" />    
+                <line x1="4" y1="18" x2="20" y2="18" />
+                <line x1="16" y1="16" x2="16" y2="20" />
+            </svg>
+        </button>
+    
+        <div class="overlay" id="overlay" onclick="closeFilterPanel()"></div>
+    
+        <div class="filter-panel" id="filterPanel">
+            <button class="close-btn" onclick="closeFilterPanel()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            
+            <div class="sort-options">
+                <h3>Sort By</h3>
+                <br>
+                <button data-sort='default'> Default </button>
+                <br>
+                <button data-sort="new"> New </button>
+                <button data-sort="price-asc"> Price ↑ </button>
+                <br>
+                <button data-sort="price-desc"> Price ↓ </button>
+                <button data-sort="popularity"> Popularity </button>
+                <br>
+            </div>
+        
+            <div class="filters">
+                <h3>Filters</h3>
+    
+                <label> Collection: </label>
+                <select id="collection" class="tag">
+                    <option value="All">All</option>
+                    <option value="Classic & Dress">Classic & Dress</option>
+                    <option value="Casual & Everyday">Casual & Everyday</option>
+                    <option value="Sports & Adventure">Sports & Adventure</option>
+                    <option value="Aviation & Travel">Aviation & Travel</option>
+                    <option value="Luxury & Heritage">Luxury & Heritage</option>
+                </select>
+    
+                <label> Brand: </label>
+                <select id="brand" class="tag">
+                    <option id="ALL" value="All">All</option>
+                    <option value="Rolex">Rolex</option>
+                    <option value="Omega">Omega</option>
+                    <option value="Cartier">Cartier</option>
+                    <option value="Patek Philippe">Patek Philippe</option>
+                    <option value="Audemars Piguet">Audemars Piguet</option>
+                    <option value="A.Lange & Söhne">A.Lange & Söhne</option>
+                    <option value="Vacheron Constantin">Vacheron Constantin</option>
+                    <option value="Jacob & Co">Jacob & Co</option>
+                    <option value="Richard Mille">Richard Mille</option>
+                    <option value="Breitling">Breitling</option>
+                </select>
+    
+                <label> Gender: </label>
+                <select id="gender" class="tag">
+                    <option value="All">All</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Unisex">Unisex</option>
+                </select>
+    
+                <label> Strap Material: </label>
+                <select id="Strap_Material" class="tag">
+                    <option value="All">All</option>
+                    <option value="Leather">Leather</option>
+                    <option value="Metal">Metal</option>
+                    <option value="Rubber">Rubber</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Rose Gold">Rose Gold</option>
+                    <option value="White Gold">White Gold</option>
+                    <option value="Else">Else</option>
+                </select>
+        
+                <label> Movement: </label>
+                <select id="Movement" class="tag">
+                    <option value="All">All</option>
+                    <option value="Automatic">Automatic</option>
+                    <option value="Quartz">Quartz</option>
+                    <option value="Manual">Manual</option>
+                </select>
+        
+                <label> Water Resistance: </label>
+                <select id="Water_Resistance" class="tag">
+                    <option value="All">All</option>
+                    <option value="30m">30m</option>
+                    <option value="50m">50m</option>
+                    <option value="100m">100m</option>
+                    <option value="200m">200m</option>
+                </select>
+        
+                <label> Case Material: </label>
+                <select id="Case_Material" class="tag">
+                    <option value="All">All</option>
+                    <option value="Stainless Steel">Stainless Steel</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Rose Gold">Rose Gold</option>
+                    <option value="White Gold">White Gold</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Titanium">Titanium</option>
+                    <option value="Platinum">Platinum</option>
+                    <option value="Ceramic">Ceramic</option>
+                    <option value="Else">Else</option>
+                </select>
+            </div>
+        
+            <br>
+            <h3>Price Range</h3>
+            <input type="text" id="priceRangeFrom" class="priceRangeValue" placeholder="From" value="0">
+            <input type="text" id="priceRangeTo" class="priceRangeValue" placeholder="To" value="50000000">
+            <br>
+            <br>
+            
+            <div class="filter-options">
+                <h3>Dial Color</h3>
+                <label><input type="checkbox" value="All" class="dial-color"> All </label>
+                <label><input type="checkbox" value="Black" class="dial-color"> Black </label>
+                <label><input type="checkbox" value="Silver" class="dial-color"> Silver </label>
+                <label><input type="checkbox" value="Gold" class="dial-color"> Gold </label>
+                <label><input type="checkbox" value="Blue" class="dial-color"> Blue </label>
+                <label><input type="checkbox" value="White" class="dial-color"> White </label>
+                <label><input type="checkbox" value="Green" class="dial-color"> Green </label>
+                <label><input type="checkbox" value="Else" class="dial-color"> Else </label>
+            </div>
+        
+            <button value="submit" class="submit" onclick="filterProducts()">Submit</button>
+            <button value="reset" class="clear" onclick="clearFilters()">Clear All</button>
+        
         </div>
 
+            <!-- Product Grid -->
+        <section class="product-container">
+            <div class="product-grid" id="productGrid">
+                <% if (products && products.length > 0) { %>
+                    <% products.forEach((product) => { %>
+                        <div class="product-card" data-product='<%= JSON.stringify(product).replace(/'/g, "&apos;") %>'>
+                            <div class="product-image-container">
+                                <div class="wishlist-icon" data-product-id="<%= product._id %>">
+                                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                </div>
+                                <a href="/products/<%= product._id %>">
+                                    <img src="/Assets/<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                                </a>
+                            </div>
+                            <div class="product-details">
+                                <a href="/products/<%= product._id %>">
+                                    <h4><%= product.name %></h4>
+                                </a>
+                                <div class="hover-buttons">
+                                    <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
+                                    <button class="compare">Compare</button>
+                                </div>
+                                <p class="price">$<%= product.price.toLocaleString() %></p>
+                                <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
+                                    <p class="stock in-stock">In Stock</p>
+                                <% } else { %>
+                                    <p class="stock out-of-stock">Out of Stock</p>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-products">
+                        <% if (typeof products !== 'undefined') { %>
+                            No products found matching your criteria.
+                        <% } else { %>
+                            Loading products...
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </section>
+
+<!-- Pagination -->
+<div class="pagination">
+    <% if (pagination.totalPages > 1) { %>
+        <button id="prevPage" <%= pagination.currentPage <= 1 ? 'disabled' : '' %>>Previous</button>
+        <span id="pageInfo">Page <%= pagination.currentPage %> of <%= pagination.totalPages %></span>
+        <button id="nextPage" <%= pagination.currentPage >= pagination.totalPages ? 'disabled' : '' %>>Next</button>
+    <% } %>
+</div>
+    
         <!-- Footer -->
         <%- include('partials/footer') %>
     </body>
