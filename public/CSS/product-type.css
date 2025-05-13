@@ -1,0 +1,526 @@
+*
+{
+  font-family: Arial,sans-serif;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  transition: all .3s cubic-bezier(.39,.575,.565,1);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color:#e8d9c4 ;
+  margin: 0;
+  padding: 0;
+}
+
+/* Main Content */
+.product-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  padding-top: calc(180px + 2rem); /* Account for fixed header height */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  background-color: #e8d9c4;
+  color: #050a30;
+}
+
+body.dark-mode .product-container
+{
+  background-color: #1C2E4A;
+}
+
+body.dark-mode .add-to-cart i,body.dark-mode .add-to-cart p
+{
+  color:#1C2E4A;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  grid-column: 1 / -1;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  color: #050a30;
+}
+
+.breadcrumb a {
+  color: #333;
+  text-decoration: none;
+}
+
+body.light-mode h1
+{
+  color: #050a30;
+}
+
+body.dark-mode .breadcrumb ,body.dark-mode .breadcrumb a,body.dark-mode .product-header ,body.dark-mode .price 
+{
+  color: #e8d9c4;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Product Gallery */
+.product-gallery {
+  position: sticky;
+  top: 180px; /* Adjusted to account for header height */
+  height: fit-content;
+  z-index: 1;
+}
+
+.main-image {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: white;
+  position: sticky;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+/* Product Info Section */
+.product-info {
+  padding: 1rem;
+}
+
+@media screen and (max-width:1090px)
+{
+
+}
+
+.product-header {
+  margin-bottom: 2rem;
+  color: #050a30;
+}
+
+.product-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-family: "futura pt", sans-serif;
+  color: #333;
+}
+
+body.dark-mode .product-header h1
+{
+  color:#e8d9c4;
+}
+
+body.dark-mode .wishlist-btn button,body.dark-mode .wishlist-btn i
+{
+  color: #e8d9c4;
+}
+
+body.dark-mode .wishlist-btn{  border: 1px solid #e8d9c4 !important;}
+
+body.dark-mode .add-to-cart
+{
+  background-color: #e8d9c4;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #050a30;
+}
+
+/* Product Actions */
+.product-actions {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.product-actions button {
+  padding: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: "futura pt", sans-serif;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.wishlist-btn {
+  background-color: transparent;
+  border: 1px solid #333 !important;
+}
+
+.swatch-pay {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.add-to-cart {
+  margin: 20px;
+  background-color: #050a30;
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.find-store {
+  background-color: #f5f5f5;
+  color: #333;
+  grid-column: 1 / -1;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.body {
+  height: 400vh;
+  overflow-x: hidden;
+}
+img {
+  width: 60%; /* Makes the image occupy 60% of the page width */
+  height: auto; /* Maintains the original aspect ratio */
+  display: flex; /* Prevents extra spacing issues */
+  margin: 0 auto; /* Centers the image */
+  float: left;
+  object-fit: cover;
+}
+.container1 {
+  height: 75vh;
+  width: 100%;
+  background-color: white;
+  display: flex;
+}
+/*.container1 .leftside {
+  align-items: flex-start; 
+  width: 60%;
+  background-color: aqua;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+*/
+.container1 /*.leftside*/ img {
+  width: 60%; /* Make image fully occupy the width */
+  height: 100%; /* Make image fully occupy the height */
+  /*object-fit: contain;
+  float: left;
+  align-items: flex-start;
+  background-color: aqua;
+  overflow: hidden;
+  display: flex;*/
+  object-fit: contain;
+  display: block;
+}
+.container1 .rightside {
+  width: 40%;
+  background-color: rgb(255, 6, 184);
+}
+.container2 video {
+  width: 100vw; /* Makes the video fully occupy the viewport width */
+  height: 100vh; /* Makes the video fully occupy the viewport height */
+  object-fit: cover; /* Ensures the video fills the entire container without distortion */
+}
+
+.container2 {
+  width: 100vw; /* Makes the video fully occupy the viewport width */
+  height: 100vh; /* Makes the video fully occupy the viewport height */
+  object-fit: cover; /* Ensures the video fills the entire container without distortion */
+  background-color: #eeeeee;
+}
+.container3 {
+  height: 75vh;
+  width: 100%;
+  background-color: #dddddd;
+}
+
+.watch-container {
+  background-color: #050a30;
+  display: flex;
+  /* justify-content: space-between;
+  align-items: flex-start;*/
+  flex-direction: column; /* Changed to column to stack elements vertically -------------------------*/
+  align-items: center; /* Center align items --------------------------------------------------------*/
+
+  width: 80%;
+  margin: 50px auto;
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* Tabs Styling */
+.tabs {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+.tab.active {
+  border-bottom: 2px solid black;
+  font-weight: bold;
+}
+
+/* Features Panel - Luxury Watch Specifications */
+#features.tab-pane {
+  padding: 2rem 1.5rem;
+  background: #faf9f7; /* Soft ivory background */
+  border-top: 1px solid #e8e5e0; /* Delicate separation */
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.feature-item {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  align-items: start;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #ece9e4; /* Subtle divider */
+}
+
+.feature-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.feature-name {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #3a3a3a; /* Rich charcoal */
+  text-transform: uppercase;
+}
+
+.feature-desc {
+  font-family: Georgia, serif;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #5e5a54; /* Warm gray */
+  padding-left: 1rem;
+  border-left: 1px solid #d8d2c9; /* Tactile separator */
+}
+
+/* Responsive Adjustment */
+@media (max-width: 768px) {
+  .feature-item {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .feature-desc {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+/* Description Panel Styling */
+#description.tab-pane {
+  padding: 2rem;
+  background: #faf9f7;
+  border-top: 1px solid #e8e5e0;
+}
+
+.luxury-description {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Georgia, serif;
+  line-height: 1.8;
+  color: #333;
+}
+
+.watch-brand {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.watch-model {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.highlight-color {
+  color: #6b8e23;
+  font-weight: 600;
+}
+
+.french-term {
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+.gold-accent {
+  color: #b8860b;
+}
+
+.feature-name {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .luxury-description {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+}
+
+/* Specifications Panel Styling */
+#specifications.tab-pane {
+  padding: 2rem;
+  background: #faf9f7;
+  border-top: 1px solid #e8e5e0;
+}
+
+.specs-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.specs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.spec-item {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #ece9e4;
+}
+
+.spec-name {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #5a4a3a;
+  letter-spacing: 0.03em;
+}
+
+.spec-value {
+  font-family: Georgia, serif;
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 400;
+}
+
+/* Responsive Adjustment */
+@media (max-width: 600px) {
+  .specs-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Content Styling */
+.tab-content {
+  /*width: 60%;*/
+  width: 100%; /* Changed to 100% to take full width----------------------------- */
+  text-align: center; /* Center align text---------------------------------------- */
+}
+
+.tab-pane {
+  display: none;
+  flex: 1;
+  padding: 10px; /*****/
+  text-align: left; /**/
+  line-height: 1.6;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+/* Image Section */
+.watch-image {
+  /*width: 40%;*/
+  width: 100%; /* Changed to 100% to take full width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; /* Added margin to separate from content -----------------------------------------------------------------*/
+}
+.all_image {
+  display: flex;
+  flex-direction: column;
+}
+.watch-image img {
+  width: 250px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Thumbnail Container Styles */
+.thumbnail-container {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  width: 60%;
+  justify-content: center;
+  width: 100%;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.thumbnail:hover {
+  border-color: #050a30;
+}
+
+.thumbnail.active {
+  border: 2px solid #050a30;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

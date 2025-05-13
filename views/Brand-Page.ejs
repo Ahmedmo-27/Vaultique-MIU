@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Vaultique | <%= brandName %></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/CSS/Loading Screen.css">
+        <link rel="stylesheet" href="/CSS/nav-bar.css">
+        <link rel="stylesheet" href="/CSS/Slider.css">
+        <link rel="stylesheet" href="/CSS/Products.css">
+        <link rel="stylesheet" href="/CSS/footer.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script src="/Javascript/Loading Screen.js"></script>
+        <script src="/Javascript/nav-bar.js"></script>
+        <script src="/Javascript/Brand-Page.js"></script>
+        <script src="/Javascript/Slider.js"></script>
+        <script src="/Javascript/Products.js"></script>
+        <script src="/Javascript/Brand-Navigation.js"></script>
+        <script src="/Javascript/Light-Mode.js"></script>
+    </head>
+    <body>
+        <!-- Loading Screen -->
+        <div class="loading-screen">
+            <div class="logo">
+                <h1>Vaultique</h1>
+            </div>
+        </div>
+
+        <!--Nav-Bar-->
+        <div class="navbar-wrapper">
+            <header class="header-unscrolled">
+                <%- include('partials/navigation') %>
+            </header>
+        </div>
+
+        <!-- Brand Content -->
+        <div class="brand-content">
+            <!-- Brand Header -->
+            <div class="brand-header">
+                <img src="<%= brand.logo %>" alt="<%= brand.name %>" class="brand-logo">
+                <h1><%= brand.name %></h1>
+                <p><%= brand.description %></p>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid">
+                <% products.forEach(function(product) { %>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="<%= product.image %>" alt="<%= product.name %>">
+                            <div class="product-overlay">
+                                <button class="quick-view" data-product-id="<%= product._id %>">
+                                    <i class="fas fa-eye"></i> Quick View
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3><%= product.name %></h3>
+                            <p class="brand"><%= product.brand %></p>
+                            <p class="price">$<%= product.price.toLocaleString() %></p>
+                            <div class="product-actions">
+                                <button class="add-to-cart" data-product-id="<%= product._id %>">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                                <button class="add-to-wishlist" data-product-id="<%= product._id %>">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Quick View Modal -->
+        <div id="quick-view-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="quick-view-content">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <%- include('partials/footer') %>
+    </body>
+</html> 

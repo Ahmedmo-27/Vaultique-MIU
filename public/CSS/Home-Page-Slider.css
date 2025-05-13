@@ -1,0 +1,289 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #fff;
+    color: #333;
+}
+
+/* Top Navigation Bar */
+.top-nav {
+    background-color: #000;
+    color: #fff;
+    padding: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.nav-left a, .nav-right a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.nav-left a:hover, .nav-right a:hover {
+    text-decoration: underline;
+}
+
+/* Hero Section */
+.hero {
+    height: 80vh;
+    background: linear-gradient(to bottom, #fff, #ccc);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 50px;
+    position: relative;
+}
+
+.hero-content {
+    max-width: 600px;
+    margin-bottom: 50px;
+}
+
+.hero h1 {
+    font-size: 42px;
+    font-weight: 300;
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.shop-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #fff;
+    color: #000;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+
+/* Popular Collections Section */
+.collections {
+    padding: 80px 50px;
+    text-align: center;
+   
+}
+
+.collections h2 {
+    font-size: 40px;
+    font-weight: 500;
+    margin-bottom: 50px;
+    color: #fff;
+    position: relative;
+    display: inline-block; /* Makes the underline only as wide as the text */
+    padding-bottom: 15px; /* Space for the underline */
+}
+
+.collections h2::after {
+    content: "";
+    position: absolute;
+    left: 25px;  /* Adjust this if you want the underline to start differently */
+    bottom: -5px; /* Positions the underline slightly below the text */
+    width: 80%;   /* Underline width relative to heading */
+    height: 3px;  /* Thickness of the underline (adjust as needed) */
+    background: #fff; /* Solid white color (or use rgba(255,255,255,0.7) for semi-transparent) */
+    /* Remove any transition properties if they exist */
+}
+
+
+
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 5fr));
+    gap: 10%;
+    margin-top: 40px;
+}
+
+.collection-card {
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.collection-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.collection-image {
+    width: 100%;
+    height: 460px;
+    overflow: hidden;
+}
+
+.collection-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.collection-card:hover .collection-image img {
+    transform: scale(1.05);
+}
+
+.collection-info {
+    padding: 25px;
+    text-align: center;
+}
+
+.collection-info h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.collection-info p {
+    color: #777;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.explore-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.explore-btn:hover {
+    background: #F6E8C0;
+}
+
+/* Slider Container */
+.slider-container {
+    position: relative;
+    overflow: hidden;
+    margin-top: -30px;
+}
+
+.slider-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.slider {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.slide {
+    min-width: 100%;
+    padding: 0 10px;
+}
+
+.slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.slider-arrow:hover {
+    background: #fff;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.prev {
+    left: 20px;
+}
+
+.next {
+    right: 20px;
+}
+
+.slider-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.dot.active {
+    background: #333;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 30px;
+        height: 70vh;
+    }
+    
+    .hero h1 {
+        font-size: 32px;
+    }
+    
+    .hero p {
+        font-size: 16px;
+    }
+    
+    .collections {
+        padding: 50px 20px;
+    }
+    
+    .collection-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .nav-left a, .nav-right a {
+        margin: 0 10px;
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,256 @@
+/* Gender Section Styles */
+.gender {
+    position: relative;
+    display: flex;
+    height: 80vh;
+    min-height: 638px;
+    margin: 80px 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+
+.him-her
+{
+    margin-bottom: -80px;
+    
+}
+
+
+
+
+
+body 
+{
+    background-color: #1C2E4A;
+}
+
+
+.text-overlay-indulge,
+.text-overlay-your {
+    position: absolute;
+    z-index: 100;
+    color: white;
+    font-size: 4rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+}
+
+.text-overlay-indulge {
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.text-overlay-your {
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.male,
+.female {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    transition: flex 0.5s ease;
+}
+
+.male:hover,
+.female:hover {
+    flex: 1.5;
+}
+
+#male-img,
+#female-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    z-index: 1; /* Ensure image stays visible */
+}
+
+.male:hover #male-img,
+.female:hover #female-img {
+    transform: scale(1.05);
+}
+
+/* Modified canvas for subtle movement effect */
+#male-fluid-canvas,
+#female-fluid-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    opacity: 0.3; /* More subtle effect */
+    mix-blend-mode: overlay;
+}
+
+.text-overlay {
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    text-align: center;
+}
+
+/* Updated Text Container Styles */
+.text-container {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 20px 20px;
+    border-radius: 8px;  
+    position: absolute;
+    top: 4%;
+    width: 150%;
+    max-width: 500px;
+    z-index: 10;
+    color: #F6E8C0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* Female (left) side text alignment */
+.female .text-container {
+    left: 2%;
+    right: auto;
+    transform: none;
+    text-align: left;
+    padding-left: 20px;
+}
+
+/* Male (right) side text alignment */
+.male .text-container {
+    left: auto;
+    right: 10%;
+    transform: none;
+    text-align: right;
+    padding-right: 20px;
+}
+
+/* Smaller text sizes */
+.section-title {
+    font-size: 2rem; /* Reduced from 3rem */
+    font-weight: 700;
+    letter-spacing: 3px; /* Reduced from 4px */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 0.5rem; /* Reduced from 1rem */
+    text-transform: uppercase;
+}
+
+.section-description {
+    font-size: 1rem; /* Reduced from 1.2rem */
+    font-weight: 300;
+    letter-spacing: 0.5px; /* Reduced from 1px */
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* RTL (Arabic) Support - swapped left/right */
+[dir="rtl"] .female .text-container {
+    right: 10%;
+    left: auto;
+    text-align: right;
+    padding-right: 20px;
+    padding-left: 0;
+}
+
+[dir="rtl"] .male .text-container {
+    left: 10%;
+    right: auto;
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.5rem; /* Smaller on mobile */
+        letter-spacing: 2px;
+    }
+    
+    .section-description {
+        font-size: 0.9rem; /* Smaller on mobile */
+    }
+    
+    .female .text-container,
+    .male .text-container {
+        width: 90%;
+        left: 5%;
+        right: 5%;
+        text-align: center;
+        padding: 0;
+    }
+    
+    [dir="rtl"] .female .text-container,
+    [dir="rtl"] .male .text-container {
+        left: 5%;
+        right: 5%;
+    }
+}
+
+.text-overlay button {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.text-overlay button:hover {
+    background: #F6E8C0;
+    color: black;
+}
+
+.male::before,
+.female::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    transition: background 0.3s ease;
+}
+
+.male:hover::before,
+.female:hover::before {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .gender {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .male, 
+    .female {
+        height: 50vh;
+        min-height: 300px;
+    }
+    
+    .text-overlay-indulge,
+    .text-overlay-your {
+        font-size: 2.5rem;
+    }
+    
+    .text-overlay-indulge {
+        top: 5%;
+    }
+    
+    .text-overlay-your {
+        top: 15%;
+    }
+}
