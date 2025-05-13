@@ -125,7 +125,10 @@ app.get("/api/health", (req, res) => {
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).render('404');
+  res.status(404).render('404', {
+    title: '404 - Page Not Found',
+    message: 'The page you are looking for does not exist.'
+  });
 });
 
 // Error Handler

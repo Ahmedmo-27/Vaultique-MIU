@@ -16,7 +16,7 @@ body {
     color: #333;
     line-height: 1.6;
     display: flex;
-    background-image:url('/Photos/404.jpg') ;
+    background-image:url('/public/Assets/Images/Photos/404.jpg') ;
     flex-direction: column;
     justify-content: center;
     align-items: center;

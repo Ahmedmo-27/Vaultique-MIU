@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaultique | Page Not Found</title>
-    <link rel="stylesheet" href="/404.css">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/public/css/404.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -24,8 +24,7 @@
         <h1 class="error-code">404</h1>
         <h2 class="error-title">Time Seems to Have Stopped</h2>
         <p class="error-message">
-            The page you're looking for doesn't exist or has been moved. 
-            Like a rare timepiece, it may have been relocated to our archives.
+            <%= message %>
         </p>
         
         <div class="btn-group">
