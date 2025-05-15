@@ -19,15 +19,11 @@
         <script src="/Javascript/Light-Mode.js"></script>
     </head>
     <body>
-        <!-- Loading Screen -->
-        <div class="loading-screen">
-            <div class="logo">
-                <h1>Vaultique</h1>
-            </div>
-        </div>
 
-            <%- include('partials/navigation') %>
-            
+        <%- include('partials/loading-screen') %>
+
+        <%- include('partials/navigation') %>
+        
             <section class="section topic">
                 <div class="video-container">
                     <video autoplay muted loop playsinline>

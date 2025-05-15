@@ -997,7 +997,7 @@ body.dark-mode .tag {
   font-weight: 600;
   text-transform: capitalize;
   letter-spacing: 1px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .text-overlay {
@@ -1007,7 +1007,7 @@ body.dark-mode .tag {
   border-radius: 12px;
   text-align: left;
   position: absolute;
-  right: 5%;
+  right: 2%;
   max-width: 500px;
   backdrop-filter: blur(5px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -1035,144 +1035,141 @@ body.dark-mode .tag {
 }
 
 @media screen and (max-width: 1200px) {
-  .image {
-    height: 450px;
-  }
-  
-  .text-overlay {
-    max-width: 400px;
-    padding: 25px;
-  }
-  
-  .text-overlay h2 {
-    font-size: 1.8rem;
-  }
-  
-  .text-overlay p {
-    font-size: 1rem;
-  }
-  
-  #brandLogo {
-    font-size: 2rem;
-  }
-}
+    .text-overlay {
+        max-width: 450px;
+        padding: 25px;
+    }
 
-@media screen and (max-width: 992px) {
-  .image {
-    height: 400px;
-  }
-  
-  .brand-logo {
-    padding: 15px 25px;
-  }
-  
-  .text-overlay {
-    max-width: 350px;
-    padding: 20px;
-  }
-}
+    .text-overlay h2 {
+        font-size: 2rem;
+    }
 
-@media screen and (max-width: 768px) {
-  .image {
-    height: 350px;
-    margin-top: 30px;
-  }
-  
-  .brand-logo {
-    position: relative;
-    margin: 20px auto;
-    width: 80%;
-    max-width: 300px;
-  }
-  
-  .text-overlay {
-    position: relative;
-    margin: 20px auto;
-    width: 90%;
-    max-width: none;
-    text-align: center;
-  }
-  
-  .text-overlay h2 {
-    font-size: 1.6rem;
-  }
-  
-  .text-overlay p {
-    font-size: 0.95rem;
-  }
-  
-  #brandLogo {
-    font-size: 1.8rem;
-  }
-}
+    .text-overlay p {
+        font-size: 1rem;
+    }
 
-@media screen and (max-width: 576px) {
-  .image {
-    height: 300px;
-  }
-  
-  .brand-logo {
-    padding: 12px 20px;
-  }
-  
-  .text-overlay {
-    padding: 15px;
-  }
-  
-  .text-overlay h2 {
-    font-size: 1.4rem;
-  }
-  
-  .text-overlay p {
-    font-size: 0.9rem;
-    line-height: 1.6;
-  }
-  
-  #brandLogo {
-    font-size: 1.5rem;
-  }
-}
-
-/* Responsive styles for video section */
-@media screen and (max-width: 1200px) {
-    .section {
-        padding: 0 4%;
+    .brand-logo
+    {
+      display: none;
     }
 }
 
 @media screen and (max-width: 992px) {
-    .section {
-        padding: 0 3%;
+    .text-overlay {
+        max-width: 400px;
+        padding: 20px;
+        margin: 0 auto;
+        position: relative;
+        right: auto;
     }
-    
-    .video-container video {
-        filter: brightness(0.7);
+
+    .text-overlay h2 {
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+    }
+
+    .text-overlay p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .brand-logo
+    {
+      display: none;
     }
 }
 
 @media screen and (max-width: 768px) {
-    .section {
-        min-height: 80vh;
-        padding: 0 2%;
+    .text-overlay {
+        max-width: 100%;
+        padding: 15px;
+        margin: 0;
+        text-align: center;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        background-color: rgba(0, 0, 0, 0.8);
     }
-    
-    .video-container {
-        position: fixed; /* Keep video fixed on mobile for better performance */
+
+    .text-overlay h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
     }
-    
-    .video-container video {
-        filter: brightness(0.6);
+
+    .text-overlay p {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 0;
+    }
+
+    .brand-logo {
+        display: none;
     }
 }
 
 @media screen and (max-width: 576px) {
-    .section {
-        min-height: 70vh;
-        padding: 0;
+    .text-overlay {
+        padding: 10px;
     }
-    
-    .video-container video {
-        filter: brightness(0.5);
+
+    .text-overlay h2 {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+
+    .text-overlay p {
+        font-size: 0.8rem;
+        line-height: 1.3;
+    }
+
+    .brand-logo {
+        display: none;
+    }
+}
+
+/* Handle very small screens */
+@media screen and (max-width: 360px) {
+    .text-overlay {
+        padding: 8px;
+    }
+
+    .text-overlay h2 {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+    }
+
+    .text-overlay p {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+
+    .brand-logo {
+        display: none;
+    }
+}
+
+/* Handle landscape orientation */
+@media screen and (orientation: landscape) and (max-width: 992px) {
+    .text-overlay {
+        max-width: 45%;
+        margin: 0;
+        position: absolute;
+        right: 5%;
+    }
+
+    .brand-logo
+    {
+      display: none;
+    }
+
+    .text-overlay h2 {
+        font-size: 1.6rem;
+    }
+
+    .text-overlay p {
+        font-size: 0.9rem;
     }
 }
 
