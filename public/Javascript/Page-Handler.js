@@ -1,6 +1,6 @@
 // Constants and Configuration
 const CONFIG = {
-  API_BASE_URL: "http://localhost:3001/api",
+  API_BASE_URL: window.location.origin + "/api",
   ITEMS_PER_PAGE: 10,
   DEBOUNCE_DELAY: 300,
   LAZY_LOAD_THRESHOLD: 0.5,
