@@ -356,3 +356,279 @@
   color: #ccc;
   margin-bottom: 1rem;
 }
+
+/* Responsive styles for slider */
+@media screen and (max-width: 1200px) {
+    .slide-content {
+        padding: 0 60px;
+    }
+
+    .watch-title {
+        font-size: 3.5rem;
+    }
+
+    .watch-tagline {
+        font-size: 1.3rem;
+    }
+
+    .watch-image {
+        max-height: 550px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .slider-container {
+        height: calc(100vh - 85px);
+    }
+
+    .slide-content {
+        padding: 0 20px;
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        justify-content: flex-start;
+        padding-top: 2rem;
+    }
+
+    .watch-info {
+        max-width: 100%;
+        padding: 0;
+        order: 2;
+    }
+
+    .watch-image-container {
+        order: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .watch-title {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .watch-tagline {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .watch-description {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .watch-image {
+        max-height: 500px;
+    }
+
+    .nav-arrow {
+        width: 40px;
+        height: 40px;
+    }
+
+    .nav-arrow svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .slider-container {
+        height: calc(100vh - 85px);
+    }
+
+    .tabs {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding: 0 0.5rem;
+    }
+
+    .tab {
+        font-size: 0.9rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .slide-content {
+        padding: 0 15px;
+        gap: 0.5rem;
+        padding-top: 1.5rem;
+    }
+
+    .watch-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .watch-tagline {
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .watch-description {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .watch-image {
+        max-height: 400px;
+    }
+
+    .nav-arrow {
+        width: 35px;
+        height: 35px;
+    }
+
+    .nav-arrow-left {
+        left: 5px;
+    }
+
+    .nav-arrow-right {
+        right: 5px;
+    }
+
+    .pagination-slider {
+        bottom: 10px;
+    }
+
+    .dot {
+        width: 20px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .slider-container {
+        height: calc(100vh - 85px);
+    }
+
+    .tabs-container {
+        padding-top: 0.5rem;
+    }
+
+    .tabs {
+        gap: 0.3rem;
+    }
+
+    .tab {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .tab.active::after {
+        width: 0.3rem;
+        height: 0.3rem;
+        bottom: -0.3rem;
+    }
+
+    .slide-content {
+        padding: 0 10px;
+        gap: 0.3rem;
+        padding-top: 1rem;
+    }
+
+    .watch-title {
+        font-size: 2.2rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .watch-tagline {
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .watch-description {
+        font-size: 0.95rem;
+        line-height: 1.3;
+        margin-bottom: 0.3rem;
+    }
+
+    .watch-image {
+        max-height: 350px;
+    }
+
+    .nav-arrow {
+        width: 30px;
+        height: 30px;
+    }
+
+    .nav-arrow svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .pagination-slider {
+        bottom: 8px;
+        gap: 6px;
+    }
+
+    .dot {
+        width: 15px;
+        height: 2px;
+    }
+}
+
+/* Handle landscape orientation */
+@media screen and (orientation: landscape) and (max-width: 992px) {
+    .slider-container {
+        height: calc(100vh - 85px);
+    }
+
+    .slide-content {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 0;
+    }
+
+    .watch-info {
+        max-width: 50%;
+        order: 2;
+    }
+
+    .watch-image-container {
+        order: 1;
+        max-width: 50%;
+    }
+
+    .watch-image {
+        max-height: 450px;
+    }
+
+    .watch-title {
+        font-size: 2.8rem;
+    }
+
+    .watch-tagline {
+        font-size: 1.3rem;
+    }
+
+    .watch-description {
+        font-size: 1.05rem;
+    }
+}
+
+/* Handle very small screens */
+@media screen and (max-width: 360px) {
+    .watch-title {
+        font-size: 1.8rem;
+    }
+
+    .watch-tagline {
+        font-size: 0.9rem;
+    }
+
+    .watch-description {
+        font-size: 0.8rem;
+    }
+
+    .watch-image {
+        max-height: 250px;
+    }
+}
+
+/* Handle high-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .watch-image {
+        image-rendering: -webkit-optimize-contrast;
+    }
+}

@@ -915,7 +915,7 @@ body.dark-mode .tag {
 }
 
 .section {
-    min-height:100vh ;
+    min-height: 100vh;
     height: 100%;
     display: flex;
     align-items: center;
@@ -948,84 +948,255 @@ body.dark-mode .tag {
     object-fit: cover;
 }
 
-.image
-{
+.image {
   margin-top: 50px;
-  height: 400px;
-  width: auto;
+  height: 500px;
+  width: 100%;
   display: flex;
   align-items: center;
   position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.image img
-{
+.image img {
   position: absolute;
   height: 100%;
   width: 100%;
-  filter: brightness(0.9);
+  object-fit: cover;
+  filter: brightness(0.85);
+  transition: transform 0.5s ease;
 }
 
-.brand-logo
-{
-  background-color: rgba(0, 0, 0, 0.6);
+.image:hover img {
+  transform: scale(1.05);
+}
+
+.brand-logo {
+  background-color: rgba(0, 0, 0, 0.7);
   text-align: center;
   color: #f6e8c0;
-  border-radius: 8px;
-  height: 80px;
-  width: 250px;
+  border-radius: 12px;
+  padding: 20px 30px;
   z-index: 1;
-  margin-top: 100px;
-  margin-left: 100px;
-  margin-bottom: 100px;
+  margin: 0 0 0 5%;
   position: absolute;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
 }
 
-#brandLogo
-{
-  margin-top: 20px;
-  width: 100%;
-  height: 100%;
+.brand-logo:hover {
+  transform: translateY(-5px);
+}
+
+#brandLogo {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 600;
   text-transform: capitalize;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .text-overlay {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.7);
   color: #f6e8c0;
-  margin-left: 820px;
-  margin-right: 40px;
-  padding: 20px 20px;
-  border-radius: 8px;
-  text-align: center;
-  position: relative;
-  font-size: 1.2rem;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: left;
+  position: absolute;
+  right: 5%;
+  max-width: 500px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.text-overlay:hover {
+  transform: translateY(-5px);
 }
 
 .text-overlay h2 {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 600;
   letter-spacing: 1px;
   color: #f9e9b0;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 15px;
 }
 
 .text-overlay p {
-  line-height: 1.6;
-  font-weight: 300;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  line-height: 1.8;
+  font-weight: 400;
+  font-size: 1.1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+@media screen and (max-width: 1200px) {
+  .image {
+    height: 450px;
+  }
+  
+  .text-overlay {
+    max-width: 400px;
+    padding: 25px;
+  }
+  
+  .text-overlay h2 {
+    font-size: 1.8rem;
+  }
+  
+  .text-overlay p {
+    font-size: 1rem;
+  }
+  
+  #brandLogo {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .image {
+    height: 400px;
+  }
+  
+  .brand-logo {
+    padding: 15px 25px;
+  }
+  
+  .text-overlay {
+    max-width: 350px;
+    padding: 20px;
+  }
 }
 
 @media screen and (max-width: 768px) {
-  .text-overlay {
-      padding: 20px;
-      font-size: 1rem;
+  .image {
+    height: 350px;
+    margin-top: 30px;
   }
-
-  .text-overlay h2 {
-      font-size: 1.5rem;
-  }
-
+  
   .brand-logo {
-    width: 60px;
+    position: relative;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 300px;
   }
+  
+  .text-overlay {
+    position: relative;
+    margin: 20px auto;
+    width: 90%;
+    max-width: none;
+    text-align: center;
+  }
+  
+  .text-overlay h2 {
+    font-size: 1.6rem;
+  }
+  
+  .text-overlay p {
+    font-size: 0.95rem;
+  }
+  
+  #brandLogo {
+    font-size: 1.8rem;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .image {
+    height: 300px;
+  }
+  
+  .brand-logo {
+    padding: 12px 20px;
+  }
+  
+  .text-overlay {
+    padding: 15px;
+  }
+  
+  .text-overlay h2 {
+    font-size: 1.4rem;
+  }
+  
+  .text-overlay p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  
+  #brandLogo {
+    font-size: 1.5rem;
+  }
+}
+
+/* Responsive styles for video section */
+@media screen and (max-width: 1200px) {
+    .section {
+        padding: 0 4%;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .section {
+        padding: 0 3%;
+    }
+    
+    .video-container video {
+        filter: brightness(0.7);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .section {
+        min-height: 80vh;
+        padding: 0 2%;
+    }
+    
+    .video-container {
+        position: fixed; /* Keep video fixed on mobile for better performance */
+    }
+    
+    .video-container video {
+        filter: brightness(0.6);
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .section {
+        min-height: 70vh;
+        padding: 0;
+    }
+    
+    .video-container video {
+        filter: brightness(0.5);
+    }
+}
+
+/* Handle orientation changes */
+@media screen and (orientation: landscape) and (max-width: 992px) {
+    .section {
+        min-height: 100vh;
+    }
+    
+    .video-container video {
+        object-fit: cover;
+    }
+}
+
+/* Handle very small screens */
+@media screen and (max-width: 360px) {
+    .section {
+        min-height: 60vh;
+    }
+}
+
+/* Handle high-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .video-container video {
+        filter: brightness(0.7);
+    }
 }
