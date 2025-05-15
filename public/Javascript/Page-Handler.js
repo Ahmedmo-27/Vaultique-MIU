@@ -321,6 +321,10 @@ function updatePageMetadata(entityData) {
 function initSlider(featuredItems) {
   if (!featuredItems || featuredItems.length === 0) {
     console.warn(`No featured items found for this ${state.pageType}`)
+    const sliderContainer = document.querySelector(".slider-container")
+    if (sliderContainer) {
+      sliderContainer.style.display = "none"
+    }
     return
   }
 
@@ -328,7 +332,7 @@ function initSlider(featuredItems) {
   const paginationSlider = document.querySelector(".pagination-slider")
 
   if (!slidesWrapper || !paginationSlider) {
-    console.error("Slider elements not found")
+    console.error("Slider elements not found in the DOM")
     return
   }
 
@@ -340,6 +344,11 @@ function initSlider(featuredItems) {
 
   // Create slides
   featuredItems.forEach((item, index) => {
+    if (!item || !item.name) {
+      console.warn("Invalid item data at index", index)
+      return
+    }
+
     const slide = document.createElement("div")
     slide.className = `slide ${index === 0 ? "active" : ""}`
     slide.dataset.model = index + 1
@@ -347,12 +356,12 @@ function initSlider(featuredItems) {
     slide.innerHTML = `
       <div class="slide-content">
         <div class="watch-info">
-          <h1 class="watch-title">${item.name}</h1>
-          <h2 class="watch-tagline">${item.tagline}</h2>
-          <p class="watch-description">${item.description}</p>
+          <h1 class="watch-title">${item.name || 'Untitled'}</h1>
+          <h2 class="watch-tagline">${item.tagline || ''}</h2>
+          <p class="watch-description">${item.description || ''}</p>
         </div>
         <div class="watch-image-container">
-          <img src="${item.image}" alt="${item.name}" class="watch-image">
+          <img src="${item.image || ''}" alt="${item.name || 'Watch image'}" class="watch-image" onerror="this.src='path/to/fallback-image.jpg'">
         </div>
       </div>
     `
@@ -360,22 +369,31 @@ function initSlider(featuredItems) {
     slidesWrapper.appendChild(slide)
   })
 
-  // Create pagination dots
-  featuredItems.forEach((_, index) => {
-    const dot = document.createElement("button")
-    dot.className = `dot ${index === 0 ? "active" : ""}`
-    dot.dataset.index = index
-    dot.setAttribute("aria-label", `Go to slide ${index + 1}`)
-    paginationSlider.appendChild(dot)
-  })
+  // Only create pagination if we have valid slides
+  if (slidesWrapper.children.length > 0) {
+    // Create pagination dots
+    featuredItems.forEach((_, index) => {
+      const dot = document.createElement("button")
+      dot.className = `dot ${index === 0 ? "active" : ""}`
+      dot.dataset.index = index
+      dot.setAttribute("aria-label", `Go to slide ${index + 1}`)
+      paginationSlider.appendChild(dot)
+    })
 
-  console.log(
-    "Slider created with",
-    slidesWrapper.children.length,
-    "slides and",
-    paginationSlider.children.length,
-    "dots",
-  )
+    console.log(
+      "Slider created with",
+      slidesWrapper.children.length,
+      "slides and",
+      paginationSlider.children.length,
+      "dots",
+    )
+  } else {
+    console.warn("No valid slides were created")
+    const sliderContainer = document.querySelector(".slider-container")
+    if (sliderContainer) {
+      sliderContainer.style.display = "none"
+    }
+  }
 }
 
 async function loadProducts() {
@@ -882,36 +900,36 @@ async function initializePage() {
       try {
         const errorJson = JSON.parse(errorText)
         errorMessage = errorJson.message || `Server error: ${response.status}`
-  } catch {
+      } catch {
         errorMessage = `Server error: ${response.status}`
-  }
+      }
 
-  const errorContent = `
-    <div class="error">
-      <p class="error-message">
-        ${errorMessage}
-      </p>
-    </div>
+      const errorContent = `
+        <div class="error">
+          <p class="error-message">
+            ${errorMessage}
+          </p>
+        </div>
       `
 
-  createModal(
-    'Error',
-    errorContent,
-    [
-      {
-        text: 'Retry',
-        class: 'confirm-btn',
-        clickHandler: () => {
+      createModal(
+        'Error',
+        errorContent,
+        [
+          {
+            text: 'Retry',
+            class: 'confirm-btn',
+            clickHandler: () => {
               closeModal(document.querySelector('.modal-overlay'))
               window.location.reload()
-        }
-      },
-      {
-        text: 'Close',
-        class: 'cancel-btn',
-        clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
-      }
-    ]
+            }
+          },
+          {
+            text: 'Close',
+            class: 'cancel-btn',
+            clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
+          }
+        ]
       )
       return
     }
@@ -960,38 +978,38 @@ async function initializePage() {
     console.error('Page error:', error)
     
     let errorMessage = 'An unexpected error occurred'
-  if (error.name === 'AbortError') {
+    if (error.name === 'AbortError') {
       errorMessage = 'Request timed out. Please check your connection and try again.'
-  } else if (error.message) {
+    } else if (error.message) {
       errorMessage = error.message
-  }
-  
-  const errorContent = `
-    <div class="error">
-      <p class="error-message">
-        ${errorMessage}
-      </p>
-    </div>
+    }
+    
+    const errorContent = `
+      <div class="error">
+        <p class="error-message">
+          ${errorMessage}
+        </p>
+      </div>
     `
-  
-  createModal(
-    'Error',
-    errorContent,
-    [
-      {
-        text: 'Retry',
-        class: 'confirm-btn',
-        clickHandler: () => {
+    
+    createModal(
+      'Error',
+      errorContent,
+      [
+        {
+          text: 'Retry',
+          class: 'confirm-btn',
+          clickHandler: () => {
             closeModal(document.querySelector('.modal-overlay'))
             window.location.reload()
+          }
+        },
+        {
+          text: 'Close',
+          class: 'cancel-btn',
+          clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
         }
-      },
-      {
-        text: 'Close',
-        class: 'cancel-btn',
-        clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
-      }
-    ]
+      ]
     )
 
     // Fallback to default entity if this wasn't already the default
