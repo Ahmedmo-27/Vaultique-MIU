@@ -648,7 +648,7 @@ header:hover .side-icon {
 
 .sidepanel .dropdown-content {
     display: none;
-    position: absolute;
+    position: relative;
     background-color: #000;
     min-width: 160px;
     z-index: 1;
