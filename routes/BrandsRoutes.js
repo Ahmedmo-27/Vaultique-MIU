@@ -1,8 +1,6 @@
 const express = require("express");
 const Brand = require("../models/Brands");
 const router = express.Router();
-const Product = require('../models/Products');
-const Collection = require('../models/Collections');
 
 const normalizeBrandName = (name) => {
   const brandMappings = {
@@ -31,51 +29,20 @@ const normalizeBrandName = (name) => {
 
 router.get("/", async (req, res) => {
   try {
-    const brands = await Brand.find();
-    res.json({
-      success: true,
-      data: brands
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    const brands = await Brand.find().sort({ name: 1 });
+    res.json({ success: true, data: brands });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-router.get("/:slug", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const brand = await Brand.findOne({ slug: req.params.slug });
-    if (!brand) {
-      return res.status(404).render('404');
-    }
-
-    const products = await Product.find({ brand: brand._id })
-      .skip(req.pagination.skip)
-      .limit(req.pagination.limit);
-
-    const totalProducts = await Product.countDocuments({ brand: brand._id });
-    const totalPages = Math.ceil(totalProducts / req.pagination.limit);
-
-    // Get all brands and collections for navigation
-    const brands = await Brand.find();
-    const collections = await Collection.find();
-
-    res.render('Brand-Page', {
-      brandName: brand.name,
-      brand,
-      products,
-      currentPage: req.pagination.page,
-      totalPages,
-      brands,
-      collections
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    const brand = await Brand.findById(req.params.id);
+    if (!brand) return res.status(404).json({ success: false, message: "Brand not found" });
+    res.json({ success: true, data: brand });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
