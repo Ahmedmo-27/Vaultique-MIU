@@ -43,7 +43,7 @@ footer {
     text-align: center;
 }
 
-.logo {
+.footer-logo {
     font-size: 24px;
     font-weight: bold;
     color: #fff;
@@ -55,7 +55,7 @@ footer {
     padding-bottom: 15px;
 }
 
-.logo::after {
+.footer-logo::after {
     content: "";
     position: absolute;
     left: 0;
@@ -257,7 +257,7 @@ footer {
         margin-bottom: 15px;
     }
     
-    .footer-brand .logo {
+    .footer-brand .footer-logo {
         font-size: 1.3rem;
         margin-bottom: 10px;
     }
