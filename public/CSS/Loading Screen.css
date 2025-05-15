@@ -10,7 +10,14 @@
     align-items: center;
     z-index: 1000;
     opacity: 1;
-    transition: opacity 1s ease;
+    transition: opacity 0.8s ease;
+}
+
+.loading-screen-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
 }
 
 body.dark-mode .loading-screen
@@ -21,6 +28,7 @@ body.dark-mode .loading-screen
 body.dark-mode .loading-screen .logo h1
 {
     color: #e8d9c4;
+    text-shadow: 0 0 10px rgba(232, 217, 196, 0.3);
 }
 
 body.light-mode .loading-screen
@@ -31,21 +39,103 @@ body.light-mode .loading-screen
 body.light-mode .loading-screen .logo h1
 {
     color: #1C2E4A;
+    text-shadow: 0 0 10px rgba(28, 46, 74, 0.3);
 }
 
 .loading-screen .logo h1 {
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    animation: fadeIn 2s ease-in-out;
+    letter-spacing: 3px;
+    animation: fadeIn 1.5s ease-in-out;
+    margin: 0;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { 
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 header {
     display: none; /* Hidden initially */
+}
+
+.progress-container {
+    width: 250px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.progress-text {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+body.dark-mode .progress-container {
+    background-color: rgba(232, 217, 196, 0.1);
+}
+
+body.dark-mode .progress-bar {
+    background-color: #e8d9c4;
+}
+
+body.dark-mode .progress-text {
+    color: #e8d9c4;
+}
+
+body.light-mode .progress-container {
+    background-color: rgba(28, 46, 74, 0.1);
+}
+
+body.light-mode .progress-bar {
+    background-color: #1C2E4A;
+}
+
+body.light-mode .progress-text {
+    color: #1C2E4A;
 }
