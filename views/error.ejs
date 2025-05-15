@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/CSS/Products.css">
+    <style>
+        .notification-modal {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-modal.hide {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .notification-content {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        .notification-icon {
+            font-size: 24px;
+        }
+
+        .notification-icon.success {
+            color: #4CAF50;
+        }
+
+        .notification-icon.error {
+            color: #f44336;
+        }
+
+        .notification-message {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .notification-close:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="notification-modal" id="notificationModal">
+        <div class="notification-content">
+            <div class="notification-icon <%= locals.type === 'success' ? 'success' : 'error' %>">
+                <%= locals.type === 'success' ? '✓' : '✕' %>
+            </div>
+            <div class="notification-message">
+                <%= message %>
+            </div>
+            <button class="notification-close" onclick="closeNotification()">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        function closeNotification() {
+            const modal = document.getElementById('notificationModal');
+            modal.classList.add('hide');
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
+        }
+
+        // Auto close after 5 seconds
+        setTimeout(closeNotification, 5000);
+    </script>
+</body>
+</html>
