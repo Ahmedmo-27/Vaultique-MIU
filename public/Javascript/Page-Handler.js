@@ -6,6 +6,24 @@ const CONFIG = {
   LAZY_LOAD_THRESHOLD: 0.5,
 }
 
+// Global error handler for message port errors
+window.addEventListener('error', (event) => {
+  if (event.message && event.message.includes('message port closed')) {
+    console.warn('Message port closed - this is expected behavior and can be safely ignored');
+    event.preventDefault();
+    return true;
+  }
+});
+
+// Handle unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason && event.reason.message && event.reason.message.includes('message port closed')) {
+    console.warn('Message port closed - this is expected behavior and can be safely ignored');
+    event.preventDefault();
+    return true;
+  }
+});
+
 // State Management
 const state = {
   currentPage: 1,
@@ -252,7 +270,11 @@ function updateBrandPage(brandData) {
   // Update brand image
   const brandImage = document.getElementById("brandCoverImage")
   if (brandImage && brandData.coverImage) {
-    brandImage.src = brandData.coverImage
+    // Ensure the path starts with /Assets/Images/
+    const imagePath = brandData.coverImage.startsWith('/') 
+      ? brandData.coverImage 
+      : `/Assets/Images/${brandData.coverImage}`
+    brandImage.src = imagePath
     brandImage.alt = `${brandData.name} Cover Image`
   }
 
@@ -361,7 +383,7 @@ function initSlider(featuredItems) {
           <p class="watch-description">${item.description || ''}</p>
         </div>
         <div class="watch-image-container">
-          <img src="${item.image || ''}" alt="${item.name || 'Watch image'}" class="watch-image" onerror="this.src='path/to/fallback-image.jpg'">
+          <img src="${item.image || ''}" alt="${item.name || 'Watch image'}" class="watch-image" onerror="this.style.display='none'">
         </div>
       </div>
     `

@@ -161,7 +161,7 @@ router.get('/brands/:brandSlug', async (req, res) => {
         };
 
         // If it's an API request or format=json, return JSON
-        if (req.query.format === 'json' || req.xhr || req.headers.accept.includes('application/json')) {
+        if (req.query.format === 'json' || req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
             return res.json({
                 success: true,
                 data: {
