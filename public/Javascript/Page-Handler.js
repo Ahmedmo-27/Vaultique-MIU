@@ -273,10 +273,11 @@ function updateBrandPage(brandData) {
     // Log the original cover image path
     console.log('Original cover image path:', brandData.coverImage)
     
-    // Ensure the path is correct for the deployed environment
-    const imagePath = brandData.coverImage.startsWith('/') 
-      ? brandData.coverImage 
-      : `/Assets/Images/photos/${brandData.coverImage}`
+    // Extract just the filename from the path
+    const filename = brandData.coverImage.split('/').pop()
+    
+    // Construct the path relative to the public directory
+    const imagePath = `/Assets/Images/photos/${filename}`
     
     // Log the final image path being used
     console.log('Final image path:', imagePath)
@@ -288,6 +289,10 @@ function updateBrandPage(brandData) {
     // Add error handling to help debug
     brandImage.onerror = () => {
       console.error(`Failed to load image at path: ${imagePath}`)
+      // Try alternative path format
+      const altPath = `/Assets/Images/Photos/${filename}`
+      console.log('Trying alternative path:', altPath)
+      brandImage.src = altPath
     }
   }
 
