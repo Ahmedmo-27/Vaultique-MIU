@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Product = require('../models/Products');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 
 const products = [
   {
@@ -16,7 +16,7 @@ const products = [
     Vcollection: "Sports & Adventure",
     gender: "Unisex",
     price: 52000,
-    image: "/Assets/Images/Watches/submariner.png",
+    image: "/Assets/Images/Watches/Rolex Submariner.png",
     description: "The Rolex Submariner is the quintessential diver's watch, combining robustness with timeless elegance. Its black dial and stainless steel case with gold accents offer a perfect balance of luxury and functionality. The unidirectional rotatable bezel and luminescent display ensure optimal readability in any conditions.",
     specifications: [
       {
@@ -306,7 +306,7 @@ const products = [
     Vcollection: "Casual & Everyday",
     gender: "Male",
     price: 40600,
-    image: "/Assets/Images/Watches/Rolex Day-Date 40.png",
+    image: "/Assets/Images/Watches/Rolex Date-Just 40.png",
     description: "The Rolex Datejust 40 is a versatile timepiece featuring a striking blue dial and white gold construction. Its automatic movement ensures precision and reliability. The iconic fluted bezel and Jubilee bracelet provide a perfect combination of elegance and comfort, making it suitable for both formal occasions and everyday wear.",
     specifications: [
       {

@@ -1,20 +1,21 @@
 const mongoose = require("mongoose")
 const Collection = require("../models/Collections")
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 
 const Collections = [
   {
     _id: "CLS_1",
     name: "Classic & Dress",
+    slug: "classic-and-dress",
     logo: "Classic & Dress",
-    coverImage: "/Ahmed/Photos/Classic Collection Cover.jpg",
+    coverImage: "/Assets/Images/Collections/Classic & Dress.png",
     heroVideo: "/Ahmed/Videos/",
     header: "Timeless Elegance",
     description: "The Classic & Dress Collection embodies traditional watchmaking excellence with contemporary sophistication. Each timepiece is a testament to enduring style and meticulous craftsmanship.",
     featuredItems: [
       {
         name: "Heritage Automatic",
-        image: "/Ahmed/Collections/Classic/Heritage Automatic.png",
+        image: "/Assets/Images/Watches/Heritage Automatic.png",
         tagline: "Traditional craftsmanship meets modern precision",
         description: "The Heritage Automatic combines classic design elements with modern mechanical innovation, creating a timepiece that bridges past and present."
       },
@@ -35,6 +36,7 @@ const Collections = [
   {
     _id: "CAS_1",
     name: "Casual & Everyday",
+    slug: "casual-and-everyday",
     logo: "/Ahmed/Collections Logos/Casual.png",
     coverImage: "/Ahmed/Photos/Casual Collection Cover.jpg",
     heroVideo: "/Ahmed/Videos/Casual Collection Video.mp4",
@@ -64,6 +66,7 @@ const Collections = [
   {
     _id: "SPR_1",
     name: "Sports & Adventure",
+    slug: "sports-and-adventure",
     logo: "/Ahmed/Collections Logos/Sport.png",
     coverImage: "/Ahmed/Photos/Sport Collection Cover.jpg",
     heroVideo: "/Ahmed/Videos/Sport Collection Video.mp4",
@@ -93,6 +96,7 @@ const Collections = [
   {
     _id: "AVI_1",
     name: "Aviation & Travel",
+    slug: "aviation-and-travel",
     logo: "Aviation & Travel",
     coverImage: "/Ahmed/Photos/Aviation Collection Cover.jpg",
     heroVideo: "/Ahmed/Videos/Breitling   Navitimer GMT & Automatic 41.mp4",
@@ -122,6 +126,7 @@ const Collections = [
   {
     _id: "LUX_1",
     name: "Luxury & Heritage",
+    slug: "luxury-and-heritage",
     logo: "/Ahmed/Collections Logos/Luxury.png",
     coverImage: "/Ahmed/Photos/Luxury Collection Cover.jpg",
     heroVideo: "/Ahmed/Videos/Luxury Collection Video.mp4",
