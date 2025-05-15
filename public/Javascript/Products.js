@@ -67,27 +67,78 @@ function initApp() {
 }
 
 function initializeFilters() {
-    // Set dropdown values from current filters
-    if (currentFilters) {
-        document.getElementById('collection').value = currentFilters.Vcollection || 'All';
-        document.getElementById('brand').value = currentFilters.brand || 'All';
-        document.getElementById('gender').value = currentFilters.gender || 'All';
-        document.getElementById('Strap_Material').value = currentFilters.strapMaterial || 'All';
-        document.getElementById('Movement').value = currentFilters.movement || 'All';
-        document.getElementById('Water_Resistance').value = currentFilters.waterResistance || 'All';
-        document.getElementById('Case_Material').value = currentFilters.caseMaterial || 'All';
-        document.getElementById('priceRangeFrom').value = currentFilters.minPrice || '';
-        document.getElementById('priceRangeTo').value = currentFilters.maxPrice || '';
-        document.getElementById('inStockFilter').checked = currentFilters.inStock === 'true';
-        currentSort = currentFilters.sort || 'default';
+    try {
+        // Get current URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
         
+        // Set dropdown values from current filters
+        const filterElements = {
+            'collection': 'Vcollection',
+            'brand': 'brand',
+            'gender': 'gender',
+            'Strap_Material': 'strapMaterial',
+            'Movement': 'movement',
+            'Water_Resistance': 'waterResistance',
+            'Case_Material': 'caseMaterial'
+        };
+
+        // Set dropdown values
+        Object.entries(filterElements).forEach(([elementId, paramName]) => {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.value = urlParams.get(paramName) || 'All';
+            }
+        });
+
+        // Set price range
+        const priceRangeFrom = document.getElementById('priceRangeFrom');
+        const priceRangeTo = document.getElementById('priceRangeTo');
+        if (priceRangeFrom) {
+            priceRangeFrom.value = urlParams.get('minPrice') || '0';
+        }
+        if (priceRangeTo) {
+            priceRangeTo.value = urlParams.get('maxPrice') || '50000000';
+        }
+
         // Set dial colors
-        if (currentFilters.dialColor && currentFilters.dialColor !== 'All') {
-            const colors = currentFilters.dialColor.split(',');
-            document.querySelectorAll('.dial-color').forEach(checkbox => {
-                checkbox.checked = colors.includes(checkbox.value);
+        const dialColors = urlParams.get('dialColor');
+        if (dialColors && dialColors !== 'All') {
+            const colorArray = dialColors.split(',');
+            const dialColorCheckboxes = document.querySelectorAll('.dial-color');
+            if (dialColorCheckboxes.length > 0) {
+                dialColorCheckboxes.forEach(checkbox => {
+                    if (checkbox) {
+                        checkbox.checked = colorArray.includes(checkbox.value);
+                    }
+                });
+            }
+        } else {
+            // If no dial colors specified or 'All' selected, check the 'All' checkbox
+            const allDialColorCheckbox = document.querySelector('.dial-color[value="All"]');
+            if (allDialColorCheckbox) {
+                allDialColorCheckbox.checked = true;
+            }
+        }
+
+        // Set in stock filter
+        const inStockFilter = document.getElementById('inStockFilter');
+        if (inStockFilter) {
+            inStockFilter.checked = urlParams.get('inStock') === 'true';
+        }
+
+        // Set sort option
+        const sortButtons = document.querySelectorAll('[data-sort]');
+        if (sortButtons.length > 0) {
+            const currentSort = urlParams.get('sort') || 'default';
+            sortButtons.forEach(button => {
+                if (button) {
+                    button.classList.toggle('active', button.dataset.sort === currentSort);
+                }
             });
         }
+
+    } catch (error) {
+        console.error('Error initializing filters:', error);
     }
 }
 
@@ -305,9 +356,13 @@ function updatePaginationUI() {
 }
 
 function updateCurrentFilters() {
+    // Store current brand/collection values
+    const currentBrand = document.getElementById('brand')?.value || 'All';
+    const currentCollection = document.getElementById('collection')?.value || 'All';
+
     currentFilters = {
-        Vcollection: document.getElementById('collection')?.value || 'All',
-        brand: document.getElementById('brand')?.value || 'All',
+        Vcollection: currentCollection,
+        brand: currentBrand,
         gender: document.getElementById('gender')?.value || 'All',
         strapMaterial: document.getElementById('Strap_Material')?.value || 'All',
         movement: document.getElementById('Movement')?.value || 'All',
@@ -338,9 +393,11 @@ function getSelectedDialColors() {
 }
 
 function resetFilters() {
+  // Store current brand/collection values
+  const currentBrand = document.getElementById('brand')?.value || 'All';
+  const currentCollection = document.getElementById('collection')?.value || 'All';
+
   const resetElements = [
-    { id: 'collection', value: 'All' },
-    { id: 'brand', value: 'All' },
     { id: 'gender', value: 'All' },
     { id: 'Strap_Material', value: 'All' },
     { id: 'Movement', value: 'All' },
@@ -354,6 +411,12 @@ function resetFilters() {
     const element = document.getElementById(el.id);
     if (element) element.value = el.value;
   });
+
+  // Restore brand/collection values
+  const brandSelect = document.getElementById('brand');
+  const collectionSelect = document.getElementById('collection');
+  if (brandSelect) brandSelect.value = currentBrand;
+  if (collectionSelect) collectionSelect.value = currentCollection;
 
   document.querySelectorAll('.dial-color').forEach(checkbox => {
     checkbox.checked = checkbox.value === 'All';

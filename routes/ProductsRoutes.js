@@ -181,7 +181,8 @@ router.get("/", async (req, res) => {
       minPrice,
       maxPrice,
       inStock = "false",
-      gender = "All"
+      gender = "All",
+      format = "html"
     } = req.query;
 
     // Validate pagination
@@ -240,12 +241,14 @@ router.get("/", async (req, res) => {
     };
     const sortOption = sortOptions[sort] || sortOptions.default;
 
-    // Get data
+    // Get data with proper population
     const [products, total, allBrands, allCollections] = await Promise.all([
       Product.find(query)
         .sort(sortOption)
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .populate('brand', 'name logo')
+        .populate('Vcollection', 'name'),
       Product.countDocuments(query),
       Brand.find(),
       Collection.find()
@@ -260,8 +263,8 @@ router.get("/", async (req, res) => {
       itemsPerPage: limit
     };
 
-    // If it's an API request, return JSON
-    if (req.xhr || req.headers.accept.includes('application/json')) {
+    // If it's an API request or format=json, return JSON
+    if (format === 'json' || req.xhr || req.headers.accept.includes('application/json')) {
       return res.json({
         success: true,
         data: {
@@ -279,34 +282,11 @@ router.get("/", async (req, res) => {
       });
     }
 
-    // Otherwise render the view
-    res.render('products', {
-      products,
-      pagination,
-      filters: {
-        brands: allBrands,
-        collections: allCollections
-      },
-      currentFilters: {
-        sort,
-        Vcollection,
-        brand,
-        strapMaterial,
-        movement,
-        waterResistance,
-        caseMaterial,
-        dialColor,
-        minPrice,
-        maxPrice,
-        inStock,
-        gender
-      }
-    });
 
   } catch (err) {
     console.error(`[${requestId}] Error fetching products:`, err);
     
-    if (req.xhr || req.headers.accept.includes('application/json')) {
+    if (format === 'json' || req.xhr || req.headers.accept.includes('application/json')) {
       return res.status(500).json({
         success: false,
         message: "Server error",
@@ -332,40 +312,11 @@ router.get("/:id", async (req, res) => {
   try {
     // Check if the id is a valid MongoDB ObjectId
     if (!isValidObjectId(req.params.id)) {
-      // If not a valid ObjectId, treat it as a route name and render the products page
-      const [products, total] = await Promise.all([
-        Product.find().limit(10),
-        Product.countDocuments()
-      ]);
-
-      const totalPages = Math.ceil(total / 10);
-      const allBrands = await Brand.find();
-      const allCollections = await Collection.find();
-
-      return res.render('Products', {
-        products,
-        pagination: {
-          currentPage: 1,
-          totalPages
-        },
-        filters: {
-          minPrice: null,
-          maxPrice: null,
-          selectedBrands: [],
-          selectedCollections: []
-        },
-        initialState: {
-          products,
-          pagination: {
-            currentPage: 1,
-            totalPages
-          },
-          filters: {
-            current: {}
-          }
-        }
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID",
+        requestId
       });
-      
     }
 
     const product = await Product.findById(req.params.id)
@@ -373,7 +324,11 @@ router.get("/:id", async (req, res) => {
       .populate('collection');
     
     if (!product) {
-      return res.status(404).render('404');
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+        requestId
+      });
     }
 
     res.json({
@@ -408,97 +363,90 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Products API endpoint
-router.get("/api/products", async (req, res) => {
-  try {
-    const {
-      Vcollection,
-      brand,
-      strapMaterial,
-      movement,
-      waterResistance,
-      caseMaterial,
-      dialColor,
-      minPrice,
-      maxPrice,
-      sort,
-      inStock,
-      gender,
-      page: rawPage,
-      limit: rawLimit
-    } = req.query
-
-    // Input validation
-    if (minPrice && isNaN(minPrice)) return res.status(400).json({ error: "Invalid minPrice" })
-    if (maxPrice && isNaN(maxPrice)) return res.status(400).json({ error: "Invalid maxPrice" })
-
-    // Validate and parse pagination parameters
-    const { page, limit } = validatePaginationParams(rawPage, rawLimit);
-
-    // Build query
-    const query = {}
-    if (gender && gender !== "All") query.gender = gender
-    if (Vcollection && Vcollection !== "All") query.Vcollection = Vcollection
-    if (brand && brand !== "All") query.brand = brand
-    if (strapMaterial && strapMaterial !== "All") query.strapMaterial = strapMaterial
-    if (movement && movement !== "All") query.movement = movement
-    if (waterResistance && waterResistance !== "All") query.waterResistance = waterResistance
-    if (caseMaterial && caseMaterial !== "All") query.caseMaterial = caseMaterial
-    if (dialColor && dialColor !== "All") query.dialColor = { $in: dialColor.split(",") }
-
-    // Stock filter
-    if (inStock === "true") {
-      query.$or = [{ stock: true }, { stockCount: { $gt: 0 } }]
+// Create new product (API)
+router.post("/", async (req, res) => {
+    try {
+        const product = new Product(req.body);
+        await product.save();
+        res.status(201).json({
+            success: true,
+            data: product
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: "Failed to create product",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
-
-    // Price range
-    if (minPrice || maxPrice) {
-      query.price = {}
-      if (minPrice) query.price.$gte = Number(minPrice)
-      if (maxPrice) query.price.$lte = Number(maxPrice)
-    }
-
-    // Sorting
-    const sortOptions = {
-      default: { _id: 1 },
-      new: { createdAt: -1 },
-      "price-asc": { price: 1 },
-      "price-desc": { price: -1 },
-      popularity: { popularityScore: -1, price: -1 },
-    }
-
-    const sortOption = sortOptions[sort] || sortOptions["default"]
-
-    // Calculate pagination
-    const skip = (page - 1) * limit
-
-    const [products, count] = await Promise.all([
-      Product.find(query).sort(sortOption).skip(skip).limit(limit),
-      Product.countDocuments(query),
-    ])
-
-    const totalPages = Math.ceil(count / limit)
-
-    res.json({ 
-      success: true,
-      data: products,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems: count
-      }
-    });
-  } catch (err) {
-    console.error("API Error:", err);
-    res.status(500).json({ 
-      success: false,
-      error: "Server error",
-      message: err.message
-    });
-  }
 });
 
-// // Serve static files from the correct directory
-// router.use(express.static(path.join(__dirname, "../Client")));
+// Update product (API)
+router.put("/:id", async (req, res) => {
+    try {
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid product ID"
+            });
+        }
+
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            data: product
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: "Failed to update product",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+// Delete product (API)
+router.delete("/:id", async (req, res) => {
+    try {
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid product ID"
+            });
+        }
+
+        const product = await Product.findByIdAndDelete(req.params.id);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Product deleted successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete product",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
 
 module.exports = router
