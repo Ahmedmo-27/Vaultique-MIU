@@ -1,10 +1,7 @@
 // Constants and Configuration
 const CONFIG = {
-  API_BASE_URL: "http://localhost:3000/api",
+  API_BASE_URL: "http://localhost:3001/api",
   ITEMS_PER_PAGE: 10,
-  DEFAULT_IMAGE: "/Ahmed/Photos/default-collection.jpg",
-  DEFAULT_PRODUCT_IMAGE: "/Ahmed/Photos/default-product.jpg",
-  DEFAULT_WATCH_IMAGE: "/Ahmed/Photos/default-watch.jpg",
   DEBOUNCE_DELAY: 300,
   LAZY_LOAD_THRESHOLD: 0.5,
 }
@@ -14,7 +11,7 @@ const state = {
   currentPage: 1,
   totalPages: 1,
   products: [],
-  currentCollection: null,
+  currentEntity: null, // Can be either collection or brand
   allItems: [],
   filteredItems: [],
   currentFilters: {},
@@ -22,11 +19,11 @@ const state = {
   error: null,
   sortOrder: "default",
   searchQuery: "",
+  pageType: null, // 'collection' or 'brand'
 }
 
-// Helper function to normalize collection names
+// Helper functions for normalizing names
 function normalizeCollectionName(name) {
-  // Convert URL-friendly names back to database names
   const collectionNameMap = {
     "classic-dress": "Classic & Dress Collection",
     "casual-everyday": "Casual & Everyday Collection",
@@ -39,8 +36,30 @@ function normalizeCollectionName(name) {
     Aviation: "Aviation & Travel Collection",
     Luxury: "Luxury & Heritage Collection",
   }
-
   return collectionNameMap[name] || name
+}
+
+function normalizeBrandName(name) {
+  const brandNameMap = {
+      "rolex": "Rolex",
+      "omega": "Omega",
+      "cartier": "Cartier",
+      "patek-philippe": "Patek Philippe",
+      "patek": "Patek Philippe",
+      "audemars-piguet": "Audemars Piguet",
+      "ap": "Audemars Piguet",
+      "a-lange-sohne": "A.Lange & Söhne",
+      "lange": "A.Lange & Söhne",
+      "A.lange ": "A.Lange & Söhne",
+      "vacheron-constantin": "Vacheron Constantin",
+      "vc": "Vacheron Constantin",
+      "jacob-co": "Jacob & Co",
+      "Jacob ": "Jacob & Co",
+      "richard-mille": "Richard Mille",
+      "rm": "Richard Mille",
+      "breitling": "Breitling"
+  }
+  return brandNameMap[name] || name
 }
 
 // Utility Functions
@@ -76,175 +95,8 @@ const utils = {
   },
 }
 
-// Update the DOMContentLoaded event handler
-document.addEventListener("DOMContentLoaded", async () => {
-  console.log("Collection page script starting...")
-  console.log("Current URL:", window.location.href)
-  console.log("Current pathname:", window.location.pathname)
-
-  try {
-    // Get collection name from URL with multiple fallback methods
-    const collectionName = extractCollectionFromURL()
-
-    // Normalize the collection name (convert URL-friendly format to database format)
-    const normalizedCollectionName = normalizeCollectionName(collectionName)
-
-    // Initialize page number from URL if present
-    const urlParams = new URLSearchParams(window.location.search)
-    state.currentPage = Number.parseInt(urlParams.get("page")) || 1
-    state.sortOrder = urlParams.get("sort") || "default"
-
-
-    // Update collection filter
-    updateCollectionFilter(normalizedCollectionName)
-
-    // Debugging information
-    console.group("Collection Page Loading")
-    console.log("URL:", window.location.href)
-    console.log("Extracted collection:", collectionName)
-    console.log("Normalized collection:", normalizedCollectionName)
-
-    // Fetch collection data with timeout
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 8000) // 8 second timeout
-
-    const apiUrl = `${CONFIG.API_BASE_URL}/collections/name/${encodeURIComponent(normalizedCollectionName)}`
-    console.log("Fetching from:", apiUrl)
-
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      signal: controller.signal,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    })
-
-    clearTimeout(timeoutId)
-
-    console.log("Response status:", response.status)
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      let errorMessage
-      try {
-        const errorJson = JSON.parse(errorText)
-        errorMessage = errorJson.message || `Server error: ${response.status}`
-      } catch {
-        errorMessage = `Server error: ${response.status}`
-      }
-
-      const errorContent = `
-        <div class="error">
-          <p class="error-message">
-            ${errorMessage}
-          </p>
-        </div>
-      `
-
-      createModal(
-        'Error',
-        errorContent,
-        [
-          {
-            text: 'Retry',
-            class: 'confirm-btn',
-            clickHandler: () => {
-              closeModal(document.querySelector('.modal-overlay'))
-              window.location.reload()
-            }
-          },
-          {
-            text: 'Close',
-            class: 'cancel-btn',
-            clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
-          }
-        ]
-      )
-      return
-    }
-
-    const result = await response.json()
-
-    if (!result.success || !result.data) {
-      throw new Error('Invalid response format from server')
-    }
-
-    const collectionData = result.data
-    console.log("Collection data:", collectionData)
-    console.groupEnd()
-
-    // Store collection data in state
-    state.currentCollection = collectionData
-
-    // Update page content
-    updateCollectionPage(collectionData)
-
-    // Initialize slider if models exist
-    if (collectionData.featuredItems?.length > 0) {
-      initSlider(collectionData.featuredItems)
-    } else {
-      console.warn("No featured items for collection:", normalizedCollectionName)
-      document.querySelector(".slider-container")?.classList.add("hidden")
-    }
-
-    // Update page metadata
-    updatePageMetadata(collectionData)
-
-    // Load initial products
-    await loadProducts()
-
-    // Setup event listeners for filters
-    setupFilterEventListeners()
-  } catch (error) {
-    console.error('Collection page error:', error)
-    
-    let errorMessage = 'An unexpected error occurred'
-    if (error.name === 'AbortError') {
-      errorMessage = 'Request timed out. Please check your connection and try again.'
-    } else if (error.message) {
-      errorMessage = error.message
-    }
-
-    const errorContent = `
-      <div class="error">
-        <p class="error-message">
-          ${errorMessage}
-        </p>
-      </div>
-    `
-
-    createModal(
-      'Error',
-      errorContent,
-      [
-        {
-          text: 'Retry',
-          class: 'confirm-btn',
-          clickHandler: () => {
-            closeModal(document.querySelector('.modal-overlay'))
-            window.location.reload()
-          }
-        },
-        {
-          text: 'Close',
-          class: 'cancel-btn',
-          clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
-        }
-      ]
-    )
-
-    // Fallback to default collection if this wasn't already the default
-    if (normalizedCollectionName !== "Classic & Dress Collection") {
-      console.log("Attempting fallback to Classic & Dress Collection...")
-      window.location.href = "/collections/classic-dress"
-    }
-  }
-})
-
+// URL extraction functions
 function extractCollectionFromURL() {
-  // Try pathname first (e.g., /collections/classic-dress)
   const pathParts = window.location.pathname.split("/")
   const collectionsIndex = pathParts.indexOf("collections")
 
@@ -252,12 +104,10 @@ function extractCollectionFromURL() {
     return pathParts[collectionsIndex + 1]
   }
 
-  // Try query parameter (e.g., ?collection=classic-dress)
   const urlParams = new URLSearchParams(window.location.search)
   const queryCollection = urlParams.get("collection")
   if (queryCollection) return queryCollection
 
-  // Try last path part (legacy support)
   const lastPart = pathParts[pathParts.length - 1].replace(".html", "")
   if (lastPart && !["Collection-Page", "collections"].includes(lastPart)) {
     return lastPart
@@ -267,33 +117,65 @@ function extractCollectionFromURL() {
   return "classic-dress"
 }
 
-async function parseErrorResponse(response) {
-  try {
-    const errorText = await response.text()
-    return JSON.parse(errorText)
-  } catch {
-    return { message: await response.text() }
+function extractBrandFromURL() {
+  const pathParts = window.location.pathname.split("/")
+  const brandsIndex = pathParts.indexOf("brands")
+
+  if (brandsIndex > -1 && brandsIndex < pathParts.length - 1) {
+    return pathParts[brandsIndex + 1]
   }
+
+  const urlParams = new URLSearchParams(window.location.search)
+  const queryBrand = urlParams.get("brand")
+  if (queryBrand) return queryBrand
+
+  const lastPart = pathParts[pathParts.length - 1].replace(".html", "")
+  if (lastPart && !["Brand-Page", "brands"].includes(lastPart)) {
+    return lastPart
+  }
+
+  console.log("No brand specified in URL, defaulting to Rolex")
+  return "rolex"
 }
 
-function updatePageMetadata(collectionData) {
-  // Update document title
-  document.title = `Vaultique | ${collectionData.name}`
+// Entity-specific filter functions
+function updateCollectionFilter(currentCollection) {
+  const collectionSelect = document.getElementById("collection")
+  if (!collectionSelect) return
 
-  // Update meta description if needed
-  const metaDesc = document.querySelector('meta[name="description"]')
-  if (metaDesc) {
-    metaDesc.content = collectionData.description || `Explore ${collectionData.name} watches collection at Vaultique`
-  }
+  const optionsToKeep = currentCollection
+  const optionsArray = Array.from(collectionSelect.options)
 
-  // Update canonical URL
-  const canonicalLink = document.querySelector('link[rel="canonical"]')
-  if (canonicalLink) {
-    canonicalLink.href =
-      window.location.origin + `/collections/${collectionData.name.toLowerCase().replace(/\s+/g, "-")}`
-  }
+  collectionSelect.innerHTML = ""
+
+  optionsArray.forEach((option) => {
+    if (optionsToKeep.includes(option.value)) {
+      collectionSelect.appendChild(option)
+    }
+  })
+
+  collectionSelect.value = currentCollection
 }
 
+function updateBrandFilter(currentBrand) {
+  const brandSelect = document.getElementById("brand")
+  if (!brandSelect) return
+
+  const optionsToKeep = currentBrand
+  const optionsArray = Array.from(brandSelect.options)
+
+  brandSelect.innerHTML = ""
+
+  optionsArray.forEach((option) => {
+    if (optionsToKeep.includes(option.value)) {
+      brandSelect.appendChild(option)
+    }
+  })
+
+  brandSelect.value = currentBrand
+}
+
+// Entity-specific page update functions
 function updateCollectionPage(collectionData) {
   console.log("Updating collection page with data:", collectionData)
 
@@ -321,7 +203,7 @@ function updateCollectionPage(collectionData) {
     collectionLogo.textContent = collectionData.name
   }
 
-  state.currentCollection = collectionData.name
+  state.currentEntity = collectionData.name
 
   // Update text overlay
   const collectionHeader = document.getElementById("collectionHeader")
@@ -331,13 +213,9 @@ function updateCollectionPage(collectionData) {
   if (collectionDescription)
     collectionDescription.textContent = collectionData.description || "Discover our exquisite collection of timepieces."
 
-  // Update page title
-  document.title = `Vaultique | ${collectionData.name}`
-
   // Update collection filter in the filter panel to match current collection
   const collectionSelect = document.getElementById("collection")
   if (collectionSelect) {
-    // First check if the option already exists
     let optionExists = false
     for (let i = 0; i < collectionSelect.options.length; i++) {
       if (collectionSelect.options[i].value === collectionData.name) {
@@ -347,7 +225,6 @@ function updateCollectionPage(collectionData) {
       }
     }
 
-    // If the option doesn't exist, create it
     if (!optionExists) {
       const option = document.createElement("option")
       option.value = collectionData.name
@@ -358,9 +235,92 @@ function updateCollectionPage(collectionData) {
   }
 }
 
+function updateBrandPage(brandData) {
+  console.log("Updating brand page with data:", brandData)
+
+  // Update hero video
+  const heroVideoSource = document.getElementById("brandVideoSource")
+  if (heroVideoSource && brandData.heroVideo) {
+    heroVideoSource.src = brandData.heroVideo
+    const videoElement = heroVideoSource.parentElement
+    if (videoElement) {
+      videoElement.load()
+      videoElement.play().catch((err) => console.warn("Auto-play prevented:", err))
+    }
+  }
+
+  // Update brand image
+  const brandImage = document.getElementById("brandCoverImage")
+  if (brandImage && brandData.coverImage) {
+    brandImage.src = brandData.coverImage
+    brandImage.alt = `${brandData.name} Cover Image`
+  }
+
+  // Update brand Name
+  const brandLogo = document.getElementById("brandLogo")
+  if (brandLogo && brandData.name) {
+    brandLogo.textContent = brandData.name
+  }
+
+  state.currentEntity = brandData.name
+
+  // Update text overlay
+  const brandHeader = document.getElementById("brandHeader")
+  const brandDescription = document.getElementById("brandDescription")
+
+  if (brandHeader) brandHeader.textContent = brandData.header || "Premium Brand"
+  if (brandDescription)
+    brandDescription.textContent = brandData.description || "Discover our exquisite collection of timepieces."
+
+  // Update brand filter in the filter panel to match current brand
+  const brandSelect = document.getElementById("brand")
+  if (brandSelect) {
+    let optionExists = false
+    for (let i = 0; i < brandSelect.options.length; i++) {
+      if (brandSelect.options[i].value === brandData.name) {
+        brandSelect.options[i].selected = true
+        optionExists = true
+        break
+      }
+    }
+
+    if (!optionExists) {
+      const option = document.createElement("option")
+      option.value = brandData.name
+      option.textContent = brandData.name
+      option.selected = true
+      brandSelect.appendChild(option)
+    }
+  }
+}
+
+// Shared functions
+function updatePageMetadata(entityData) {
+  // Update document title
+  document.title = `Vaultique | ${entityData.name}`
+  
+  // Update meta description if needed
+  const metaDesc = document.querySelector('meta[name="description"]')
+  if (metaDesc) {
+    metaDesc.content = entityData.description || 
+      (state.pageType === 'collection' 
+        ? `Explore ${entityData.name} watches collection at Vaultique` 
+        : `Explore ${entityData.name} watches at Vaultique`)
+  }
+  
+  // Update canonical URL
+  const canonicalLink = document.querySelector('link[rel="canonical"]')
+  if (canonicalLink) {
+    const urlPath = state.pageType === 'collection' 
+      ? `/collections/${entityData.name.toLowerCase().replace(/\s+/g, "-")}`
+      : `/brands/${entityData.name.toLowerCase().replace(/\s+/g, "-")}`
+    canonicalLink.href = window.location.origin + urlPath
+  }
+}
+
 function initSlider(featuredItems) {
   if (!featuredItems || featuredItems.length === 0) {
-    console.warn("No featured items found for this collection")
+    console.warn(`No featured items found for this ${state.pageType}`)
     return
   }
 
@@ -383,7 +343,7 @@ function initSlider(featuredItems) {
     const slide = document.createElement("div")
     slide.className = `slide ${index === 0 ? "active" : ""}`
     slide.dataset.model = index + 1
-    
+
     slide.innerHTML = `
       <div class="slide-content">
         <div class="watch-info">
@@ -418,31 +378,8 @@ function initSlider(featuredItems) {
   )
 }
 
-function updateCollectionFilter(currentCollection) {
-  const collectionSelect = document.getElementById("collection")
-  if (!collectionSelect) return
-
-  // Keep only the current collection and "All" option
-  const optionsToKeep = currentCollection
-  const optionsArray = Array.from(collectionSelect.options)
-
-  // Clear all options
-  collectionSelect.innerHTML = ""
-
-  // Re-add only the options we want to keep
-  optionsArray.forEach((option) => {
-    if (optionsToKeep.includes(option.value)) {
-      collectionSelect.appendChild(option)
-    }
-  })
-
-  // Set the selected collection
-  collectionSelect.value = currentCollection
-}
-
-// Product Loading and Filtering Functions
 async function loadProducts() {
-  if (!state.currentCollection) return
+  if (!state.currentEntity) return
 
   try {
     showLoadingState()
@@ -456,9 +393,10 @@ async function loadProducts() {
       sort: state.sortOrder,
     })
 
-    // Add collection filter
-    if (state.currentCollection._id) {
-      queryParams.append("Vcollection", state.currentCollection._id)
+    // Add entity-specific filter
+    if (state.currentEntity._id) {
+      const filterKey = state.pageType === 'collection' ? 'Vcollection' : 'brand'
+      queryParams.append(filterKey, state.currentEntity._id)
     }
 
     // Add other filters
@@ -519,66 +457,20 @@ function updateProductGrid(products) {
   if (!productGrid) return
 
   if (!products.length) {
-    productGrid.innerHTML = '<div class="no-products">No products found for this collection.</div>'
+    const noProductsText = state.pageType === 'collection' 
+      ? 'No products found for this collection.' 
+      : 'No products found for this brand.'
+    productGrid.innerHTML = `<div class="no-products">${noProductsText}</div>`
     return
   }
 
-  const fragment = document.createDocumentFragment()
-  products.forEach((product, index) => {
-    const card = createProductCard(product, index)
-    fragment.appendChild(card)
-  })
-
   productGrid.innerHTML = ""
-  productGrid.appendChild(fragment)
-}
-
-function createProductCard(product, index) {
-  const card = utils.createElement("div", "product-card", {
-    style: `animation-delay: ${index * 50}ms`,
-    "data-product-id": product._id,
+  products.forEach(product => {
+    const card = document.createElement('div')
+    card.className = 'product-card'
+    card.setAttribute('data-product', JSON.stringify(product).replace(/'/g, "&apos;"))
+    productGrid.appendChild(card)
   })
-
-  const inStock = product.stock || (product.stockCount && product.stockCount > 0)
-  const stockBadge = inStock
-    ? '<p class="stock in-stock">In Stock</p>'
-    : '<p class="stock out-of-stock">Out of Stock</p>'
-
-  card.innerHTML = `
-    <div class="product-image-container">
-      <div class="wishlist-icon" onclick="toggleWishlist(this, '${product._id}')" role="button" tabindex="0" aria-label="Add to wishlist">
-        <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
-        </svg>
-      </div>
-      <a href="${product.productPageUrl || "#"}" aria-label="View ${product.name} details">
-        <img src="${product.image}" 
-             alt="${product.name}" 
-             loading="lazy">
-      </a>
-    </div>
-    <div class="product-details">
-      <a href="${product.productPageUrl || "#"}">
-        <h4>${product.name}</h4>
-      </a>
-      <div class="hover-buttons">
-        <button class="quick-view" 
-                onclick="toggleQuickView(${JSON.stringify(product).replace(/"/g, "&quot;")})"
-                aria-label="Quick view ${product.name}">
-          Quick View
-        </button>
-        <button class="compare" 
-                onclick="addToCompare('${product._id}')"
-                aria-label="Compare ${product.name}">
-          Compare
-        </button>
-      </div>
-      <p class="price">${utils.formatPrice(product.price)}</p>
-      ${stockBadge}
-    </div>
-  `
-
-  return card
 }
 
 function updatePagination() {
@@ -686,8 +578,11 @@ function handleFilterChange(event) {
 
   // Select elements
   document.querySelectorAll(".filters select").forEach((select) => {
-    if (select.id === "collection") {
-      // Always include collection value
+    const isEntityFilter = (state.pageType === 'collection' && select.id === "collection") || 
+                          (state.pageType === 'brand' && select.id === "brand")
+    
+    if (isEntityFilter) {
+      // Always include entity value
       filters[select.id] = select.value
     } else if (select.value && select.value !== "All") {
       filters[select.id] = select.value
@@ -758,17 +653,17 @@ function updateURLParams(params) {
 
 // Clear all filters
 function clearFilters() {
-  // Store current collection
-  const collectionSelect = document.getElementById("collection")
-  const currentCollectionValue = collectionSelect?.value
+  // Store current entity
+  const entitySelect = document.getElementById(state.pageType === 'collection' ? "collection" : "brand")
+  const currentEntityValue = entitySelect?.value
 
-  // Determine if we're on a collection page
-  const isCollectionPage = window.location.pathname.includes('/collections/')
-
-  // Reset all select elements except collection on collection page
+  // Reset all select elements except entity on entity page
   document.querySelectorAll(".filters select").forEach((select) => {
-    if (isCollectionPage && select.id === "collection") {
-      // Keep collection value on collection page
+    const isEntitySelect = (state.pageType === 'collection' && select.id === "collection") || 
+                          (state.pageType === 'brand' && select.id === "brand")
+    
+    if (isEntitySelect) {
+      // Keep entity value on entity page
       return
     }
     select.value = "All"
@@ -787,11 +682,11 @@ function clearFilters() {
   const searchInput = document.getElementById("searchInput")
   if (searchInput) searchInput.value = ""
 
-  // Reset state but keep collection on collection page
+  // Reset state but keep entity on entity page
   state.currentFilters = {}
   
-  if (isCollectionPage && currentCollectionValue) {
-    state.currentFilters.collection = currentCollectionValue
+  if (currentEntityValue) {
+    state.currentFilters[state.pageType === 'collection' ? 'collection' : 'brand'] = currentEntityValue
   }
   
   state.searchQuery = ""
@@ -804,14 +699,14 @@ function clearFilters() {
   })
   document.querySelector('.sort-options button[data-sort="default"]')?.classList.add("active")
 
-  // Restore collection select value if it was changed
-  if (isCollectionPage && collectionSelect && currentCollectionValue) {
-    collectionSelect.value = currentCollectionValue
+  // Restore entity select value if it was changed
+  if (entitySelect && currentEntityValue) {
+    entitySelect.value = currentEntityValue
   }
 
-  // Ensure collection is preserved in the state
-  if (isCollectionPage && state.currentCollection) {
-    state.currentCollection = state.currentCollection
+  // Ensure entity is preserved in the state
+  if (state.currentEntity) {
+    state.currentEntity = state.currentEntity
   }
 
   loadProducts()
@@ -912,3 +807,203 @@ window.addEventListener("popstate", () => {
   state.currentPage = 1
   loadProducts()
 })
+
+// Main initialization function
+async function initializePage() {
+  console.log("Page script starting...")
+  console.log("Current URL:", window.location.href)
+  console.log("Current pathname:", window.location.pathname)
+
+  try {
+    // Determine page type (collection or brand)
+    const isCollectionPage = window.location.pathname.includes('/collections/')
+    const isBrandPage = window.location.pathname.includes('/brands/')
+    
+    if (isCollectionPage) {
+      state.pageType = 'collection'
+    } else if (isBrandPage) {
+      state.pageType = 'brand'
+    } else {
+      throw new Error('Unknown page type')
+    }
+
+    // Get entity name from URL
+    const entityName = state.pageType === 'collection' 
+      ? extractCollectionFromURL() 
+      : extractBrandFromURL()
+
+    // Normalize the entity name
+    const normalizedEntityName = state.pageType === 'collection'
+      ? normalizeCollectionName(entityName)
+      : normalizeBrandName(entityName)
+
+    // Initialize page number from URL if present
+    const urlParams = new URLSearchParams(window.location.search)
+    state.currentPage = Number.parseInt(urlParams.get("page")) || 1
+    state.sortOrder = urlParams.get("sort") || "default"
+
+    // Update entity filter
+    if (state.pageType === 'collection') {
+      updateCollectionFilter(normalizedEntityName)
+    } else {
+      updateBrandFilter(normalizedEntityName)
+    }
+
+    // Debugging information
+    console.group(`${state.pageType.charAt(0).toUpperCase() + state.pageType.slice(1)} Page Loading`)
+    console.log("URL:", window.location.href)
+    console.log("Extracted entity:", entityName)
+    console.log("Normalized entity:", normalizedEntityName)
+
+    // Fetch entity data with timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 8000) // 8 second timeout
+
+    const apiUrl = `${CONFIG.API_BASE_URL}/${state.pageType}s/name/${encodeURIComponent(normalizedEntityName)}`
+    console.log("Fetching from:", apiUrl)
+
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    })
+
+    clearTimeout(timeoutId)
+
+    console.log("Response status:", response.status)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      let errorMessage
+      try {
+        const errorJson = JSON.parse(errorText)
+        errorMessage = errorJson.message || `Server error: ${response.status}`
+  } catch {
+        errorMessage = `Server error: ${response.status}`
+  }
+
+  const errorContent = `
+    <div class="error">
+      <p class="error-message">
+        ${errorMessage}
+      </p>
+    </div>
+      `
+
+  createModal(
+    'Error',
+    errorContent,
+    [
+      {
+        text: 'Retry',
+        class: 'confirm-btn',
+        clickHandler: () => {
+              closeModal(document.querySelector('.modal-overlay'))
+              window.location.reload()
+        }
+      },
+      {
+        text: 'Close',
+        class: 'cancel-btn',
+        clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
+      }
+    ]
+      )
+      return
+    }
+
+    const result = await response.json()
+
+    if (!result.success || !result.data) {
+      throw new Error('Invalid response format from server')
+    }
+
+    const entityData = result.data
+    console.log("Entity data:", entityData)
+    console.groupEnd()
+
+    // Store entity data in state
+    state.currentEntity = entityData
+
+    // Update page content
+    if (state.pageType === 'collection') {
+      updateCollectionPage(entityData)
+    } else {
+      updateBrandPage(entityData)
+    }
+
+    // Initialize slider if featured items exist
+    const featuredItems = state.pageType === 'collection' 
+      ? entityData.featuredItems 
+      : entityData.featuredModels
+    
+    if (featuredItems?.length > 0) {
+      initSlider(featuredItems)
+    } else {
+      console.warn(`No featured items for ${state.pageType}:`, normalizedEntityName)
+      document.querySelector(".slider-container")?.classList.add("hidden")
+    }
+
+    // Update page metadata
+    updatePageMetadata(entityData)
+
+    // Load initial products
+    await loadProducts()
+
+    // Setup event listeners for filters
+    setupFilterEventListeners()
+  } catch (error) {
+    console.error('Page error:', error)
+    
+    let errorMessage = 'An unexpected error occurred'
+  if (error.name === 'AbortError') {
+      errorMessage = 'Request timed out. Please check your connection and try again.'
+  } else if (error.message) {
+      errorMessage = error.message
+  }
+  
+  const errorContent = `
+    <div class="error">
+      <p class="error-message">
+        ${errorMessage}
+      </p>
+    </div>
+    `
+  
+  createModal(
+    'Error',
+    errorContent,
+    [
+      {
+        text: 'Retry',
+        class: 'confirm-btn',
+        clickHandler: () => {
+            closeModal(document.querySelector('.modal-overlay'))
+            window.location.reload()
+        }
+      },
+      {
+        text: 'Close',
+        class: 'cancel-btn',
+        clickHandler: () => closeModal(document.querySelector('.modal-overlay'))
+      }
+    ]
+    )
+
+    // Fallback to default entity if this wasn't already the default
+    if (state.pageType === 'collection' && normalizedEntityName !== "Classic & Dress Collection") {
+      console.log("Attempting fallback to Classic & Dress Collection...")
+      window.location.href = "/collections/classic-dress"
+    } else if (state.pageType === 'brand' && normalizedEntityName !== "Rolex") {
+      console.log("Attempting fallback to Rolex...")
+      window.location.href = "/brands/rolex"
+    }
+  }
+}
+
+// Initialize the page when DOM is loaded
+document.addEventListener("DOMContentLoaded", initializePage)
