@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const header = document.querySelector('header');
     
     if (searchButton) {
-        searchButton2.addEventListener('input', debounce(handleSearch, 300));
+        searchButton.addEventListener('input', debounce(handleSearch, 300));
     }
     
     if (searchButton2) {
@@ -240,11 +240,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             searchDiv.style.border = '1px solid black';
             buttonCount++;
-        } else if (buttonCount === 1 && searchField.value == "") {
+            searchField.focus();
+        } else if (buttonCount === 1 && searchField.value === "") {
             searchDiv.style.border = 'none';
             searchField.style.width = '0px';
             searchDiv.style.width = '40px';
             buttonCount--;
+            resetSearchUI();
         }
     }
 
@@ -265,45 +267,73 @@ async function handleSearch(event) {
     const headerBottom = document.getElementById('header-bottom');
     const header = document.querySelector('header');
     const searchResultsDiv = document.getElementById('search-results');
+    const searchField = event.target;
 
-    // Ensure required DOM elements exist
+    // Debug logs
+    console.log('[handleSearch] Called from:', searchField.id, 'Query:', query);
+    console.log('[handleSearch] searchExtension:', searchExtension, 'headerBottom:', headerBottom, 'header:', header, 'searchResultsDiv:', searchResultsDiv);
+
     if (!searchExtension || !headerBottom || !header || !searchResultsDiv) {
         console.error('Required DOM elements not found for search');
         return;
     }
 
-    // Show search UI immediately when user starts typing
-    if (query.length > 0) {
+    if (query.length >= 2) {
         headerBottom.style.display = 'none';
         header.classList.remove('header-unscrolled');
         header.classList.add('header-scrolled');
         searchExtension.style.display = 'flex';
-        
-        // Show loading state
-        searchResultsDiv.innerHTML = '<div class="search-loading">Searching...</div>';
-
+        searchResultsDiv.innerHTML = `
+            <div class="search-loading">
+                <div class="loading-spinner"></div>
+                <p>Searching...</p>
+            </div>`;
+        console.log('[handleSearch] Showing searchExtension and searchResultsDiv');
         try {
-            // Fetch search results from the server
-            const response = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=8`);
+            const response = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=8`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
             if (!response.ok) {
                 throw new Error(`Search failed: ${response.status}`);
             }
 
             const result = await response.json();
+            console.log('[handleSearch] API result:', result);
 
-            if (!result.success) {
-                throw new Error(result.error || 'Search request failed');
+            let products = [];
+            if (result.data && Array.isArray(result.data.products)) {
+                products = result.data.products;
+            } else if (Array.isArray(result.data)) {
+                products = result.data;
             }
 
-            const products = result.data || [];
             displaySearchResults(products, query);
         } catch (error) {
             console.error('Search error:', error);
-            searchResultsDiv.innerHTML = '<div class="no-results">Error loading search results</div>';
+            searchResultsDiv.innerHTML = `
+                <div class="search-error">
+                    <p>Error loading search results</p>
+                    <p class="error-details">${error.message}</p>
+                    <button class="retry-button" onclick="handleSearch(event)">Retry</button>
+                </div>`;
         }
+    } else if (query.length === 1) {
+        searchExtension.style.display = 'flex';
+        searchResultsDiv.innerHTML = `
+            <div class="search-suggestions">
+                <p>Type at least 2 characters to search</p>
+                <p class="suggestion-list">
+                    Try searching for brand names, watch types, or features
+                </p>
+            </div>`;
+        console.log('[handleSearch] Query too short, showing suggestions');
     } else {
-        // Reset UI when query is empty
         resetSearchUI();
+        console.log('[handleSearch] Query empty, resetting UI');
     }
 }
 
@@ -311,7 +341,7 @@ async function handleSearch(event) {
 function displaySearchResults(products, query) {
     const searchResultsDiv = document.getElementById('search-results');
     searchResultsDiv.innerHTML = '';
-
+    console.log('[displaySearchResults] Called for:', query, 'Products:', products);
     if (!products || products.length === 0) {
         searchResultsDiv.innerHTML = `
             <div class="no-results">
@@ -322,7 +352,16 @@ function displaySearchResults(products, query) {
                     <li>Watch types (e.g., Automatic, Chronograph)</li>
                     <li>Features (e.g., Diver, Pilot)</li>
                 </ul>
+                <div class="search-tips">
+                    <p>Tips:</p>
+                    <ul>
+                        <li>Check your spelling</li>
+                        <li>Try more general terms</li>
+                        <li>Use brand names</li>
+                    </ul>
+                </div>
             </div>`;
+        console.log('[displaySearchResults] No products found');
         return;
     }
 
@@ -351,13 +390,14 @@ function displaySearchResults(products, query) {
         brandHeader.textContent = brand;
         brandSection.appendChild(brandHeader);
 
-        brandProducts.forEach(product => {
+        brandProducts.forEach((product, index) => {
             const productLink = document.createElement('a');
             productLink.href = `/product.html?id=${product._id || product.id}`;
             productLink.classList.add('search-result-item');
             productLink.setAttribute('role', 'option');
             productLink.setAttribute('tabindex', '0');
             productLink.setAttribute('aria-selected', 'false');
+            productLink.setAttribute('data-index', index);
 
             const imgContainer = document.createElement('div');
             imgContainer.classList.add('search-result-item-img-cont');
@@ -367,7 +407,7 @@ function displaySearchResults(products, query) {
             img.alt = product.name;
             img.classList.add('search-result-item-img');
             img.onerror = () => {
-                img.src = '/Watches/placeholder.png'; // Fallback image
+                img.src = '/Watches/placeholder.png';
             };
 
             const productInfo = document.createElement('div');
@@ -409,7 +449,20 @@ function displaySearchResults(products, query) {
                         e.preventDefault();
                         productLink.click();
                         break;
+                    case 'Escape':
+                        e.preventDefault();
+                        resetSearchUI();
+                        break;
                 }
+            });
+
+            // Add hover effects
+            productLink.addEventListener('mouseenter', () => {
+                productLink.setAttribute('aria-selected', 'true');
+            });
+
+            productLink.addEventListener('mouseleave', () => {
+                productLink.setAttribute('aria-selected', 'false');
             });
 
             brandSection.appendChild(productLink);
@@ -420,22 +473,35 @@ function displaySearchResults(products, query) {
 
     searchResultsDiv.appendChild(resultsContainer);
 
-    // Add a "View All Results" link if there are more results
+    // Add a "View All Results" link
     const viewAllLink = document.createElement('a');
     viewAllLink.href = `/products.html?search=${encodeURIComponent(query)}`;
     viewAllLink.classList.add('view-all-results');
     viewAllLink.textContent = `View all results for "${query}"`;
     searchResultsDiv.appendChild(viewAllLink);
+
+    // Focus the first result
+    const firstResult = resultsContainer.querySelector('.search-result-item');
+    if (firstResult) {
+        firstResult.focus();
+    }
+    console.log('[displaySearchResults] Results rendered, searchResultsDiv:', searchResultsDiv);
 }
 
-// Reset the search UI when the query is too short
+// Reset the search UI when the query is empty
 function resetSearchUI() {
     const searchExtension = document.getElementById('search-extension');
     const headerBottom = document.getElementById('header-bottom');
     const header = document.querySelector('header');
+    const searchField = document.getElementById('searchField');
+    const searchField2 = document.getElementById('searchField2');
+    const searchResultsDiv = document.getElementById('search-results');
 
     if (searchExtension) searchExtension.style.display = 'none';
     if (headerBottom) headerBottom.style.display = 'flex';
+    if (searchField) searchField.value = '';
+    if (searchField2) searchField2.value = '';
+    if (searchResultsDiv) searchResultsDiv.innerHTML = '';
 
     if (header && window.scrollY === 0) {
         header.classList.remove('header-scrolled');
@@ -448,10 +514,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchField = document.getElementById('searchField');
     const searchField2 = document.getElementById('searchField2');
 
+    // Attach input event listeners to both search fields
     if (searchField) {
         searchField.addEventListener('input', debounce(handleSearch, 300));
     }
-
     if (searchField2) {
         searchField2.addEventListener('input', debounce(handleSearch, 300));
     }
