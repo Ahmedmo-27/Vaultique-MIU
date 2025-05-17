@@ -250,57 +250,81 @@ router.get("/", async (req, res) => {
         .populate('brand', 'name logo')
         .populate('Vcollection', 'name'),
       Product.countDocuments(query),
-      Brand.find(),
-      Collection.find()
+      Brand.find().select('name logo'),
+      Collection.find().select('name')
     ]);
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limit);
-    const pagination = {
-      currentPage: page,
-      totalPages,
-      totalItems: total,
-      itemsPerPage: limit
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
+
+    // Prepare response data
+    const responseData = {
+      products,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+        hasNextPage,
+        hasPreviousPage
+      },
+      filters: {
+        available: {
+          brands: allBrands,
+          collections: allCollections
+        },
+        current: {
+          Vcollection,
+          brand,
+          strapMaterial,
+          movement,
+          waterResistance,
+          caseMaterial,
+          dialColor,
+          minPrice,
+          maxPrice,
+          inStock,
+          gender,
+          sort
+        }
+      }
     };
 
-    // If it's an API request or format=json, return JSON
-    if (format === 'json' || req.xhr || req.headers.accept.includes('application/json')) {
-      return res.json({
-        success: true,
-        data: {
-          products,
-          pagination,
-          filters: {
-            brands: allBrands,
-            collections: allCollections
-          }
-        },
-        requestId,
-        timing: {
-          duration: Date.now() - startTime
-        }
-      });
-    }
-
+    // Always return JSON for /api/products
+    res.setHeader('Content-Type', 'application/json');
+    res.json({
+      success: true,
+      data: responseData,
+      requestId,
+      timing: {
+        duration: Date.now() - startTime
+      }
+    });
 
   } catch (err) {
     console.error(`[${requestId}] Error fetching products:`, err);
     
-    if (format === 'json' || req.xhr || req.headers.accept.includes('application/json')) {
-      return res.status(500).json({
-        success: false,
-        message: "Server error",
-        requestId,
-        timing: {
-          duration: Date.now() - startTime
-        }
-      });
+    const errorResponse = {
+      success: false,
+      message: "Server error",
+      requestId,
+      timing: {
+        duration: Date.now() - startTime
+      }
+    };
+
+    if (process.env.NODE_ENV === 'development') {
+      errorResponse.error = {
+        message: err.message,
+        stack: err.stack
+      };
     }
 
-    res.status(500).render('error', {
-      message: "An error occurred while fetching products",
-      error: process.env.NODE_ENV === 'development' ? err : {}
-    });
+    // Always return JSON for errors too
+    res.setHeader('Content-Type', 'application/json');
+    res.status(500).json(errorResponse);
   }
 });
 
@@ -321,7 +345,7 @@ router.get("/:id", async (req, res) => {
 
     const product = await Product.findById(req.params.id)
       .populate('brand')
-      .populate('collection');
+      .populate('Vcollection','name');
     
     if (!product) {
       return res.status(404).json({
