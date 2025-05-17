@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions: # Add this block
+  id-token: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
