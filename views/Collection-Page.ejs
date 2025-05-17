@@ -27,7 +27,7 @@
             <section class="section topic">
                 <div class="video-container">
                     <video autoplay muted loop playsinline>
-                        <source src="" id="brandVideoSource">
+                        <source src="<%= collection.heroVideo %>" id="brandVideoSource">
                     </video>
                 </div>
             </section>
@@ -58,12 +58,12 @@
             </div>
     
             <div class="image" style="margin-bottom: -90px;">
-                <img src="/placeholder.svg" alt="Brand Image" id="brandCoverImage">
+                <img src="<%= collection.coverImage %>" alt="Brand Image" id="brandCoverImage">
                 <div class="brand-logo">
                     <h1 id="brandLogo"><%= collection.name %> </h1>
                 </div>
                 <div class="text-overlay">
-                    <h2 id="brandHeader"><%= collection.title %></h2>
+                    <h2 id="brandHeader"><%= collection.header %></h2>
                     <p id="brandDescription">
                         <%= collection.description %>
                     </p>
