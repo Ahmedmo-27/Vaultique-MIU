@@ -65,3 +65,7 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DB3FABF9FC864856810435CB6AC3F7E5 }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID_f6266cf7-c2b8-427d-9419-b10da80be5aa}}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID_e3c51588-fa5c-4ba7-8d94-aa0cbb420b39}}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_30659de5-7fc4-41a4-a501-2a29679ca935 }}
+          client-secret: ${{ secrets.AZUREAPPSERVICE_CLIENT_SECRET_03f1531f-3d26-42ec-bb8a-63d37a65cb48 }}
