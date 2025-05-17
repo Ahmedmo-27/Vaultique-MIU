@@ -190,24 +190,23 @@ body
 }
 
 @media screen and (max-width: 760px) {
-
   .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Adjust for smaller screens */
-    margin-top: 100px; /* Adjust margin for smaller screens */
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    margin-top: 100px;
   }
 
-  .product-image-container
-  {
+  .product-image-container {
     height: 250px;
   }
 
   .product-card {
     height: auto;
-    padding : 8px !important;
+    padding: 8px !important;
+    position: relative;
   }
 
   .product-card img {
-    height: 150px; 
+    height: 150px;
     max-width: 100%;
   }
 
@@ -226,6 +225,43 @@ body
   .stock {
     font-size: 12px;
     margin-top: 3px;
+  }
+
+  .wishlist-icon {
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    padding: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .hover-buttons {
+    top: 58% !important;
+    position: absolute;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .hover-buttons button {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 11px;
+    border-radius: 15px;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .hover-buttons button:active {
+    transform: scale(0.95);
   }
 }
 
@@ -310,14 +346,17 @@ body
   position: absolute;
   top: 25px;
   right: 25px;
-  width: 30px;
-  height: 30px;
+  width: 37px;
+  height: 37px;
   cursor: pointer;
   z-index: 10;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 5px;
 }
 
 .wishlist-icon svg 
@@ -329,6 +368,11 @@ body
   height: 100%;
   object-fit: contain;
   transition: transform 0.2s ease;
+}
+
+body.light-mode .wishlist-icon svg
+{
+  stroke: #1C2E4A;
 }
 
 .wishlist-icon:hover svg 
@@ -461,7 +505,18 @@ body
   z-index: 1001;
   display: none;
   overflow-y: auto;
-  animation: fadeIn 0.5s ease-in-out;
+  animation: modalFadeIn 0.5s ease-in-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .quick-view-modal.open {
