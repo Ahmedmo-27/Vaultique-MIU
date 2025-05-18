@@ -28,8 +28,19 @@ jobs:
 
       - name: Create deployment package
         run: |
+          # Create deployment directory
           mkdir -p deployment
-          cp -r package.json package-lock.json src/ deployment/
+          
+          # Copy essential files that exist
+          cp package.json package-lock.json deployment/
+          
+          # Copy other common directories if they exist
+          [ -d "src" ] && cp -r src/ deployment/ || echo "No src directory found"
+          [ -d "public" ] && cp -r public/ deployment/ || echo "No public directory found"
+          [ -d "dist" ] && cp -r dist/ deployment/ || echo "No dist directory found"
+          [ -d "server" ] && cp -r server/ deployment/ || echo "No server directory found"
+          
+          # Create zip package
           cd deployment && zip -r ../release.zip ./*
 
       - name: Upload artifact
@@ -51,32 +62,6 @@ jobs:
         with:
           name: node-app
 
-      - name: Check and reset deployment status
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            # List active deployments
-            echo "Checking active deployments..."
-            az webapp deployment list-publishing-credentials \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }} \
-              --query "scmUri" -o tsv
-            
-            # Clean up any stuck deployments
-            echo "Cleaning up deployments..."
-            az webapp deployment source delete \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }} \
-              --delete-command true
-            
-            # Restart the app service
-            echo "Restarting app service..."
-            az webapp restart \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }}
-            
-            sleep 10 # Wait for restart to complete
-
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
@@ -84,13 +69,3 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           package: release.zip
           slot-name: production
-          enable-oryx-build: false
-          clean: true
-          restart: false
-
-      - name: Verify deployment
-        run: |
-          echo "Checking deployment status..."
-          curl -s -o /dev/null -w "%{http_code}" \
-            https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net | \
-            grep -q 200 && echo "Deployment successful" || echo "Deployment verification failed"
