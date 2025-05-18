@@ -8,8 +8,9 @@ on:
 
 env:
   NODE_VERSION: '20.x'
-  AZURE_WEBAPP_NAME: 'vaultique-d9g7htapdedhbsg0' # Must match exactly from publish profile
+  AZURE_WEBAPP_NAME: 'vaultique-d9g7htapdedhbsg0' # Must match exactly
   RESOURCE_GROUP: 'appsvc_linux_uaenorth'
+  SCM_URL: 'vaultique-d9g7htapdedhbsg0.scm.uaenorth-01.azurewebsites.net'
 
 jobs:
   build:
@@ -32,11 +33,9 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir -p deployment
-          # Copy only existing files
-          cp package.json package-lock.json deployment/ 2>/dev/null || true
+          cp package.json package-lock.json deployment/
           [ -d "src" ] && cp -r src/ deployment/ || echo "No src directory"
           [ -d "public" ] && cp -r public/ deployment/ || echo "No public directory"
-          [ -d "dist" ] && cp -r dist/ deployment/ || echo "No dist directory"
           cd deployment && zip -r ../release.zip ./*
 
       - name: Upload artifact
@@ -58,12 +57,18 @@ jobs:
         with:
           name: node-app
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-          package: release.zip
-          slot-name: production
-          target: zipdeploy  # Explicitly use ZipDeploy method
-          verbose: true      # Enable detailed logs
+      - name: Deploy using Kudu API (Fallback)
+        run: |
+          # Extract credentials from publish profile
+          USERNAME='$Vaultique'
+          PASSWORD='dAY8LwyJEa3liAr4A0jqaKYpAwBqruGGvZEB0n3M2NpguDSMu1qim4KbCK7T'
+          
+          # Create basic auth token
+          AUTH_TOKEN=$(echo -n "$USERNAME:$PASSWORD" | base64)
+          
+          # Deploy using ZipDeploy API
+          curl -X POST \
+            -H "Content-Type: application/zip" \
+            -H "Authorization: Basic $AUTH_TOKEN" \
+            --data-binary @"release.zip" \
+            https://${{ env.SCM_URL }}/api/zipdeploy
