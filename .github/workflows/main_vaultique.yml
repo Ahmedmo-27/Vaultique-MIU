@@ -6,40 +6,35 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  NODE_VERSION: '20.x'
-  AZURE_WEBAPP_NAME: 'Vaultique'
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          node-version: '20.x'
 
       - name: Install dependencies
+        run: npm ci
+
+      - name: Build and test
+        env:
+          NODE_ENV: production
+          CI: true
         run: |
-          # Update npm first
-          npm install -g npm@latest
-          # Install with legacy peer deps to handle deprecated packages
-          npm install --legacy-peer-deps
-          # Check for security updates
-          npm audit fix --force || true
+          npm run build --if-present
+          npm run test --if-present
 
       - name: Create deployment package
-        run: |
-          # Create deployment folder (skip if no build needed)
-          mkdir -p deployment
-          # Copy only necessary files
-          cp -r package.json package-lock.json src/ deployment/
-          cd deployment && zip -r ../release.zip ./*
+        run: zip -r release.zip ./*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -52,7 +47,7 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact
