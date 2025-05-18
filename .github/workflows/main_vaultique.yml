@@ -5,9 +5,8 @@ on:
     branches: [ main ]
 
 env:
-  # Use EXACT names from Azure CLI output
-  AZURE_WEBAPP_NAME: 'Vaultique'  # Portal name (case-sensitive)
-  ACTUAL_HOSTNAME: 'vaultique-d9g7htapdedhbsg0.uaenorth-01.azurewebsites.net'  # From az CLI
+  AZURE_WEBAPP_NAME: 'Vaultique'
+  ACTUAL_HOSTNAME: 'vaultique-d9g7htapdedhbsg0.uaenorth-01.azurewebsites.net'
   RESOURCE_GROUP: 'appsvc_linux_uaenorth'
 
 jobs:
@@ -25,12 +24,27 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Build package
+    - name: Create deployment package
       run: |
+        # Create deployment directory
         mkdir -p deployment
-        cp -r package.json package-lock.json src/ deployment/
+        
+        # Copy essential files that definitely exist
+        cp package.json package-lock.json deployment/
+        
+        # Copy common directories if they exist
+        for dir in src public dist server; do
+          if [ -d "$dir" ]; then
+            echo "Copying $dir directory"
+            cp -r "$dir" deployment/
+          else
+            echo "Directory $dir not found - skipping"
+          fi
+        done
+        
+        # Create zip package
         cd deployment && zip -r ../release.zip ./*
-    
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -42,7 +56,7 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: https://${{ env.ACTUAL_HOSTNAME }}  # Use verified hostname
+      url: https://${{ env.ACTUAL_HOSTNAME }}
 
     steps:
     - uses: actions/download-artifact@v4
@@ -52,7 +66,7 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}  # "Vaultique"
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
         package: release.zip
     
