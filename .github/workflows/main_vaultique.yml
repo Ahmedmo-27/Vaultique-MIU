@@ -6,8 +6,8 @@ on:
       - main
   workflow_dispatch:
 
-permissions: # Add this block
-  id-token: write
+permissions:
+  id-token: write   # Required for OIDC
   contents: read
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
@@ -34,7 +34,7 @@ jobs:
           npm run test --if-present
 
       - name: Create deployment package
-        run: zip -r release.zip ./*
+        run: zip -r release.zip ./* -x '*.git*' 'node_modules/*'
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -56,7 +56,7 @@ jobs:
           name: node-app
 
       - name: Extract package
-        run: unzip release.zip
+        run: unzip -q release.zip
 
       - name: Azure Login
         uses: azure/login@v2
@@ -64,7 +64,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          auth-type: oidc
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
