@@ -62,5 +62,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'Vaultique'
-          publish-profile: ${{ secrets.AZURE_PUBLISHPROFILE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISH_PROFILE }}
           package: release.zip
