@@ -8,7 +8,7 @@ on:
 
 env:
   NODE_VERSION: '20.x'
-  AZURE_WEBAPP_NAME: 'Vaultique'
+  AZURE_WEBAPP_NAME: 'vaultique-d9g7htapdedhbsg0' # Must match exactly from publish profile
   RESOURCE_GROUP: 'appsvc_linux_uaenorth'
 
 jobs:
@@ -24,23 +24,19 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm install -g npm@latest
+          npm ci --legacy-peer-deps
+          npm audit fix --force || true
 
       - name: Create deployment package
         run: |
-          # Create deployment directory
           mkdir -p deployment
-          
-          # Copy essential files that exist
-          cp package.json package-lock.json deployment/
-          
-          # Copy other common directories if they exist
-          [ -d "src" ] && cp -r src/ deployment/ || echo "No src directory found"
-          [ -d "public" ] && cp -r public/ deployment/ || echo "No public directory found"
-          [ -d "dist" ] && cp -r dist/ deployment/ || echo "No dist directory found"
-          [ -d "server" ] && cp -r server/ deployment/ || echo "No server directory found"
-          
-          # Create zip package
+          # Copy only existing files
+          cp package.json package-lock.json deployment/ 2>/dev/null || true
+          [ -d "src" ] && cp -r src/ deployment/ || echo "No src directory"
+          [ -d "public" ] && cp -r public/ deployment/ || echo "No public directory"
+          [ -d "dist" ] && cp -r dist/ deployment/ || echo "No dist directory"
           cd deployment && zip -r ../release.zip ./*
 
       - name: Upload artifact
@@ -69,3 +65,5 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           package: release.zip
           slot-name: production
+          target: zipdeploy  # Explicitly use ZipDeploy method
+          verbose: true      # Enable detailed logs
