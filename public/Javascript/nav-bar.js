@@ -3,11 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchButton = document.getElementById('search-button');
     const searchButton2 = document.getElementById('search-button2');
     const middleDiv = document.getElementById('top-move-on-scroll');
-    const middleDivanchors = middleDiv.querySelectorAll('a');
     const headerMiddle = document.getElementById('header-middle');
     const headerBottom = document.getElementById('header-bottom');
     const header = document.querySelector('header');
+    const exitSearchButton = document.getElementById('exit-search-extension-button');
     
+    // Only add event listeners if elements exist
     if (searchButton) {
         searchButton.addEventListener('input', debounce(handleSearch, 300));
     }
@@ -16,100 +17,120 @@ document.addEventListener('DOMContentLoaded', function () {
         searchButton2.addEventListener('input', debounce(handleSearch, 300));
     }
 
-    window.addEventListener('scroll', function () 
-    {
-        const headerTop = document.getElementById('header-top');
-        const sideicon = document.getElementById('side-icon');
-        const logo = document.getElementById('logo');
-    
-        if (window.scrollY > 0&& window.innerWidth > 1100) 
-        {
-            header.classList.remove('header-unscrolled');
-            header.classList.add('header-scrolled');
-
-            // Ensure the logo stays on the left
-            logo.style.position = 'relative';
-            logo.style.left = '50px'; // Adjust this value as needed
-            logo.style.top = '50%';
-            logo.style.transform = 'translateY(-10%)';
-            
-            // Ensure the icons stay on the right
-            headerMiddle.style.justifyContent = 'flex-end';
-            headerMiddle.style.paddingRight = '30px'; // Adjust this value as needed
-    
-            const toggleTheme= document.querySelector('[data-theme-toggle]');
-
-            // Show all icons
-            middleDiv.style.display = 'flex';
-            middleDivanchors.forEach(anchor => {
-                anchor.style.display = 'inline-flex';
-            });
-    
-            // Other scroll-related changes
-            searchButton.style.display = 'none';
-            searchButton2.classList.remove('search-button-unscrolled');
-            searchButton2.classList.add('search-button-scrolled');
-            headerTop.style.display = 'none';
-            middleDiv.classList.remove('header-top-unscrolled');
-            middleDiv.classList.add('header-top-scrolled');
-            logo.classList.remove('logo-unscrolled');
-            logo.classList.add('logo-scrolled');
-            headerBottom.classList.remove('header-bottom-unscrolled');
-            headerBottom.classList.add('header-bottom-scrolled');
-        } 
-        
-        else if (window.scrollY > 0 && window.innerWidth <= 1100)
-        {
-            header.classList.remove('header-unscrolled');
-            header.classList.add('header-scrolled');
-            middleDiv.classList.remove('header-top-unscrolled');
-            middleDiv.classList.add('header-top-scrolled');
-            headerBottom.classList.remove('header-bottom-unscrolled');
-            headerBottom.classList.add('header-bottom-scrolled');
-            headerTop.style.display = 'none';
-            logo.style.marginLeft='75px';
-            logo.style.fontSize='30px';
-        }
-
-        else 
-        {
-            header.classList.remove('header-scrolled');
-            header.classList.add('header-unscrolled');
-    
-            // Reset the logo position
-            logo.style.position = 'static';
-            logo.style.left = 'auto';
-            logo.style.top = 'auto';
-            logo.style.transform = 'none';
-    
-            // Reset the icons position
-            headerMiddle.style.justifyContent = 'center';
-            headerMiddle.style.paddingRight = '0';
-    
-            if (window.innerWidth > 1100) {
-                searchButton.style.display = 'flex';
-                middleDiv.style.display = 'none';
-            } else {
-                middleDivanchors.forEach(anchor => {
-                    anchor.style.display = 'none';
-                });
-                headerMiddle.style.justifyContent = 'center';
+    if (exitSearchButton) {
+        exitSearchButton.addEventListener('click', () => {
+            const searchExtension = document.getElementById('search-extension');
+            const searchField = document.getElementById('searchField');
+            if (searchExtension) searchExtension.style.display = 'none';
+            if (searchField) searchField.value = '';
+            if (headerBottom) headerBottom.style.display = 'flex';
+            if (header) {
+                header.classList.remove('header-scrolled');
+                header.classList.add('header-unscrolled');
             }
-    
-            // Other unscroll-related changes
-            searchButton2.classList.remove('search-button-scrolled');
-            searchButton2.classList.add('search-button-unscrolled');
-            headerTop.style.display = 'flex';
-            middleDiv.classList.remove('header-top-unscrolled');
-            middleDiv.classList.remove('header-top-scrolled');
-            headerMiddle.style.justifyContent = 'center';
-            logo.classList.remove('logo-scrolled');
-            logo.classList.add('logo-unscrolled');
-            headerBottom.classList.add('header-bottom-unscrolled');
-            headerBottom.classList.remove('header-bottom-scrolled');
+        });
+    }
+
+    if (middleDiv) {
+        const middleDivanchors = middleDiv.querySelectorAll('a');
+        
+        window.addEventListener('scroll', function () {
+            const headerTop = document.getElementById('header-top');
+            const sideicon = document.getElementById('side-icon');
+            const logo = document.getElementById('logo');
             
-        }
-    });
+            if (!headerTop || !logo || !headerMiddle || !headerBottom) return;
+            
+            if (window.scrollY > 0 && window.innerWidth > 1100) {
+                header.classList.remove('header-unscrolled');
+                header.classList.add('header-scrolled');
+
+                // Ensure the logo stays on the left
+                logo.style.position = 'relative';
+                logo.style.left = '50px';
+                logo.style.top = '50%';
+                logo.style.transform = 'translateY(-10%)';
+                
+                // Ensure the icons stay on the right
+                headerMiddle.style.justifyContent = 'flex-end';
+                headerMiddle.style.paddingRight = '30px';
+        
+                // Show all icons
+                middleDiv.style.display = 'flex';
+                middleDivanchors.forEach(anchor => {
+                    anchor.style.display = 'inline-flex';
+                });
+        
+                // Other scroll-related changes
+                if (searchButton) searchButton.style.display = 'none';
+                if (searchButton2) {
+                    searchButton2.classList.remove('search-button-unscrolled');
+                    searchButton2.classList.add('search-button-scrolled');
+                }
+                headerTop.style.display = 'none';
+                middleDiv.classList.remove('header-top-unscrolled');
+                middleDiv.classList.add('header-top-scrolled');
+                logo.classList.remove('logo-unscrolled');
+                logo.classList.add('logo-scrolled');
+                headerBottom.classList.remove('header-bottom-unscrolled');
+                headerBottom.classList.add('header-bottom-scrolled');
+            } 
+            
+            else if (window.scrollY > 0 && window.innerWidth <= 1100)
+            {
+                header.classList.remove('header-unscrolled');
+                header.classList.add('header-scrolled');
+                middleDiv.classList.remove('header-top-unscrolled');
+                middleDiv.classList.add('header-top-scrolled');
+                headerBottom.classList.remove('header-bottom-unscrolled');
+                headerBottom.classList.add('header-bottom-scrolled');
+                headerTop.style.display = 'none';
+                logo.style.marginLeft='75px';
+                logo.style.fontSize='30px';
+            }
+
+            else 
+            {
+                header.classList.remove('header-scrolled');
+                header.classList.add('header-unscrolled');
+        
+                // Reset the logo position
+                logo.style.position = 'static';
+                logo.style.left = 'auto';
+                logo.style.top = 'auto';
+                logo.style.transform = 'none';
+        
+                // Reset the icons position
+                headerMiddle.style.justifyContent = 'center';
+                headerMiddle.style.paddingRight = '0';
+        
+                if (window.innerWidth > 1100) {
+                    searchButton.style.display = 'flex';
+                    middleDiv.style.display = 'none';
+                } else {
+                    middleDivanchors.forEach(anchor => {
+                        anchor.style.display = 'none';
+                    });
+                    headerMiddle.style.justifyContent = 'center';
+                }
+        
+                // Other unscroll-related changes
+                if (searchButton2) {
+                    searchButton2.classList.remove('search-button-scrolled');
+                    searchButton2.classList.add('search-button-unscrolled');
+                }
+                headerTop.style.display = 'flex';
+                middleDiv.classList.remove('header-top-unscrolled');
+                middleDiv.classList.remove('header-top-scrolled');
+                headerMiddle.style.justifyContent = 'center';
+                logo.classList.remove('logo-scrolled');
+                logo.classList.add('logo-unscrolled');
+                headerBottom.classList.add('header-bottom-unscrolled');
+                headerBottom.classList.remove('header-bottom-scrolled');
+                
+            }
+        });
+    }
 
     //responsive header
     const closebtn = document.getElementById('closebtn');
