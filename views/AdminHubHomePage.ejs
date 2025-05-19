@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
+    <link rel="stylesheet" href="AdminHubHomePage.css">
+    <link rel="stylesheet" href="/Website/Login/Ahmed/Navigation Bar/nav-bar.css">
+        <script src="/Website/Login/Ahmed/Navigation Bar/nav-bar.js"></script>
+    <title>AdminHub</title>
+</head>
+
+<body>
+    <div class="navbar-wrapper">
+        <header class="header-unscrolled">
+            <div class="header-top-unscrolled" id="header-top" style="display: none;">
+                <div class="store-services" id="store-services">
+
+                    <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
+                        <i class="fa-solid fa-sun"></i>
+                        <i class="fa-solid fa-moon"></i>
+                        <span class="toggle-button-slider"></span>
+                    </a>
+
+                    <nav class="navigation">            
+                        <a href="">
+                            <i class="fa-solid fa-globe"></i>
+                            <p>Language</p>
+                        </a>
+                        <select id="language" class="tag">
+                            <option value="en">EN</option>
+                            <option value="ar">AR</option>
+                        </select>
+                    </nav>
+
+                </div>
+    
+                <div class="user-data">
+                    <nav class="navigation">
+                        <a href="/User/Account">
+                            <i class='fas fa-user-alt'></i>
+                            <p>Account</p>
+                        </a>        
+                    </nav>
+                </div>
+            </div>
+    
+            <div class="header-middle-unscrolled" id="header-middle">
+                <div class="responsive">
+                    <a class="side-icon" id="side-icon">
+                        <i class="fa fa-bars" id="ham-whatever"></i>
+                    </a>
+                </div>
+    
+                <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
+                <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+    
+                    <nav class="navigation">
+                        <a href="/User/Account" style="display: none;">
+                            <i class='fas fa-user-alt'></i>
+                        </a>        
+                    </nav>
+                </div>
+            </div>
+    
+            <div class="header-bottom-unscrolled" id="header-bottom">
+                <nav class="navigation">
+                    <a href="AdminHubHomePage.html">Home</a>
+                    <a href="ManageUsers.html">Manage Users</a>
+                    <a href="analytics.html" id="collections-anchor-with-extension" class="extension">Analytics</a>
+                    <a href="CreateProduct.html" data-category="Bracelets">Manage Products</a>
+                    <a href="#">Settings</a>
+                    <a href="/Website/Login/LoginSignup.html" class="logout">Logout</a>
+                </nav>
+            </div>
+        </header>
+    
+        <!--Side-Panel-->
+        <div id="mySidepanel" class="sidepanel" style="width: 0px;">
+            <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+            <a href="#">Home</a>
+            <a href="#">Manage Users</a>
+            <a href="#" id="collections-anchor-with-extension" class="extension">Analytics</a>
+            <a href="#" data-category="Bracelets">Add Products</a>
+            <a href="#">Settings</a>
+            <a href="/Website/Login/LoginSignup.html" class="logout">Logout</a>
+                
+            <a id="toggle-button-side" class="toggle-button" onclick="toggleLightDarkMode()">
+                <i class="fa-solid fa-sun"></i>
+                <i class="fa-solid fa-moon"></i>
+                <span class="toggle-button-slider"></span>
+            </a>
+
+        </div>
+    </div>
+    <!-- CONTENT -->
+    <section id="content">
+       
+
+        <!-- MAIN -->
+    <main>         </li>
+                    </ul>
+                </div>
+    
+                </a>
+            </div>
+
+            <ul class="box-info">
+                <li>
+                    <i class='bx bxs-calendar-check'></i>
+                    <span class="text">
+                        <h3>1020</h3>
+                        <p>New Order</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bxs-group'></i>
+                    <span class="text">
+                        <h3>2834</h3>
+                        <p>Visitors</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bxs-dollar-circle'></i>
+                    <span class="text">
+                        <h3>$2543</h3>
+                        <p>Total Sales</p>
+                    </span>
+                </li>
+            </ul>
+
+
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>Recent Orders</h3>
+                        <i class='bx bx-search'></i>
+                        <i class='bx bx-filter'></i>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Date Order</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <img src="img/Person5.jpg">
+                                    <p>Hassan Ahmed</p>
+                                </td>
+                                <td>01-10-2021</td>
+                                <td><span class="status completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="img/Person4.jpg">
+                                    <p>Jana Ehab</p>
+                                </td>
+                                <td>01-10-2021</td>
+                                <td><span class="status pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="img/Person1.jpg">
+                                    <p>Youssef muhammed</p>
+                                </td>
+                                <td>01-10-2021</td>
+                                <td><span class="status process">Process</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="img/Person3.jpg">
+                                    <p>Alya Hussien</p>
+                                </td>
+                                <td>01-10-2021</td>
+                                <td><span class="status pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="img/Person2.jpg">
+                                    <p>Ahmed Ayman</p>
+                                </td>
+                                <td>01-10-2021</td>
+                                <td><span class="status completed">Completed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="todo">
+                    <div class="head">
+                        <h3>Todos</h3>
+                        <i class='bx bx-plus'></i>
+                        <i class='bx bx-filter'></i>
+                    </div>
+                    <ul class="todo-list">
+                        <li class="completed">
+                            <p>Todo List</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                        <li class="completed">
+                            <p>Todo List</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                        <li class="not-completed">
+                            <p>Todo List</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                        <li class="completed">
+                            <p>Todo List</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                        <li class="not-completed">
+                            <p>Todo List</p>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+        <!-- MAIN -->
+    </section>
+    <!-- CONTENT -->
+
+
+    <script src="AdminHub.js"></script>
+</body>
+
+</html>

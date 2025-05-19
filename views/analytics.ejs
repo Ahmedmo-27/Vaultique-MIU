@@ -1,0 +1,167 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="analytics.css">
+  <link rel="stylesheet" href="/Website/Login/Ahmed/Navigation Bar/nav-bar.css">
+  <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script> <!-- Replace with your Font Awesome kit -->
+  <script src="/Website/Login/Ahmed/Navigation Bar/nav-bar.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="analytics.js" defer></script>
+</head>
+<body>
+  <div class="navbar-wrapper">
+    <header class="header-unscrolled">
+      <div class="header-top-unscrolled" id="header-top" style="display: none;">
+        <div class="store-services" id="store-services">
+          <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
+            <i class="fa-solid fa-sun"></i>
+            <i class="fa-solid fa-moon"></i>
+            <span class="toggle-button-slider"></span>
+          </a>
+          <nav class="navigation">
+            <a href="#">
+              <i class="fa-solid fa-globe"></i>
+              <p>Language</p>
+            </a>
+            <select id="language" class="tag">
+              <option value="en">EN</option>
+              <option value="ar">AR</option>
+            </select>
+          </nav>
+        </div>
+        <div class="user-data">
+          <nav class="navigation">
+            <a href="/User/Account">
+              <i class="fas fa-user-alt"></i>
+              <p>Account</p>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="header-middle-unscrolled" id="header-middle">
+        <div class="responsive">
+          <a class="side-icon" id="side-icon">
+            <i class="fa fa-bars" id="ham-whatever"></i>
+          </a>
+        </div>
+        <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
+        <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+          <nav class="navigation">
+            <a href="/User/Account" style="display: none;">
+              <i class="fas fa-user-alt"></i>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="header-bottom-unscrolled" id="header-bottom">
+        <nav class="navigation">
+          <a href="AdminHubHomePage.html">Home</a>
+          <a href="ManageUsers.html">Manage Users</a>
+          <a href="analytics.html" id="collections-anchor-with-extension" class="extension">Analytics</a>
+          <a href="CreateProduct.html" data-category="Bracelets">Manage Products</a>
+          <a href="#">Settings</a>
+          <a href="/Website/Login/LoginSignup.html" class="logout">Logout</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="card dark">
+        <h2>Active Users</h2>
+        <p class="large">72</p>
+      </div>
+
+      <div class="card">
+        <h3>Sales Overview</h3>
+        <canvas id="trafficChart" width="400" height="200"></canvas>
+      </div>
+
+      <div class="card stats-box">
+        <p>Users</p>
+        <h3>15K</h3>
+        <p class="positive">↑ 268%</p>
+      </div>
+
+      <div class="card stats-box">
+        <p>Sessions</p>
+        <h3>17K</h3>
+        <p class="positive">↑ 268%</p>
+      </div>
+
+      <div class="card stats-box">
+        <p>Bounce Rate</p>
+        <h3>62.57%</h3>
+        <p class="negative">↑ 19.6%</p>
+      </div>
+
+      <div class="card stats">
+        <p>Session Duration</p>
+        <h3>1m 37s</h3>
+        <p class="negative">↓ 29.7%</p>
+      </div>
+
+      <div class="card alert">
+        <span class="alert-icon">🔔</span>
+        <div>
+          <strong>No alerts set</strong>
+          <p>Get notified when your data drastically changes</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Most Selling Brands</h3>
+        <p>Rolex | 26%</p>
+        <div class="bar" style="width: 26%"></div>
+        <p>Cartier | 17%</p>
+        <div class="bar" style="width: 17%"></div>
+        <p>Audemars Piguet | 22%</p>
+        <div class="bar" style="width: 22%"></div>
+        <p>Omega | 19%</p>
+        <div class="bar" style="width: 19%"></div>
+        <p>Tissot | 16%</p>
+        <div class="bar" style="width: 16%"></div>
+      </div>
+
+      <div class="card">
+        <h3>Most Selling Collections</h3>
+        <p>Classic & Dress | 28%</p>
+        <div class="bar" style="width: 28%"></div>
+        <p>Casual & Everyday | 22%</p>
+        <div class="bar" style="width: 22%"></div>
+        <p>Sports & Adventure | 19%</p>
+        <div class="bar" style="width: 19%"></div>
+        <p>Aviation & Travel | 17%</p>
+        <div class="bar" style="width: 17%"></div>
+        <p>Luxury & Heritage | 14%</p>
+        <div class="bar" style="width: 14%"></div>
+      </div>
+
+      <div class="card">
+        <h3>Top Pages</h3>
+        <ul class="top-pages">
+          <li>/ - 23,956</li>
+          <li>/about - 565</li>
+          <li>/license - 477</li>
+          <li class="selected">/posts/sketch-help... - 458</li>
+          <li>/posts/sketch-pricing... - 447</li>
+          <li>/posts/sketch-stats... - 785</li>
+          <li>/posts/sketch-dark... - 962</li>
+          <li>/posts/sketch-messages... - 558</li>
+          <li>/posts/sketch-modal... - 486</li>
+        </ul>
+      </div>
+
+      <div class="card highlight">
+        <h2>Vaultique</h2>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
