@@ -35,7 +35,7 @@
 
             <div class="user-data">
                 <nav class="navigation">
-                    <a href="/user/account">
+                    <a href="/user/Account-Details">
                         <i class='fas fa-user-alt'></i>
                         <p>Account</p>
                     </a>
@@ -348,3 +348,16 @@
 
     </div>
 </div>
+
+<script src="/Javascript/notifications.js"></script>
+<script>
+    // Logout confirmation
+    function confirmLogout() {
+        showConfirmation(
+            'Are you sure you want to log out?',
+            () => {
+                window.location.href = '/user/logout';
+            }
+        );
+    }
+</script>
