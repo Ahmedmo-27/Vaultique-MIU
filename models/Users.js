@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const Order = require('../models/Orders');
 
 const UserSchema = new mongoose.Schema({
     id: {
@@ -149,6 +150,103 @@ const UserSchema = new mongoose.Schema({
             default: "Credit Card"
         }
     },
+    orders: [{
+        orderId: {
+            type: String,
+            required: true
+        },
+        orderDate: {
+            type: Date,
+            default: Date.now
+        },
+        status: {
+            type: String,
+            enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+            default: 'Pending'
+        },
+        total: {
+            type: Number,
+            required: true
+        },
+        items: [{
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product',
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true,
+                min: 1
+            }
+        }]
+    }],
+    wishlist: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true
+        },
+        addedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    refunds: [{
+        refundId: {
+            type: String,
+            required: true
+        },
+        order: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Order',
+            required: true
+        },
+        reason: {
+            type: String,
+            required: true
+        },
+        amount: {
+            type: Number,
+            required: true
+        },
+        status: {
+            type: String,
+            enum: ['Pending', 'Approved', 'Rejected', 'Completed'],
+            default: 'Pending'
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    reviews: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true
+        },
+        rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5
+        },
+        title: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        content: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     createdAt: {
         type: Date,
         default: Date.now
