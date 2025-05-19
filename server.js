@@ -10,6 +10,8 @@ const session = require("express-session");
 // Import route files
 const apiRouter = require("./routes/api");
 const userController = require("./controllers/User");
+const adminRoutes = require("./routes/AdminRoutes");
+const adminController = require("./controllers/Admin");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -99,10 +101,19 @@ app.use('/Javascript', express.static(path.join(publicPath, 'Javascript')), (req
 
 // API Routes (Backend)
 app.use("/api", apiRouter);
+app.use("/api/admin", adminRoutes);
 
 // Frontend Routes
 app.get('/', (req, res) => res.redirect('/user/products'));
 app.use('/user', userController);
+
+// Admin Frontend Routes
+app.get('/admin', (req, res) => res.redirect('/admin/dashboard'));
+app.get('/admin/dashboard', adminController.renderDashboard);
+app.get('/admin/users', adminController.renderUsers);
+app.get('/admin/products', adminController.renderProducts);
+app.get('/admin/products/create', adminController.renderCreateProduct);
+app.get('/admin/analytics', adminController.renderAnalytics);
 
 // 404 handler for API routes - MUST BE AFTER API ROUTES
 app.use('/api', (req, res) => {
@@ -115,7 +126,7 @@ app.use('/api', (req, res) => {
 // 404 handler for frontend routes - MUST BE AFTER ALL ROUTES
 app.use((req, res) => {
   res.status(404).render('404', {
-    title: 'Page Not Found',
+    title: '404 - Page Not Found',
     message: 'The page you are looking for does not exist.'
   });
 });
@@ -133,9 +144,18 @@ app.use((err, req, res, next) => {
   }
 
   // Handle frontend errors
+  if (err.status === 404) {
+    return res.status(404).render('404', {
+      title: '404 - Page Not Found',
+      message: err.message || 'The page you are looking for does not exist.'
+    });
+  }
+
   res.status(err.status || 500).render('error', {
     title: 'Error',
+    type: 'error',
     message: err.message || 'Something went wrong!',
+    show: true,
     error: process.env.NODE_ENV === 'development' ? err : {}
   });
 });
