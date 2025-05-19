@@ -3,13 +3,15 @@ const router = express.Router();
 const Product = require('../models/Products');
 const Brand = require('../models/Brands');
 const Collection = require('../models/Collections');
+const User = require('../models/Users');
 
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification') => {
     res.render('error', {
         title,
         type,
-        message
+        message,
+        show: true
     });
 };
 
@@ -316,5 +318,65 @@ router.post('/wishlist/remove', async (req, res) => {
     }
 });
 
+// Account Details page
+router.get('/account-details', async (req, res) => {
+    try {
+        // For testing, get the first user from the database
+        const user = await User.findOne()
+            .select('+phone_number +Payment +Payment.cardNumber +Payment.cardHolder +Payment.expiryDate +Payment.paymentType')
+            .populate({
+                path: 'orders.items.product',
+                select: 'name image price'
+            })
+            .populate({
+                path: 'wishlist.product',
+                select: 'name image price'
+            })
+            .populate({
+                path: 'refunds.order',
+                select: 'orderId items',
+                populate: {
+                    path: 'items.product',
+                    select: 'name'
+                }
+            })
+            .populate({
+                path: 'reviews.product',
+                select: 'name image'
+            });
+        
+        if (!user) {
+            return renderNotification(res, 'error', 'No user found in database');
+        }
+
+        // Format user data for the template
+        const userData = {
+            name: user.Name,
+            email: user.email,
+            dob: user.DOB.toLocaleDateString('en-GB'), // Format as DD.MM.YYYY
+            phone: user.phone_number,
+            language: user.language,
+            address: user.Address || {},
+            payment: user.Payment ? {
+                cardNumber: user.Payment.cardNumber ? `**** **** **** ${user.Payment.cardNumber.slice(-4)}` : null,
+                cardHolder: user.Payment.cardHolder || '',
+                expiryDate: user.Payment.expiryDate || '',
+                paymentType: user.Payment.paymentType || 'Credit Card'
+            } : {},
+            orders: user.orders || [],
+            wishlist: user.wishlist || [],
+            refunds: user.refunds || [],
+            reviews: user.reviews || []
+        };
+
+        res.render('Account-Details', {
+            title: 'Account Details',
+            user: userData
+        });
+    } catch (error) {
+        console.error('Error loading account details:', error);
+        renderNotification(res, 'error', 'Failed to load account details');
+    }
+});
 
 module.exports = router; 
