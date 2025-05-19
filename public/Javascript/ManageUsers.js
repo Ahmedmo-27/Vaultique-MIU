@@ -1,14 +1,31 @@
-let users = [];
+let users = window.initialData?.users || [];
 
 async function fetchUsers() {
   try {
-    const response = await fetch('http://localhost:3000/users');
+    const response = await fetch('/api/admin/users', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 401) {
+      // Handle unauthorized access
+      window.location.href = '/login';
+      return;
+    }
+
     const data = await response.json();
-    users = data;
-    renderUsers(users);
+
+    if (data.success) {
+      users = data.data;
+      updateUsersTable(users);
+    } else {
+      showNotification('error', data.message || 'Failed to load users');
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
-    alert('Error loading users. Please try again.');
+    showNotification('error', 'Failed to load users');
   }
 }
 
@@ -18,22 +35,31 @@ const modal = document.getElementById("addUserModal");
 
 function renderUsers(data) {
   const tableBody = document.getElementById("userTableBody");
+  if (!tableBody) {
+    console.error('Table body element not found');
+    return;
+  }
+
   tableBody.innerHTML = "";
+
+  if (!data || !Array.isArray(data)) {
+    console.error('Invalid data received:', data);
+    return;
+  }
 
   data.forEach((user, index) => {
     const row = `
       <tr>
-        <td>${user.username || user.name}</td>
-        <td>${user.email}</td>
-        <td>${user.role || 'User'}</td>
-        <td>${user.division || '-'}</td>
-        <td>${user.access || 'Standard'}</td>
-        <td>${user.dateAdded || new Date().toLocaleDateString()}</td>
-        <td>${user.lastLogin || 'Never'}</td>
+        <td>${user.Name || '-'}</td>
+        <td>${user.email || '-'}</td>
+        <td>${user.role || '-'}</td>
+        <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
+        <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
         <td>
-          <button class="details-btn" onclick="viewDetails(${index})">View Details</button>
-          <button class="order-btn" onclick="viewOrders(${index})">View Orders</button>
-          <button class="delete-btn" onclick="deleteUser(${index})">Delete</button>
+          <button onclick="viewUserDetails('${user._id}')" class="view-btn">View</button>
+          <button onclick="viewUserOrders('${user._id}')" class="orders-btn">Orders</button>
+          <button onclick="editUser('${user._id}')" class="edit-btn">Edit</button>
+          <button onclick="deleteUser('${user._id}')" class="delete-btn">Delete</button>
         </td>
       </tr>
     `;
@@ -41,22 +67,27 @@ function renderUsers(data) {
   });
 }
 
-async function deleteUser(index) {
-  const user = users[index];
+async function deleteUser(userId) {
+  if (!confirm('Are you sure you want to delete this user?')) {
+    return;
+  }
+
   try {
-    const response = await fetch(`http://localhost:3000/users/${user.email}`, {
+    const response = await fetch(`/api/admin/users/${userId}`, {
       method: 'DELETE'
     });
-    
-    if (response.ok) {
-      users.splice(index, 1);
-      renderUsers(users);
+
+    const data = await response.json();
+
+    if (data.success) {
+      showNotification('success', 'User deleted successfully');
+      fetchUsers();
     } else {
-      alert('Error deleting user');
+      showNotification('error', data.message || 'Failed to delete user');
     }
   } catch (error) {
     console.error('Error deleting user:', error);
-    alert('Error deleting user. Please try again.');
+    showNotification('error', 'Failed to delete user');
   }
 }
 
@@ -64,26 +95,29 @@ searchInput.addEventListener("input", () => {
   const keyword = searchInput.value.toLowerCase();
   const filtered = users.filter(
     (u) =>
-      u.name.toLowerCase().includes(keyword) ||
+      u.Name.toLowerCase().includes(keyword) ||
       u.email.toLowerCase().includes(keyword)
   );
   renderUsers(filtered);
 });
 
 document.getElementById("addUserBtn").onclick = () => {
-  modal.classList.remove("hidden");
+  document.getElementById('nameInput').value = '';
+  document.getElementById('emailInput').value = '';
+  document.getElementById('roleInput').value = '';
+
+  document.getElementById('addUserModal').classList.remove('hidden');
+  document.getElementById('saveUserBtn').onclick = () => saveUser();
 };
 
 document.getElementById("closeModalBtn").onclick = () => {
-  modal.classList.add("hidden");
+  document.getElementById('addUserModal').classList.add('hidden');
 };
 
 document.getElementById("saveUserBtn").onclick = async () => {
   const name = document.getElementById("nameInput").value;
   const email = document.getElementById("emailInput").value;
   const role = document.getElementById("roleInput").value;
-  const division = document.getElementById("divisionInput").value;
-  const access = document.getElementById("accessInput").value;
 
   if (name && email) {
     try {
@@ -94,15 +128,13 @@ document.getElementById("saveUserBtn").onclick = async () => {
           username: name,
           email,
           role,
-          division,
-          access,
           dateAdded: new Date().toLocaleDateString(),
           lastLogin: "Never"
         })
       });
 
       if (response.ok) {
-        modal.classList.add("hidden");
+        document.getElementById('addUserModal').classList.add('hidden');
         await fetchUsers(); // Refresh the user list
       } else {
         alert('Error adding user');
@@ -117,61 +149,176 @@ document.getElementById("saveUserBtn").onclick = async () => {
 };
 
 renderUsers(users);
-function viewOrders(index) {
-  const user = users[index];
-  const ordersList = document.getElementById("ordersList");
-  ordersList.innerHTML = "";
 
-  if (user.orders && user.orders.length > 0) {
-    user.orders.forEach(order => {
-      const item = document.createElement("li");
-      item.textContent = `Order ID: ${order.id} — ${order.model} (${order.date})`;
-      ordersList.appendChild(item);
-    });
-  } else {
-    ordersList.innerHTML = "<li>No orders found.</li>";
+async function viewUserDetails(userId) {
+  try {
+    const response = await fetch(`/api/admin/users/${userId}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const user = data.data;
+      document.getElementById('detailName').textContent = user.Name;
+      document.getElementById('detailEmail').textContent = user.email;
+      document.getElementById('detailPhone').textContent = user.phone_number || '-';
+      document.getElementById('detailDOB').textContent = new Date(user.DOB).toLocaleDateString();
+      document.getElementById('detailLanguage').textContent = user.language;
+      document.getElementById('detailRole').textContent = user.role;
+      document.getElementById('detailAccess').textContent = user.accessLevel || 'Standard';
+      document.getElementById('detailDateAdded').textContent = new Date(user.createdAt).toLocaleDateString();
+      document.getElementById('detailLastLogin').textContent = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
+      document.getElementById('detailCreditCard').textContent = user.Payment ? `**** **** **** ${user.Payment.cardNumber.slice(-4)}` : '-';
+
+      document.getElementById('userDetailsModal').classList.remove('hidden');
+    }
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    showNotification('error', 'Failed to load user details');
   }
-
-  document.getElementById("ordersModal").classList.remove("hidden");
 }
+
+async function viewUserOrders(userId) {
+  try {
+    const response = await fetch(`/api/admin/users/${userId}/orders`);
+    const data = await response.json();
+
+    if (data.success) {
+      const ordersList = document.getElementById('ordersList');
+      ordersList.innerHTML = '';
+
+      data.data.forEach(order => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="order-item">
+            <span>Order #${order.orderId}</span>
+            <span>${new Date(order.orderDate).toLocaleDateString()}</span>
+            <span>$${order.total}</span>
+            <span class="status ${order.status.toLowerCase()}">${order.status}</span>
+          </div>
+        `;
+        ordersList.appendChild(li);
+      });
+
+      document.getElementById('ordersModal').classList.remove('hidden');
+    }
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    showNotification('error', 'Failed to load user orders');
+  }
+}
+
+async function editUser(userId) {
+  try {
+    const response = await fetch(`/api/admin/users/${userId}`);
+    const data = await response.json();
+
+    if (data.success) {
+      const user = data.data;
+      document.getElementById('nameInput').value = user.Name;
+      document.getElementById('emailInput').value = user.email;
+      document.getElementById('roleInput').value = user.role;
+
+      document.getElementById('addUserModal').classList.remove('hidden');
+      document.getElementById('saveUserBtn').onclick = () => saveUser(userId);
+    }
+  } catch (error) {
+    console.error('Error fetching user for edit:', error);
+    showNotification('error', 'Failed to load user data');
+  }
+}
+
+async function saveUser(userId) {
+  const userData = {
+    Name: document.getElementById('nameInput').value,
+    email: document.getElementById('emailInput').value,
+    role: document.getElementById('roleInput').value
+  };
+
+  try {
+    const response = await fetch(`/api/admin/users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showNotification('success', 'User updated successfully');
+      document.getElementById('addUserModal').classList.add('hidden');
+      fetchUsers();
+    } else {
+      showNotification('error', data.message || 'Failed to update user');
+    }
+  } catch (error) {
+    console.error('Error updating user:', error);
+    showNotification('error', 'Failed to update user');
+  }
+}
+
+document.getElementById("closeDetailsBtn").onclick = () => {
+  document.getElementById("userDetailsModal").classList.add("hidden");
+};
 
 document.getElementById("closeOrdersBtn").onclick = () => {
   document.getElementById("ordersModal").classList.add("hidden");
 };
 
-// Function to mask credit card number
-function maskCreditCard(cardNumber) {
-  if (!cardNumber) return 'Not provided';
-  // Keep only last 4 digits, mask the rest
-  return '**** **** **** ' + cardNumber.slice(-4);
+function showNotification(type, message) {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
 }
 
-// Function to view user details
-function viewDetails(index) {
-  const user = users[index];
-  const modal = document.getElementById("userDetailsModal");
-  
-  // Populate the details
-  document.getElementById("detailName").textContent = user.username || user.name || 'N/A';
-  document.getElementById("detailEmail").textContent = user.email || 'N/A';
-  document.getElementById("detailPhone").textContent = user.phone || 'N/A';
-  document.getElementById("detailDOB").textContent = user.dob || 'N/A';
-  document.getElementById("detailLanguage").textContent = user.language || 'N/A';
-  document.getElementById("detailRole").textContent = user.role || 'User';
-  document.getElementById("detailAccess").textContent = user.access || 'Standard';
-  document.getElementById("detailDateAdded").textContent = user.dateAdded || 'N/A';
-  document.getElementById("detailLastLogin").textContent = user.lastLogin || 'Never';
-  document.getElementById("detailCreditCard").textContent = maskCreditCard(user.creditCard);
+function updateUsersTable(users) {
+  const tableBody = document.getElementById("userTableBody");
+  if (!tableBody) {
+    console.error('Table body element not found');
+    return;
+  }
 
-  // Show the modal
-  modal.classList.remove("hidden");
+  tableBody.innerHTML = "";
+
+  if (!users || !Array.isArray(users)) {
+    console.error('Invalid data received:', users);
+    return;
+  }
+
+  users.forEach((user) => {
+    const row = `
+      <tr>
+        <td>${user.Name || '-'}</td>
+        <td>${user.email || '-'}</td>
+        <td>${user.role || '-'}</td>
+        <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
+        <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+        <td>
+          <button onclick="viewUserDetails('${user._id}')" class="view-btn">View</button>
+          <button onclick="viewUserOrders('${user._id}')" class="orders-btn">Orders</button>
+          <button onclick="editUser('${user._id}')" class="edit-btn">Edit</button>
+          <button onclick="deleteUser('${user._id}')" class="delete-btn">Delete</button>
+        </td>
+      </tr>
+    `;
+    tableBody.insertAdjacentHTML("beforeend", row);
+  });
 }
 
-// Add event listener for closing the details modal
-document.getElementById("closeDetailsBtn").onclick = () => {
-  document.getElementById("userDetailsModal").classList.add("hidden");
-};
-
-// Initialize the page by fetching users
-fetchUsers();
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+  // Check if we have initial data
+  if (window.initialData?.users?.length > 0) {
+    users = window.initialData.users;
+    updateUsersTable(users);
+  } else if (!window.location.search.includes('view=') && !window.location.search.includes('edit=')) {
+    fetchUsers();
+  }
+});
 

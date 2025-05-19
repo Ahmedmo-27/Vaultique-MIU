@@ -608,6 +608,112 @@ function addToCartFromQuickView(productId) {
   toggleQuickView(); // Close the modal
 }
 
+// Add to cart function
+async function addToCart(productId) {
+    try {
+        const response = await fetch('/user/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('success', 'Product added to cart successfully');
+        } else {
+            showNotification('error', data.message || 'Failed to add product to cart');
+        }
+    } catch (error) {
+        showNotification('error', 'Failed to add product to cart');
+    }
+}
+
+// Remove from cart function
+async function removeFromCart(productId) {
+    showConfirmation(
+        'Are you sure you want to remove this item from your cart?',
+        async () => {
+            try {
+                const response = await fetch('/user/cart/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('success', 'Product removed from cart successfully');
+                    // Refresh cart or update UI
+                    location.reload();
+                } else {
+                    showNotification('error', data.message || 'Failed to remove product from cart');
+                }
+            } catch (error) {
+                showNotification('error', 'Failed to remove product from cart');
+            }
+        }
+    );
+}
+
+// Add to wishlist function
+async function addToWishlist(productId) {
+    try {
+        const response = await fetch('/user/wishlist/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('success', 'Product added to wishlist successfully');
+        } else {
+            showNotification('error', data.message || 'Failed to add product to wishlist');
+        }
+    } catch (error) {
+        showNotification('error', 'Failed to add product to wishlist');
+    }
+}
+
+// Remove from wishlist function
+async function removeFromWishlist(productId) {
+    showConfirmation(
+        'Are you sure you want to remove this item from your wishlist?',
+        async () => {
+            try {
+                const response = await fetch('/user/wishlist/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('success', 'Product removed from wishlist successfully');
+                    // Refresh wishlist or update UI
+                    location.reload();
+                } else {
+                    showNotification('error', data.message || 'Failed to remove product from wishlist');
+                }
+            } catch (error) {
+                showNotification('error', 'Failed to remove product from wishlist');
+            }
+        }
+    );
+}
+
 // Make functions available globally
 window.toggleWishlist = toggleWishlist;
 window.toggleQuickView = toggleQuickView;
