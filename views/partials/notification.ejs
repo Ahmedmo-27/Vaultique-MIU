@@ -1,0 +1,167 @@
+<!-- Notification Modal -->
+<div class="modal-overlay<%= locals.show ? ' show' : '' %>" id="notificationModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><%= locals.type === 'success' ? 'Success' : 'Error' %></h3>
+            <button class="close-modal" onclick="closeNotification()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="notification-icon <%= locals.type %>">
+                <%= locals.type === 'success' ? '✓' : '✕' %>
+            </div>
+            <div class="notification-message">
+                <%= locals.message || 'An error occurred' %>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeNotification()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto close notification after 5 seconds if shown
+    if (locals.show) {
+        setTimeout(() => {
+            closeNotification();
+        }, 5000);
+    }
+
+    // Close notification function
+    function closeNotification() {
+        const modal = document.getElementById('notificationModal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
+        }
+    }
+</script>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(3px);
+    }
+
+    .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-container {
+        background-color: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transform: translateY(30px);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-overlay.show .modal-container {
+        transform: translateY(0);
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f9f9f9;
+        border-radius: 12px 12px 0 0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1C2E4A;
+    }
+
+    .close-modal {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+        transition: color 0.2s ease;
+        background: none;
+        border: none;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .close-modal:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 25px;
+        text-align: center;
+    }
+
+    .notification-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .notification-icon.success {
+        color: #4CAF50;
+    }
+
+    .notification-icon.error {
+        color: #f44336;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        background-color: #f9f9f9;
+        border-radius: 0 0 12px 12px;
+        position: sticky;
+        bottom: 0;
+    }
+
+    .modal-footer button {
+        padding: 10px 18px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        min-width: 100px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #1976d2;
+        color: white;
+        border: none;
+    }
+
+    .modal-footer button:hover {
+        background: #1565c0;
+    }
+</style> 
