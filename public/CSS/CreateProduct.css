@@ -2,88 +2,317 @@ body {
     background-color: #1a2b47;
     color: white;
     font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
+    min-height: 100vh;
 }
 
 .container {
-    text-align: center;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 100px;
 }
 
 .back-btn {
     display: inline-block;
     background-color: white;
-    color: black;
-    padding: 8px 16px;
+    color: #1a2b47;
+    padding: 10px 20px;
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
     border-radius: 5px;
     margin-bottom: 20px;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .back-btn:hover {
     background-color: #f0f0f0;
+    transform: translateY(-2px);
 }
 
 .form-container {
     background-color: white;
-    color: black;
-    padding: 25px;
+    color: #1a2b47;
+    padding: 2rem;
     border-radius: 10px;
-    width: 320px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 h2 {
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 500;
-    margin-bottom: 15px;
+    margin-bottom: 1.5rem;
+    color: #1a2b47;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+#productForm {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Make certain form groups span full width */
+.form-group.full-width {
+    grid-column: 1 / -1;
 }
 
 label {
     display: block;
-    margin-top: 10px;
-    font-size: 12px;
+    margin-bottom: 0.5rem;
+    font-size: 14px;
     font-weight: 500;
+    color: #1a2b47;
 }
 
 input,
 select,
 textarea {
     width: 100%;
-    padding: 7px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
+    padding: 10px;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 14px;
     font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #1a2b47;
 }
 
 textarea {
+    min-height: 100px;
     resize: vertical;
 }
 
-.upload-btn,
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.feature-entry,
+.spec-entry {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.feature-entry input,
+.spec-entry input {
+    flex: 1;
+}
+
+.remove-feature,
+.remove-spec {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.remove-feature:hover,
+.remove-spec:hover {
+    background-color: #c82333;
+}
+
+#addFeature,
+#addSpec {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+#addFeature:hover,
+#addSpec:hover {
+    background-color: #218838;
+}
+
 .create-btn {
     width: 100%;
     background-color: #1a2b47;
     color: white;
-    padding: 10px;
-    font-size: 12px;
+    padding: 12px;
+    font-size: 16px;
     font-weight: 500;
     border: none;
     border-radius: 5px;
-    margin-top: 12px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    grid-column: 1 / -1;
 }
 
-.upload-btn:hover,
 .create-btn:hover {
     background-color: #0e1b2f;
+    transform: translateY(-2px);
 }
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.notification.hidden {
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .form-container {
+        padding: 1.5rem;
+    }
+
+    #productForm {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-entry,
+    .spec-entry {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .remove-feature,
+    .remove-spec {
+        width: 100%;
+    }
+}
+
+/* Upload Container Styles */
+.image-upload-container,
+.gallery-upload-container,
+.video-upload-container,
+.model-upload-container {
+    position: relative;
+    width: 100%;
+}
+
+.file-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.image-preview-container,
+.gallery-preview-container,
+.video-preview-container,
+.model-preview-container {
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #ddd;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.image-preview-container:hover,
+.gallery-preview-container:hover,
+.video-preview-container:hover,
+.model-preview-container:hover {
+    border-color: #1a2b47;
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+}
+
+.upload-placeholder i {
+    font-size: 2rem;
+}
+
+.upload-placeholder span {
+    font-size: 0.9rem;
+}
+
+/* Gallery Preview Styles */
+.gallery-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.gallery-preview img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Video Preview Styles */
+.video-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: #000;
+}
+
+/* Narrow Textarea */
+.narrow-textarea {
+    max-width: 800px;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .gallery-preview {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    .gallery-preview img {
+        height: 120px;
+    }
+}
+
+/* Add Font Awesome for the upload icon */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');

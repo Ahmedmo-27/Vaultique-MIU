@@ -5,115 +5,82 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manage Users</title>
-    <link rel="stylesheet" href="ManageUsers.css" />
-    <link rel="stylesheet" href="/Website/Login/Ahmed/Navigation Bar/nav-bar.css">
-        <script src="/Website/Login/Ahmed/Navigation Bar/nav-bar.js"></script>
+    <link rel="stylesheet" href="/CSS/ManageUsers.css" />
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <script src="/Javascript/nav-bar.js"></script>
 </head>
 
 <body>
-    <div class="navbar-wrapper">
-        <header class="header-unscrolled">
-            <div class="header-top-unscrolled" id="header-top" style="display: none;">
-                <div class="store-services" id="store-services">
 
-                    <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
-                        <i class="fa-solid fa-sun"></i>
-                        <i class="fa-solid fa-moon"></i>
-                        <span class="toggle-button-slider"></span>
-                    </a>
+  <%- include('partials/Admin-navigation') %>
 
-                    <nav class="navigation">            
-                        <a href="">
-                            <i class="fa-solid fa-globe"></i>
-                            <p>Language</p>
-                        </a>
-                        <select id="language" class="tag">
-                            <option value="en">EN</option>
-                            <option value="ar">AR</option>
-                        </select>
-                    </nav>
-
-                </div>
-    
-                <div class="user-data">
-                    <nav class="navigation">
-                        <a href="/User/Account">
-                            <i class='fas fa-user-alt'></i>
-                            <p>Account</p>
-                        </a>        
-                    </nav>
-                </div>
-            </div>
-    
-            <div class="header-middle-unscrolled" id="header-middle">
-                <div class="responsive">
-                    <a class="side-icon" id="side-icon">
-                        <i class="fa fa-bars" id="ham-whatever"></i>
-                    </a>
-                </div>
-    
-                <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
-                <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
-    
-                    <nav class="navigation">
-                        <a href="/User/Account" style="display: none;">
-                            <i class='fas fa-user-alt'></i>
-                        </a>        
-                    </nav>
-                </div>
-            </div>
-    
-            <div class="header-bottom-unscrolled" id="header-bottom">
-                <nav class="navigation">
-                    <a href="AdminHubHomePage.html">Home</a>
-                    <a href="ManageUsers.html">Manage Users</a>
-                    <a href="analytics.html" id="collections-anchor-with-extension" class="extension">Analytics</a>
-                    <a href="CreateProduct.html" data-category="Bracelets">Manage Products</a>
-                    <a href="#">Settings</a>
-                    <a href="/Website/Login/LoginSignup.html" class="logout">Logout</a>
-                </nav>
-            </div>
-        </header>
-    
-        <!--Side-Panel-->
-        <div id="mySidepanel" class="sidepanel" style="width: 0px;">
-            <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
-            <a href="#">Home</a>
-            <a href="#">Manage Users</a>
-            <a href="#" id="collections-anchor-with-extension" class="extension">Analytics</a>
-            <a href="#" data-category="Bracelets">Add Products</a>
-            <a href="#">Settings</a>
-            <a href="/Website/Login/LoginSignup.html" class="logout">Logout</a>
-                
-            <a id="toggle-button-side" class="toggle-button" onclick="toggleLightDarkMode()">
-                <i class="fa-solid fa-sun"></i>
-                <i class="fa-solid fa-moon"></i>
-                <span class="toggle-button-slider"></span>
-            </a>
-        </div>
-    </div>
-   <!-- Replace <div class="container">...</div> with this -->
 <div class="container">
+    <% if (error) { %>
+        <div class="error-message">
+            <%= error %>
+        </div>
+    <% } %>
     <div class="controls">
       <input type="text" id="search" placeholder="Search by Name or Email" />
       <button id="addUserBtn">+ Add User</button>
     </div>
   
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Division</th>
-          <th>Access Level</th>
-          <th>Date Added</th>
-          <th>Last Login</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="userTableBody"></tbody>
-    </table>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Date Added</th>
+            <th>Last Login</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <% if (users && users.length > 0) { %>
+            <% users.forEach(user => { %>
+              <tr>
+                <td><%= user.Name || '-' %></td>
+                <td><%= user.email || '-' %></td>
+                <td><%= user.role || '-' %></td>
+                <td><%= user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-' %></td>
+                <td><%= user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never' %></td>
+                <td>
+                  <button onclick="viewUserDetails('<%= user._id %>')" class="view-btn">View</button>
+                  <button onclick="viewUserOrders('<%= user._id %>')" class="orders-btn">Orders</button>
+                  <button onclick="editUser('<%= user._id %>')" class="edit-btn">Edit</button>
+                  <button onclick="deleteUser('<%= user._id %>')" class="delete-btn">Delete</button>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="6">No users found</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if (pagination && pagination.totalPages > 1) { %>
+      <div class="pagination">
+        <% if (pagination.hasPrevPage) { %>
+          <a href="/admin/users?page=<%= pagination.prevPage %>" class="page-link">&laquo; Previous</a>
+        <% } %>
+        
+        <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+          <a href="/admin/users?page=<%= i %>" 
+             class="page-link <%= i === pagination.currentPage ? 'active' : '' %>">
+            <%= i %>
+          </a>
+        <% } %>
+        
+        <% if (pagination.hasNextPage) { %>
+          <a href="/admin/users?page=<%= pagination.nextPage %>" class="page-link">Next &raquo;</a>
+        <% } %>
+      </div>
+    <% } %>
   </div>
   
     
@@ -121,8 +88,43 @@
       <div id="ordersModal" class="modal hidden">
         <div class="modal-content">
           <h2>User Orders</h2>
-          <ul id="ordersList"></ul>
-          <button id="closeOrdersBtn">Close</button>
+          <div class="modal-body">
+            <% if (typeof userOrders !== 'undefined' && userOrders && userOrders.length > 0) { %>
+              <ul class="orders-list">
+                <% userOrders.forEach(order => { %>
+                  <li>
+                    <div class="order-info">
+                      <span class="order-id">Order #<%= order._id %></span>
+                      <span class="order-date"><%= new Date(order.date).toLocaleDateString() %></span>
+                    </div>
+                    <div class="order-details">
+                      <span class="order-total">$<%= order.total.toFixed(2) %></span>
+                      <span class="order-status <%= order.status.toLowerCase() %>"><%= order.status %></span>
+                    </div>
+                    <% if (order.items && order.items.length > 0) { %>
+                      <div class="order-items">
+                        <h4>Items:</h4>
+                        <ul>
+                          <% order.items.forEach(item => { %>
+                            <li>
+                              <%= item.product ? item.product.name : 'Unknown Product' %> - 
+                              Quantity: <%= item.quantity %>, 
+                              Price: $<%= item.price.toFixed(2) %>
+                            </li>
+                          <% }); %>
+                        </ul>
+                      </div>
+                    <% } %>
+                  </li>
+                <% }); %>
+              </ul>
+            <% } else { %>
+              <p>No orders found for this user</p>
+            <% } %>
+          </div>
+          <div class="modal-footer">
+            <button id="closeOrdersBtn">Close</button>
+          </div>
         </div>
       </div>
     
@@ -130,37 +132,191 @@
       <div id="userDetailsModal" class="modal hidden">
         <div class="modal-content">
           <h2>User Details</h2>
-          <div id="userDetailsContent">
-            <p><strong>Name:</strong> <span id="detailName"></span></p>
-            <p><strong>Email:</strong> <span id="detailEmail"></span></p>
-            <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
-            <p><strong>Date of Birth:</strong> <span id="detailDOB"></span></p>
-            <p><strong>Language:</strong> <span id="detailLanguage"></span></p>
-            <p><strong>Role:</strong> <span id="detailRole"></span></p>
-            <p><strong>Access Level:</strong> <span id="detailAccess"></span></p>
-            <p><strong>Date Added:</strong> <span id="detailDateAdded"></span></p>
-            <p><strong>Last Login:</strong> <span id="detailLastLogin"></span></p>
-            <p><strong>Credit Card:</strong> <span id="detailCreditCard"></span></p>
+          <div class="modal-body">
+            <% if (typeof userDetails !== 'undefined' && userDetails) { %>
+              <div class="user-details">
+                <div class="detail-section">
+                  <h3>Basic Information</h3>
+                  <p><strong>Name:</strong> <%= userDetails.Name %></p>
+                  <p><strong>Username:</strong> <%= userDetails.username %></p>
+                  <p><strong>Email:</strong> <%= userDetails.email %></p>
+                  <p><strong>Phone:</strong> <%= userDetails.phone_number || 'N/A' %></p>
+                  <p><strong>Date of Birth:</strong> <%= userDetails.DOB ? new Date(userDetails.DOB).toLocaleDateString() : 'N/A' %></p>
+                  <p><strong>Language:</strong> <%= userDetails.language || 'English' %></p>
+                  <p><strong>Role:</strong> <%= userDetails.role %></p>
+                </div>
+
+                <% if (userDetails.Address) { %>
+                  <div class="detail-section">
+                    <h3>Address Information</h3>
+                    <p><strong>City:</strong> <%= userDetails.Address.city %></p>
+                    <p><strong>Street:</strong> <%= userDetails.Address.street %></p>
+                    <p><strong>Address Type:</strong> <%= userDetails.Address.addressType %></p>
+                    <p><strong>State:</strong> <%= userDetails.Address.state %></p>
+                    <p><strong>Country:</strong> <%= userDetails.Address.country %></p>
+                    <p><strong>Postal Code:</strong> <%= userDetails.Address.postalCode %></p>
+                  </div>
+                <% } %>
+
+                <% if (userDetails.Payment) { %>
+                  <div class="detail-section">
+                    <h3>Payment Information</h3>
+                    <p><strong>Card Holder:</strong> <%= userDetails.Payment.cardHolder %></p>
+                    <p><strong>Payment Type:</strong> <%= userDetails.Payment.paymentType %></p>
+                    <p><strong>Expiry Date:</strong> <%= userDetails.Payment.expiryDate %></p>
+                    <p><strong>Card Number:</strong> **** **** **** <%= userDetails.Payment.cardNumber.slice(-4) %></p>
+                  </div>
+                <% } %>
+              </div>
+            <% } else { %>
+              <p>No user details available</p>
+            <% } %>
           </div>
-          <button id="closeDetailsBtn">Close</button>
+          <div class="modal-footer">
+            <button id="closeDetailsBtn">Close</button>
+          </div>
         </div>
       </div>
     
-      <!-- Add User Modal -->
+      <!-- Add/Edit User Modal -->
       <div id="addUserModal" class="modal hidden">
         <div class="modal-content">
-          <h2>Add New User</h2>
-          <input type="text" id="nameInput" placeholder="Name" />
-          <input type="email" id="emailInput" placeholder="Email" />
-          <input type="text" id="roleInput" placeholder="Role" />
-          <input type="text" id="divisionInput" placeholder="Division" />
-          <input type="text" id="accessInput" placeholder="Access Level" />
-          <button id="saveUserBtn">Save</button>
-          <button id="closeModalBtn">Cancel</button>
+          <h2 id="modalTitle"><%= editUser ? 'Edit User' : 'Add New User' %></h2>
+          <div class="modal-body">
+            <form id="userForm">
+              <div class="form-group">
+                <label for="nameInput">Name</label>
+                <input type="text" id="nameInput" name="Name" value="<%= editUser ? editUser.Name : '' %>" required>
+                <span class="error-message" id="nameError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="usernameInput">Username</label>
+                <input type="text" id="usernameInput" name="username" value="<%= editUser ? editUser.username : '' %>" required>
+                <span class="error-message" id="usernameError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="emailInput">Email</label>
+                <input type="email" id="emailInput" name="email" value="<%= editUser ? editUser.email : '' %>" required>
+                <span class="error-message" id="emailError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="phoneInput">Phone Number</label>
+                <input type="tel" id="phoneInput" name="phone_number" value="<%= editUser ? editUser.phone_number : '' %>">
+                <span class="error-message" id="phoneError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="dobInput">Date of Birth</label>
+                <input type="date" id="dobInput" name="DOB" value="<%= editUser && editUser.DOB ? new Date(editUser.DOB).toISOString().split('T')[0] : '' %>">
+                <span class="error-message" id="dobError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="languageInput">Language</label>
+                <select id="languageInput" name="language">
+                  <option value="English" <%= editUser && editUser.language === 'English' ? 'selected' : '' %>>English</option>
+                  <option value="Arabic" <%= editUser && editUser.language === 'Arabic' ? 'selected' : '' %>>Arabic</option>
+                </select>
+                <span class="error-message" id="languageError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="roleInput">Role</label>
+                <select id="roleInput" name="role" required>
+                  <option value="user" <%= editUser && editUser.role === 'user' ? 'selected' : '' %>>User</option>
+                  <option value="admin" <%= editUser && editUser.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                </select>
+                <span class="error-message" id="roleError"></span>
+              </div>
+
+              <div class="form-section">
+                <h3>Address Information</h3>
+                <div class="form-group">
+                  <label for="cityInput">City</label>
+                  <input type="text" id="cityInput" name="Address[city]" value="<%= editUser && editUser.Address ? editUser.Address.city : '' %>">
+                  <span class="error-message" id="cityError"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="streetInput">Street</label>
+                  <input type="text" id="streetInput" name="Address[street]" value="<%= editUser && editUser.Address ? editUser.Address.street : '' %>">
+                  <span class="error-message" id="streetError"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="addressTypeInput">Address Type</label>
+                  <select id="addressTypeInput" name="Address[addressType]">
+                    <option value="Home" <%= editUser && editUser.Address && editUser.Address.addressType === 'Home' ? 'selected' : '' %>>Home</option>
+                    <option value="Work" <%= editUser && editUser.Address && editUser.Address.addressType === 'Work' ? 'selected' : '' %>>Work</option>
+                    <option value="Other" <%= editUser && editUser.Address && editUser.Address.addressType === 'Other' ? 'selected' : '' %>>Other</option>
+                  </select>
+                  <span class="error-message" id="addressTypeError"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="stateInput">State</label>
+                  <input type="text" id="stateInput" name="Address[state]" value="<%= editUser && editUser.Address ? editUser.Address.state : '' %>">
+                  <span class="error-message" id="stateError"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="countryInput">Country</label>
+                  <input type="text" id="countryInput" name="Address[country]" value="<%= editUser && editUser.Address ? editUser.Address.country : '' %>">
+                  <span class="error-message" id="countryError"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="postalCodeInput">Postal Code</label>
+                  <input type="text" id="postalCodeInput" name="Address[postalCode]" value="<%= editUser && editUser.Address ? editUser.Address.postalCode : '' %>">
+                  <span class="error-message" id="postalCodeError"></span>
+                </div>
+              </div>
+
+              <% if (!editUser) { %>
+                <div class="form-group">
+                  <label for="passwordInput">Password</label>
+                  <input type="password" id="passwordInput" name="password" required>
+                  <span class="error-message" id="passwordError"></span>
+                </div>
+              <% } %>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="saveUserBtn">Save</button>
+            <button id="closeModalBtn">Cancel</button>
+          </div>
         </div>
       </div>
-    
-      <script src="ManageUsers.js"></script>
+      <div id="notification" class="notification hidden"></div>
+      <%- include('partials/notification') %>
+      
+      <!-- Initialize data for JavaScript -->
+      <div id="initialData" 
+           data-users='<%- JSON.stringify(users || []) %>'
+           data-edit-user='<%- JSON.stringify(editUser || null) %>'
+           data-user-details='<%- JSON.stringify(userDetails || null) %>'
+           data-user-orders='<%- JSON.stringify(userOrders || []) %>'
+           data-pagination='<%- JSON.stringify(pagination || {}) %>'
+           data-error='<%- JSON.stringify(error || null) %>'
+           style="display: none;">
+      </div>
+      <script>
+        // Initialize data from data attributes
+        const initialDataElement = document.getElementById('initialData');
+        window.initialData = {
+          users: JSON.parse(initialDataElement.dataset.users),
+          editUser: JSON.parse(initialDataElement.dataset.editUser),
+          userDetails: JSON.parse(initialDataElement.dataset.userDetails),
+          userOrders: JSON.parse(initialDataElement.dataset.userOrders),
+          pagination: JSON.parse(initialDataElement.dataset.pagination),
+          error: JSON.parse(initialDataElement.dataset.error)
+        };
+      </script>
+      <script src="/Javascript/nav-bar.js"></script>
+      <script src="/Javascript/ManageUsers.js"></script>
     </body>
     
     </html>

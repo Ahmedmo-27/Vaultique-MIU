@@ -5,23 +5,8 @@ body {
     color: #0f172a;
 }
 
-header {
-    background-color: #0f172a;
-    padding: 20px;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-header nav a {
-    margin: 13px;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-}
-
 .container {
+    margin-top: 100px;
     padding: 20px;
     display: grid;
     gap: 20px;

@@ -6,76 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Analytics Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="analytics.css">
-  <link rel="stylesheet" href="/Website/Login/Ahmed/Navigation Bar/nav-bar.css">
-  <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script> <!-- Replace with your Font Awesome kit -->
-  <script src="/Website/Login/Ahmed/Navigation Bar/nav-bar.js" defer></script>
+  <link rel="stylesheet" href="/CSS/analytics.css">
+  <link rel="stylesheet" href="/CSS/nav-bar.css">
+  <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+  <script src="/Javascript/nav-bar.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-  <script src="analytics.js" defer></script>
+  <script src="/Javascript/analytics.js" defer></script>
 </head>
 <body>
-  <div class="navbar-wrapper">
-    <header class="header-unscrolled">
-      <div class="header-top-unscrolled" id="header-top" style="display: none;">
-        <div class="store-services" id="store-services">
-          <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
-            <i class="fa-solid fa-sun"></i>
-            <i class="fa-solid fa-moon"></i>
-            <span class="toggle-button-slider"></span>
-          </a>
-          <nav class="navigation">
-            <a href="#">
-              <i class="fa-solid fa-globe"></i>
-              <p>Language</p>
-            </a>
-            <select id="language" class="tag">
-              <option value="en">EN</option>
-              <option value="ar">AR</option>
-            </select>
-          </nav>
-        </div>
-        <div class="user-data">
-          <nav class="navigation">
-            <a href="/User/Account">
-              <i class="fas fa-user-alt"></i>
-              <p>Account</p>
-            </a>
-          </nav>
-        </div>
-      </div>
 
-      <div class="header-middle-unscrolled" id="header-middle">
-        <div class="responsive">
-          <a class="side-icon" id="side-icon">
-            <i class="fa fa-bars" id="ham-whatever"></i>
-          </a>
-        </div>
-        <a href="/Wael/welcome.html" class="logo-unscrolled" id="logo">Vaultique</a>
-        <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
-          <nav class="navigation">
-            <a href="/User/Account" style="display: none;">
-              <i class="fas fa-user-alt"></i>
-            </a>
-          </nav>
-        </div>
-      </div>
-
-      <div class="header-bottom-unscrolled" id="header-bottom">
-        <nav class="navigation">
-          <a href="AdminHubHomePage.html">Home</a>
-          <a href="ManageUsers.html">Manage Users</a>
-          <a href="analytics.html" id="collections-anchor-with-extension" class="extension">Analytics</a>
-          <a href="CreateProduct.html" data-category="Bracelets">Manage Products</a>
-          <a href="#">Settings</a>
-          <a href="/Website/Login/LoginSignup.html" class="logout">Logout</a>
-        </nav>
-      </div>
-    </header>
+    <%- include('partials/Admin-navigation') %>
 
     <div class="container">
       <div class="card dark">
         <h2>Active Users</h2>
-        <p class="large">72</p>
+        <p class="large"><%= activeUsers || 0 %></p>
       </div>
 
       <div class="card">
@@ -85,26 +30,34 @@
 
       <div class="card stats-box">
         <p>Users</p>
-        <h3>15K</h3>
-        <p class="positive">↑ 268%</p>
+        <h3><%= totalUsers || 0 %></h3>
+        <p class="<%= userGrowth >= 0 ? 'positive' : 'negative' %>">
+          <%= userGrowth >= 0 ? '+' : '' %><%= userGrowth || 0 %>%
+        </p>
       </div>
 
       <div class="card stats-box">
         <p>Sessions</p>
-        <h3>17K</h3>
-        <p class="positive">↑ 268%</p>
+        <h3><%= totalSessions || 0 %></h3>
+        <p class="<%= sessionGrowth >= 0 ? 'positive' : 'negative' %>">
+          <%= sessionGrowth >= 0 ? '+' : '' %><%= sessionGrowth || 0 %>%
+        </p>
       </div>
 
       <div class="card stats-box">
         <p>Bounce Rate</p>
-        <h3>62.57%</h3>
-        <p class="negative">↑ 19.6%</p>
+        <h3><%= bounceRate || 0 %>%</h3>
+        <p class="<%= bounceRateChange <= 0 ? 'positive' : 'negative' %>">
+          <%= bounceRateChange >= 0 ? '+' : '' %><%= bounceRateChange || 0 %>%
+        </p>
       </div>
 
       <div class="card stats">
         <p>Session Duration</p>
-        <h3>1m 37s</h3>
-        <p class="negative">↓ 29.7%</p>
+        <h3><%= sessionDuration || '0:00' %></h3>
+        <p class="<%= sessionDurationChange >= 0 ? 'positive' : 'negative' %>">
+          <%= sessionDurationChange >= 0 ? '+' : '' %><%= sessionDurationChange || 0 %>%
+        </p>
       </div>
 
       <div class="card alert">
@@ -115,53 +68,45 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" id="brandStats">
         <h3>Most Selling Brands</h3>
-        <p>Rolex | 26%</p>
-        <div class="bar" style="width: 26%"></div>
-        <p>Cartier | 17%</p>
-        <div class="bar" style="width: 17%"></div>
-        <p>Audemars Piguet | 22%</p>
-        <div class="bar" style="width: 22%"></div>
-        <p>Omega | 19%</p>
-        <div class="bar" style="width: 19%"></div>
-        <p>Tissot | 16%</p>
-        <div class="bar" style="width: 16%"></div>
+        <% if (brandStats && brandStats.length > 0) { %>
+          <ul class="stats-list">
+            <% brandStats.forEach(brand => { %>
+              <li>
+                <span class="brand-name"><%= brand.name %></span>
+                <span class="brand-sales">$<%= brand.sales.toFixed(2) %></span>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <p>No brand statistics available</p>
+        <% } %>
       </div>
 
-      <div class="card">
+      <div class="card" id="collectionStats">
         <h3>Most Selling Collections</h3>
-        <p>Classic & Dress | 28%</p>
-        <div class="bar" style="width: 28%"></div>
-        <p>Casual & Everyday | 22%</p>
-        <div class="bar" style="width: 22%"></div>
-        <p>Sports & Adventure | 19%</p>
-        <div class="bar" style="width: 19%"></div>
-        <p>Aviation & Travel | 17%</p>
-        <div class="bar" style="width: 17%"></div>
-        <p>Luxury & Heritage | 14%</p>
-        <div class="bar" style="width: 14%"></div>
-      </div>
-
-      <div class="card">
-        <h3>Top Pages</h3>
-        <ul class="top-pages">
-          <li>/ - 23,956</li>
-          <li>/about - 565</li>
-          <li>/license - 477</li>
-          <li class="selected">/posts/sketch-help... - 458</li>
-          <li>/posts/sketch-pricing... - 447</li>
-          <li>/posts/sketch-stats... - 785</li>
-          <li>/posts/sketch-dark... - 962</li>
-          <li>/posts/sketch-messages... - 558</li>
-          <li>/posts/sketch-modal... - 486</li>
-        </ul>
+        <% if (collectionStats && collectionStats.length > 0) { %>
+          <ul class="stats-list">
+            <% collectionStats.forEach(collection => { %>
+              <li>
+                <span class="collection-name"><%= collection.name %></span>
+                <span class="collection-sales">$<%= collection.sales.toFixed(2) %></span>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <p>No collection statistics available</p>
+        <% } %>
       </div>
 
       <div class="card highlight">
         <h2>Vaultique</h2>
       </div>
+
     </div>
-  </div>
+
+    <%- include('partials/notification') %>
+
 </body>
 </html>

@@ -1,0 +1,82 @@
+<div class="navbar-wrapper">
+    <header class="header-unscrolled">
+        <div class="header-top-unscrolled" id="header-top" style="display: none;">
+            <div class="store-services" id="store-services">
+
+                <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
+                    <i class="fa-solid fa-sun"></i>
+                    <i class="fa-solid fa-moon"></i>
+                    <span class="toggle-button-slider"></span>
+                </a>
+
+                <nav class="navigation">            
+                    <a href="">
+                        <i class="fa-solid fa-globe"></i>
+                        <p>Language</p>
+                    </a>
+                    <select id="language" class="tag">
+                        <option value="en">EN</option>
+                        <option value="ar">AR</option>
+                    </select>
+                </nav>
+
+            </div>
+
+            <div class="user-data">
+                <nav class="navigation">
+                    <a href="/admin/Account-Details">
+                        <i class='fas fa-user-alt'></i>
+                        <p>Account</p>
+                    </a>        
+                </nav>
+            </div>
+        </div>
+
+        <div class="header-middle-unscrolled" id="header-middle">
+            <div class="responsive">
+                <a class="side-icon" id="side-icon">
+                    <i class="fa fa-bars" id="ham-whatever"></i>
+                </a>
+            </div>
+
+            <a href="/admin/dashboard" class="logo-unscrolled" id="logo">Vaultique</a>
+            <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+
+                <nav class="navigation">
+                    <a href="/admin/Account-Details" style="display: none;">
+                        <i class='fas fa-user-alt'></i>
+                    </a>        
+                </nav>
+            </div>
+        </div>
+
+        <div class="header-bottom-unscrolled" id="header-bottom">
+            <nav class="navigation">
+                <a href="/admin/dashboard">Home</a>
+                <a href="/admin/users">Manage Users</a>
+                <a href="/admin/analytics" class="extension">Analytics</a>
+                <a href="/admin/products/create" >Manage Products</a>
+                <a href="/admin/settings">Settings</a>
+                <a href="/admin/logout" class="logout">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!--Side-Panel-->
+    <div id="mySidepanel" class="sidepanel" style="width: 0px;">
+        <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
+        <a href="/admin/dashboard">Home</a>
+        <a href="/admin/users">Manage Users</a>
+        <a href="/admin/analytics" class="extension">Analytics</a>
+        <a href="/admin/products/create">Add Products</a>
+        <a href="/admin/settings">Settings</a>
+        <a href="/admin/logout" class="logout">Logout</a>
+            
+        <a id="toggle-button-side" class="toggle-button" onclick="toggleLightDarkMode()">
+            <i class="fa-solid fa-sun"></i>
+            <i class="fa-solid fa-moon"></i>
+            <span class="toggle-button-slider"></span>
+        </a>
+
+    </div>
+</div>

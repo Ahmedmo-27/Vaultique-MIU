@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> <%= user.name %> | Account Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/account-details.css">
+    <link rel="stylesheet" href="/CSS/footer.css">
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Javascript/nav-bar.js"></script>
+    <script src="/Javascript/account-details.js"></script>
+    <script src="/Javascript/Light-Mode.js"></script>
+</head>
+<body>
+
+    <%- include('partials/loading-screen') %>
+
+    <%- include('partials/navigation') %>
+   
+    <div class="account-container">
+        <div class="sidebar">
+            <div class="sidebar-item active" data-tab="personal-info"><i class="fas fa-user"></i> Personal Information</div>
+            <div class="sidebar-item" data-tab="addresses"><i class="fas fa-map-marker-alt"></i> My Addresses</div>
+            <div class="sidebar-item" data-tab="orders"><i class="fas fa-box"></i> My Orders</div>
+            <div class="sidebar-item" data-tab="wishlist"><i class="fas fa-heart"></i> My Wishlist</div>
+            <div class="sidebar-item" data-tab="refunds"><i class="fas fa-undo"></i> My Refunds</div>
+            <div class="sidebar-item" data-tab="payment-methods"><i class="fas fa-credit-card"></i> Payment Methods</div>
+            <div class="sidebar-item" data-tab="reviews"><i class="fas fa-star"></i> My Reviews</div>
+            <div class="sidebar-item" data-tab="logout"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Personal Information Tab (Default Active) -->
+            <div class="tab-content active" id="personal-info">
+                <div class="section-title">Account Settings</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <div class="form-value"><%= user.name %></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <div class="form-value"><%= user.email %></div>
+                </div>
+    
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="form-value">********** <a href="#" class="edit-link" id="changePasswordLink">Change Password</a></div>
+                </div>
+    
+                <div class="form-group">
+                    <label class="form-label">Date of Birth</label>
+                    <div class="form-value"><%= user.dob %></div>
+                </div>
+    
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <div class="phone-input-container">
+                        <select id="countrySelect" class="country-select">
+                            <!-- Options populated by JavaScript -->
+                        </select>
+                        <input id="phoneNumber" type="tel" value="<%= user.phone %>" placeholder="Phone number">
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label class="form-label">Preferred Language</label>
+                    <select id="languageSelect">
+                        <option value="English" <%= user.language === 'English' ? 'selected' : '' %>>English</option>
+                        <option value="Arabic" <%= user.language === 'Arabic' ? 'selected' : '' %>>Arabic</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Addresses Tab -->
+            <div class="tab-content" id="addresses">
+                <div class="section-title">My Addresses</div>
+                
+                <div class="address-list">
+                    <div class="address-card default">
+                        <div class="address-header">
+                            <h4><%= user.address.addressType %> Address</h4>
+                            <span class="default-badge">Default</span>
+                        </div>
+                        <p><%= user.address.street %></p>
+                        <p><%= user.address.city %>, <%= user.address.state %></p>
+                        <p><%= user.address.country %></p>
+                        <div class="address-actions">
+                            <button class="edit-address">Edit</button>
+                            <button class="remove-address">Remove</button>
+                        </div>
+                    </div>
+                    
+                    <button class="add-address-btn">
+                        <i class="fas fa-plus"></i> Add New Address
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Orders Tab -->
+            <div class="tab-content" id="orders">
+                <div class="section-title">My Orders</div>
+                
+                <div class="order-filters">
+                    <select id="orderFilter">
+                        <option value="all">All Orders</option>
+                        <option value="pending">Pending</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <input type="text" placeholder="Search orders..." id="orderSearch">
+                </div>
+                
+                <div class="orders-list">
+                    <% if (user.orders && user.orders.length > 0) { %>
+                        <% user.orders.forEach(order => { %>
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div class="order-id">Order #<%= order.orderId %></div>
+                                    <div class="order-date">Placed on <%= new Date(order.orderDate).toLocaleDateString() %></div>
+                                    <div class="order-status <%= order.status.toLowerCase() %>"><%= order.status %></div>
+                                    <div class="order-total">$<%= order.total.toFixed(2) %></div>
+                                </div>
+                                
+                                <div class="order-products">
+                                    <% order.items.forEach(item => { %>
+                                        <div class="order-product">
+                                            <img src="<%= item.product.image %>" alt="<%= item.product.name %>">
+                                            <div class="product-info">
+                                                <h5><%= item.product.name %></h5>
+                                                <p>Qty: <%= item.quantity %></p>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                                
+                                <div class="order-actions">
+                                    <% if (order.status === 'Shipped') { %>
+                                        <button class="track-order">Track Order</button>
+                                    <% } else if (order.status === 'Delivered') { %>
+                                        <button class="buy-again">Buy Again</button>
+                                    <% } %>
+                                    <button class="order-details">View Details</button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-orders">
+                            <p>You haven't placed any orders yet.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <!-- Wishlist Tab -->
+            <div class="tab-content" id="wishlist">
+                <div class="section-title">My Wishlist</div>
+                
+                <div class="wishlist-grid">
+                    <% if (user.wishlist && user.wishlist.length > 0) { %>
+                        <% user.wishlist.forEach(item => { %>
+                            <div class="wishlist-item">
+                                <div class="wishlist-image">
+                                    <img src="<%= item.product.image %>" alt="<%= item.product.name %>">
+                                    <button class="remove-wishlist" data-product-id="<%= item.product._id %>">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="wishlist-details">
+                                    <h5><%= item.product.name %></h5>
+                                    <div class="wishlist-price">$<%= item.product.price.toFixed(2) %></div>
+                                    <button class="add-to-cart" data-product-id="<%= item.product._id %>">Add to Cart</button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-wishlist">
+                            <p>Your wishlist is empty.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <!-- Refunds Tab -->
+            <div class="tab-content" id="refunds">
+                <div class="section-title">My Refunds</div>
+                
+                <div class="refunds-list">
+                    <% if (user.refunds && user.refunds.length > 0) { %>
+                        <% user.refunds.forEach(refund => { %>
+                            <div class="refund-card <%= refund.status.toLowerCase() %>">
+                                <div class="refund-header">
+                                    <div class="refund-id">Refund #<%= refund.refundId %></div>
+                                    <div class="refund-status"><%= refund.status %></div>
+                                </div>
+                                <div class="refund-details">
+                                    <p><strong>Order:</strong> #<%= refund.order.orderId %> - <%= refund.order.items[0].product.name %></p>
+                                    <p><strong>Reason:</strong> <%= refund.reason %></p>
+                                    <p><strong>Amount:</strong> $<%= refund.amount.toFixed(2) %></p>
+                                    <p><strong><%= refund.status === 'Pending' ? 'Requested' : 'Processed' %> on:</strong> <%= new Date(refund.date).toLocaleDateString() %></p>
+                                </div>
+                                <div class="refund-actions">
+                                    <button class="view-details">View Details</button>
+                                    <% if (refund.status === 'Pending') { %>
+                                        <button class="cancel-request" data-refund-id="<%= refund._id %>">Cancel Request</button>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-refunds">
+                            <p>You haven't requested any refunds yet.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <!-- Payment Methods Tab -->
+            <div class="tab-content" id="payment-methods">
+                <div class="section-title">Payment Methods</div>
+                
+                <div class="payment-methods-list">
+                    <% if (user.payment && user.payment.cardNumber) { %>
+                    <div class="payment-method-card default">
+                        <div class="payment-method-header">
+                            <div class="payment-method-type">
+                                <i class="fab fa-cc-<%= user.payment.paymentType.toLowerCase().includes('visa') ? 'visa' : 'mastercard' %>"></i>
+                                <span><%= user.payment.paymentType %></span>
+                            </div>
+                            <span class="default-badge">Default</span>
+                        </div>
+                        <div class="payment-method-details">
+                            <p>**** **** **** <%= user.payment.cardNumber.slice(-4) %></p>
+                            <p>Expires <%= user.payment.expiryDate %></p>
+                        </div>
+                        <div class="payment-method-actions">
+                            <button class="edit-method">Edit</button>
+                            <button class="remove-method">Remove</button>
+                        </div>
+                    </div>
+                    <% } else { %>
+                    <div class="no-payment-methods">
+                        <p>No payment methods added yet.</p>
+                    </div>
+                    <% } %>
+                    
+                    <button class="add-payment-method">
+                        <i class="fas fa-plus"></i> Add New Payment Method
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Reviews Tab -->
+            <div class="tab-content" id="reviews">
+                <div class="section-title">My Reviews</div>
+                
+                <div class="reviews-list">
+                    <% if (user.reviews && user.reviews.length > 0) { %>
+                        <% user.reviews.forEach(review => { %>
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <div class="review-product">
+                                        <img src="<%= review.product.image %>" alt="<%= review.product.name %>">
+                                        <h5><%= review.product.name %></h5>
+                                    </div>
+                                    <div class="review-rating">
+                                        <div class="stars">
+                                            <% for(let i = 1; i <= 5; i++) { %>
+                                                <i class="<%= i <= review.rating ? 'fas' : 'far' %> fa-star"></i>
+                                            <% } %>
+                                        </div>
+                                        <div class="review-date"><%= new Date(review.date).toLocaleDateString() %></div>
+                                    </div>
+                                </div>
+                                <div class="review-content">
+                                    <h6><%= review.title %></h6>
+                                    <p><%= review.content %></p>
+                                </div>
+                                <div class="review-actions">
+                                    <button class="edit-review" data-review-id="<%= review._id %>">Edit Review</button>
+                                    <button class="delete-review" data-review-id="<%= review._id %>">Delete</button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-reviews">
+                            <p>You haven't written any reviews yet.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('partials/footer') %>
+
+
+    <%- include('partials/notification', { 
+        type: locals.type || 'error',
+        message: locals.message || 'An error occurred',
+        show: locals.show || false 
+    }) %>
+
+</body>
+</html>
