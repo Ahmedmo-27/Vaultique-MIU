@@ -177,15 +177,15 @@
                         <a href="/products/<%= product._id %>">
                             <img src="/public/Assets/<%= product.image %>" alt="<%= product.name %>" loading="lazy">
                         </a>
+                        <div class="hover-buttons">
+                            <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
+                            <button class="compare">Compare</button>
+                        </div>
                     </div>
                     <div class="product-details">
                         <a href="/products/<%= product._id %>">
                             <h4><%= product.name %></h4>
                         </a>
-                        <div class="hover-buttons">
-                            <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
-                            <button class="compare">Compare</button>
-                        </div>
                         <p class="price">$<%= product.price.toLocaleString() %></p>
                         <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
                             <p class="stock in-stock">In Stock</p>
@@ -218,6 +218,8 @@
 
 <!-- Footer -->
 <%- include('partials/footer') %>
+
+<%- include('partials/notification') %>
 
     </body>
 </html>
