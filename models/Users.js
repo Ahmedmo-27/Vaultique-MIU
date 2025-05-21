@@ -35,17 +35,15 @@ const UserSchema = new mongoose.Schema({
     },
     DOB: {
         type: Date,
-        required: true,
         validate: {
             validator: function(value) {
-                return value < new Date();
+                return !value || value < new Date();
             },
             message: 'Date of Birth must be in the past'
         }
     },
     phone_number: {
         type: String,
-        required: true,
         unique: true,
         select: false
     },
@@ -64,37 +62,31 @@ const UserSchema = new mongoose.Schema({
     Address: {
         city: {
             type: String,
-            required: true,
             trim: true
         },
         street: {
             type: String,
-            required: true,
             trim: true
         },
         addressType: {
             type: String,
-            required: true,
             enum: ["Home", "Work", "Other"],
             default: "Home"
         },
         state: {
             type: String,
-            required: true,
             trim: true
         },
         country: {
             type: String,
-            required: true,
             trim: true
         },
         postalCode: {
             type: String,
-            required: true,
             trim: true,
             validate: {
                 validator: function(v) {
-                    return /^[a-zA-Z0-9\s-]{3,10}$/.test(v);
+                    return !v || /^[a-zA-Z0-9\s-]{3,10}$/.test(v);
                 },
                 message: props => `${props.value} is not a valid postal code!`
             }
@@ -103,12 +95,10 @@ const UserSchema = new mongoose.Schema({
     Payment: {
         cardNumber: {
             type: String,
-            required: true,
             trim: true,
             validate: {
                 validator: function(v) {
-                    // Simple regex for 13-19 digit card numbers
-                    return /^\d{13,19}$/.test(v);
+                    return !v || /^\d{13,19}$/.test(v);
                 },
                 message: props => `${props.value} is not a valid card number!`
             },
@@ -116,36 +106,31 @@ const UserSchema = new mongoose.Schema({
         },
         cardHolder: {
             type: String,
-            required: true,
             trim: true
         },
         expiryDate: {
             type: String,
-            required: true,
             trim: true,
             validate: {
                 validator: function(v) {
-                    // MM/YY format
-                    return /^(0[1-9]|1[0-2])\/(\d{2})$/.test(v);
+                    return !v || /^(0[1-9]|1[0-2])\/(\d{2})$/.test(v);
                 },
                 message: props => `${props.value} is not a valid expiry date! Use MM/YY.`
             }
         },
         cvv: {
             type: String,
-            required: true,
             trim: true,
             select: false,
             validate: {
                 validator: function(v) {
-                    return /^\d{3,4}$/.test(v);
+                    return !v || /^\d{3,4}$/.test(v);
                 },
                 message: props => `${props.value} is not a valid CVV!`
             }
         },
         paymentType: {
             type: String,
-            required: true,
             enum: ["Credit Card", "Debit Card", "PayPal"],
             default: "Credit Card"
         }

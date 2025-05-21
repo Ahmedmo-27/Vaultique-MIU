@@ -15,7 +15,7 @@
   <%- include('partials/Admin-navigation') %>
 
 <div class="container">
-    <% if (error) { %>
+    <% if (typeof error !== 'undefined' && error) { %>
         <div class="error-message">
             <%= error %>
         </div>
@@ -38,7 +38,7 @@
           </tr>
         </thead>
         <tbody id="userTableBody">
-          <% if (users && users.length > 0) { %>
+          <% if (typeof users !== 'undefined' && users && users.length > 0) { %>
             <% users.forEach(user => { %>
               <tr>
                 <td><%= user.Name || '-' %></td>
@@ -203,6 +203,12 @@
               </div>
 
               <div class="form-group">
+                <label for="passwordInput">Password</label>
+                <input type="password" id="passwordInput" name="password" required>
+                <span class="error-message" id="passwordError"></span>
+              </div>
+
+              <div class="form-group">
                 <label for="phoneInput">Phone Number</label>
                 <input type="tel" id="phoneInput" name="phone_number" value="<%= editUser ? editUser.phone_number : '' %>">
                 <span class="error-message" id="phoneError"></span>
@@ -274,14 +280,6 @@
                   <span class="error-message" id="postalCodeError"></span>
                 </div>
               </div>
-
-              <% if (!editUser) { %>
-                <div class="form-group">
-                  <label for="passwordInput">Password</label>
-                  <input type="password" id="passwordInput" name="password" required>
-                  <span class="error-message" id="passwordError"></span>
-                </div>
-              <% } %>
             </form>
           </div>
           <div class="modal-footer">
@@ -317,7 +315,104 @@
       </script>
       <script src="/Javascript/nav-bar.js"></script>
       <script src="/Javascript/ManageUsers.js"></script>
-    </body>
-    
-    </html>
+    </div>
+  </div>
+
+  <script>
+    // Modal handling
+    const addUserBtn = document.getElementById('addUserBtn');
+    const addUserModal = document.getElementById('addUserModal');
+    const userForm = document.getElementById('userForm');
+    const closeButtons = document.querySelectorAll('.modal .close, .modal-footer button');
+
+    // Open Add User Modal
+    addUserBtn.addEventListener('click', () => {
+      addUserModal.classList.remove('hidden');
+      document.getElementById('modalTitle').textContent = 'Add New User';
+      userForm.reset();
+    });
+
+    // Close Modal
+    closeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.modal').forEach(modal => {
+          modal.classList.add('hidden');
+        });
+      });
+    });
+
+    // Handle form submission
+    userForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Get form data
+      const formData = new FormData(userForm);
+      const userData = {
+        Name: formData.get('Name'),
+        username: formData.get('username'),
+        email: formData.get('email'),
+        phone_number: formData.get('phone_number'),
+        DOB: formData.get('DOB'),
+        language: formData.get('language'),
+        role: formData.get('role'),
+        Address: {
+          city: formData.get('Address[city]'),
+          street: formData.get('Address[street]'),
+          addressType: formData.get('Address[addressType]'),
+          state: formData.get('Address[state]'),
+          country: formData.get('Address[country]'),
+          postalCode: formData.get('Address[postalCode]')
+        }
+      };
+
+      try {
+        const response = await fetch('/admin/users/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Show success message
+          alert('User created successfully!');
+          // Close modal
+          addUserModal.classList.add('hidden');
+          // Refresh the page to show new user
+          window.location.reload();
+        } else {
+          // Show error message
+          alert(result.message || 'Error creating user');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error creating user. Please try again.');
+      }
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('search');
+    const userTableBody = document.getElementById('userTableBody');
+
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const rows = userTableBody.getElementsByTagName('tr');
+
+      Array.from(rows).forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        const email = row.cells[1].textContent.toLowerCase();
+        
+        if (name.includes(searchTerm) || email.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
     

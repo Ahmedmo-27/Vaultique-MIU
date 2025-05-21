@@ -4,18 +4,17 @@ async function fetchUsers() {
   try {
     const response = await fetch('/api/admin/users', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
         'Content-Type': 'application/json'
       }
     });
 
     if (response.status === 401) {
-      // Handle unauthorized access
       window.location.href = '/login';
       return;
     }
 
     const data = await response.json();
+    console.log('Fetched users:', data);
 
     if (data.success) {
       users = data.data;
@@ -73,33 +72,42 @@ async function deleteUser(userId) {
   }
 
   try {
+    console.log('Deleting user:', userId);
     const response = await fetch(`/api/admin/users/${userId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
 
+    console.log('Delete response status:', response.status);
     const data = await response.json();
+    console.log('Delete response data:', data);
 
     if (data.success) {
       showNotification('success', 'User deleted successfully');
-      fetchUsers();
+      await fetchUsers();
     } else {
       showNotification('error', data.message || 'Failed to delete user');
     }
   } catch (error) {
     console.error('Error deleting user:', error);
-    showNotification('error', 'Failed to delete user');
+    showNotification('error', 'Error deleting user: ' + error.message);
   }
 }
 
-searchInput.addEventListener("input", () => {
-  const keyword = searchInput.value.toLowerCase();
-  const filtered = users.filter(
-    (u) =>
-      u.Name.toLowerCase().includes(keyword) ||
-      u.email.toLowerCase().includes(keyword)
-  );
-  renderUsers(filtered);
-});
+// Initialize search functionality
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    const keyword = searchInput.value.toLowerCase();
+    const filtered = users.filter(
+      (u) =>
+        u.Name.toLowerCase().includes(keyword) ||
+        u.email.toLowerCase().includes(keyword)
+    );
+    updateUsersTable(filtered);
+  });
+}
 
 document.getElementById("addUserBtn").onclick = () => {
   document.getElementById('nameInput').value = '';
@@ -107,68 +115,116 @@ document.getElementById("addUserBtn").onclick = () => {
   document.getElementById('roleInput').value = '';
 
   document.getElementById('addUserModal').classList.remove('hidden');
-  document.getElementById('saveUserBtn').onclick = () => saveUser();
+  document.getElementById('saveUserBtn').addEventListener('click', async () => {
+    const formData = new FormData(document.getElementById('userForm'));
+    const userData = {
+      Name: formData.get('Name'),
+      username: formData.get('username'),
+      email: formData.get('email'),
+      password: formData.get('password'),
+      phone_number: formData.get('phone_number'),
+      DOB: formData.get('DOB'),
+      language: formData.get('language'),
+      role: formData.get('role'),
+      Address: {
+        city: formData.get('Address[city]'),
+        street: formData.get('Address[street]'),
+        addressType: formData.get('Address[addressType]'),
+        state: formData.get('Address[state]'),
+        country: formData.get('Address[country]'),
+        postalCode: formData.get('Address[postalCode]')
+      }
+    };
+
+    await saveUser(userData);
+  });
 };
 
 document.getElementById("closeModalBtn").onclick = () => {
   document.getElementById('addUserModal').classList.add('hidden');
 };
 
-document.getElementById("saveUserBtn").onclick = async () => {
-  const name = document.getElementById("nameInput").value;
-  const email = document.getElementById("emailInput").value;
-  const role = document.getElementById("roleInput").value;
+async function saveUser(userData) {
+  try {
+    console.log('Saving user data:', userData);
+    const response = await fetch('/api/admin/users/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    });
 
-  if (name && email) {
-    try {
-      const response = await fetch('http://localhost:3000/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: name,
-          email,
-          role,
-          dateAdded: new Date().toLocaleDateString(),
-          lastLogin: "Never"
-        })
-      });
+    console.log('Save response status:', response.status);
+    const data = await response.json();
+    console.log('Save response data:', data);
 
-      if (response.ok) {
-        document.getElementById('addUserModal').classList.add('hidden');
-        await fetchUsers(); // Refresh the user list
-      } else {
-        alert('Error adding user');
-      }
-    } catch (error) {
-      console.error('Error adding user:', error);
-      alert('Error adding user. Please try again.');
+    if (data.success) {
+      showNotification('success', 'User saved successfully!');
+      document.getElementById('addUserModal').classList.add('hidden');
+      await fetchUsers();
+    } else {
+      showNotification('error', data.message || 'Failed to save user');
     }
-  } else {
-    alert("Name and Email are required.");
+  } catch (error) {
+    console.error('Error saving user:', error);
+    showNotification('error', 'Error saving user: ' + error.message);
   }
-};
+}
 
 renderUsers(users);
 
 async function viewUserDetails(userId) {
   try {
+    console.log('Fetching user details for:', userId);
     const response = await fetch(`/api/admin/users/${userId}`);
     const data = await response.json();
+    console.log('User details response:', data);
 
     if (data.success) {
       const user = data.data;
-      document.getElementById('detailName').textContent = user.Name;
-      document.getElementById('detailEmail').textContent = user.email;
-      document.getElementById('detailPhone').textContent = user.phone_number || '-';
-      document.getElementById('detailDOB').textContent = new Date(user.DOB).toLocaleDateString();
-      document.getElementById('detailLanguage').textContent = user.language;
-      document.getElementById('detailRole').textContent = user.role;
-      document.getElementById('detailAccess').textContent = user.accessLevel || 'Standard';
-      document.getElementById('detailDateAdded').textContent = new Date(user.createdAt).toLocaleDateString();
-      document.getElementById('detailLastLogin').textContent = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
-      document.getElementById('detailCreditCard').textContent = user.Payment ? `**** **** **** ${user.Payment.cardNumber.slice(-4)}` : '-';
-
-      document.getElementById('userDetailsModal').classList.remove('hidden');
+      const modal = document.getElementById('userDetailsModal');
+      const modalBody = modal.querySelector('.modal-body');
+      
+      modalBody.innerHTML = `
+        <div class="user-details">
+          <div class="detail-section">
+            <h3>Basic Information</h3>
+            <p><strong>Name:</strong> ${user.Name || '-'}</p>
+            <p><strong>Username:</strong> ${user.username || '-'}</p>
+            <p><strong>Email:</strong> ${user.email || '-'}</p>
+            <p><strong>Phone:</strong> ${user.phone_number || 'N/A'}</p>
+            <p><strong>Date of Birth:</strong> ${user.DOB ? new Date(user.DOB).toLocaleDateString() : 'N/A'}</p>
+            <p><strong>Language:</strong> ${user.language || 'English'}</p>
+            <p><strong>Role:</strong> ${user.role || '-'}</p>
+            <p><strong>Created At:</strong> ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
+          </div>
+          ${user.Address ? `
+            <div class="detail-section">
+              <h3>Address Information</h3>
+              <p><strong>City:</strong> ${user.Address.city || '-'}</p>
+              <p><strong>Street:</strong> ${user.Address.street || '-'}</p>
+              <p><strong>Address Type:</strong> ${user.Address.addressType || '-'}</p>
+              <p><strong>State:</strong> ${user.Address.state || '-'}</p>
+              <p><strong>Country:</strong> ${user.Address.country || '-'}</p>
+              <p><strong>Postal Code:</strong> ${user.Address.postalCode || '-'}</p>
+            </div>
+          ` : ''}
+          ${user.Payment ? `
+            <div class="detail-section">
+              <h3>Payment Information</h3>
+              <p><strong>Card Holder:</strong> ${user.Payment.cardHolder || '-'}</p>
+              <p><strong>Payment Type:</strong> ${user.Payment.paymentType || '-'}</p>
+              <p><strong>Expiry Date:</strong> ${user.Payment.expiryDate || '-'}</p>
+              <p><strong>Card Number:</strong> **** **** **** ${user.Payment.cardNumber.slice(-4) || '-'}</p>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      modal.classList.remove('hidden');
+    } else {
+      showNotification('error', data.message || 'Failed to load user details');
     }
   } catch (error) {
     console.error('Error fetching user details:', error);
@@ -178,27 +234,53 @@ async function viewUserDetails(userId) {
 
 async function viewUserOrders(userId) {
   try {
+    console.log('Fetching orders for user:', userId);
     const response = await fetch(`/api/admin/users/${userId}/orders`);
     const data = await response.json();
+    console.log('Orders response:', data);
 
     if (data.success) {
-      const ordersList = document.getElementById('ordersList');
-      ordersList.innerHTML = '';
-
-      data.data.forEach(order => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <div class="order-item">
-            <span>Order #${order.orderId}</span>
-            <span>${new Date(order.orderDate).toLocaleDateString()}</span>
-            <span>$${order.total}</span>
-            <span class="status ${order.status.toLowerCase()}">${order.status}</span>
-          </div>
+      const modal = document.getElementById('ordersModal');
+      const modalBody = modal.querySelector('.modal-body');
+      
+      if (data.data && data.data.length > 0) {
+        modalBody.innerHTML = `
+          <ul class="orders-list">
+            ${data.data.map(order => `
+              <li>
+                <div class="order-info">
+                  <span class="order-id">Order #${order._id}</span>
+                  <span class="order-date">${new Date(order.date).toLocaleDateString()}</span>
+                </div>
+                <div class="order-details">
+                  <span class="order-total">$${order.total.toFixed(2)}</span>
+                  <span class="order-status ${order.status.toLowerCase()}">${order.status}</span>
+                </div>
+                ${order.items && order.items.length > 0 ? `
+                  <div class="order-items">
+                    <h4>Items:</h4>
+                    <ul>
+                      ${order.items.map(item => `
+                        <li>
+                          ${item.product ? item.product.name : 'Unknown Product'} - 
+                          Quantity: ${item.quantity}, 
+                          Price: $${item.price.toFixed(2)}
+                        </li>
+                      `).join('')}
+                    </ul>
+                  </div>
+                ` : ''}
+              </li>
+            `).join('')}
+          </ul>
         `;
-        ordersList.appendChild(li);
-      });
-
-      document.getElementById('ordersModal').classList.remove('hidden');
+      } else {
+        modalBody.innerHTML = '<p>No orders found for this user</p>';
+      }
+      
+      modal.classList.remove('hidden');
+    } else {
+      showNotification('error', data.message || 'Failed to load user orders');
     }
   } catch (error) {
     console.error('Error fetching user orders:', error);
@@ -218,42 +300,33 @@ async function editUser(userId) {
       document.getElementById('roleInput').value = user.role;
 
       document.getElementById('addUserModal').classList.remove('hidden');
-      document.getElementById('saveUserBtn').onclick = () => saveUser(userId);
+      document.getElementById('saveUserBtn').addEventListener('click', async () => {
+        const formData = new FormData(document.getElementById('userForm'));
+        const userData = {
+          Name: formData.get('Name'),
+          username: formData.get('username'),
+          email: formData.get('email'),
+          password: formData.get('password'),
+          phone_number: formData.get('phone_number'),
+          DOB: formData.get('DOB'),
+          language: formData.get('language'),
+          role: formData.get('role'),
+          Address: {
+            city: formData.get('Address[city]'),
+            street: formData.get('Address[street]'),
+            addressType: formData.get('Address[addressType]'),
+            state: formData.get('Address[state]'),
+            country: formData.get('Address[country]'),
+            postalCode: formData.get('Address[postalCode]')
+          }
+        };
+
+        await saveUser(userData);
+      });
     }
   } catch (error) {
     console.error('Error fetching user for edit:', error);
     showNotification('error', 'Failed to load user data');
-  }
-}
-
-async function saveUser(userId) {
-  const userData = {
-    Name: document.getElementById('nameInput').value,
-    email: document.getElementById('emailInput').value,
-    role: document.getElementById('roleInput').value
-  };
-
-  try {
-    const response = await fetch(`/api/admin/users/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      showNotification('success', 'User updated successfully');
-      document.getElementById('addUserModal').classList.add('hidden');
-      fetchUsers();
-    } else {
-      showNotification('error', data.message || 'Failed to update user');
-    }
-  } catch (error) {
-    console.error('Error updating user:', error);
-    showNotification('error', 'Failed to update user');
   }
 }
 
@@ -313,6 +386,81 @@ function updateUsersTable(users) {
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('search');
+  const addUserBtn = document.getElementById('addUserBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const saveUserBtn = document.getElementById('saveUserBtn');
+  const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+  const closeOrdersBtn = document.getElementById('closeOrdersBtn');
+
+  // Initialize search functionality
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = users.filter(
+        (u) =>
+          (u.Name && u.Name.toLowerCase().includes(keyword)) ||
+          (u.email && u.email.toLowerCase().includes(keyword))
+      );
+      updateUsersTable(filtered);
+    });
+  }
+
+  // Initialize add user button
+  if (addUserBtn) {
+    addUserBtn.addEventListener('click', () => {
+      document.getElementById('addUserModal').classList.remove('hidden');
+      document.getElementById('userForm').reset();
+    });
+  }
+
+  // Initialize close modal button
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => {
+      document.getElementById('addUserModal').classList.add('hidden');
+    });
+  }
+
+  // Initialize save user button
+  if (saveUserBtn) {
+    saveUserBtn.addEventListener('click', async () => {
+      const formData = new FormData(document.getElementById('userForm'));
+      const userData = {
+        Name: formData.get('Name'),
+        username: formData.get('username'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        phone_number: formData.get('phone_number'),
+        DOB: formData.get('DOB'),
+        language: formData.get('language'),
+        role: formData.get('role'),
+        Address: {
+          city: formData.get('Address[city]'),
+          street: formData.get('Address[street]'),
+          addressType: formData.get('Address[addressType]'),
+          state: formData.get('Address[state]'),
+          country: formData.get('Address[country]'),
+          postalCode: formData.get('Address[postalCode]')
+        }
+      };
+      await saveUser(userData);
+    });
+  }
+
+  // Initialize close details button
+  if (closeDetailsBtn) {
+    closeDetailsBtn.addEventListener('click', () => {
+      document.getElementById('userDetailsModal').classList.add('hidden');
+    });
+  }
+
+  // Initialize close orders button
+  if (closeOrdersBtn) {
+    closeOrdersBtn.addEventListener('click', () => {
+      document.getElementById('ordersModal').classList.add('hidden');
+    });
+  }
+
   // Check if we have initial data
   if (window.initialData?.users?.length > 0) {
     users = window.initialData.users;

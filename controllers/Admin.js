@@ -6,6 +6,8 @@ const Brand = require('../models/Brands');
 const Todo = require('../models/Todos');
 const Session = require('../models/Sessions');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const validator = require('validator');
 
 // Load users from database
 const loadUsers = async () => {
@@ -166,6 +168,103 @@ exports.deleteUser = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error deleting user',
+            error: error.message
+        });
+    }
+}; 
+
+exports.addUser = async (req, res) => {
+    try {
+        const {
+            Name,
+            username,
+            email,
+            password,
+            DOB,
+            phone_number,
+            language,
+            role,
+            Address,
+            Payment
+        } = req.body;
+
+  // Validate required fields
+        if (!Name || !username || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide all required fields: Name, username, email, and password'
+            });
+        }
+
+        // Validate email format
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid email address'
+            });
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ 
+            $or: [
+                { email: email.toLowerCase() },
+                { username: username }
+            ]
+        });
+
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'User with this email or username already exists'
+            });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create new user
+        const newUser = await User.create({
+            Name,
+            username,
+            email: email.toLowerCase(),
+            password: hashedPassword,
+            DOB: DOB || undefined,
+            phone_number: phone_number || undefined,
+            language: language || 'English',
+            role: role || 'user', // Default to 'user' if role not specified
+            Address: Address || undefined,
+            Payment: Payment || undefined
+        });
+
+
+        // Save user to database
+        await newUser.save();
+
+        // Remove sensitive information from response 
+        //        // Remove sensitive information before sending response
+        const userResponse = newUser.toObject();
+        delete userResponse.password;
+
+        delete userResponse.Payment;
+         if (userResponse.Payment) {
+            delete userResponse.Payment.cvv;
+            if (userResponse.Payment.cardNumber) {
+                userResponse.Payment.cardNumber = `**** **** **** ${userResponse.Payment.cardNumber.slice(-4)}`;
+            }
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'User created successfully',
+            data: userResponse
+        });
+
+    } catch (error) {
+        console.error('Error creating user:', error);
+                res.status(500).json({
+            success: false,
+            message: 'Error creating user',
             error: error.message
         });
     }
@@ -845,6 +944,34 @@ exports.renderAnalytics = async (req, res) => {
             title: 'Error',
             type: 'error',
             message: 'Error loading analytics',
+            error: error.message
+        });
+    }
+};
+
+exports.getUserOrders = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const orders = await Order.find({ user: req.params.id })
+            .populate('items.product')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: orders
+        });
+    } catch (error) {
+        console.error('Error fetching user orders:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching user orders',
             error: error.message
         });
     }

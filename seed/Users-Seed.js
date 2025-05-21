@@ -80,6 +80,32 @@ const Users = [
       paymentType: 'Credit Card'
     },
     role: 'user'
+  },
+  {
+    id: new mongoose.Types.ObjectId().toString(),
+    Name: 'Ahmed Khalid',
+    username: 'ahmedkhalidddd',
+    email: 'ahmedkhalid@gmail.com',
+    password: '556256215',
+    DOB: new Date('2005-01-15'),
+    phone_number: '22562187135',
+    language: 'English',
+    Address: {
+      city: '10th of Ramadan',
+      street: '789 King Rd',
+      addressType: 'Other',
+      state: 'Cairo',
+      country: 'Egypt',
+      postalCode: '11511'
+    },
+    Payment: {
+      cardNumber: '340005456120000009',
+      cardHolder: 'Ahmed Khalis',
+      expiryDate: '01/27',
+      cvv: '789',
+      paymentType: 'Credit Card'
+    },
+    role: 'user'
   }
 ];
 
