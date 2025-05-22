@@ -13,13 +13,13 @@
     "seed:collections": "node seed/Collections-Seed.js",
     "seed:users": "node seed/Users-Seed.js",
     "seed:all": "npm run seed && npm run seed:brands && npm run seed:collections && npm run seed:users",
-    "test": "jest"
+    "test": "jest",
+    "fix-passwords": "node scripts/fix-passwords.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
