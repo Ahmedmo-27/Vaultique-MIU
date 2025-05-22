@@ -1,21 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
+const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
 const crypto = require('crypto');
 const validator = require('validator');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
-const csrf = require('csurf');
-const helmet = require('helmet');
-
-// Add security headers
-router.use(helmet());
-
-// Add CSRF protection
-const csrfProtection = csrf({ cookie: true });
-router.use(csrfProtection);
+// Security headers and CSRF protection are handled in server.js
 
 // Rate limiting for login attempts
 const loginLimiter = rateLimit({
@@ -27,8 +19,13 @@ const loginLimiter = rateLimit({
 // Rate limiting for signup attempts
 const signupLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 3, // limit each IP to 3 accounts per hour
-    message: 'Too many accounts created from this IP, please try again after an hour'
+    max: 10, // Increased from 3 to 10 attempts per hour
+    message: JSON.stringify({
+        success: false,
+        message: 'Too many accounts created from this IP, please try again after an hour'
+    }),
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 // Password validation middleware
@@ -51,7 +48,14 @@ const validatePassword = (password) => {
 
 // Helper function to generate JWT token
 const generateToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+        console.error('JWT_SECRET is not defined in environment variables');
+        // Return a temporary token that will be rejected later
+        // This prevents the app from crashing during signup
+        return 'invalid-token-missing-secret';
+    }
+    return jwt.sign({ id: userId }, jwtSecret, {
         expiresIn: '30d'
     });
 };
@@ -70,23 +74,27 @@ const signupValidation = [
         .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long')
         .matches(/^[a-zA-Z0-9_]+$/).withMessage('Username can only contain letters, numbers and underscores'),
     body('email').isEmail().normalizeEmail().withMessage('Please enter a valid email address'),
-    body('password').custom((value, { req }) => {
-        const errors = validatePassword(value);
-        if (errors.length > 0) {
-            throw new Error(errors.join('. '));
-        }
-        return true;
-    }),
-    body('phone_number').optional().matches(/^\+?[\d\s-]+$/).withMessage('Please enter a valid phone number'),
-    body('DOB').optional().isISO8601().toDate().withMessage('Please enter a valid date')
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+        .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+        .matches(/[0-9]/).withMessage('Password must contain at least one number'),
+    body('phone_number').optional(),
+    body('DOB').optional()
 ];
 
 // Login route
 router.post('/login', loginLimiter, loginValidation, async (req, res) => {
     try {
+        console.log('Login attempt received:', { 
+            email: req.body.email,
+            hasPassword: !!req.body.password,
+            csrfToken: !!req.headers['csrf-token'] || !!req.headers['x-csrf-token'],
+            body: req.body 
+        });
+
         // Check for validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            console.log('Validation errors:', errors.array());
             return res.status(400).json({
                 success: false,
                 message: 'Validation error',
@@ -96,91 +104,196 @@ router.post('/login', loginLimiter, loginValidation, async (req, res) => {
 
         const { email, password } = req.body;
 
-        // Find user by email with all necessary fields
-        const user = await User.findOne({ email: email.toLowerCase() })
-            .select('+password +failedLoginAttempts +lastFailedLogin')
-            .select('Name username email role language Address Payment createdAt lastLogin status');
-
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid email or password'
-            });
-        }
-
-        // Check if account is locked
-        if (user.isAccountLocked()) {
-            return res.status(423).json({
-                success: false,
-                message: 'Account is temporarily locked due to too many failed attempts. Please try again later.'
-            });
-        }
-
-        // Check if user is active
-        if (user.status !== 'active') {
-            return res.status(401).json({
-                success: false,
-                message: 'Your account has been deactivated. Please contact support.'
-            });
-        }
-
-        // Check password
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
-            // Record failed login attempt
-            await user.recordLoginAttempt(false, req.ip, req.get('user-agent'));
-
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid email or password'
-            });
-        }
-
-        // Record successful login
-        await user.recordLoginAttempt(true, req.ip, req.get('user-agent'));
-
-        // Generate token
-        const token = generateToken(user._id);
-
-        // Set session cookie with secure options
-        const sessionConfig = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-            path: '/',
-            domain: process.env.COOKIE_DOMAIN || undefined
-        };
-
-        res.cookie('token', token, sessionConfig);
-
-        // Remove sensitive information
-        const userResponse = user.toObject();
-        delete userResponse.password;
-        delete userResponse.failedLoginAttempts;
-        delete userResponse.lastFailedLogin;
-
-        if (userResponse.Payment) {
-            delete userResponse.Payment.cvv;
-            if (userResponse.Payment.cardNumber) {
-                userResponse.Payment.cardNumber = `**** **** **** ${userResponse.Payment.cardNumber.slice(-4)}`;
-            }
-        }
-
-        res.status(200).json({
-            success: true,
-            message: 'Login successful',
-            data: {
-                user: userResponse,
-                isAdmin: user.role === 'admin',
-                redirectUrl: user.role === 'admin' ? '/admin/dashboard' : '/user/home',
-                csrfToken: req.csrfToken()
-            }
+        // Debug log for request body
+        console.log('Request body:', {
+            hasEmail: !!email,
+            hasPassword: !!password,
+            emailLength: email?.length,
+            passwordLength: password?.length
         });
 
+        try {
+            // Find user by email with all necessary fields
+            const user = await User.findOne({ email: email?.toLowerCase() })
+                .select('+password +failedLoginAttempts +lastFailedLogin +status +role')
+                .exec();
+
+            console.log('Database query result:', {
+                userFound: !!user,
+                hasPassword: user ? !!user.password : false,
+                status: user?.status,
+                role: user?.role
+            });
+
+            if (!user) {
+                console.log('User not found:', { email });
+                return res.status(401).json({
+                    success: false,
+                    message: 'Invalid email or password'
+                });
+            }
+
+            // Ensure password is available
+            if (!user.password) {
+                console.error('Password not found for user:', user.email);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Authentication error'
+                });
+            }
+
+            // Check password
+            try {
+                const isMatch = await user.verifyPassword(password);
+                console.log('Password check:', {
+                    isMatch,
+                    passwordProvided: !!password,
+                    hashedPasswordExists: !!user.password
+                });
+
+                if (!isMatch) {
+                    // Update failed login attempts
+                    user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
+                    user.lastFailedLogin = new Date();
+                    await user.save();
+
+                    return res.status(401).json({
+                        success: false,
+                        message: 'Invalid email or password'
+                    });
+                }
+            } catch (bcryptError) {
+                console.error('Password verification error:', bcryptError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Error verifying password'
+                });
+            }
+
+            // Check if account is locked
+            const isLocked = user.failedLoginAttempts >= 5 && 
+                user.lastFailedLogin && 
+                (new Date() - new Date(user.lastFailedLogin)) < 30 * 60 * 1000;
+
+            if (isLocked) {
+                console.log('Account locked:', { 
+                    email: user.email,
+                    failedAttempts: user.failedLoginAttempts,
+                    lastFailedLogin: user.lastFailedLogin
+                });
+                return res.status(423).json({
+                    success: false,
+                    message: 'Account is temporarily locked due to too many failed attempts. Please try again later.'
+                });
+            }
+
+            // Ensure status is set
+            if (!user.status) {
+                console.log('Setting default status for user:', user.email);
+                user.status = 'active';
+                await user.save();
+            }
+
+            // Check if user is active
+            if (user.status !== 'active') {
+                console.log('Inactive account attempt:', { 
+                    email: user.email, 
+                    status: user.status 
+                });
+                return res.status(401).json({
+                    success: false,
+                    message: 'Your account has been deactivated. Please contact support.'
+                });
+            }
+
+            // Reset failed login attempts and update last login
+            user.failedLoginAttempts = 0;
+            user.lastLogin = new Date();
+            user.loginHistory.push({
+                timestamp: new Date(),
+                ip: req.ip,
+                userAgent: req.get('user-agent'),
+                success: true
+            });
+
+            // Keep only last 10 login attempts
+            if (user.loginHistory.length > 10) {
+                user.loginHistory = user.loginHistory.slice(-10);
+            }
+
+            await user.save();
+
+            // Generate token
+            const jwtSecret = process.env.JWT_SECRET;
+            if (!jwtSecret) {
+                console.error('JWT_SECRET not found in environment');
+                return res.status(500).json({
+                    success: false,
+                    message: 'Server configuration error'
+                });
+            }
+
+            const token = jwt.sign(
+                { id: user._id, role: user.role },
+                jwtSecret,
+                { expiresIn: '30d' }
+            );
+
+            // Set session cookie with secure options
+            const sessionConfig = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+                path: '/'
+            };
+
+            res.cookie('token', token, sessionConfig);
+
+            // Create safe user object for response
+            const userResponse = {
+                _id: user._id,
+                email: user.email,
+                username: user.username,
+                Name: user.Name,
+                role: user.role,
+                status: user.status,
+                language: user.language,
+                createdAt: user.createdAt,
+                lastLogin: user.lastLogin
+            };
+
+            console.log('Login successful:', { 
+                email: user.email, 
+                role: user.role,
+                status: user.status
+            });
+
+            // Generate a fresh CSRF token for the response
+            const csrfToken = req.csrfToken ? req.csrfToken() : null;
+
+            res.status(200).json({
+                success: true,
+                message: 'Login successful',
+                data: {
+                    user: userResponse,
+                    isAdmin: user.role === 'admin',
+                    redirectUrl: user.role === 'admin' ? '/admin/dashboard' : '/user/home',
+                    csrfToken: csrfToken
+                }
+            });
+
+        } catch (dbError) {
+            console.error('Database error:', dbError);
+            throw dbError;
+        }
+
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Login error:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
         res.status(500).json({
             success: false,
             message: 'An error occurred during login',
@@ -192,9 +305,17 @@ router.post('/login', loginLimiter, loginValidation, async (req, res) => {
 // Signup route
 router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
     try {
+        console.log('Signup attempt received:', { 
+            email: req.body.email,
+            username: req.body.username,
+            hasPassword: !!req.body.password,
+            body: req.body 
+        });
+
         // Check for validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            console.log('Validation errors:', errors.array());
             return res.status(400).json({
                 success: false,
                 message: 'Validation error',
@@ -214,79 +335,113 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
             Payment
         } = req.body;
 
-        // Check if user already exists
-        const existingUser = await User.findOne({
-            $or: [
-                { email: email.toLowerCase() },
-                { username: username }
-            ]
-        });
+        try {
+            // Check if user already exists
+            console.log('Checking if user exists...');
+            const existingUser = await User.findOne({
+                $or: [
+                    { email: email.toLowerCase() },
+                    { username: username }
+                ]
+            });
 
-        if (existingUser) {
+            if (existingUser) {
+                console.log('User already exists:', existingUser.email === email.toLowerCase() ? 
+                    'Email already registered' : 
+                    'Username already taken');
+                return res.status(400).json({
+                    success: false,
+                    message: existingUser.email === email.toLowerCase() ? 
+                        'Email already registered' : 
+                        'Username already taken'
+                });
+            }
+
+            // Hash password with stronger salt rounds - use bcryptjs for consistency
+            console.log('Hashing password...');
+            const salt = await bcryptjs.genSalt(12);
+            const hashedPassword = await bcryptjs.hash(password, salt);
+
+            // Create user object
+            console.log('Creating user object...');
+            const userData = {
+                Name,
+                username,
+                email: email.toLowerCase(),
+                password: hashedPassword,
+                role: 'user',
+                status: 'active',
+                createdAt: new Date()
+            };
+
+            // Add optional fields if provided
+            if (DOB) userData.DOB = DOB;
+            if (phone_number) userData.phone_number = phone_number;
+            if (language) {
+                // Map language codes to full names if needed
+                const languageMap = {
+                    'en': 'English',
+                    'ar': 'Arabic',
+                    'fr': 'English' // Default to English for unsupported languages
+                };
+                userData.language = languageMap[language] || language;
+                console.log('Language value:', language, '→', userData.language);
+            }
+
+            console.log('Creating new user in database...');
+            // Create new user
+            const newUser = await User.create(userData);
+            console.log('User created successfully:', newUser._id);
+
+            // Remove sensitive information
+            const userResponse = newUser.toObject();
+            delete userResponse.password;
+
+            // Generate token
+            const token = generateToken(newUser._id);
+
+            // Set session cookie
+            const sessionConfig = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 30 * 24 * 60 * 60 * 1000,
+                path: '/',
+                domain: process.env.COOKIE_DOMAIN || undefined
+            };
+
+            res.cookie('token', token, sessionConfig);
+
+            res.status(201).json({
+                success: true,
+                message: 'Signup successful',
+                data: {
+                    user: userResponse,
+                    csrfToken: req.csrfToken()
+                }
+            });
+        } catch (dbError) {
+            console.error('Database operation error:', dbError);
+            throw dbError;
+        }
+    } catch (error) {
+        console.error('Error creating user:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
+        
+        // Send more specific error messages based on the error type
+        if (error.code === 11000) {
+            // MongoDB duplicate key error
             return res.status(400).json({
                 success: false,
-                message: existingUser.email === email.toLowerCase() ? 
-                    'Email already registered' : 
-                    'Username already taken'
+                message: 'Username or email already exists',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }
-
-        // Hash password with stronger salt rounds
-        const salt = await bcrypt.genSalt(12);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // Create new user
-        const newUser = await User.create({
-            Name,
-            username,
-            email: email.toLowerCase(),
-            password: hashedPassword,
-            DOB: DOB || undefined,
-            phone_number: phone_number || undefined,
-            language: language || 'English',
-            role: 'user',
-            Address: Address || undefined,
-            Payment: Payment || undefined,
-            status: 'active',
-            createdAt: new Date()
-        });
-
-        // Remove sensitive information
-        const userResponse = newUser.toObject();
-        delete userResponse.password;
-        if (userResponse.Payment) {
-            delete userResponse.Payment.cvv;
-            if (userResponse.Payment.cardNumber) {
-                userResponse.Payment.cardNumber = `**** **** **** ${userResponse.Payment.cardNumber.slice(-4)}`;
-            }
-        }
-
-        // Generate token
-        const token = generateToken(newUser._id);
-
-        // Set session cookie
-        const sessionConfig = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            path: '/',
-            domain: process.env.COOKIE_DOMAIN || undefined
-        };
-
-        res.cookie('token', token, sessionConfig);
-
-        res.status(201).json({
-            success: true,
-            message: 'Signup successful',
-            data: {
-                user: userResponse,
-                csrfToken: req.csrfToken()
-            }
-        });
-
-    } catch (error) {
-        console.error('Error creating user:', error);
+        
         res.status(500).json({
             success: false,
             message: 'Error creating user',
@@ -393,8 +548,8 @@ router.post('/reset-password/:token', [
         }
 
         // Hash new password with stronger salt rounds
-        const salt = await bcrypt.genSalt(12);
-        user.password = await bcrypt.hash(password, salt);
+        const salt = await bcryptjs.genSalt(12);
+        user.password = await bcryptjs.hash(password, salt);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
         user.failedLoginAttempts = 0; // Reset failed attempts

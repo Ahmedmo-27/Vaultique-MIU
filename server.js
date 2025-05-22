@@ -8,6 +8,8 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const csrf = require('csurf');
 const helmet = require('helmet');
+const { isAuthenticated, isAdmin, optionalAuth } = require('./middleware/auth');
+const config = require('./config/env');
 
 // Import route files
 const apiRouter = require("./routes/api");
@@ -17,7 +19,6 @@ const adminController = require("./controllers/Admin");
 const streamChatRoutes = require("./routes/StreamChat");
 const authRoutes = require("./controllers/Auth");
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
@@ -26,19 +27,15 @@ app.set('views', path.join(__dirname, 'views'));
 // Enhanced MongoDB Connection with better error handling
 const connectDB = async () => {
   try {
-    if (!process.env.MONGODB_URI) {
-      throw new Error('MONGODB_URI is not defined in environment variables');
-    }
-
     console.log('Attempting to connect to MongoDB...'); // Debug log
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+    const conn = await mongoose.connect(config.mongodbUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       family: 4
     });
-    console.log(`Connected to MongoDB at ${process.env.MONGODB_URI}`);
+    console.log(`Connected to MongoDB at ${config.mongodbUri}`);
     console.log('MongoDB connection state:', mongoose.connection.readyState); // Debug log
   } catch (err) {
     console.error("MongoDB connection error:", err);
@@ -46,10 +43,6 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
-// Login/Signup page
-
-// Security Middleware
-app.use(helmet());
 
 // Middleware
 app.use(express.json());
@@ -59,41 +52,55 @@ app.use(cookieParser());
 
 // Session Configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'default_secret',
+  secret: config.sessionSecret,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: config.isProduction,
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 
-// CSRF Protection
-app.use(csrf({ cookie: true }));
-
 // CORS Configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Accept", "CSRF-Token"],
-  credentials: true,
-  exposedHeaders: ["Set-Cookie"]
+    origin: true, // Allow all origins in development
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'CSRF-Token', 'X-Requested-With'],
+    credentials: true,
+    maxAge: 600, // Cache preflight requests for 10 minutes
+    exposedHeaders: ['Set-Cookie', 'Date', 'ETag']
 }));
 
-// Configure headers to allow cross-origin resources
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, CSRF-Token');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
-  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
-  res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
-  res.setHeader('Access-Control-Allow-Private-Network', 'true');
-  next();
-});
+// Security Middleware
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "'unsafe-hashes'", "https:", "http:"],
+            scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
+            scriptSrcElem: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https:", "http:"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https:", "http:"],
+            imgSrc: ["'self'", "data:", "https:", "http:"],
+            connectSrc: ["'self'", "https:", "http:", "ws:", "wss:"],
+            fontSrc: ["'self'", "https:", "http:", "data:"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'", "https:", "http:"],
+            frameSrc: ["'self'"],
+            upgradeInsecureRequests: []
+        }
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: false
+}));
+
+// CSRF Protection
+app.use(csrf({ cookie: { 
+    httpOnly: true,
+    secure: config.isProduction,
+    sameSite: 'lax'
+}}));
 
 // Add CSRF token to all responses
 app.use((req, res, next) => {
@@ -104,81 +111,74 @@ app.use((req, res, next) => {
 // Static File Serving Configuration
 const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
-
-// Serve static files from the public directory
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/public/Assets', express.static(path.join(__dirname, 'public/Assets')));
 
 // CSS and JavaScript static files
-app.use('/CSS', express.static(path.join(publicPath, 'CSS'), (req, res, next) => {
+app.use('/CSS', express.static(path.join(publicPath, 'CSS')), (req, res, next) => {
   res.type('text/css');
   next();
-}));
+});
 
 app.use('/Javascript', express.static(path.join(publicPath, 'Javascript')), (req, res, next) => {
   res.type('application/javascript');
   next();
 });
 
-// API Routes (Backend)
-app.use("/api", apiRouter);
-app.use("/api/admin", adminRoutes);
-app.use("/api/stream-chat", streamChatRoutes);
+// Public routes (no authentication required)
 app.use("/api/auth", authRoutes);
+
+// Apply optional authentication to all routes
+// This will set req.user if a valid token is present but won't block access
+app.use(optionalAuth);
+
+// Protected API routes
+app.use("/api", apiRouter);
+app.use("/api/admin", adminRoutes); // Already has isAdmin middleware
+app.use("/api/stream-chat", isAuthenticated, streamChatRoutes);
 
 // Frontend Routes
 app.get('/', (req, res) => res.redirect('/user/home'));
-app.use('/user', userController);
+app.use('/user', userController); // No authentication required for user pages
 
 // Admin Frontend Routes
 app.get('/admin', (req, res) => res.redirect('/admin/dashboard'));
-app.get('/admin/dashboard', adminController.renderDashboard);
-app.get('/admin/users', adminController.renderUsers);
-app.get('/admin/products', adminController.renderProducts);
-app.get('/admin/products/create', adminController.renderCreateProduct);
-app.get('/admin/analytics', adminController.renderAnalytics);
+app.get('/admin/dashboard', isAdmin, adminController.renderDashboard);
+app.get('/admin/users', isAdmin, adminController.renderUsers);
+app.get('/admin/products', isAdmin, adminController.renderProducts);
+app.get('/admin/products/create', isAdmin, adminController.renderCreateProduct);
+app.get('/admin/analytics', isAdmin, adminController.renderAnalytics);
 
-// 404 handler for API routes - MUST BE AFTER API ROUTES
-app.use('/api', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'API endpoint not found'
-  });
+// Increase request timeout
+app.use((req, res, next) => {
+    res.setTimeout(30000, () => {
+        console.log('Request has timed out.');
+        res.status(408).send('Request has timed out.');
+    });
+    next();
 });
 
-// 404 handler for frontend routes - MUST BE AFTER ALL ROUTES
-app.use((req, res) => {
-  res.status(404).render('404', {
-    title: '404 - Page Not Found',
-    message: 'The page you are looking for does not exist.'
-  });
-});
-
-// CSRF error handler
+// Error Handlers
 app.use((err, req, res, next) => {
+  console.error(err.stack);
+
   if (err.code === 'EBADCSRFTOKEN') {
     return res.status(403).json({
       success: false,
       message: 'Invalid CSRF token'
     });
   }
-  next(err);
-});
 
-// General error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-
-  // Handle API errors
+  // API errors
   if (req.path.startsWith('/api')) {
     return res.status(err.status || 500).json({
       success: false,
       message: err.message || 'Internal Server Error',
-      error: process.env.NODE_ENV === 'development' ? err : undefined
+      error: config.nodeEnv === 'development' ? err : undefined
     });
   }
 
-  // Handle frontend errors
+  // Frontend errors
   if (err.status === 404) {
     return res.status(404).render('404', {
       title: '404 - Page Not Found',
@@ -191,22 +191,19 @@ app.use((err, req, res, next) => {
     type: 'error',
     message: err.message || 'Something went wrong!',
     show: true,
-    error: process.env.NODE_ENV === 'development' ? err : {}
+    error: config.nodeEnv === 'development' ? err : {}
   });
 });
 
-// Only start the server if this file is run directly
+// Start server
 if (require.main === module) {
-  // Connect to MongoDB before starting the server
   connectDB().then(() => {
-    // Start Server
-    const server = app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+    const server = app.listen(config.port, () => {
+      console.log(`Server running on port ${config.port}`);
       console.log(`Serving static files from: ${publicPath}`);
-      console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
+      console.log(`Frontend URL: ${config.frontendUrl}`);
     });
 
-    // Graceful Shutdown
     process.on("SIGTERM", () => {
       console.log("SIGTERM received. Shutting down gracefully...");
       server.close(() => {
@@ -222,5 +219,4 @@ if (require.main === module) {
   });
 }
 
-// Export the app for testing
 module.exports = app;
