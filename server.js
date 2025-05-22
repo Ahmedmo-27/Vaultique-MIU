@@ -6,13 +6,16 @@ const path = require("path");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const csrf = require('csurf');
+const helmet = require('helmet');
 
 // Import route files
 const apiRouter = require("./routes/api");
 const userController = require("./controllers/User");
 const adminRoutes = require("./routes/AdminRoutes");
 const adminController = require("./controllers/Admin");
-
+const streamChatRoutes = require("./routes/StreamChat");
+const authRoutes = require("./controllers/Auth");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -27,7 +30,8 @@ const connectDB = async () => {
       throw new Error('MONGODB_URI is not defined in environment variables');
     }
 
-    await mongoose.connect(process.env.MONGODB_URI, {
+    console.log('Attempting to connect to MongoDB...'); // Debug log
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
@@ -35,12 +39,16 @@ const connectDB = async () => {
       family: 4
     });
     console.log(`Connected to MongoDB at ${process.env.MONGODB_URI}`);
+    console.log('MongoDB connection state:', mongoose.connection.readyState); // Debug log
   } catch (err) {
     console.error("MongoDB connection error:", err);
     console.error("Please make sure MongoDB is running and .env file is properly configured");
     process.exit(1);
   }
 };
+
+// Security Middleware
+app.use(helmet());
 
 // Middleware
 app.use(express.json());
@@ -60,23 +68,35 @@ app.use(session({
   }
 }));
 
+// CSRF Protection
+app.use(csrf({ cookie: true }));
+
 // CORS Configuration
 app.use(cors({
-  origin: "*",
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  allowedHeaders: ["Content-Type", "Authorization", "Accept", "CSRF-Token"],
+  credentials: true,
+  exposedHeaders: ["Set-Cookie"]
 }));
 
 // Configure headers to allow cross-origin resources
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, CSRF-Token');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
   res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
   res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  next();
+});
+
+// Add CSRF token to all responses
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
   next();
 });
 
@@ -102,6 +122,8 @@ app.use('/Javascript', express.static(path.join(publicPath, 'Javascript')), (req
 // API Routes (Backend)
 app.use("/api", apiRouter);
 app.use("/api/admin", adminRoutes);
+app.use("/api/stream-chat", streamChatRoutes);
+app.use("/api/auth", authRoutes);
 
 // Frontend Routes
 app.get('/', (req, res) => res.redirect('/user/home'));
@@ -131,6 +153,18 @@ app.use((req, res) => {
   });
 });
 
+// CSRF error handler
+app.use((err, req, res, next) => {
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({
+      success: false,
+      message: 'Invalid CSRF token'
+    });
+  }
+  next(err);
+});
+
+// General error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
 

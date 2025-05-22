@@ -235,7 +235,69 @@ const UserSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+    status: {
+        type: String,
+        enum: ['active', 'inactive', 'suspended'],
+        default: 'active'
+    },
+    failedLoginAttempts: {
+        type: Number,
+        default: 0
+    },
+    lastFailedLogin: {
+        type: Date
+    },
+    lastLogin: {
+        type: Date
+    },
+    loginHistory: [{
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+        ip: String,
+        userAgent: String,
+        success: Boolean
+    }],
 });
+
+// Add index for email and username for faster queries
+UserSchema.index({ email: 1 });
+UserSchema.index({ username: 1 });
+
+// Add method to check if account is locked
+UserSchema.methods.isAccountLocked = function() {
+    return this.failedLoginAttempts >= 5 && 
+           this.lastFailedLogin && 
+           (new Date() - this.lastFailedLogin) < 30 * 60 * 1000; // 30 minutes
+};
+
+// Add method to record login attempt
+UserSchema.methods.recordLoginAttempt = async function(success, ip, userAgent) {
+    this.loginHistory.push({
+        timestamp: new Date(),
+        ip,
+        userAgent,
+        success
+    });
+
+    if (success) {
+        this.failedLoginAttempts = 0;
+        this.lastLogin = new Date();
+    } else {
+        this.failedLoginAttempts += 1;
+        this.lastFailedLogin = new Date();
+    }
+
+    // Keep only last 10 login attempts
+    if (this.loginHistory.length > 10) {
+        this.loginHistory = this.loginHistory.slice(-10);
+    }
+
+    await this.save();
+};
 
 module.exports = mongoose.model('User', UserSchema);

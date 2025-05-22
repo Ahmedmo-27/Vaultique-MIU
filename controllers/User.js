@@ -15,6 +15,19 @@ const renderNotification = (res, type, message, title = 'Notification') => {
     });
 };
 
+// Login/Signup page
+router.get('/LoginSignup', async (req, res) => {
+    try {
+        res.render('LoginSignup', {
+            title: 'Vaultique | Login & Signup',
+            csrfToken: req.csrfToken()
+        });
+    } catch (error) {
+        console.error('Error loading auth page:', error);
+        renderNotification(res, 'error', 'Failed to load login/signup page. Please try again later.');
+    }
+});
+
 // Home page
 router.get('/home', async (req, res) => {
     try {
