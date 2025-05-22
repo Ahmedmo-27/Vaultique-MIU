@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const Order = require('../models/Orders');
+const bcryptjs = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
     id: {
         type: String,
-        required: true,
-        unique: true,
-        default: () => new mongoose.Types.ObjectId()
+        default: () => new mongoose.Types.ObjectId().toString()
     },
     Name: {
         type: String,
@@ -35,22 +34,17 @@ const UserSchema = new mongoose.Schema({
     },
     DOB: {
         type: Date,
-        validate: {
-            validator: function(value) {
-                return !value || value < new Date();
-            },
-            message: 'Date of Birth must be in the past'
-        }
+        required: false
     },
     phone_number: {
         type: String,
-        unique: true,
+        required: false,
+        unique: false,
         select: false
     },
     language: {
         type: String,
         default: "English",
-        required: true,
         enum: ["English", "Arabic"]
     },
     role: {
@@ -241,7 +235,9 @@ const UserSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['active', 'inactive', 'suspended'],
-        default: 'active'
+        default: 'active',
+        required: true,
+        select: true
     },
     failedLoginAttempts: {
         type: Number,
@@ -267,6 +263,34 @@ const UserSchema = new mongoose.Schema({
 // Add index for email and username for faster queries
 UserSchema.index({ email: 1 });
 UserSchema.index({ username: 1 });
+
+// Add a pre-save hook to hash passwords
+UserSchema.pre('save', async function(next) {
+    // Only hash the password if it has been modified (or is new)
+    if (!this.isModified('password')) return next();
+
+    try {
+        // Check if password looks like a hash
+        if (this.password && !this.password.startsWith('$2')) {
+            // Generate a salt
+            const salt = await bcryptjs.genSalt(12);
+            // Hash the password
+            this.password = await bcryptjs.hash(this.password, salt);
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Add method to verify password
+UserSchema.methods.verifyPassword = async function(candidatePassword) {
+    try {
+        return await bcryptjs.compare(candidatePassword, this.password);
+    } catch (error) {
+        throw new Error('Error verifying password');
+    }
+};
 
 // Add method to check if account is locked
 UserSchema.methods.isAccountLocked = function() {
@@ -297,6 +321,26 @@ UserSchema.methods.recordLoginAttempt = async function(success, ip, userAgent) {
         this.loginHistory = this.loginHistory.slice(-10);
     }
 
+    await this.save();
+};
+
+// Add a pre-save hook to ensure status is set
+UserSchema.pre('save', function(next) {
+    if (!this.status) {
+        this.status = 'active';
+    }
+    next();
+});
+
+// Add method to activate account
+UserSchema.methods.activateAccount = async function() {
+    this.status = 'active';
+    await this.save();
+};
+
+// Add method to deactivate account
+UserSchema.methods.deactivateAccount = async function() {
+    this.status = 'inactive';
     await this.save();
 };
 

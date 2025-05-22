@@ -4,6 +4,7 @@ const Product = require('../models/Products');
 const Brand = require('../models/Brands');
 const Collection = require('../models/Collections');
 const User = require('../models/Users');
+const { isAuthenticated } = require('../middleware/auth');
 
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification') => {
@@ -14,6 +15,8 @@ const renderNotification = (res, type, message, title = 'Notification') => {
         show: true
     });
 };
+
+// Public routes (no auth required)
 
 // Login/Signup page
 router.get('/LoginSignup', async (req, res) => {
@@ -31,23 +34,17 @@ router.get('/LoginSignup', async (req, res) => {
 // Home page
 router.get('/home', async (req, res) => {
     try {
+        // If user is logged in, we'll have req.user from the optional auth middleware
         res.render('Home-Page', {
             title: 'Vaultique | Home',
+            user: req.user || null
         });
     } catch (error) {
         console.error('Error loading home page:', error);
         renderNotification(res, 'error', 'Failed to load home page. Please try again later.');
     }
 });
-    router.get('/LoginSignup', async (req, res) => {
-    try {
-        res.render('LoginSignup', {
-            title: 'Vaultique | Login & Signup'
-        });
-    } catch (error) {
-        console.error('Error loading auth page:', error);
-        renderNotification(res, 'error', 'Failed to load login/signup page. Please try again later.');
-    }});
+
 // Products page
 router.get('/products', async (req, res) => {
     try {
@@ -94,7 +91,8 @@ router.get('/products', async (req, res) => {
                 maxPrice: req.query.maxPrice || null,
                 inStock: req.query.inStock || 'false',
                 gender: req.query.gender || 'All'
-            }
+            },
+            user: req.user || null
         });
     } catch (error) {
         console.error('Error loading products:', error);
@@ -240,7 +238,8 @@ router.get('/brands/:brandSlug', async (req, res) => {
                 minPrice: req.query.minPrice || null,
                 maxPrice: req.query.maxPrice || null,
                 inStock: req.query.inStock || 'false'
-            }
+            },
+            user: req.user || null
         });
     } catch (error) {
         console.error('Error loading brand page:', error);
@@ -287,7 +286,8 @@ router.get('/collections/:collectionSlug', async (req, res) => {
             filters: {
                 brands,
                 Vcollections: collections
-            }
+            },
+            user: req.user || null
         });
     } catch (error) {
         console.error('Error loading collection page:', error);
@@ -295,7 +295,13 @@ router.get('/collections/:collectionSlug', async (req, res) => {
     }
 });
 
-router.get('/cart', async (req, res) => {
+// Features that require authentication
+// Add a middleware for authenticated routes
+const authenticatedRoutes = express.Router();
+authenticatedRoutes.use(isAuthenticated);
+
+// Cart routes require auth
+authenticatedRoutes.get('/cart', async (req, res) => {
     try {
         // cart retrieval logic here
         renderNotification(res, 'success', 'Cart retrieved successfully');
@@ -304,8 +310,7 @@ router.get('/cart', async (req, res) => {
     }
 });
 
-// Add to cart success notification
-router.post('/cart/add', async (req, res) => {
+authenticatedRoutes.post('/cart/add', async (req, res) => {
     try {
         // cart addition logic here
         renderNotification(res, 'success', 'Product added to cart successfully');
@@ -314,7 +319,7 @@ router.post('/cart/add', async (req, res) => {
     }
 });
 
-router.post('/cart/remove', async (req, res) => {
+authenticatedRoutes.post('/cart/remove', async (req, res) => {
     try {
         // cart removal logic here
         renderNotification(res, 'success', 'Product removed from cart successfully');
@@ -323,7 +328,8 @@ router.post('/cart/remove', async (req, res) => {
     }
 });
 
-router.get('/wishlist', async (req, res) => {
+// Wishlist routes require auth
+authenticatedRoutes.get('/wishlist', async (req, res) => {
     try {
         // wishlist retrieval logic here
         renderNotification(res, 'success', 'Wishlist retrieved successfully');
@@ -332,8 +338,7 @@ router.get('/wishlist', async (req, res) => {
     }
 });
 
-
-router.post('/wishlist/add', async (req, res) => {
+authenticatedRoutes.post('/wishlist/add', async (req, res) => {
     try {
         // wishlist addition logic here
         renderNotification(res, 'success', 'Product added to wishlist successfully');
@@ -342,7 +347,7 @@ router.post('/wishlist/add', async (req, res) => {
     }
 });
 
-router.post('/wishlist/remove', async (req, res) => {
+authenticatedRoutes.post('/wishlist/remove', async (req, res) => {
     try {
         // wishlist removal logic here
         renderNotification(res, 'success', 'Product removed from wishlist successfully');
@@ -351,65 +356,53 @@ router.post('/wishlist/remove', async (req, res) => {
     }
 });
 
-// Account Details page
-router.get('/account-details', async (req, res) => {
+// Account Details page requires auth
+authenticatedRoutes.get('/account-details', async (req, res) => {
     try {
-        // For testing, get the first user from the database
-        const user = await User.findOne()
-            .select('+phone_number +Payment +Payment.cardNumber +Payment.cardHolder +Payment.expiryDate +Payment.paymentType')
-            .populate({
-                path: 'orders.items.product',
-                select: 'name image price'
-            })
-            .populate({
-                path: 'wishlist.product',
-                select: 'name image price'
-            })
-            .populate({
-                path: 'refunds.order',
-                select: 'orderId items',
-                populate: {
-                    path: 'items.product',
-                    select: 'name'
-                }
-            })
-            .populate({
-                path: 'reviews.product',
-                select: 'name image'
-            });
+        // Get user data, but handle cases where it might not exist
+        let userData = null;
         
-        if (!user) {
-            return renderNotification(res, 'error', 'No user found in database');
+        if (req.user && req.user._id) {
+            userData = await User.findById(req.user._id)
+                .select('-password -Payment.cardNumber -Payment.cvv')
+                .lean();
         }
 
-        // Format user data for the template
-        const userData = {
-            name: user.Name,
-            email: user.email,
-            dob: user.DOB.toLocaleDateString('en-GB'), // Format as DD.MM.YYYY
-            phone: user.phone_number,
-            language: user.language,
-            address: user.Address || {},
-            payment: user.Payment ? {
-                cardNumber: user.Payment.cardNumber ? `**** **** **** ${user.Payment.cardNumber.slice(-4)}` : null,
-                cardHolder: user.Payment.cardHolder || '',
-                expiryDate: user.Payment.expiryDate || '',
-                paymentType: user.Payment.paymentType || 'Credit Card'
-            } : {},
-            orders: user.orders || [],
-            wishlist: user.wishlist || [],
-            refunds: user.refunds || [],
-            reviews: user.reviews || []
-        };
+        if (!userData) {
+            console.log('User data not found for account details page');
+            // Still render the page but with empty data
+            userData = { 
+                _id: req.user?._id || '',
+                Name: req.user?.Name || '',
+                email: req.user?.email || ''
+            };
+        }
 
         res.render('Account-Details', {
             title: 'Account Details',
-            user: userData
+            user: userData,
+            // Pass empty notification data for the partial
+            type: '',
+            message: '',
+            show: false
         });
     } catch (error) {
         console.error('Error loading account details:', error);
-        renderNotification(res, 'error', 'Failed to load account details');
+        res.render('Account-Details', {
+            title: 'Account Details',
+            user: { 
+                _id: req.user?._id || '',
+                Name: req.user?.Name || '',
+                email: req.user?.email || ''
+            },
+            type: 'error',
+            message: 'Failed to load account details',
+            show: true
+        });
     }
 });
+
+// Add the authenticated routes
+router.use(authenticatedRoutes);
 
 module.exports = router; 
