@@ -25,4 +25,19 @@ router.post('/products/create', adminController.createProduct);
 // Analytics routes
 router.get('/analytics', adminController.renderAnalytics);
 
+// Admin logout route
+router.get('/logout', (req, res) => {
+  // Clear JWT token cookie
+  res.cookie('token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    expires: new Date(0),
+    path: '/',
+    domain: process.env.COOKIE_DOMAIN || undefined,
+  });
+  
+  // Redirect to login page or home
+  res.redirect('/LoginSignup');
+});
+
 module.exports = router;

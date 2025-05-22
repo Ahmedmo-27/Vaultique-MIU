@@ -127,6 +127,21 @@ app.use('/api', apiRouter);
 app.use('/api/admin', adminRoutes); // Already has isAdmin middleware
 app.use('/api/stream-chat', isAdmin, streamChatRoutes);
 
+// Global logout route for client-side usage
+app.get('/logout', (req, res) => {
+  // Clear JWT token cookie
+  res.cookie('token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    expires: new Date(0),
+    path: '/',
+    domain: process.env.COOKIE_DOMAIN || undefined,
+  });
+  
+  // Redirect to login page
+  res.redirect('/user/LoginSignup');
+});
+
 // Frontend Routes
 app.get('/', (req, res) => res.redirect('/user/home'));
 app.use('/user', userController); // No authentication required for user pages
@@ -138,6 +153,21 @@ app.get('/admin/users', isAdmin, adminController.renderUsers);
 app.get('/admin/products', isAdmin, adminController.renderProducts);
 app.get('/admin/products/create', isAdmin, adminController.renderCreateProduct);
 app.get('/admin/analytics', isAdmin, adminController.renderAnalytics);
+
+// Admin logout route
+app.get('/admin/logout', (req, res) => {
+  // Clear JWT token cookie
+  res.cookie('token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    expires: new Date(0),
+    path: '/',
+    domain: process.env.COOKIE_DOMAIN || undefined,
+  });
+  
+  // Redirect to login page
+  res.redirect('/user/LoginSignup');
+});
 
 // Increase request timeout
 app.use((req, res, next) => {
