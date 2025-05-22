@@ -15,6 +15,18 @@ const renderNotification = (res, type, message, title = 'Notification') => {
     });
 };
 
+// Home page
+router.get('/home', async (req, res) => {
+    try {
+        res.render('Home-Page', {
+            title: 'Vaultique | Home',
+        });
+    } catch (error) {
+        console.error('Error loading home page:', error);
+        renderNotification(res, 'error', 'Failed to load home page. Please try again later.');
+    }
+});
+
 // Products page
 router.get('/products', async (req, res) => {
     try {

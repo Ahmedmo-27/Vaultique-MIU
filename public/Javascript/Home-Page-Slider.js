@@ -50,19 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
         goToSlide(currentIndex);
     });
     
-    // Explore button functionality
-    exploreBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const collectionName = this.closest('.collection-info').querySelector('h3').textContent;
-            alert(`Exploring ${collectionName}`);
-        });
-    });
-    
-    // Shop All Watches button
-    shopBtn.addEventListener('click', function() {
-        alert('Browsing all watches in our collection');
-    });
-    
     // Auto slide (optional)
     let interval = setInterval(() => {
         currentIndex = (currentIndex + 1) % totalSlides;

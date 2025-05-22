@@ -114,7 +114,7 @@ app.use("/api", apiRouter);
 app.use("/api/admin", adminRoutes);
 
 // Frontend Routes
-app.get('/', (req, res) => res.redirect('/user/products'));
+app.get('/', (req, res) => res.redirect('/user/home'));
 app.use('/user', userController);
 
 // Admin Frontend Routes
