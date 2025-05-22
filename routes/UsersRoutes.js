@@ -1,8 +1,12 @@
 const express = require('express');
 const User = require('../models/Users');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // Using bcryptjs for consistency
 const validator = require('validator');
+const { isUser } = require('../middleware/auth');
 const router = express.Router();
+
+// Remove authentication requirement for all routes
+// router.use(isUser);
 
 // Sign-up route
 router.post('/signup', async (req, res) => {
@@ -160,7 +164,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get all users (excluding sensitive fields)
+// Get all users (excluding sensitive fields) - public endpoint
 router.get('/', async (req, res) => {
   try {
     // Exclude password and phone_number at the query level
@@ -188,7 +192,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get user by ID
+// Get user by ID - public endpoint
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id, '-password -phone_number').lean();
