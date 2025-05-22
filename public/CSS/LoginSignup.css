@@ -351,32 +351,34 @@ password-container {
     transition: width 0.3s, background 0.3s;
 }
 
+.select-option {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-bottom: 2px solid white;
+    background: transparent;
+    color: white;
+    outline: none;
+    font-size: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 15px;
+}
+
+.select-option option {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+}
+
+
 .strength-text {
     font-size: 12px;
     margin-top: 5px;
     color: rgba(255, 255, 255, 0.7);}
-    select {
-        width: 100%;
-        padding: 10px;
-        border: none;
-        border-bottom: 2px solid white;
-        background: transparent;
-        color: white;
-        outline: none;
-        font-size: 16px;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 15px;
-    }
-    
-    select option {
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-    }
     
     /* Row layout for card details */
     .input-group-row {

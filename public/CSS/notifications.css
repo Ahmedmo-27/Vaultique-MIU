@@ -1,0 +1,32 @@
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    z-index: 9999;
+    animation: slideIn 0.3s ease-in-out;
+}
+
+.notification.success {
+    background-color: #4CAF50;
+    box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+}
+
+.notification.error {
+    background-color: #f44336;
+    box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+} 
