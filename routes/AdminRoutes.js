@@ -4,7 +4,7 @@ const adminController = require('../controllers/Admin');
 const { isAdmin } = require('../middleware/auth');
 
 // Apply admin middleware to all routes
-// router.use(isAdmin); // Temporarily disabled for testing
+router.use(isAdmin);
 
 // Admin dashboard
 router.get('/dashboard', adminController.renderDashboard);

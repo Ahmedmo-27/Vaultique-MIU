@@ -50,17 +50,24 @@ const jwtAuth = (req, res, next) => {
   }
 };
 
-// Session-based Authentication middleware
+// Middleware to check if user is authenticated
 const isAuthenticated = async (req, res, next) => {
     try {
-        if (!req.session.userId) {
+        const token = req.cookies.token;
+
+        if (!token) {
             return res.status(401).json({
                 success: false,
                 message: 'Please login to access this resource'
             });
         }
 
-        const user = await User.findById(req.session.userId);
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Get user from token
+        const user = await User.findById(decoded.id).select('-password');
+        
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -68,55 +75,122 @@ const isAuthenticated = async (req, res, next) => {
             });
         }
 
+        // Check if user is active
+        if (user.status !== 'active') {
+            return res.status(401).json({
+                success: false,
+                message: 'Your account has been deactivated. Please contact support.'
+            });
+        }
+
+        // Add user to request object
         req.user = user;
         next();
     } catch (error) {
-        res.status(500).json({
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token'
+            });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Token expired'
+            });
+        }
+        return res.status(500).json({
             success: false,
-            message: 'Error in authentication',
-            error: error.message
+            message: 'Authentication error'
         });
     }
 };
 
-// Admin Authentication middleware
+// Middleware to check if user is admin
 const isAdmin = async (req, res, next) => {
     try {
-        if (!req.session.userId) {
-            return res.status(401).json({
-                success: false,
-                message: 'Please login to access this resource'
-            });
-        }
-
-        const user = await User.findById(req.session.userId);
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-
-        if (user.role !== 'admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Access denied. Admin privileges required.'
-            });
-        }
-
-        req.user = user;
-        next();
+        // First check if user is authenticated
+        await isAuthenticated(req, res, () => {
+            // Check if user is admin
+            if (req.user && req.user.role === 'admin') {
+                next();
+            } else {
+                res.status(403).json({
+                    success: false,
+                    message: 'Access denied. Admin only.'
+                });
+            }
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Error in admin authentication',
-            error: error.message
+            message: 'Error checking admin status'
         });
+    }
+};
+
+// Middleware to check if user is a regular user (not admin)
+const isUser = async (req, res, next) => {
+    try {
+        // First check if user is authenticated
+        await isAuthenticated(req, res, () => {
+            // Check if user is a regular user
+            if (req.user && req.user.role === 'user') {
+                next();
+            } else {
+                res.status(403).json({
+                    success: false,
+                    message: 'Access denied. Users only.'
+                });
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error checking user status'
+        });
+    }
+};
+
+// Middleware for optional authentication - sets req.user if token is valid, but doesn't block access
+const optionalAuth = async (req, res, next) => {
+    try {
+        const token = req.cookies.token;
+
+        if (!token) {
+            // No token, continue without user info
+            return next();
+        }
+
+        try {
+            // Verify token
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            
+            // Get user from token
+            const user = await User.findById(decoded.id).select('-password');
+            
+            if (user && user.status === 'active') {
+                // Add user to request object
+                req.user = user;
+            }
+        } catch (error) {
+            // Invalid token, but we still continue without blocking
+            console.log('Optional auth error:', error.message);
+        }
+        
+        // Continue regardless of auth success/failure
+        next();
+    } catch (error) {
+        // Continue with request even if there was an error
+        console.error('Optional auth error:', error);
+        next();
     }
 };
 
 module.exports = {
     jwtAuth,
     isAuthenticated,
-    isAdmin
+    isAdmin,
+    isUser,
+    optionalAuth
 }; 

@@ -73,22 +73,19 @@ document.addEventListener("DOMContentLoaded", function () {
   nextStep1.addEventListener("click", function(e) {
       e.preventDefault();
       
-      // Validate step 1 fields
+      // Validate step 1 fields - only require essential fields
       const username = document.getElementById("username").value;
       const email = document.getElementById("email-signup").value;
       const password = document.getElementById("password-signup").value;
-      const phone = document.getElementById("phone").value;
-      const dob = document.getElementById("dob").value;
-      const language = document.getElementById("language").value;
       
-      if (!username || !email || !password || !phone || !dob || !language) {
-          alert("Please fill all required fields");
+      if (!username || !email || !password) {
+          showNotification('error', 'Username, email and password are required');
           return;
       }
       
       // Validate password strength
       if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
-          alert("Password must be at least 8 characters with 1 capital letter and 1 number");
+          showNotification('error', 'Password must be at least 8 characters with 1 capital letter and 1 number');
           return;
       }
       
@@ -120,83 +117,170 @@ document.addEventListener("DOMContentLoaded", function () {
       step2.style.display = "flex";
   });
 
+  // Complete signup button - directly submit the form
+  document.getElementById("complete-signup").addEventListener("click", function(e) {
+      e.preventDefault();
+      console.log('Complete signup button clicked');
+      document.getElementById("signup-form-id").dispatchEvent(new Event('submit'));
+  });
+
   // Form submission validation
   signupForm.addEventListener("submit", async function(e) {
     e.preventDefault();
+    console.log('Form submitted');
     
-    // Get form data
+    // Get essential form data
     const username = document.getElementById("username").value;
     const email = document.getElementById("email-signup").value;
     const password = document.getElementById("password-signup").value;
+    
+    // Validate essential fields
+    if (!username || !email || !password) {
+        showNotification('error', 'Username, email and password are required');
+        return;
+    }
+    
+    // Prepare form data with essential fields
+    const formData = {
+        Name: username,
+        username: username,
+        email: email,
+        password: password
+    };
+    
+    // Add optional fields only if they have values
     const phone = document.getElementById("phone").value;
+    if (phone) formData.phone_number = phone;
+    
     const dob = document.getElementById("dob").value;
+    if (dob) formData.DOB = dob;
+    
     const language = document.getElementById("language").value;
-    const creditCard = document.getElementById("credit-card").value;
+    if (language) formData.language = language;
+
+    console.log('Submitting signup form with data:', { 
+        username, email, 
+        hasPhone: !!phone, 
+        hasDOB: !!dob, 
+        hasLanguage: !!language 
+    });
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    console.log('CSRF token:', csrfToken ? 'present' : 'missing');
     
     try {
-      const response = await fetch('http://localhost:3000/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          username, 
-          email, 
-          password,
-          phone,
-          dob,
-          language,
-          creditCard,
-          role: 'User',
-          access: 'Standard',
-          dateAdded: new Date().toLocaleDateString(),
-          lastLogin: 'Never'
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        alert(data.message);
-        flipContainer.classList.remove("flipped"); // Switch to login form after successful signup
-      } else {
-        alert(data.message || "Error creating account");
-      }
+        const response = await fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': csrfToken,
+                'X-CSRF-Token': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData),
+            credentials: 'include'
+        });
+        
+        console.log('Signup response status:', response.status);
+        
+        // Handle different status codes
+        if (response.status === 429) {
+            showNotification('error', 'Too many signup attempts. Please try again later.');
+            return;
+        }
+        
+        // Try to parse the response as JSON
+        let data;
+        try {
+            data = await response.json();
+            console.log('Signup response data:', data);
+        } catch (jsonError) {
+            console.error('Error parsing JSON response:', jsonError);
+            // If we can't parse JSON, use the status text
+            showNotification('error', `Error: ${response.statusText || 'Unknown error'}`);
+            return;
+        }
+        
+        if (response.ok) {
+            showNotification('success', 'Account created successfully! Redirecting to login...');
+            setTimeout(() => {
+                flipContainer.classList.remove("flipped"); // Switch to login form after successful signup
+            }, 1500);
+        } else {
+            // Handle error responses with proper JSON
+            const errorMsg = data.message || "Error creating account";
+            console.error('Server error:', errorMsg);
+            
+            // Show detailed error from server if available
+            if (data.error) {
+                console.error('Detailed error:', data.error);
+                
+                // Parse the validation error for specific field issues
+                if (data.error.includes('validation failed')) {
+                    // Extract the specific field that failed validation
+                    const fieldMatch = data.error.match(/path `([^`]+)`/);
+                    if (fieldMatch && fieldMatch[1]) {
+                        const field = fieldMatch[1];
+                        showNotification('error', `Invalid ${field} value. Please check your input.`);
+                    } else {
+                        showNotification('error', 'Form validation failed. Please check your inputs.');
+                    }
+                } else {
+                    showNotification('error', errorMsg);
+                }
+            } else {
+                showNotification('error', errorMsg);
+            }
+            
+            // Show validation errors if available
+            if (data.errors && Array.isArray(data.errors)) {
+                const errorMessage = data.errors.map(err => err.msg).join('. ');
+                showNotification('error', errorMessage);
+            }
+        }
     } catch (error) {
-      console.error('Signup error:', error);
-      alert("Error creating account. Please make sure the server is running at http://localhost:3000");
+        console.error('Signup error:', error);
+        showNotification('error', 'Network error. Please check your connection and try again.');
     }
   });
 
-  // Login form submission
-  loginForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
+  // Handle login form submission
+  document.getElementById('login-form-id').addEventListener('submit', async (event) => {
+    event.preventDefault();
     
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        headers: {
+          'Content-Type': 'application/json',
+          'CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
-        alert("Login successful!");
-        // Redirect based on whether it's an admin login
-        if (data.isAdmin) {
-          window.location.href = "Admin Dashboard/AdminHubHomePage.html";
+        showNotification('success', 'Login successful!');
+        
+        // Redirect based on user role
+        if (data.data.isAdmin) {
+          window.location.href = '/admin/dashboard';
         } else {
-          // Redirect regular users to their dashboard
-          window.location.href = "User/dashboard.html";
+          window.location.href = '/user/home';
         }
       } else {
-        alert(data.message || "Invalid credentials");
+        showNotification('error', data.message || 'Login failed. Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert("Error logging in. Please try again.");
+      showNotification('error', 'An error occurred during login. Please try again.');
     }
   });
 
