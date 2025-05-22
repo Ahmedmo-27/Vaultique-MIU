@@ -46,6 +46,7 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
+// Login/Signup page
 
 // Security Middleware
 app.use(helmet());
