@@ -4,11 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <title>Login & Signup Form</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/CSS/LoginSignup.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/notifications.css">
     <script src="/Javascript/nav-bar.js"></script>
+    <script src="/Javascript/notifications.js"></script>
+    <script src="/Javascript/auth.js"></script>
     <script defer src="/Javascript/LoginSignup.js"></script>
 </head>
 
@@ -90,20 +94,19 @@
                             </div>
                         </div>
                         <div class="input-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                            <label for="phone">Phone Number (Optional)</label>
+                            <input type="tel" id="phone" placeholder="Enter your phone number">
                         </div>
                         <div class="input-group">
-                            <label for="dob">Date of Birth</label>
-                            <input type="date" id="dob" required>
+                            <label for="dob">Date of Birth (Optional)</label>
+                            <input type="date" id="dob">
                         </div>
                         <div class="input-group">
-                            <label for="language">Preferred Language</label>
-                            <select id="language" required>
+                            <label for="language">Preferred Language (Optional)</label>
+                            <select class="select-option" id="language">
                                 <option value="">Select language</option>
-                                <option value="en">English</option>
-                                <option value="ar">Arabic</option>
-                                <option value="fr">French</option>
+                                <option value="English">English</option>
+                                <option value="Arabic">Arabic</option>
                             </select>
                         </div>
                         <button type="button" id="next-step1" class="next-btn">Next</button>
@@ -130,7 +133,7 @@
                         </div>
                         <div class="input-group">
                             <label for="country">Country</label>
-                            <select id="country">
+                            <select class="select-option" id="country">
                                 <option value="">Select country</option>
                                 <option value="US">United States</option>
                                 <option value="UK">United Kingdom</option>
@@ -149,7 +152,7 @@
                         <h3>Payment Information</h3>
                         <div class="input-group">
                             <label for="card-type">Card Type</label>
-                            <select id="card-type" required>
+                            <select class="select-option" id="card-type">
                                 <option value="">Select card type</option>
                                 <option value="visa">Visa</option>
                                 <option value="mastercard">Mastercard</option>
