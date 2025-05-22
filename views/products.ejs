@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <script src="/Javascript/Loading Screen.js"></script>
         <script src="/Javascript/nav-bar.js"></script>
+        <script src="/Javascript/notifications.js"></script>
         <script src="/Javascript/Products.js" defer></script>
         <script src="/Javascript/Light-Mode.js"></script>
     </head>
@@ -175,7 +176,7 @@
                             </svg>
                         </div>
                         <a href="/products/<%= product._id %>">
-                            <img src="/public/Assets/<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                            <img src="<%= product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}` %>" alt="<%= product.name %>" loading="lazy">
                         </a>
                         <div class="hover-buttons">
                             <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>

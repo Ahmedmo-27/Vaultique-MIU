@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  brand: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand', required: true },
+  brand: { type: String, ref: 'Brand', required: true },
   strapMaterial: { type: String, required: true },
   movement: { type: String, required: true },
   waterResistance: { type: String, required: true },
@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   stock: { type: Boolean, default: true },
   stockCount: { type: Number, default: 0 },
-  Vcollection: { type: String, required: true},
+  Vcollection: { type: String, required: true },
   gender: { type: String, required: true },
 
   // Media fields
@@ -27,19 +27,19 @@ const productSchema = new mongoose.Schema({
   specialFeatures: [
     {
       featureName: { type: String },
-      featureDesc: { type: String }
-    }
+      featureDesc: { type: String },
+    },
   ],
   specifications: [
     {
       specName: { type: String },
-      specValue: { type: String }
-    }
+      specValue: { type: String },
+    },
   ],
 
   // Metrics
   popularityScore: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('Product', productSchema);

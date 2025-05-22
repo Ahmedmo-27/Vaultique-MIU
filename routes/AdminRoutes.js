@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/Admin');
-const { isAdmin } = require('../middleware/auth');
+const { isAdmin } = require('../middleware/jwt');
 
 // Apply admin middleware to all routes
 router.use(isAdmin);

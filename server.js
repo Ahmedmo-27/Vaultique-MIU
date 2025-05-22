@@ -1,23 +1,21 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-const path = require("path");
-const compression = require("compression");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const csrf = require('csurf');
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const path = require('path');
+const compression = require('compression');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
-const { isAuthenticated, isAdmin, optionalAuth } = require('./middleware/auth');
+const { authenticateJWT, optionalJWT, isAdmin } = require('./middleware/jwt');
 const config = require('./config/env');
 
 // Import route files
-const apiRouter = require("./routes/api");
-const userController = require("./controllers/User");
-const adminRoutes = require("./routes/AdminRoutes");
-const adminController = require("./controllers/Admin");
-const streamChatRoutes = require("./routes/StreamChat");
-const authRoutes = require("./controllers/Auth");
+const apiRouter = require('./routes/api');
+const userController = require('./controllers/User');
+const adminRoutes = require('./routes/AdminRoutes');
+const adminController = require('./controllers/Admin');
+const streamChatRoutes = require('./routes/StreamChat');
+const authRoutes = require('./controllers/Auth');
 const app = express();
 
 // Set EJS as the view engine
@@ -33,13 +31,13 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
-      family: 4
+      family: 4,
     });
     console.log(`Connected to MongoDB at ${config.mongodbUri}`);
     console.log('MongoDB connection state:', mongoose.connection.readyState); // Debug log
   } catch (err) {
-    console.error("MongoDB connection error:", err);
-    console.error("Please make sure MongoDB is running and .env file is properly configured");
+    console.error('MongoDB connection error:', err);
+    console.error('Please make sure MongoDB is running and .env file is properly configured');
     process.exit(1);
   }
 };
@@ -50,63 +48,55 @@ app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cookieParser());
 
-// Session Configuration
-app.use(session({
-  secret: config.sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: config.isProduction,
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
-
 // CORS Configuration
-app.use(cors({
+app.use(
+  cors({
     origin: true, // Allow all origins in development
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'CSRF-Token', 'X-Requested-With'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'X-Access-Token',
+      'X-Requested-With',
+    ],
     credentials: true,
     maxAge: 600, // Cache preflight requests for 10 minutes
-    exposedHeaders: ['Set-Cookie', 'Date', 'ETag']
-}));
+    exposedHeaders: ['Set-Cookie', 'Date', 'ETag'],
+  })
+);
 
 // Security Middleware
-app.use(helmet({
+app.use(
+  helmet({
     contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "'unsafe-hashes'", "https:", "http:"],
-            scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
-            scriptSrcElem: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https:", "http:"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https:", "http:"],
-            imgSrc: ["'self'", "data:", "https:", "http:"],
-            connectSrc: ["'self'", "https:", "http:", "ws:", "wss:"],
-            fontSrc: ["'self'", "https:", "http:", "data:"],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'", "https:", "http:"],
-            frameSrc: ["'self'"],
-            upgradeInsecureRequests: []
-        }
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "'unsafe-hashes'",
+          'https:',
+          'http:',
+        ],
+        scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
+        scriptSrcElem: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https:', 'http:'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
+        imgSrc: ["'self'", 'data:', 'https:', 'http:'],
+        connectSrc: ["'self'", 'https:', 'http:', 'ws:', 'wss:'],
+        fontSrc: ["'self'", 'https:', 'http:', 'data:'],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'", 'https:', 'http:'],
+        frameSrc: ["'self'"],
+        upgradeInsecureRequests: [],
+      },
     },
     crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    crossOriginOpenerPolicy: false
-}));
-
-// CSRF Protection
-app.use(csrf({ cookie: { 
-    httpOnly: true,
-    secure: config.isProduction,
-    sameSite: 'lax'
-}}));
-
-// Add CSRF token to all responses
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: false,
+  })
+);
 
 // Static File Serving Configuration
 const publicPath = path.join(__dirname, 'public');
@@ -126,16 +116,16 @@ app.use('/Javascript', express.static(path.join(publicPath, 'Javascript')), (req
 });
 
 // Public routes (no authentication required)
-app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes);
 
 // Apply optional authentication to all routes
 // This will set req.user if a valid token is present but won't block access
-app.use(optionalAuth);
+app.use(optionalJWT);
 
 // Protected API routes
-app.use("/api", apiRouter);
-app.use("/api/admin", adminRoutes); // Already has isAdmin middleware
-app.use("/api/stream-chat", isAuthenticated, streamChatRoutes);
+app.use('/api', apiRouter);
+app.use('/api/admin', adminRoutes); // Already has isAdmin middleware
+app.use('/api/stream-chat', isAdmin, streamChatRoutes);
 
 // Frontend Routes
 app.get('/', (req, res) => res.redirect('/user/home'));
@@ -151,30 +141,23 @@ app.get('/admin/analytics', isAdmin, adminController.renderAnalytics);
 
 // Increase request timeout
 app.use((req, res, next) => {
-    res.setTimeout(30000, () => {
-        console.log('Request has timed out.');
-        res.status(408).send('Request has timed out.');
-    });
-    next();
+  res.setTimeout(30000, () => {
+    console.log('Request has timed out.');
+    res.status(408).send('Request has timed out.');
+  });
+  next();
 });
 
 // Error Handlers
 app.use((err, req, res, next) => {
   console.error(err.stack);
 
-  if (err.code === 'EBADCSRFTOKEN') {
-    return res.status(403).json({
-      success: false,
-      message: 'Invalid CSRF token'
-    });
-  }
-
   // API errors
   if (req.path.startsWith('/api')) {
     return res.status(err.status || 500).json({
       success: false,
       message: err.message || 'Internal Server Error',
-      error: config.nodeEnv === 'development' ? err : undefined
+      error: config.nodeEnv === 'development' ? err : undefined,
     });
   }
 
@@ -182,7 +165,7 @@ app.use((err, req, res, next) => {
   if (err.status === 404) {
     return res.status(404).render('404', {
       title: '404 - Page Not Found',
-      message: err.message || 'The page you are looking for does not exist.'
+      message: err.message || 'The page you are looking for does not exist.',
     });
   }
 
@@ -191,32 +174,34 @@ app.use((err, req, res, next) => {
     type: 'error',
     message: err.message || 'Something went wrong!',
     show: true,
-    error: config.nodeEnv === 'development' ? err : {}
+    error: config.nodeEnv === 'development' ? err : {},
   });
 });
 
 // Start server
 if (require.main === module) {
-  connectDB().then(() => {
-    const server = app.listen(config.port, () => {
-      console.log(`Server running on port ${config.port}`);
-      console.log(`Serving static files from: ${publicPath}`);
-      console.log(`Frontend URL: ${config.frontendUrl}`);
-    });
+  connectDB()
+    .then(() => {
+      const server = app.listen(config.port, () => {
+        console.log(`Server running on port ${config.port}`);
+        console.log(`Serving static files from: ${publicPath}`);
+        console.log(`Frontend URL: ${config.frontendUrl}`);
+      });
 
-    process.on("SIGTERM", () => {
-      console.log("SIGTERM received. Shutting down gracefully...");
-      server.close(() => {
-        mongoose.connection.close(false, () => {
-          console.log("MongoDB connection closed");
-          process.exit(0);
+      process.on('SIGTERM', () => {
+        console.log('SIGTERM received. Shutting down gracefully...');
+        server.close(() => {
+          mongoose.connection.close(false, () => {
+            console.log('MongoDB connection closed');
+            process.exit(0);
+          });
         });
       });
+    })
+    .catch((err) => {
+      console.error('Failed to start server:', err);
+      process.exit(1);
     });
-  }).catch(err => {
-    console.error("Failed to start server:", err);
-    process.exit(1);
-  });
 }
 
 module.exports = app;

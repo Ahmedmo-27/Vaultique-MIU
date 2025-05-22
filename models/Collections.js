@@ -14,9 +14,9 @@ const collectionSchema = new mongoose.Schema({
       name: { type: String, required: true },
       image: { type: String, required: true },
       tagline: { type: String, required: true },
-      description: { type: String, required: true }
-    }
-  ]
+      description: { type: String, required: true },
+    },
+  ],
 });
 
-module.exports = mongoose.model('Collection', collectionSchema); 
+module.exports = mongoose.model('Collection', collectionSchema);
