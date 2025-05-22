@@ -42,16 +42,7 @@ const connectDB = async () => {
   }
 };
 // Login/Signup page
-app.get('/LoginSignup', async (req, res) => {
-    try {
-        res.render('LoginSignup', {
-            title: 'Vaultique | Login & Signup'
-        });
-    } catch (error) {
-        console.error('Error loading auth page:', error);
-        renderNotification(res, 'error', 'Failed to load login/signup page. Please try again later.');
-    }
-});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -26,7 +26,15 @@ router.get('/home', async (req, res) => {
         renderNotification(res, 'error', 'Failed to load home page. Please try again later.');
     }
 });
-
+    router.get('/LoginSignup', async (req, res) => {
+    try {
+        res.render('LoginSignup', {
+            title: 'Vaultique | Login & Signup'
+        });
+    } catch (error) {
+        console.error('Error loading auth page:', error);
+        renderNotification(res, 'error', 'Failed to load login/signup page. Please try again later.');
+    }});
 // Products page
 router.get('/products', async (req, res) => {
     try {
@@ -44,16 +52,6 @@ router.get('/products', async (req, res) => {
             Brand.find(),
             Collection.find()
         ]);
-        router.get('/LoginSignup', async (req, res) => {
-    try {
-        res.render('LoginSignup', {
-            title: 'Vaultique | Login & Signup'
-        });
-    } catch (error) {
-        console.error('Error loading auth page:', error);
-        renderNotification(res, 'error', 'Failed to load login/signup page. Please try again later.');
-    }
-});
 
         const totalPages = Math.ceil(totalProducts / limit);
 
