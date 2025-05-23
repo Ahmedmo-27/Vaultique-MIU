@@ -6,7 +6,7 @@ const path = require('path');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
-const { authenticateJWT, optionalJWT, isAdmin } = require('./middleware/jwt');
+const { optionalJWT, isAdmin } = require('./middleware/jwt');
 const config = require('./config/env');
 
 // Import route files
