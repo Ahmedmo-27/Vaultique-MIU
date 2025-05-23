@@ -98,21 +98,81 @@ app.use(
   })
 );
 
-// Static File Serving Configuration
+// Static File Serving Configuration - IMPROVED VERSION FOR RAILWAY
 const publicPath = path.join(__dirname, 'public');
-app.use(express.static(publicPath));
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/public/Assets', express.static(path.join(__dirname, 'public/Assets')));
+console.log('Public path configured as:', publicPath);
 
-// CSS and JavaScript static files
-app.use('/CSS', express.static(path.join(publicPath, 'CSS')), (req, res, next) => {
-  res.type('text/css');
-  next();
+// Explicit MIME type handlers
+const serveStaticWithType = (directory, contentType) => {
+  return (req, res, next) => {
+    const filePath = path.join(directory, req.path);
+    const fs = require('fs');
+    
+    // Check if file exists
+    if (fs.existsSync(filePath)) {
+      console.log(`Serving static file: ${filePath} as ${contentType}`);
+      res.set('Content-Type', contentType);
+      res.sendFile(filePath);
+    } else {
+      console.log(`File not found: ${filePath}`);
+      next();
+    }
+  };
+};
+
+// Primary static file serving
+app.use(express.static(publicPath));
+
+// CSS files with explicit MIME type
+app.get('/CSS/*', (req, res, next) => {
+  const cssPath = path.join(publicPath, req.path);
+  res.set('Content-Type', 'text/css');
+  res.sendFile(cssPath, err => {
+    if (err) {
+      console.error(`CSS file error for ${cssPath}:`, err.message);
+      next();
+    }
+  });
 });
 
-app.use('/Javascript', express.static(path.join(publicPath, 'Javascript')), (req, res, next) => {
-  res.type('application/javascript');
-  next();
+// JavaScript files with explicit MIME type
+app.get('/Javascript/*', (req, res, next) => {
+  const jsPath = path.join(publicPath, req.path);
+  res.set('Content-Type', 'application/javascript');
+  res.sendFile(jsPath, err => {
+    if (err) {
+      console.error(`JS file error for ${jsPath}:`, err.message);
+      next();
+    }
+  });
+});
+
+// Fallback static file handlers (case-insensitive)
+app.use('/css', express.static(path.join(publicPath, 'CSS')));
+app.use('/javascript', express.static(path.join(publicPath, 'Javascript')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')));
+
+// Debug route for troubleshooting static files
+app.get('/debug-static-files', (req, res) => {
+  const fs = require('fs');
+  const cssPath = path.join(publicPath, 'CSS/account-details.css');
+  const jsPath = path.join(publicPath, 'Javascript/account-details.js');
+  
+  res.json({
+    nodeEnv: process.env.NODE_ENV,
+    publicPath,
+    cssExists: fs.existsSync(cssPath),
+    jsExists: fs.existsSync(jsPath),
+    cssPath,
+    jsPath,
+    cssDir: fs.existsSync(path.join(publicPath, 'CSS')) 
+      ? fs.readdirSync(path.join(publicPath, 'CSS')) 
+      : 'Directory not found',
+    jsDir: fs.existsSync(path.join(publicPath, 'Javascript')) 
+      ? fs.readdirSync(path.join(publicPath, 'Javascript')) 
+      : 'Directory not found'
+  });
 });
 
 // Public routes (no authentication required)
