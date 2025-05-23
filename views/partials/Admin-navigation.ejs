@@ -3,7 +3,7 @@
         <div class="header-top-unscrolled" id="header-top" style="display: none;">
             <div class="store-services" id="store-services">
 
-                <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
+                <a id="toggle-button" class="toggle-button" data-theme-toggle>
                     <i class="fa-solid fa-sun"></i>
                     <i class="fa-solid fa-moon"></i>
                     <span class="toggle-button-slider"></span>
@@ -20,6 +20,12 @@
                     </select>
                 </nav>
 
+                <div class="search-button-unscrolled" id="search-button" style="display: none;">
+                    <input type="search" id="searchField" class="searchField" placeholder="Search">
+                    <button id="search" class="search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="user-data">
@@ -40,12 +46,32 @@
             </div>
 
             <a href="/admin/dashboard" class="logo-unscrolled" id="logo">Vaultique</a>
-            <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+            
+            <div id="top-move-on-scroll" style="display: none;" class="middleDev">
+                <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
+                    <input type="search" id="searchField2" class="searchField" placeholder="Search">
+                    <button id="search2" class="search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
 
                 <nav class="navigation">
                     <a href="/admin/Account-Details" style="display: none;">
                         <i class='fas fa-user-alt'></i>
-                    </a>        
+                    </a>
+                    
+                    <a id="toggle-button" class="toggle-button" data-theme-toggle style="display:none;">
+                        <i class="fa-solid fa-sun"></i>
+                        <i class="fa-solid fa-moon"></i>
+                        <span class="toggle-button-slider"></span>
+                    </a>
+
+                    <a style="display: none;">
+                        <select id="language" class="tag">
+                            <option value="en">EN</option>
+                            <option value="ar">AR</option>
+                        </select>
+                    </a>
                 </nav>
             </div>
         </div>
@@ -55,10 +81,16 @@
                 <a href="/admin/dashboard">Home</a>
                 <a href="/admin/users">Manage Users</a>
                 <a href="/admin/analytics" class="extension">Analytics</a>
-                <a href="/admin/products/create" >Manage Products</a>
+                <a href="/admin/products/create">Manage Products</a>
                 <a href="/admin/settings">Settings</a>
                 <a href="/admin/logout" class="logout">Logout</a>
             </nav>
+        </div>
+
+        <div class="search-extension" id="search-extension" style="display: none;">
+            <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
+            <h3>Search Results</h3>
+            <div id="search-results" class="search-results"></div>
         </div>
     </header>
 
@@ -72,11 +104,39 @@
         <a href="/admin/settings">Settings</a>
         <a href="/admin/logout" class="logout">Logout</a>
             
-        <a id="toggle-button-side" class="toggle-button" onclick="toggleLightDarkMode()">
+        <a id="toggle-button-side" class="toggle-button" data-theme-toggle>
             <i class="fa-solid fa-sun"></i>
             <i class="fa-solid fa-moon"></i>
             <span class="toggle-button-slider"></span>
         </a>
-
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make sure Font Awesome is loaded
+        if (typeof FontAwesome === 'undefined') {
+            const fontAwesomeLink = document.createElement('link');
+            fontAwesomeLink.rel = 'stylesheet';
+            fontAwesomeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
+            document.head.appendChild(fontAwesomeLink);
+        }
+        
+        // Manual initialization for side panel
+        const sideIcon = document.getElementById('side-icon');
+        const closebtn = document.getElementById('closebtn');
+        
+        if(sideIcon) {
+            sideIcon.addEventListener('click', function() {
+                const panel = document.getElementById('mySidepanel');
+                panel.style.display = 'block';
+                panel.style.width = '250px';
+            });
+        }
+        
+        if(closebtn) {
+            closebtn.addEventListener('click', function() {
+                document.getElementById('mySidepanel').style.width = '0';
+            });
+        }
+    });
+</script>
