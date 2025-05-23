@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const helmet = require("helmet");
 const compression = require("compression");
-
+const products = require("./models/Products");
 // Import route files
 const brandsRouter = require("./routes/BrandsRoutes");
 const collectionsRouter = require("./routes/CollectionsRoutes");
@@ -13,11 +13,10 @@ const usersRouter = require("./routes/UsersRoutes");
 const productsRouter = require("./routes/ProductsRoutes");
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
-// Set EJS as the view engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 // Enhanced MongoDB Connection
 const connectDB = async () => {
@@ -40,8 +39,8 @@ connectDB();
 app.use(
   cors({
     origin: [
-      "http://127.0.0.1:3001",
-      "http://localhost:3001",
+      "http://127.0.0.1:5500",
+      "http://localhost:5500",
       process.env.FRONTEND_URL,
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -55,19 +54,19 @@ const paginationMiddleware = (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    
+
     // Validate pagination parameters
     if (page < 1) {
       return res.status(400).json({
         success: false,
-        message: "Page number must be greater than 0"
+        message: "Page number must be greater than 0",
       });
     }
-    
+
     if (limit < 1 || limit > 50) {
       return res.status(400).json({
         success: false,
-        message: "Limit must be between 1 and 50"
+        message: "Limit must be between 1 and 50",
       });
     }
 
@@ -75,14 +74,14 @@ const paginationMiddleware = (req, res, next) => {
     req.pagination = {
       page,
       limit,
-      skip: (page - 1) * limit
+      skip: (page - 1) * limit,
     };
 
     next();
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: "Invalid pagination parameters"
+      message: "Invalid pagination parameters",
     });
   }
 };
@@ -154,10 +153,10 @@ app.use((req, res) => {
 // Error Handler
 app.use((err, req, res, next) => {
   console.error("Server Error:", err);
-  res.status(500).json({ 
+  res.status(500).json({
     success: false,
     message: "Internal Server Error",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined
+    error: process.env.NODE_ENV === "development" ? err.message : undefined,
   });
 });
 

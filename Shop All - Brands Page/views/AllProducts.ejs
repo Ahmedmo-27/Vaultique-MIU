@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Products</title>
+    <script src="/Ahmed/Shop All - Brands Page/Client/Products.js"></script>
+  </head>
+  <body>
+    <h3>Welcome</h3>
+
+    <% if (products.length > 0) { %> <% products.forEach(p => { %>
+    <div>
+      <span><%= p.id %></span>
+      <span><%= p.name %></span>
+      <span><%= p.price %></span>
+    </div>
+    <% }) %> <% } else { %>
+    <span>No products in the database</span>
+    <% } %>
+  </body>
+</html>
