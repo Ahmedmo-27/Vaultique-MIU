@@ -272,16 +272,19 @@ async function handleSearch(event) {
         return;
     }
 
-    if (query.length > 2) {
-        // Show search UI
+    // Show search UI immediately when user starts typing
+    if (query.length > 0) {
         headerBottom.style.display = 'none';
         header.classList.remove('header-unscrolled');
         header.classList.add('header-scrolled');
         searchExtension.style.display = 'flex';
+        
+        // Show loading state
+        searchResultsDiv.innerHTML = '<div class="search-loading">Searching...</div>';
 
         try {
             // Fetch search results from the server
-            const response = await fetch(`/api/products/search?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=8`);
             if (!response.ok) {
                 throw new Error(`Search failed: ${response.status}`);
             }
@@ -293,70 +296,136 @@ async function handleSearch(event) {
             }
 
             const products = result.data || [];
-            displaySearchResults(products);
+            displaySearchResults(products, query);
         } catch (error) {
             console.error('Search error:', error);
             searchResultsDiv.innerHTML = '<div class="no-results">Error loading search results</div>';
         }
     } else {
-        // Reset UI when query is too short
+        // Reset UI when query is empty
         resetSearchUI();
     }
 }
 
 // Display search results in the UI
-function displaySearchResults(products) {
+function displaySearchResults(products, query) {
     const searchResultsDiv = document.getElementById('search-results');
     searchResultsDiv.innerHTML = '';
 
     if (!products || products.length === 0) {
-        searchResultsDiv.innerHTML = '<div class="no-results">No products found</div>';
+        searchResultsDiv.innerHTML = `
+            <div class="no-results">
+                <p>No products found for "${query}"</p>
+                <p class="search-suggestions">Try searching for:</p>
+                <ul class="suggestion-list">
+                    <li>Brand names (e.g., Rolex, Omega)</li>
+                    <li>Watch types (e.g., Automatic, Chronograph)</li>
+                    <li>Features (e.g., Diver, Pilot)</li>
+                </ul>
+            </div>`;
         return;
     }
 
-    // Limit results to a maximum of 8 items for better UX
-    const displayProducts = products.slice(0, 8);
+    // Create a container for keyboard navigation
+    const resultsContainer = document.createElement('div');
+    resultsContainer.classList.add('search-results-container');
+    resultsContainer.setAttribute('role', 'listbox');
+    resultsContainer.setAttribute('aria-label', 'Search results');
 
-    displayProducts.forEach(product => {
-        const productLink = document.createElement('a');
-        productLink.href = `/product.html?id=${product._id || product.id}`;
-        productLink.classList.add('search-result-item');
+    // Group products by brand for better organization
+    const productsByBrand = products.reduce((acc, product) => {
+        if (!acc[product.brand]) {
+            acc[product.brand] = [];
+        }
+        acc[product.brand].push(product);
+        return acc;
+    }, {});
 
-        const imgContainer = document.createElement('div');
-        imgContainer.classList.add('search-result-item-img-cont');
+    // Display products grouped by brand
+    Object.entries(productsByBrand).forEach(([brand, brandProducts]) => {
+        const brandSection = document.createElement('div');
+        brandSection.classList.add('brand-section');
 
-        const img = document.createElement('img');
-        img.src = product.image;
-        img.alt = product.name;
-        img.classList.add('search-result-item-img');
-        img.onerror = () => {
-            img.src = '/Watches/placeholder.png'; // Fallback image
-        };
+        const brandHeader = document.createElement('div');
+        brandHeader.classList.add('brand-header');
+        brandHeader.textContent = brand;
+        brandSection.appendChild(brandHeader);
 
-        const productName = document.createElement('span');
-        productName.classList.add('search-extension-a');
-        productName.textContent = product.name;
+        brandProducts.forEach(product => {
+            const productLink = document.createElement('a');
+            productLink.href = `/product.html?id=${product._id || product.id}`;
+            productLink.classList.add('search-result-item');
+            productLink.setAttribute('role', 'option');
+            productLink.setAttribute('tabindex', '0');
+            productLink.setAttribute('aria-selected', 'false');
 
-        const price = document.createElement('span');
-        price.classList.add('search-result-price');
-        price.textContent = `$${product.price.toLocaleString()}`;
+            const imgContainer = document.createElement('div');
+            imgContainer.classList.add('search-result-item-img-cont');
 
-        imgContainer.appendChild(img);
-        productLink.appendChild(imgContainer);
-        productLink.appendChild(productName);
-        productLink.appendChild(price);
+            const img = document.createElement('img');
+            img.src = product.image;
+            img.alt = product.name;
+            img.classList.add('search-result-item-img');
+            img.onerror = () => {
+                img.src = '/Watches/placeholder.png'; // Fallback image
+            };
 
-        searchResultsDiv.appendChild(productLink);
+            const productInfo = document.createElement('div');
+            productInfo.classList.add('search-result-info');
+
+            const productName = document.createElement('span');
+            productName.classList.add('search-extension-a');
+            productName.textContent = product.name;
+
+            const price = document.createElement('span');
+            price.classList.add('search-result-price');
+            price.textContent = `$${product.price.toLocaleString()}`;
+
+            imgContainer.appendChild(img);
+            productInfo.appendChild(productName);
+            productInfo.appendChild(price);
+            productLink.appendChild(imgContainer);
+            productLink.appendChild(productInfo);
+
+            // Add keyboard navigation
+            productLink.addEventListener('keydown', (e) => {
+                const items = resultsContainer.querySelectorAll('.search-result-item');
+                const currentIndex = Array.from(items).indexOf(productLink);
+
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        if (currentIndex < items.length - 1) {
+                            items[currentIndex + 1].focus();
+                        }
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        if (currentIndex > 0) {
+                            items[currentIndex - 1].focus();
+                        }
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        productLink.click();
+                        break;
+                }
+            });
+
+            brandSection.appendChild(productLink);
+        });
+
+        resultsContainer.appendChild(brandSection);
     });
 
+    searchResultsDiv.appendChild(resultsContainer);
+
     // Add a "View All Results" link if there are more results
-    if (products.length > 8) {
-        const viewAllLink = document.createElement('a');
-        viewAllLink.href = `/products.html?query=${encodeURIComponent(document.getElementById('searchField').value)}`;
-        viewAllLink.classList.add('view-all-results');
-        viewAllLink.textContent = `View all ${products.length} results`;
-        searchResultsDiv.appendChild(viewAllLink);
-    }
+    const viewAllLink = document.createElement('a');
+    viewAllLink.href = `/products.html?search=${encodeURIComponent(query)}`;
+    viewAllLink.classList.add('view-all-results');
+    viewAllLink.textContent = `View all results for "${query}"`;
+    searchResultsDiv.appendChild(viewAllLink);
 }
 
 // Reset the search UI when the query is too short

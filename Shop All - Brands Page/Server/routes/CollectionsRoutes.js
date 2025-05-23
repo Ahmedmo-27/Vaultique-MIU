@@ -1,6 +1,8 @@
 const express = require("express");
 const Collection = require("../models/Collections");
 const router = express.Router();
+const Product = require('../models/Products');
+const Brand = require('../models/Brands');
 
 // Collection name normalization mappings
 const COLLECTION_MAPPINGS = {
@@ -64,10 +66,53 @@ function generateSearchVariations(name) {
 // Get all collections
 router.get("/", async (req, res) => {
   try {
-    const collections = await Collection.find().sort({ name: 1 });
-    res.json({ success: true, data: collections });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    const collections = await Collection.find();
+    res.json({
+      success: true,
+      data: collections
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Get collection by slug
+router.get('/:slug', async (req, res) => {
+  try {
+    const collection = await Collection.findOne({ slug: req.params.slug });
+    if (!collection) {
+      return res.status(404).render('404');
+    }
+
+    const products = await Product.find({ collection: collection._id })
+      .skip(req.pagination.skip)
+      .limit(req.pagination.limit);
+
+    const totalProducts = await Product.countDocuments({ collection: collection._id });
+    const totalPages = Math.ceil(totalProducts / req.pagination.limit);
+
+    // Get all brands and collections for navigation
+    const brands = await Brand.find();
+    const collections = await Collection.find();
+
+    res.render('Collection-Page', {
+      collectionName: collection.name,
+      collectionDescription: collection.description,
+      collection,
+      products,
+      currentPage: req.pagination.page,
+      totalPages,
+      brands,
+      collections
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 });
 

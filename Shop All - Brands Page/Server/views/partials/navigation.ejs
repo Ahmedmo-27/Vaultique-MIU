@@ -1,0 +1,163 @@
+<div class="header-top-unscrolled" id="header-top" style="display: none;">
+    <div class="store-services" id="store-services">
+        <a id="toggle-button" class="toggle-button" data-theme-toggle>
+            <i class="fa-solid fa-sun"></i>
+            <i class="fa-solid fa-moon"></i>
+            <span class="toggle-button-slider"></span>
+        </a>
+
+        <nav class="navigation">    
+            <a href="#">
+                <i class="fa-solid fa-globe"></i>
+                <p>Language</p>
+            </a>
+            <select id="language" class="tag">
+                <option value="en">EN</option>
+                <option value="ar">AR</option>
+            </select>
+            
+            <a href="/contact-us">
+                <i class='fas fa-phone-alt'></i>
+                <p>Contact Us</p>
+            </a>
+        </nav>
+
+        <div class="search-button-unscrolled" id="search-button" style="display: none;">
+            <input type="search" id="searchField" class="searchField" placeholder="Search">
+            <button id="search" class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="user-data">
+        <nav class="navigation">
+            <a href="/account">
+                <i class='fas fa-user-alt'></i>
+                <p>Account</p>
+            </a>
+
+            <a href="/wishlist">
+                <i class='fas fa-heart'></i>
+                <p>WishList</p>
+            </a>
+
+            <a href="/cart">
+                <i class='fas fa-shopping-cart'></i>
+                <p>Cart </p>
+            </a>
+        </nav>
+    </div>
+</div>
+
+<div class="header-middle-unscrolled" id="header-middle">
+    <div class="responsive">
+        <a class="side-icon" id="side-icon">
+            <i class="fa fa-bars" id="ham-whatever"></i>
+        </a>
+    </div>
+
+    <a href="/" class="logo-unscrolled" id="logo">Vaultique</a>
+   
+    <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
+   
+        <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
+            <input type="search" id="searchField2" class="searchField" placeholder="Search">
+            <button id="search2" class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+
+        <nav class="navigation">
+            <a href="/contact-us" style="display: none;">
+                <i class='fas fa-phone-alt'></i>
+            </a>
+
+            <a href="/account" style="display: none;">
+                <i class='fas fa-user-alt'></i>
+            </a>
+
+            <a href="/wishlist" style="display: none;">
+                <i class='fas fa-heart'></i>
+            </a>
+
+            <a href="/cart" style="display: none;">
+                <i class='fas fa-shopping-cart'></i>
+            </a>
+
+            <a id="toggle-button" class="toggle-button" data-theme-toggle style="display:none;">
+                <i class="fa-solid fa-sun"></i>
+                <i class="fa-solid fa-moon"></i>
+                <span class="toggle-button-slider"></span>
+            </a>
+
+            <a style="display: none;">
+                <select id="language" class="tag">
+                    <option value="en">EN</option>
+                    <option value="ar">AR</option>
+                </select>
+            </a>
+        </nav>
+    </div>
+</div>
+
+<div class="header-bottom-unscrolled" id="header-bottom">
+    <nav class="navigation">
+        <a href="/">Home</a>
+        <a href="/products">Shop All</a>
+        <a href="/collections" id="collections-anchor-with-extension" class="extension">Collections</a>
+        <a href="/brands" data-category="Brands">Brands</a>
+        <a href="/recommendations">Recommendation System</a>
+    </nav>
+</div>
+
+<div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
+    <div id="collections-extension">
+        <div class="collection-anchors">
+            <h4><b>Collections</b></h4>
+            <br>
+            <% collections.forEach(function(collection) { %>
+                <a href="/collections/<%= collection.slug %>" data-collection="<%= collection.name %>">
+                    <%= collection.name %>
+                </a>
+                <br>
+            <% }); %>
+        </div>
+
+        <% collections.forEach(function(collection) { %>
+            <a class="extension-item" href="/collections/<%= collection.slug %>" data-collection="<%= collection.name %>">
+                <img src="<%= collection.image %>" alt="<%= collection.name %>" class="category-img extension-img">
+                <div>
+                    <h4 class="extension-text"><%= collection.name %></h4>
+                </div>
+            </a>
+        <% }); %>
+    </div>
+</div>
+
+<div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
+    <div id="bracelets-extension">
+        <div class="bracelets-anchors">
+            <h4><b>Brands</b></h4>
+            <br>
+            <% brands.forEach(function(brand) { %>
+                <a href="/brands/<%= brand.slug %>" data-brand="<%= brand.name %>">
+                    <%= brand.name %>
+                </a>
+            <% }); %>
+        </div> 
+        
+        <div class="brands-logos">
+            <% brands.forEach(function(brand) { %>
+                <div class="bracelets-extension">
+                    <a class="extension-item" href="/brands/<%= brand.slug %>" data-brand="<%= brand.name %>">
+                        <img src="<%= brand.logo %>" alt="<%= brand.name %>" class="category-img extension-img">
+                        <div>
+                            <h4 class="extension-text"><%= brand.name %> Collection</h4>
+                        </div>
+                    </a>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div> 

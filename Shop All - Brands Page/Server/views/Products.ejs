@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Vaultique | Shop All</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/css/loading-screen.css">
+        <link rel="stylesheet" href="/css/nav-bar.css">
+        <link rel="stylesheet" href="/css/slider.css">
+        <link rel="stylesheet" href="/css/products.css">
+        <link rel="stylesheet" href="/css/footer.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script src="/js/loading-screen.js"></script>
+        <script src="/js/nav-bar.js"></script>
+        <script src="/js/products.js"></script>
+        <script src="/js/slider.js"></script>
+        <script src="/js/light-mode.js"></script>
+    </head>
+    <body>
+        <!-- Loading Screen -->
+        <div class="loading-screen">
+            <div class="logo">
+                <h1>Vaultique</h1>
+            </div>
+        </div>
+
+        <!--Nav-Bar-->
+        <div class="navbar-wrapper">
+            <header class="header-unscrolled">
+                <%- include('partials/navigation') %>
+            </header>
+        </div>
+
+        <!-- Products Content -->
+        <div class="products-content">
+            <!-- Filters Sidebar -->
+            <div class="filters-sidebar">
+                <div class="filter-section">
+                    <h3>Price Range</h3>
+                    <div class="price-range">
+                        <input type="range" id="price-min" min="0" max="100000" value="0">
+                        <input type="range" id="price-max" min="0" max="100000" value="100000">
+                        <div class="price-inputs">
+                            <input type="number" id="min-price" placeholder="Min">
+                            <input type="number" id="max-price" placeholder="Max">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Brands</h3>
+                    <div class="brand-filters">
+                        <% brands.forEach(function(brand) { %>
+                            <label class="brand-checkbox">
+                                <input type="checkbox" name="brand" value="<%= brand.slug %>">
+                                <%= brand.name %>
+                            </label>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Collections</h3>
+                    <div class="collection-filters">
+                        <% collections.forEach(function(collection) { %>
+                            <label class="collection-checkbox">
+                                <input type="checkbox" name="collection" value="<%= collection.slug %>">
+                                <%= collection.name %>
+                            </label>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <button id="apply-filters" class="apply-filters-btn">Apply Filters</button>
+                <button id="reset-filters" class="reset-filters-btn">Reset Filters</button>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid">
+                <% products.forEach(function(product) { %>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="<%= product.image %>" alt="<%= product.name %>">
+                            <div class="product-overlay">
+                                <button class="quick-view" data-product-id="<%= product._id %>">
+                                    <i class="fas fa-eye"></i> Quick View
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3><%= product.name %></h3>
+                            <p class="brand"><%= product.brand %></p>
+                            <p class="price">$<%= product.price.toLocaleString() %></p>
+                            <div class="product-actions">
+                                <button class="add-to-cart" data-product-id="<%= product._id %>">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                                <button class="add-to-wishlist" data-product-id="<%= product._id %>">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="page-link">Previous</a>
+            <% } %>
+            
+            <% for(let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>" class="page-link <%= i === currentPage ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>" class="page-link">Next</a>
+            <% } %>
+        </div>
+
+        <!-- Quick View Modal -->
+        <div id="quick-view-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="quick-view-content">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <%- include('partials/footer') %>
+    </body>
+</html> 

@@ -896,3 +896,224 @@ body.light-mode .search,body.light-mode .searchField::placeholder {
 body.dark-mode {
     background-color: #1C2E4A;
 }
+
+/* Search Results Styles */
+.search-results-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.brand-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.brand-header {
+    font-family: 'futura pt', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.search-result-item:hover,
+.search-result-item:focus {
+    background-color: rgba(0, 0, 0, 0.05);
+    outline: none;
+    transform: translateX(5px);
+}
+
+.search-result-item-img-cont {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+.search-result-item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+}
+
+.search-extension-a {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.search-result-price {
+    font-size: 14px;
+    color: #666;
+}
+
+.view-all-results {
+    display: block;
+    text-align: center;
+    padding: 15px;
+    margin-top: 10px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    border-top: 1px solid #eee;
+    transition: color 0.2s ease;
+}
+
+.view-all-results:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Loading State */
+.search-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    color: #666;
+    font-size: 14px;
+}
+
+.search-loading::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    border: 2px solid #ddd;
+    border-top-color: #666;
+    border-radius: 50%;
+    animation: search-loading-spinner 0.8s linear infinite;
+}
+
+@keyframes search-loading-spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* No Results State */
+.no-results {
+    padding: 30px;
+    text-align: center;
+    color: #666;
+}
+
+.no-results p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.search-suggestions {
+    margin-top: 15px !important;
+    color: #333;
+    font-weight: 500;
+}
+
+.suggestion-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+    text-align: left;
+    max-width: 300px;
+    margin: 10px auto 0;
+}
+
+.suggestion-list li {
+    padding: 5px 0;
+    color: #666;
+    font-size: 13px;
+}
+
+.suggestion-list li:before {
+    content: "•";
+    color: #007bff;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+/* Search Extension */
+#search-extension {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#search-extension.active {
+    display: flex;
+}
+
+/* Search Input Styles */
+#search-button,
+#search-button2 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+#searchField,
+#searchField2 {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 8px;
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+#search-button.active #searchField,
+#search-button2.active #searchField2 {
+    width: 200px;
+}
+
+/* Exit Button */
+#exit-search-extension-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+#exit-search-extension-button:hover {
+    color: #333;
+}

@@ -2,6 +2,9 @@ const express = require("express")
 const Product = require("../models/Products")
 const path = require("path");
 const router = express.Router();
+const Brand = require('../models/Brands');
+const Collection = require('../models/Collections');
+const mongoose = require('mongoose');
 
 // Product name normalization mappings
 const PRODUCT_MAPPINGS = {
@@ -66,98 +69,96 @@ function validatePaginationParams(page, limit) {
   return { page: parsedPage, limit: parsedLimit };
 }
 
-// Products API endpoint
-router.get("/api/products", async (req, res) => {
+// Helper function to check if a string is a valid MongoDB ObjectId
+const isValidObjectId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
+};
+
+// Get products by name - MUST BE BEFORE /:id ROUTE
+router.get("/name/:name", async (req, res) => {
+  const startTime = Date.now();
+  const requestId = Math.random().toString(36).substring(7);
+
   try {
-    const {
-      Vcollection,
-      brand,
-      strapMaterial,
-      movement,
-      waterResistance,
-      caseMaterial,
-      dialColor,
-      minPrice,
-      maxPrice,
-      sort,
-      inStock,
-      gender,
-      page: rawPage,
-      limit: rawLimit
-    } = req.query
-
-    // Input validation
-    if (minPrice && isNaN(minPrice)) return res.status(400).json({ error: "Invalid minPrice" })
-    if (maxPrice && isNaN(maxPrice)) return res.status(400).json({ error: "Invalid maxPrice" })
-
-    // Validate and parse pagination parameters
-    const { page, limit } = validatePaginationParams(rawPage, rawLimit);
-
-    // Build query
-    const query = {}
-    if (gender && gender !== "All") query.gender = gender
-    if (Vcollection && Vcollection !== "All") query.Vcollection = Vcollection
-    if (brand && brand !== "All") query.brand = brand
-    if (strapMaterial && strapMaterial !== "All") query.strapMaterial = strapMaterial
-    if (movement && movement !== "All") query.movement = movement
-    if (waterResistance && waterResistance !== "All") query.waterResistance = waterResistance
-    if (caseMaterial && caseMaterial !== "All") query.caseMaterial = caseMaterial
-    if (dialColor && dialColor !== "All") query.dialColor = { $in: dialColor.split(",") }
-
-    // Stock filter
-    if (inStock === "true") {
-      query.$or = [{ stock: true }, { stockCount: { $gt: 0 } }]
+    const rawName = decodeURIComponent(req.params.name);
+    if (!rawName || typeof rawName !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product name provided",
+        requestId
+      });
     }
 
-    // Price range
-    if (minPrice || maxPrice) {
-      query.price = {}
-      if (minPrice) query.price.$gte = Number(minPrice)
-      if (maxPrice) query.price.$lte = Number(maxPrice)
+    // Normalize the product name
+    const normalizedProductName = normalizeProductName(rawName);
+    console.log(`[${requestId}] Searching for product: ${rawName} (normalized: ${normalizedProductName})`);
+
+    // Generate search variations
+    const searchVariations = generateSearchVariations(normalizedProductName);
+    
+    // Try exact match first
+    let product = await Product.findOne({ name: normalizedProductName });
+
+    // If not found, try case-insensitive regex match with variations
+    if (!product) {
+      const searchQueries = searchVariations.map(variation => ({
+        name: { $regex: new RegExp(`^${variation}$`, "i") }
+      }));
+
+      product = await Product.findOne({
+        $or: searchQueries
+      });
     }
 
-    // Sorting
-    const sortOptions = {
-      default: { _id: 1 },
-      new: { createdAt: -1 },
-      "price-asc": { price: 1 },
-      "price-desc": { price: -1 },
-      popularity: { popularityScore: -1, price: -1 },
+    if (!product) {
+      console.log(`[${requestId}] Product not found: ${normalizedProductName}`);
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+        attemptedName: normalizedProductName,
+        variations: searchVariations,
+        requestId
+      });
     }
 
-    const sortOption = sortOptions[sort] || sortOptions["default"]
+    // Log success with timing
+    const duration = Date.now() - startTime;
+    console.log(`[${requestId}] Found product: ${product.name} (${duration}ms)`);
 
-    // Calculate pagination
-    const skip = (page - 1) * limit
-
-    const [products, count] = await Promise.all([
-      Product.find(query).sort(sortOption).skip(skip).limit(limit),
-      Product.countDocuments(query),
-    ])
-
-    const totalPages = Math.ceil(count / limit)
-
+    // Return success response
     res.json({
       success: true,
-      data: products,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems: count,
-        itemsPerPage: limit,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1
+      data: product,
+      source: 'database',
+      requestId,
+      timing: {
+        duration,
+        cached: false
       }
-    })
+    });
+
   } catch (err) {
-    console.error("API Error:", err)
-    res.status(500).json({
+    console.error(`[${requestId}] Error finding product:`, err);
+    
+    const errorResponse = {
       success: false,
-      error: "Server error",
-      details: process.env.NODE_ENV === "development" ? err.message : undefined,
-    })
+      message: "Server error",
+      requestId,
+      timing: {
+        duration: Date.now() - startTime
+      }
+    };
+
+    if (process.env.NODE_ENV === 'development') {
+      errorResponse.error = {
+        message: err.message,
+        stack: err.stack
+      };
+    }
+
+    res.status(500).json(errorResponse);
   }
-})
+});
 
 // Get all products with filtering and pagination
 router.get("/", async (req, res) => {
@@ -253,25 +254,23 @@ router.get("/", async (req, res) => {
 
     const totalPages = Math.ceil(total / limit);
 
-    const result = {
-      success: true,
-      data: products,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems: total,
-        itemsPerPage: limit,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1
-      },
-      source: 'database',
-      requestId,
-      timing: {
-        duration: Date.now() - startTime
-      }
-    };
+    // Get all brands and collections for filters and navigation
+    const allBrands = await Brand.find();
+    const allCollections = await Collection.find();
 
-    res.json(result);
+    res.render('Products', {
+      products,
+      currentPage: page,
+      totalPages,
+      brands: allBrands,
+      collections: allCollections,
+      filters: {
+        minPrice,
+        maxPrice,
+        selectedBrands: brand ? [brand] : [],
+        selectedCollections: Vcollection ? [Vcollection] : []
+      }
+    });
 
   } catch (err) {
     console.error(`[${requestId}] Error fetching products:`, err);
@@ -296,20 +295,45 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Get single product by ID
+// Get single product by ID - MUST BE AFTER /name/:name ROUTE
 router.get("/:id", async (req, res) => {
   const startTime = Date.now();
   const requestId = Math.random().toString(36).substring(7);
 
   try {
-    const product = await Product.findById(req.params.id);
+    // Check if the id is a valid MongoDB ObjectId
+    if (!isValidObjectId(req.params.id)) {
+      // If not a valid ObjectId, treat it as a route name and render the products page
+      const [products, total] = await Promise.all([
+        Product.find().limit(12),
+        Product.countDocuments()
+      ]);
+
+      const totalPages = Math.ceil(total / 12);
+      const allBrands = await Brand.find();
+      const allCollections = await Collection.find();
+
+      return res.render('Products', {
+        products,
+        currentPage: 1,
+        totalPages,
+        brands: allBrands,
+        collections: allCollections,
+        filters: {
+          minPrice: null,
+          maxPrice: null,
+          selectedBrands: [],
+          selectedCollections: []
+        }
+      });
+    }
+
+    const product = await Product.findById(req.params.id)
+      .populate('brand')
+      .populate('collection');
     
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-        requestId
-      });
+      return res.status(404).render('404');
     }
 
     res.json({
@@ -344,91 +368,98 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Get products by name
-router.get("/name/:name", async (req, res) => {
-  const startTime = Date.now();
-  const requestId = Math.random().toString(36).substring(7);
-
+// Products API endpoint
+router.get("/api/products", async (req, res) => {
   try {
-    const rawName = decodeURIComponent(req.params.name);
-    if (!rawName || typeof rawName !== 'string') {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid product name provided",
-        requestId
-      });
+    const {
+      Vcollection,
+      brand,
+      strapMaterial,
+      movement,
+      waterResistance,
+      caseMaterial,
+      dialColor,
+      minPrice,
+      maxPrice,
+      sort,
+      inStock,
+      gender,
+      page: rawPage,
+      limit: rawLimit
+    } = req.query
+
+    // Input validation
+    if (minPrice && isNaN(minPrice)) return res.status(400).json({ error: "Invalid minPrice" })
+    if (maxPrice && isNaN(maxPrice)) return res.status(400).json({ error: "Invalid maxPrice" })
+
+    // Validate and parse pagination parameters
+    const { page, limit } = validatePaginationParams(rawPage, rawLimit);
+
+    // Build query
+    const query = {}
+    if (gender && gender !== "All") query.gender = gender
+    if (Vcollection && Vcollection !== "All") query.Vcollection = Vcollection
+    if (brand && brand !== "All") query.brand = brand
+    if (strapMaterial && strapMaterial !== "All") query.strapMaterial = strapMaterial
+    if (movement && movement !== "All") query.movement = movement
+    if (waterResistance && waterResistance !== "All") query.waterResistance = waterResistance
+    if (caseMaterial && caseMaterial !== "All") query.caseMaterial = caseMaterial
+    if (dialColor && dialColor !== "All") query.dialColor = { $in: dialColor.split(",") }
+
+    // Stock filter
+    if (inStock === "true") {
+      query.$or = [{ stock: true }, { stockCount: { $gt: 0 } }]
     }
 
-    // Normalize the product name
-    const normalizedProductName = normalizeProductName(rawName);
-    console.log(`[${requestId}] Searching for product: ${rawName} (normalized: ${normalizedProductName})`);
-
-    // Generate search variations
-    const searchVariations = generateSearchVariations(normalizedProductName);
-    
-    // Try exact match first
-    let product = await Product.findOne({ name: normalizedProductName });
-
-    // If not found, try case-insensitive regex match with variations
-    if (!product) {
-      const searchQueries = searchVariations.map(variation => ({
-        name: { $regex: new RegExp(`^${variation}$`, "i") }
-      }));
-
-      product = await Product.findOne({
-        $or: searchQueries
-      });
+    // Price range
+    if (minPrice || maxPrice) {
+      query.price = {}
+      if (minPrice) query.price.$gte = Number(minPrice)
+      if (maxPrice) query.price.$lte = Number(maxPrice)
     }
 
-    if (!product) {
-      console.log(`[${requestId}] Product not found: ${normalizedProductName}`);
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-        attemptedName: normalizedProductName,
-        variations: searchVariations,
-        requestId
-      });
+    // Sorting
+    const sortOptions = {
+      default: { _id: 1 },
+      new: { createdAt: -1 },
+      "price-asc": { price: 1 },
+      "price-desc": { price: -1 },
+      popularity: { popularityScore: -1, price: -1 },
     }
 
-    // Log success with timing
-    const duration = Date.now() - startTime;
-    console.log(`[${requestId}] Found product: ${product.name} (${duration}ms)`);
+    const sortOption = sortOptions[sort] || sortOptions["default"]
 
-    // Return success response
+    // Calculate pagination
+    const skip = (page - 1) * limit
+
+    const [products, count] = await Promise.all([
+      Product.find(query).sort(sortOption).skip(skip).limit(limit),
+      Product.countDocuments(query),
+    ])
+
+    const totalPages = Math.ceil(count / limit)
+
     res.json({
       success: true,
-      data: product,
-      source: 'database',
-      requestId,
-      timing: {
-        duration,
-        cached: false
+      data: products,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: count,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1
       }
-    });
-
+    })
   } catch (err) {
-    console.error(`[${requestId}] Error finding product:`, err);
-    
-    const errorResponse = {
+    console.error("API Error:", err)
+    res.status(500).json({
       success: false,
-      message: "Server error",
-      requestId,
-      timing: {
-        duration: Date.now() - startTime
-      }
-    };
-
-    if (process.env.NODE_ENV === 'development') {
-      errorResponse.error = {
-        message: err.message,
-        stack: err.stack
-      };
-    }
-
-    res.status(500).json(errorResponse);
+      error: "Server error",
+      details: process.env.NODE_ENV === "development" ? err.message : undefined,
+    })
   }
-});
+})
 
 // // Serve static files from the correct directory
 // router.use(express.static(path.join(__dirname, "../Client")));
