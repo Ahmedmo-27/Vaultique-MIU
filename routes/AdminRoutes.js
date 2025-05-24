@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/Admin');
 const { isAdmin } = require('../middleware/auth');
+const { upload, handleMulterError } = require('../middleware/upload');
 
 // Apply admin middleware to all routes
 // router.use(isAdmin); // Temporarily disabled for testing
@@ -20,7 +21,16 @@ router.delete('/users/:id', adminController.deleteUser);
 // Product management routes
 router.get('/products', adminController.renderProducts);
 router.get('/products/create', adminController.renderCreateProduct);
-router.post('/products/create', adminController.createProduct);
+router.post('/products/create', 
+    upload.fields([
+        { name: 'image', maxCount: 1 },
+        { name: 'galleryImages', maxCount: 10 },
+        { name: 'video', maxCount: 1 },
+        { name: 'model3D', maxCount: 1 }
+    ]),
+    handleMulterError,
+    adminController.createProduct
+);
 
 // Analytics routes
 router.get('/analytics', adminController.renderAnalytics);

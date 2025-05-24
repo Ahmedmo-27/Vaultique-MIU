@@ -19,12 +19,9 @@ async function fetchUsers() {
     if (data.success) {
       users = data.data;
       updateUsersTable(users);
-    } else {
-      showNotification('error', data.message || 'Failed to load users');
     }
   } catch (error) {
     console.error('Error fetching users:', error);
-    showNotification('error', 'Failed to load users');
   }
 }
 
@@ -85,7 +82,12 @@ async function deleteUser(userId) {
     console.log('Delete response data:', data);
 
     if (data.success) {
+      // Remove the user from the local array first
+      users = users.filter(user => user._id !== userId);
+      // Update the table with the filtered users
+      updateUsersTable(users);
       showNotification('success', 'User deleted successfully');
+      // Then fetch fresh data from server
       await fetchUsers();
     } else {
       showNotification('error', data.message || 'Failed to delete user');
@@ -160,8 +162,13 @@ async function saveUser(userData) {
     console.log('Save response data:', data);
 
     if (data.success) {
+      // Add the new user to the local array
+      users.push(data.data);
+      // Update the table with the new user
+      updateUsersTable(users);
       showNotification('success', 'User saved successfully!');
       document.getElementById('addUserModal').classList.add('hidden');
+      // Then fetch fresh data from server
       await fetchUsers();
     } else {
       showNotification('error', data.message || 'Failed to save user');
@@ -290,23 +297,64 @@ async function viewUserOrders(userId) {
 
 async function editUser(userId) {
   try {
+    console.log('Fetching user details for edit:', userId);
     const response = await fetch(`/api/admin/users/${userId}`);
-    const data = await response.json();
+    const result = await response.json();
+    console.log('User details response:', result);
 
-    if (data.success) {
-      const user = data.data;
-      document.getElementById('nameInput').value = user.Name;
-      document.getElementById('emailInput').value = user.email;
-      document.getElementById('roleInput').value = user.role;
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to fetch user details');
+    }
 
-      document.getElementById('addUserModal').classList.remove('hidden');
-      document.getElementById('saveUserBtn').addEventListener('click', async () => {
-        const formData = new FormData(document.getElementById('userForm'));
+    const user = result.data;
+    if (!user) {
+      throw new Error('No user data received');
+    }
+
+    // Get the modal and form elements
+    const modal = document.getElementById('addUserModal');
+    const form = document.getElementById('userForm');
+    
+    if (!modal || !form) {
+      throw new Error('Modal or form elements not found');
+    }
+
+    // Set modal title
+    const modalTitle = modal.querySelector('.modal-title');
+    if (modalTitle) {
+      modalTitle.textContent = 'Edit User';
+    }
+
+    // Populate form fields
+    form.querySelector('[name="Name"]').value = user.Name || '';
+    form.querySelector('[name="username"]').value = user.username || '';
+    form.querySelector('[name="email"]').value = user.email || '';
+    form.querySelector('[name="phone_number"]').value = user.phone_number || '';
+    form.querySelector('[name="DOB"]').value = user.DOB ? new Date(user.DOB).toISOString().split('T')[0] : '';
+    form.querySelector('[name="language"]').value = user.language || 'English';
+    form.querySelector('[name="role"]').value = user.role || 'user';
+
+    // Handle address fields
+    if (user.Address) {
+      form.querySelector('[name="Address[street]"]').value = user.Address.street || '';
+      form.querySelector('[name="Address[city]"]').value = user.Address.city || '';
+      form.querySelector('[name="Address[state]"]').value = user.Address.state || '';
+      form.querySelector('[name="Address[postalCode]"]').value = user.Address.postalCode || '';
+      form.querySelector('[name="Address[country]"]').value = user.Address.country || '';
+    }
+
+    // Show the modal
+    modal.classList.remove('hidden');
+
+    // Update save button to handle update instead of create
+    const saveButton = document.getElementById('saveUserBtn');
+    if (saveButton) {
+      saveButton.onclick = async () => {
+        const formData = new FormData(form);
         const userData = {
           Name: formData.get('Name'),
           username: formData.get('username'),
           email: formData.get('email'),
-          password: formData.get('password'),
           phone_number: formData.get('phone_number'),
           DOB: formData.get('DOB'),
           language: formData.get('language'),
@@ -314,19 +362,64 @@ async function editUser(userId) {
           Address: {
             city: formData.get('Address[city]'),
             street: formData.get('Address[street]'),
-            addressType: formData.get('Address[addressType]'),
             state: formData.get('Address[state]'),
             country: formData.get('Address[country]'),
             postalCode: formData.get('Address[postalCode]')
           }
         };
 
-        await saveUser(userData);
-      });
+        // Only include password if it's not empty
+        const password = formData.get('password');
+        if (password) {
+          userData.password = password;
+        }
+
+        // Remove any Payment-related fields
+        delete userData.Payment;
+
+        await updateUser(userId, userData);
+      };
+    }
+
+  } catch (error) {
+    console.error('Error in editUser:', error);
+    showNotification('Error loading user details: ' + error.message, 'error');
+  }
+}
+
+async function updateUser(userId, userData) {
+  try {
+    console.log('Updating user:', userId, userData);
+    const response = await fetch(`/api/admin/users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    });
+
+    console.log('Update response status:', response.status);
+    const data = await response.json();
+    console.log('Update response data:', data);
+
+    if (data.success) {
+      // Update the user in the local array
+      const index = users.findIndex(user => user._id === userId);
+      if (index !== -1) {
+        users[index] = { ...users[index], ...data.data };
+      }
+      // Update the table with the modified user
+      updateUsersTable(users);
+      showNotification('success', 'User updated successfully!');
+      document.getElementById('addUserModal').classList.add('hidden');
+      // Then fetch fresh data from server
+      await fetchUsers();
+    } else {
+      showNotification('error', data.message || 'Failed to update user');
     }
   } catch (error) {
-    console.error('Error fetching user for edit:', error);
-    showNotification('error', 'Failed to load user data');
+    console.error('Error updating user:', error);
+    showNotification('error', 'Error updating user: ' + error.message);
   }
 }
 
@@ -386,87 +479,90 @@ function updateUsersTable(users) {
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('search');
-  const addUserBtn = document.getElementById('addUserBtn');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const saveUserBtn = document.getElementById('saveUserBtn');
-  const closeDetailsBtn = document.getElementById('closeDetailsBtn');
-  const closeOrdersBtn = document.getElementById('closeOrdersBtn');
+    // Get all required elements
+    const searchInput = document.getElementById('search');
+    const addUserBtn = document.getElementById('addUserBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const saveUserBtn = document.getElementById('saveUserBtn');
+    const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+    const closeOrdersBtn = document.getElementById('closeOrdersBtn');
+    const userForm = document.getElementById('userForm');
 
-  // Initialize search functionality
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      const keyword = searchInput.value.toLowerCase();
-      const filtered = users.filter(
-        (u) =>
-          (u.Name && u.Name.toLowerCase().includes(keyword)) ||
-          (u.email && u.email.toLowerCase().includes(keyword))
-      );
-      updateUsersTable(filtered);
-    });
-  }
+    // Initialize search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const keyword = searchInput.value.toLowerCase();
+            const filtered = users.filter(
+                (u) =>
+                    (u.Name && u.Name.toLowerCase().includes(keyword)) ||
+                    (u.email && u.email.toLowerCase().includes(keyword))
+            );
+            updateUsersTable(filtered);
+        });
+    }
 
-  // Initialize add user button
-  if (addUserBtn) {
-    addUserBtn.addEventListener('click', () => {
-      document.getElementById('addUserModal').classList.remove('hidden');
-      document.getElementById('userForm').reset();
-    });
-  }
+    // Initialize add user button
+    if (addUserBtn) {
+        addUserBtn.addEventListener('click', () => {
+            if (userForm) userForm.reset();
+            document.getElementById('addUserModal').classList.remove('hidden');
+        });
+    }
 
-  // Initialize close modal button
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => {
-      document.getElementById('addUserModal').classList.add('hidden');
-    });
-  }
+    // Initialize close modal button
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            document.getElementById('addUserModal').classList.add('hidden');
+        });
+    }
 
-  // Initialize save user button
-  if (saveUserBtn) {
-    saveUserBtn.addEventListener('click', async () => {
-      const formData = new FormData(document.getElementById('userForm'));
-      const userData = {
-        Name: formData.get('Name'),
-        username: formData.get('username'),
-        email: formData.get('email'),
-        password: formData.get('password'),
-        phone_number: formData.get('phone_number'),
-        DOB: formData.get('DOB'),
-        language: formData.get('language'),
-        role: formData.get('role'),
-        Address: {
-          city: formData.get('Address[city]'),
-          street: formData.get('Address[street]'),
-          addressType: formData.get('Address[addressType]'),
-          state: formData.get('Address[state]'),
-          country: formData.get('Address[country]'),
-          postalCode: formData.get('Address[postalCode]')
-        }
-      };
-      await saveUser(userData);
-    });
-  }
+    // Initialize save user button
+    if (saveUserBtn) {
+        saveUserBtn.addEventListener('click', async () => {
+            if (!userForm) return;
+            
+            const formData = new FormData(userForm);
+            const userData = {
+                Name: formData.get('Name'),
+                username: formData.get('username'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                phone_number: formData.get('phone_number'),
+                DOB: formData.get('DOB'),
+                language: formData.get('language'),
+                role: formData.get('role'),
+                Address: {
+                    city: formData.get('Address[city]'),
+                    street: formData.get('Address[street]'),
+                    state: formData.get('Address[state]'),
+                    country: formData.get('Address[country]'),
+                    postalCode: formData.get('Address[postalCode]')
+                }
+            };
+            await saveUser(userData);
+        });
+    }
 
-  // Initialize close details button
-  if (closeDetailsBtn) {
-    closeDetailsBtn.addEventListener('click', () => {
-      document.getElementById('userDetailsModal').classList.add('hidden');
-    });
-  }
+    // Initialize close details button
+    if (closeDetailsBtn) {
+        closeDetailsBtn.addEventListener('click', () => {
+            document.getElementById('userDetailsModal').classList.add('hidden');
+        });
+    }
 
-  // Initialize close orders button
-  if (closeOrdersBtn) {
-    closeOrdersBtn.addEventListener('click', () => {
-      document.getElementById('ordersModal').classList.add('hidden');
-    });
-  }
+    // Initialize close orders button
+    if (closeOrdersBtn) {
+        closeOrdersBtn.addEventListener('click', () => {
+            document.getElementById('ordersModal').classList.add('hidden');
+        });
+    }
 
-  // Check if we have initial data
-  if (window.initialData?.users?.length > 0) {
-    users = window.initialData.users;
-    updateUsersTable(users);
-  } else if (!window.location.search.includes('view=') && !window.location.search.includes('edit=')) {
-    fetchUsers();
-  }
+    // Check if we have initial data
+    if (window.initialData?.users?.length > 0) {
+        users = window.initialData.users;
+        updateUsersTable(users);
+    } else if (!window.location.search.includes('view=') && !window.location.search.includes('edit=')) {
+        fetchUsers();
+    }
 });
 

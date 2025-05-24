@@ -103,18 +103,46 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).select('-password -Payment');
+        const userId = req.params.id;
+        console.log('Fetching user with ID:', userId);
+        
+        // Validate the ID format
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            console.log('Invalid user ID format:', userId);
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid user ID format'
+            });
+        }
+
+        // Find user and explicitly select fields
+        const user = await User.findById(userId).select({
+            Name: 1,
+            username: 1,
+            email: 1,
+            DOB: 1,
+            phone_number: 1,
+            language: 1,
+            role: 1,
+            Address: 1,
+            createdAt: 1
+        });
+        
         if (!user) {
+            console.log('User not found with ID:', userId);
             return res.status(404).json({
                 success: false,
                 message: 'User not found'
             });
         }
+
+        console.log('Successfully fetched user:', user);
         res.status(200).json({
             success: true,
             data: user
         });
     } catch (error) {
+        console.error('Error in getUserById:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching user',
@@ -125,13 +153,90 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        ).select('-password -Payment');
+        const userId = req.params.id;
+        
+        // Only allow specific fields to be updated
+        const allowedFields = [
+            'Name',
+            'username',
+            'email',
+            'phone_number',
+            'DOB',
+            'language',
+            'role',
+            'Address'
+        ];
 
-        if (!user) {
+        // Filter out any fields that aren't in the allowed list
+        const updateData = Object.keys(req.body)
+            .filter(key => allowedFields.includes(key))
+            .reduce((obj, key) => {
+                obj[key] = req.body[key];
+                return obj;
+            }, {});
+
+        // Validate the ID format
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid user ID format'
+            });
+        }
+
+        // Get the current user data
+        const currentUser = await User.findById(userId);
+        if (!currentUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Only check for duplicates if email or username is being changed
+        if (updateData.email && updateData.email.toLowerCase() !== currentUser.email.toLowerCase()) {
+            const existingEmail = await User.findOne({ 
+                email: updateData.email.toLowerCase(),
+                _id: { $ne: userId }
+            });
+            if (existingEmail) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email is already taken by another user'
+                });
+            }
+        }
+
+        if (updateData.username && updateData.username !== currentUser.username) {
+            const existingUsername = await User.findOne({ 
+                username: updateData.username,
+                _id: { $ne: userId }
+            });
+            if (existingUsername) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Username is already taken by another user'
+                });
+            }
+        }
+
+        // Handle password update
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(req.body.password, salt);
+        }
+
+        // Update the user using findOneAndUpdate with strict field selection
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userId },
+            { $set: updateData },
+            { 
+                new: true, 
+                runValidators: true,
+                select: 'Name username email DOB phone_number language role Address createdAt' // Explicitly select only these fields
+            }
+        );
+
+        if (!updatedUser) {
             return res.status(404).json({
                 success: false,
                 message: 'User not found'
@@ -140,9 +245,11 @@ exports.updateUser = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: user
+            message: 'User updated successfully',
+            data: updatedUser
         });
     } catch (error) {
+        console.error('Error updating user:', error);
         res.status(500).json({
             success: false,
             message: 'Error updating user',
@@ -289,15 +396,149 @@ exports.getAllProducts = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
     try {
-        const product = await Product.create(req.body);
+        console.log('Received product creation request:', {
+            body: req.body,
+            files: req.files
+        });
+
+        // Validate required fields
+        const requiredFields = ['id', 'name', 'brand', 'price', 'description', 'strapMaterial', 'movement', 'waterResistance', 'caseMaterial', 'dialColor', 'Vcollection', 'gender'];
+        const missingFields = requiredFields.filter(field => !req.body[field]);
+        if (missingFields.length > 0) {
+            console.log('Missing required fields:', missingFields);
+            return res.status(400).json({
+                success: false,
+                message: `Missing required fields: ${missingFields.join(', ')}`
+            });
+        }
+
+        // Check for product image
+        if (!req.files?.image) {
+            console.log('No product image provided');
+            return res.status(400).json({
+                success: false,
+                message: 'Product image is required'
+            });
+        }
+
+        // Find the brand by name
+        const brand = await Brand.findOne({ name: req.body.brand });
+        if (!brand) {
+            console.log('Brand not found:', req.body.brand);
+            return res.status(400).json({
+                success: false,
+                message: `Brand "${req.body.brand}" not found`
+            });
+        }
+
+        // Process file paths
+        const imagePath = req.files.image[0].path.replace('public', '');
+        const galleryPaths = req.files.galleryImages?.map(file => file.path.replace('public', '')) || [];
+        const videoPath = req.files.video?.[0]?.path.replace('public', '');
+        const modelPath = req.files.model3D?.[0]?.path.replace('public', '');
+
+        // Format special features
+        const specialFeatures = [];
+        if (req.body.featureName && req.body.featureDesc) {
+            const featureNames = Array.isArray(req.body.featureName) ? req.body.featureName : [req.body.featureName];
+            const featureDescs = Array.isArray(req.body.featureDesc) ? req.body.featureDesc : [req.body.featureDesc];
+            
+            for (let i = 0; i < featureNames.length; i++) {
+                if (featureNames[i] && featureDescs[i]) {
+                    specialFeatures.push({
+                        featureName: featureNames[i],
+                        featureDesc: featureDescs[i]
+                    });
+                }
+            }
+        }
+
+        // Format specifications
+        const specifications = [];
+        if (req.body.specName && req.body.specValue) {
+            const specNames = Array.isArray(req.body.specName) ? req.body.specName : [req.body.specName];
+            const specValues = Array.isArray(req.body.specValue) ? req.body.specValue : [req.body.specValue];
+            
+            for (let i = 0; i < specNames.length; i++) {
+                if (specNames[i] && specValues[i]) {
+                    specifications.push({
+                        specName: specNames[i],
+                        specValue: specValues[i]
+                    });
+                }
+            }
+        }
+
+        // Create product data object
+        const productData = {
+            id: req.body.id,
+            name: req.body.name,
+            brand: brand._id, // Use the brand's _id (String)
+            strapMaterial: req.body.strapMaterial,
+            movement: req.body.movement,
+            waterResistance: req.body.waterResistance,
+            caseMaterial: req.body.caseMaterial,
+            dialColor: req.body.dialColor,
+            price: Number(req.body.price),
+            stock: req.body.stock === 'true',
+            stockCount: Number(req.body.stockCount),
+            Vcollection: req.body.Vcollection,
+            gender: req.body.gender,
+            image: imagePath,
+            galleryImages: galleryPaths,
+            video: videoPath,
+            model3D: modelPath,
+            productPageUrl: req.body.productPageUrl,
+            description: req.body.description,
+            specialFeatures,
+            specifications
+        };
+
+        console.log('Creating product with data:', productData);
+
+        // Create the product
+        const product = await Product.create(productData);
+
         res.status(201).json({
             success: true,
+            message: 'Product created successfully',
             data: product
         });
     } catch (error) {
+        console.error('Error creating product:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            errors: error.errors
+        });
+
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.values(error.errors).map(err => ({
+                field: err.path,
+                message: err.message,
+                value: err.value
+            }));
+            console.log('Validation errors:', validationErrors);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: validationErrors
+            });
+        }
+
+        // Handle duplicate key error
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            return res.status(400).json({
+                success: false,
+                message: `A product with this ${field} already exists`
+            });
+        }
+
         res.status(500).json({
             success: false,
-            message: 'Error creating product',
+            message: 'Failed to create product',
             error: error.message
         });
     }

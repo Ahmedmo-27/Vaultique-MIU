@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
         exitSearchButton.addEventListener('click', () => {
             const searchExtension = document.getElementById('search-extension');
             const searchField = document.getElementById('searchField');
+            const headerBottom = document.getElementById('header-bottom');
+            const header = document.querySelector('header');
+            
             if (searchExtension) searchExtension.style.display = 'none';
             if (searchField) searchField.value = '';
             if (headerBottom) headerBottom.style.display = 'flex';
