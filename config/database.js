@@ -10,24 +10,24 @@ const connect = async () => {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
-      family: 4
+      family: 4,
     });
     console.log(`Connected to MongoDB at ${process.env.MONGODB_URI}`);
     retryCount = 0;
   } catch (err) {
-    console.error("MongoDB connection error:", err);
+    console.error('MongoDB connection error:', err);
     retryCount++;
-    
+
     if (retryCount < MAX_RETRIES) {
       console.log(`Retrying connection (${retryCount}/${MAX_RETRIES})...`);
       setTimeout(connect, 5000);
     } else {
-      console.error("Max retries reached. Could not connect to MongoDB.");
+      console.error('Max retries reached. Could not connect to MongoDB.');
       process.exit(1);
     }
   }
 };
 
 module.exports = {
-  connect
-}; 
+  connect,
+};

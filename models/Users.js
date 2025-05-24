@@ -1,241 +1,361 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const Order = require('../models/Orders');
+const bcryptjs = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
-    id: {
+  id: {
+    type: String,
+    default: () => new mongoose.Types.ObjectId().toString(),
+  },
+  Name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    validate: [validator.isEmail, 'Please provide a valid email'],
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+    select: false,
+  },
+  DOB: {
+    type: Date,
+    required: false,
+  },
+  phone_number: {
+    type: String,
+    required: false,
+    unique: false,
+    select: false,
+  },
+  language: {
+    type: String,
+    default: 'English',
+    enum: ['English', 'Arabic'],
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'user'],
+    default: 'user',
+    required: true,
+  },
+  Address: {
+    city: {
+      type: String,
+      trim: true,
+    },
+    street: {
+      type: String,
+      trim: true,
+    },
+    addressType: {
+      type: String,
+      enum: ['Home', 'Work', 'Other'],
+      default: 'Home',
+    },
+    state: {
+      type: String,
+      trim: true,
+    },
+    country: {
+      type: String,
+      trim: true,
+    },
+    postalCode: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function (v) {
+          return !v || /^[a-zA-Z0-9\s-]{3,10}$/.test(v);
+        },
+        message: (props) => `${props.value} is not a valid postal code!`,
+      },
+    },
+  },
+  Payment: {
+    cardNumber: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function (v) {
+          return !v || /^\d{13,19}$/.test(v);
+        },
+        message: (props) => `${props.value} is not a valid card number!`,
+      },
+      select: false,
+    },
+    cardHolder: {
+      type: String,
+      trim: true,
+    },
+    expiryDate: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function (v) {
+          return !v || /^(0[1-9]|1[0-2])\/(\d{2})$/.test(v);
+        },
+        message: (props) => `${props.value} is not a valid expiry date! Use MM/YY.`,
+      },
+    },
+    cvv: {
+      type: String,
+      trim: true,
+      select: false,
+      validate: {
+        validator: function (v) {
+          return !v || /^\d{3,4}$/.test(v);
+        },
+        message: (props) => `${props.value} is not a valid CVV!`,
+      },
+    },
+    paymentType: {
+      type: String,
+      enum: ['Credit Card', 'Debit Card', 'PayPal'],
+      default: 'Credit Card',
+    },
+  },
+  orders: [
+    {
+      orderId: {
         type: String,
         required: true,
-        unique: true,
-        default: () => new mongoose.Types.ObjectId()
-    },
-    Name: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        validate: [validator.isEmail, 'Please provide a valid email']
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 8,
-        select: false
-    },
-    DOB: {
+      },
+      orderDate: {
         type: Date,
-        validate: {
-            validator: function(value) {
-                return !value || value < new Date();
-            },
-            message: 'Date of Birth must be in the past'
-        }
-    },
-    phone_number: {
+        default: Date.now,
+      },
+      status: {
         type: String,
-        unique: true,
-        select: false
-    },
-    language: {
-        type: String,
-        default: "English",
+        enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+        default: 'Pending',
+      },
+      total: {
+        type: Number,
         required: true,
-        enum: ["English", "Arabic"]
-    },
-    role: {
-        type: String,
-        enum: ["admin", "user"],
-        default: "user",
-        required: true
-    },
-    Address: {
-        city: {
-            type: String,
-            trim: true
-        },
-        street: {
-            type: String,
-            trim: true
-        },
-        addressType: {
-            type: String,
-            enum: ["Home", "Work", "Other"],
-            default: "Home"
-        },
-        state: {
-            type: String,
-            trim: true
-        },
-        country: {
-            type: String,
-            trim: true
-        },
-        postalCode: {
-            type: String,
-            trim: true,
-            validate: {
-                validator: function(v) {
-                    return !v || /^[a-zA-Z0-9\s-]{3,10}$/.test(v);
-                },
-                message: props => `${props.value} is not a valid postal code!`
-            }
-        }
-    },
-    Payment: {
-        cardNumber: {
-            type: String,
-            trim: true,
-            validate: {
-                validator: function(v) {
-                    return !v || /^\d{13,19}$/.test(v);
-                },
-                message: props => `${props.value} is not a valid card number!`
-            },
-            select: false
-        },
-        cardHolder: {
-            type: String,
-            trim: true
-        },
-        expiryDate: {
-            type: String,
-            trim: true,
-            validate: {
-                validator: function(v) {
-                    return !v || /^(0[1-9]|1[0-2])\/(\d{2})$/.test(v);
-                },
-                message: props => `${props.value} is not a valid expiry date! Use MM/YY.`
-            }
-        },
-        cvv: {
-            type: String,
-            trim: true,
-            select: false,
-            validate: {
-                validator: function(v) {
-                    return !v || /^\d{3,4}$/.test(v);
-                },
-                message: props => `${props.value} is not a valid CVV!`
-            }
-        },
-        paymentType: {
-            type: String,
-            enum: ["Credit Card", "Debit Card", "PayPal"],
-            default: "Credit Card"
-        }
-    },
-    orders: [{
-        orderId: {
-            type: String,
-            required: true
-        },
-        orderDate: {
-            type: Date,
-            default: Date.now
-        },
-        status: {
-            type: String,
-            enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
-            default: 'Pending'
-        },
-        total: {
-            type: Number,
-            required: true
-        },
-        items: [{
-            product: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product',
-                required: true
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                min: 1
-            }
-        }]
-    }],
-    wishlist: [{
-        product: {
+      },
+      items: [
+        {
+          product: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product',
-            required: true
-        },
-        addedAt: {
-            type: Date,
-            default: Date.now
-        }
-    }],
-    refunds: [{
-        refundId: {
-            type: String,
-            required: true
-        },
-        order: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Order',
-            required: true
-        },
-        reason: {
-            type: String,
-            required: true
-        },
-        amount: {
-            type: Number,
-            required: true
-        },
-        status: {
-            type: String,
-            enum: ['Pending', 'Approved', 'Rejected', 'Completed'],
-            default: 'Pending'
-        },
-        date: {
-            type: Date,
-            default: Date.now
-        }
-    }],
-    reviews: [{
-        product: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product',
-            required: true
-        },
-        rating: {
+            required: true,
+          },
+          quantity: {
             type: Number,
             required: true,
             min: 1,
-            max: 5
+          },
         },
-        title: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        content: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        date: {
-            type: Date,
-            default: Date.now
-        }
-    }],
-    createdAt: {
+      ],
+    },
+  ],
+  wishlist: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true,
+      },
+      addedAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+      },
+    },
+  ],
+  refunds: [
+    {
+      refundId: {
+        type: String,
+        required: true,
+      },
+      order: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order',
+        required: true,
+      },
+      reason: {
+        type: String,
+        required: true,
+      },
+      amount: {
+        type: Number,
+        required: true,
+      },
+      status: {
+        type: String,
+        enum: ['Pending', 'Approved', 'Rejected', 'Completed'],
+        default: 'Pending',
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  reviews: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true,
+      },
+      rating: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5,
+      },
+      title: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      content: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'suspended'],
+    default: 'active',
+    required: true,
+    select: true,
+  },
+  failedLoginAttempts: {
+    type: Number,
+    default: 0,
+  },
+  lastFailedLogin: {
+    type: Date,
+  },
+  lastLogin: {
+    type: Date,
+  },
+  loginHistory: [
+    {
+      timestamp: {
+        type: Date,
+        default: Date.now,
+      },
+      ip: String,
+      userAgent: String,
+      success: Boolean,
+    },
+  ],
 });
+
+// Add index for email and username for faster queries
+UserSchema.index({ email: 1 });
+UserSchema.index({ username: 1 });
+
+// Add a pre-save hook to hash passwords
+UserSchema.pre('save', async function (next) {
+  // Only hash the password if it has been modified (or is new)
+  if (!this.isModified('password')) return next();
+
+  try {
+    // Check if password looks like a hash
+    if (this.password && !this.password.startsWith('$2')) {
+      // Generate a salt
+      const salt = await bcryptjs.genSalt(12);
+      // Hash the password
+      this.password = await bcryptjs.hash(this.password, salt);
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Add method to verify password
+UserSchema.methods.verifyPassword = async function (candidatePassword) {
+  try {
+    return await bcryptjs.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw new Error('Error verifying password');
+  }
+};
+
+// Add method to check if account is locked
+UserSchema.methods.isAccountLocked = function () {
+  return (
+    this.failedLoginAttempts >= 5 &&
+    this.lastFailedLogin &&
+    new Date() - this.lastFailedLogin < 30 * 60 * 1000
+  ); // 30 minutes
+};
+
+// Add method to record login attempt
+UserSchema.methods.recordLoginAttempt = async function (success, ip, userAgent) {
+  this.loginHistory.push({
+    timestamp: new Date(),
+    ip,
+    userAgent,
+    success,
+  });
+
+  if (success) {
+    this.failedLoginAttempts = 0;
+    this.lastLogin = new Date();
+  } else {
+    this.failedLoginAttempts += 1;
+    this.lastFailedLogin = new Date();
+  }
+
+  // Keep only last 10 login attempts
+  if (this.loginHistory.length > 10) {
+    this.loginHistory = this.loginHistory.slice(-10);
+  }
+
+  await this.save();
+};
+
+// Add a pre-save hook to ensure status is set
+UserSchema.pre('save', function (next) {
+  if (!this.status) {
+    this.status = 'active';
+  }
+  next();
+});
+
+// Add method to activate account
+UserSchema.methods.activateAccount = async function () {
+  this.status = 'active';
+  await this.save();
+};
+
+// Add method to deactivate account
+UserSchema.methods.deactivateAccount = async function () {
+  this.status = 'inactive';
+  await this.save();
+};
 
 module.exports = mongoose.model('User', UserSchema);

@@ -4,8 +4,8 @@ async function fetchUsers() {
   try {
     const response = await fetch('/api/admin/users', {
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
 
     if (response.status === 401) {
@@ -25,18 +25,18 @@ async function fetchUsers() {
   }
 }
 
-const tableBody = document.getElementById("userTableBody");
-const searchInput = document.getElementById("search");
-const modal = document.getElementById("addUserModal");
+const tableBody = document.getElementById('userTableBody');
+const searchInput = document.getElementById('search');
+const modal = document.getElementById('addUserModal');
 
 function renderUsers(data) {
-  const tableBody = document.getElementById("userTableBody");
+  const tableBody = document.getElementById('userTableBody');
   if (!tableBody) {
     console.error('Table body element not found');
     return;
   }
 
-  tableBody.innerHTML = "";
+  tableBody.innerHTML = '';
 
   if (!data || !Array.isArray(data)) {
     console.error('Invalid data received:', data);
@@ -59,7 +59,7 @@ function renderUsers(data) {
         </td>
       </tr>
     `;
-    tableBody.insertAdjacentHTML("beforeend", row);
+    tableBody.insertAdjacentHTML('beforeend', row);
   });
 }
 
@@ -73,8 +73,8 @@ async function deleteUser(userId) {
     const response = await fetch(`/api/admin/users/${userId}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
 
     console.log('Delete response status:', response.status);
@@ -100,18 +100,16 @@ async function deleteUser(userId) {
 
 // Initialize search functionality
 if (searchInput) {
-  searchInput.addEventListener("input", () => {
+  searchInput.addEventListener('input', () => {
     const keyword = searchInput.value.toLowerCase();
     const filtered = users.filter(
-      (u) =>
-        u.Name.toLowerCase().includes(keyword) ||
-        u.email.toLowerCase().includes(keyword)
+      (u) => u.Name.toLowerCase().includes(keyword) || u.email.toLowerCase().includes(keyword)
     );
     updateUsersTable(filtered);
   });
 }
 
-document.getElementById("addUserBtn").onclick = () => {
+document.getElementById('addUserBtn').onclick = () => {
   document.getElementById('nameInput').value = '';
   document.getElementById('emailInput').value = '';
   document.getElementById('roleInput').value = '';
@@ -134,15 +132,15 @@ document.getElementById("addUserBtn").onclick = () => {
         addressType: formData.get('Address[addressType]'),
         state: formData.get('Address[state]'),
         country: formData.get('Address[country]'),
-        postalCode: formData.get('Address[postalCode]')
-      }
+        postalCode: formData.get('Address[postalCode]'),
+      },
     };
 
     await saveUser(userData);
   });
 };
 
-document.getElementById("closeModalBtn").onclick = () => {
+document.getElementById('closeModalBtn').onclick = () => {
   document.getElementById('addUserModal').classList.add('hidden');
 };
 
@@ -152,9 +150,9 @@ async function saveUser(userData) {
     const response = await fetch('/api/admin/users/add', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
     });
 
     console.log('Save response status:', response.status);
@@ -192,7 +190,7 @@ async function viewUserDetails(userId) {
       const user = data.data;
       const modal = document.getElementById('userDetailsModal');
       const modalBody = modal.querySelector('.modal-body');
-      
+
       modalBody.innerHTML = `
         <div class="user-details">
           <div class="detail-section">
@@ -206,7 +204,9 @@ async function viewUserDetails(userId) {
             <p><strong>Role:</strong> ${user.role || '-'}</p>
             <p><strong>Created At:</strong> ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
           </div>
-          ${user.Address ? `
+          ${
+            user.Address
+              ? `
             <div class="detail-section">
               <h3>Address Information</h3>
               <p><strong>City:</strong> ${user.Address.city || '-'}</p>
@@ -216,8 +216,12 @@ async function viewUserDetails(userId) {
               <p><strong>Country:</strong> ${user.Address.country || '-'}</p>
               <p><strong>Postal Code:</strong> ${user.Address.postalCode || '-'}</p>
             </div>
-          ` : ''}
-          ${user.Payment ? `
+          `
+              : ''
+          }
+          ${
+            user.Payment
+              ? `
             <div class="detail-section">
               <h3>Payment Information</h3>
               <p><strong>Card Holder:</strong> ${user.Payment.cardHolder || '-'}</p>
@@ -225,10 +229,12 @@ async function viewUserDetails(userId) {
               <p><strong>Expiry Date:</strong> ${user.Payment.expiryDate || '-'}</p>
               <p><strong>Card Number:</strong> **** **** **** ${user.Payment.cardNumber.slice(-4) || '-'}</p>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
         </div>
       `;
-      
+
       modal.classList.remove('hidden');
     } else {
       showNotification('error', data.message || 'Failed to load user details');
@@ -249,11 +255,13 @@ async function viewUserOrders(userId) {
     if (data.success) {
       const modal = document.getElementById('ordersModal');
       const modalBody = modal.querySelector('.modal-body');
-      
+
       if (data.data && data.data.length > 0) {
         modalBody.innerHTML = `
           <ul class="orders-list">
-            ${data.data.map(order => `
+            ${data.data
+              .map(
+                (order) => `
               <li>
                 <div class="order-info">
                   <span class="order-id">Order #${order._id}</span>
@@ -263,28 +271,38 @@ async function viewUserOrders(userId) {
                   <span class="order-total">$${order.total.toFixed(2)}</span>
                   <span class="order-status ${order.status.toLowerCase()}">${order.status}</span>
                 </div>
-                ${order.items && order.items.length > 0 ? `
+                ${
+                  order.items && order.items.length > 0
+                    ? `
                   <div class="order-items">
                     <h4>Items:</h4>
                     <ul>
-                      ${order.items.map(item => `
+                      ${order.items
+                        .map(
+                          (item) => `
                         <li>
                           ${item.product ? item.product.name : 'Unknown Product'} - 
                           Quantity: ${item.quantity}, 
                           Price: $${item.price.toFixed(2)}
                         </li>
-                      `).join('')}
+                      `
+                        )
+                        .join('')}
                     </ul>
                   </div>
-                ` : ''}
+                `
+                    : ''
+                }
               </li>
-            `).join('')}
+            `
+              )
+              .join('')}
           </ul>
         `;
       } else {
         modalBody.innerHTML = '<p>No orders found for this user</p>';
       }
-      
+
       modal.classList.remove('hidden');
     } else {
       showNotification('error', data.message || 'Failed to load user orders');
@@ -364,8 +382,8 @@ async function editUser(userId) {
             street: formData.get('Address[street]'),
             state: formData.get('Address[state]'),
             country: formData.get('Address[country]'),
-            postalCode: formData.get('Address[postalCode]')
-          }
+            postalCode: formData.get('Address[postalCode]'),
+          },
         };
 
         // Only include password if it's not empty
@@ -423,12 +441,12 @@ async function updateUser(userId, userData) {
   }
 }
 
-document.getElementById("closeDetailsBtn").onclick = () => {
-  document.getElementById("userDetailsModal").classList.add("hidden");
+document.getElementById('closeDetailsBtn').onclick = () => {
+  document.getElementById('userDetailsModal').classList.add('hidden');
 };
 
-document.getElementById("closeOrdersBtn").onclick = () => {
-  document.getElementById("ordersModal").classList.add("hidden");
+document.getElementById('closeOrdersBtn').onclick = () => {
+  document.getElementById('ordersModal').classList.add('hidden');
 };
 
 function showNotification(type, message) {
@@ -444,13 +462,13 @@ function showNotification(type, message) {
 }
 
 function updateUsersTable(users) {
-  const tableBody = document.getElementById("userTableBody");
+  const tableBody = document.getElementById('userTableBody');
   if (!tableBody) {
     console.error('Table body element not found');
     return;
   }
 
-  tableBody.innerHTML = "";
+  tableBody.innerHTML = '';
 
   if (!users || !Array.isArray(users)) {
     console.error('Invalid data received:', users);
@@ -473,7 +491,7 @@ function updateUsersTable(users) {
         </td>
       </tr>
     `;
-    tableBody.insertAdjacentHTML("beforeend", row);
+    tableBody.insertAdjacentHTML('beforeend', row);
   });
 }
 
@@ -565,4 +583,3 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchUsers();
     }
 });
-

@@ -64,102 +64,102 @@ function validateForm() {
 
 // Show notification
 function showNotification(type, message) {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
 
-    document.body.appendChild(notification);
+  document.body.appendChild(notification);
 
-    // Remove notification after 3 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
+  // Remove notification after 3 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
 }
 
 // Initialize form
 document.addEventListener('DOMContentLoaded', () => {
-    // Main Image Preview
-    const imageInput = document.getElementById('image');
-    const imagePreview = document.getElementById('imagePreview');
-    const imagePlaceholder = imageInput.parentElement.querySelector('.upload-placeholder');
+  // Main Image Preview
+  const imageInput = document.getElementById('image');
+  const imagePreview = document.getElementById('imagePreview');
+  const imagePlaceholder = imageInput.parentElement.querySelector('.upload-placeholder');
 
-    imageInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
-                imagePreview.classList.remove('hidden');
-                imagePlaceholder.style.display = 'none';
-            }
-            reader.readAsDataURL(file);
-        } else {
-            imagePreview.classList.add('hidden');
-            imagePlaceholder.style.display = 'flex';
-        }
-    });
+  imageInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        imagePreview.src = e.target.result;
+        imagePreview.classList.remove('hidden');
+        imagePlaceholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      imagePreview.classList.add('hidden');
+      imagePlaceholder.style.display = 'flex';
+    }
+  });
 
-    // Gallery Images Preview
-    const galleryInput = document.getElementById('galleryImages');
-    const galleryPreview = document.getElementById('galleryPreview');
-    const galleryPlaceholder = galleryInput.parentElement.querySelector('.upload-placeholder');
+  // Gallery Images Preview
+  const galleryInput = document.getElementById('galleryImages');
+  const galleryPreview = document.getElementById('galleryPreview');
+  const galleryPlaceholder = galleryInput.parentElement.querySelector('.upload-placeholder');
 
-    galleryInput.addEventListener('change', function(e) {
-        const files = e.target.files;
-        if (files.length > 0) {
-            galleryPreview.innerHTML = '';
-            galleryPlaceholder.style.display = 'none';
-            
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    galleryPreview.appendChild(img);
-                }
-                reader.readAsDataURL(file);
-            });
-        } else {
-            galleryPreview.innerHTML = '';
-            galleryPlaceholder.style.display = 'flex';
-        }
-    });
+  galleryInput.addEventListener('change', function (e) {
+    const files = e.target.files;
+    if (files.length > 0) {
+      galleryPreview.innerHTML = '';
+      galleryPlaceholder.style.display = 'none';
 
-    // Video Preview
-    const videoInput = document.getElementById('video');
-    const videoPreview = document.getElementById('videoPreview');
-    const videoPlaceholder = videoInput.parentElement.querySelector('.upload-placeholder');
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          galleryPreview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    } else {
+      galleryPreview.innerHTML = '';
+      galleryPlaceholder.style.display = 'flex';
+    }
+  });
 
-    videoInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            videoPreview.src = URL.createObjectURL(file);
-            videoPreview.classList.remove('hidden');
-            videoPlaceholder.style.display = 'none';
-        } else {
-            videoPreview.classList.add('hidden');
-            videoPlaceholder.style.display = 'flex';
-        }
-    });
+  // Video Preview
+  const videoInput = document.getElementById('video');
+  const videoPreview = document.getElementById('videoPreview');
+  const videoPlaceholder = videoInput.parentElement.querySelector('.upload-placeholder');
 
-    // 3D Model Upload
-    const modelInput = document.getElementById('model3D');
-    const modelPlaceholder = modelInput.parentElement.querySelector('.upload-placeholder');
+  videoInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      videoPreview.src = URL.createObjectURL(file);
+      videoPreview.classList.remove('hidden');
+      videoPlaceholder.style.display = 'none';
+    } else {
+      videoPreview.classList.add('hidden');
+      videoPlaceholder.style.display = 'flex';
+    }
+  });
 
-    modelInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            modelPlaceholder.innerHTML = `
+  // 3D Model Upload
+  const modelInput = document.getElementById('model3D');
+  const modelPlaceholder = modelInput.parentElement.querySelector('.upload-placeholder');
+
+  modelInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      modelPlaceholder.innerHTML = `
                 <i class="fas fa-check-circle"></i>
                 <span>${file.name}</span>
             `;
-        } else {
-            modelPlaceholder.innerHTML = `
+    } else {
+      modelPlaceholder.innerHTML = `
                 <i class="fas fa-cube"></i>
                 <span>Click to upload 3D model (.glb)</span>
             `;
-        }
-    });
+    }
+  });
 
     // Form submission
     document.getElementById('productForm').addEventListener('submit', async (e) => {

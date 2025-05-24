@@ -1,27 +1,41 @@
 const express = require('express');
 const User = require('../models/Users');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // Using bcryptjs for consistency
 const validator = require('validator');
+const { authenticateJWT } = require('../middleware/jwt');
 const router = express.Router();
+
+// Remove authentication requirement for all routes
+// router.use(authenticateJWT);
 
 // Sign-up route
 router.post('/signup', async (req, res) => {
   try {
-    const { 
-      Name, 
-      username, 
-      email, 
-      password, 
-      DOB, 
-      phone_number, 
-      language, 
+    const {
+      Name,
+      username,
+      email,
+      password,
+      DOB,
+      phone_number,
+      language,
       Address,
       Payment,
-      role // Optional, but only allow 'user' for security
+      role, // Optional, but only allow 'user' for security
     } = req.body;
 
     // Basic validation for top-level fields
-    if (!Name || !username || !email || !password || !DOB || !phone_number || !language || !Address || !Payment) {
+    if (
+      !Name ||
+      !username ||
+      !email ||
+      !password ||
+      !DOB ||
+      !phone_number ||
+      !language ||
+      !Address ||
+      !Payment
+    ) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -56,8 +70,8 @@ router.post('/signup', async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }, { phone_number }] });
     if (existingUser) {
-      return res.status(400).json({ 
-        message: 'User with this email, username or phone number already exists' 
+      return res.status(400).json({
+        message: 'User with this email, username or phone number already exists',
       });
     }
 
@@ -65,7 +79,7 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Only allow 'user' role to be set via signup
-    const userRole = (role && role.toLowerCase() === 'admin') ? 'user' : (role || 'user');
+    const userRole = role && role.toLowerCase() === 'admin' ? 'user' : role || 'user';
 
     // Create new user with all fields
     const newUser = new User({
@@ -83,15 +97,15 @@ router.post('/signup', async (req, res) => {
         addressType: Address.addressType,
         state: Address.state,
         country: Address.country,
-        postalCode: Address.postalCode
+        postalCode: Address.postalCode,
       },
       Payment: {
         cardNumber: Payment.cardNumber,
         cardHolder: Payment.cardHolder,
         expiryDate: Payment.expiryDate,
         cvv: Payment.cvv,
-        paymentType: Payment.paymentType
-      }
+        paymentType: Payment.paymentType,
+      },
     });
 
     // Save user to database (will trigger schema validation)
@@ -108,9 +122,8 @@ router.post('/signup', async (req, res) => {
 
     return res.status(201).json({
       message: 'User created successfully',
-      user: userToReturn
+      user: userToReturn,
     });
-
   } catch (error) {
     // Mongoose validation errors
     if (error.name === 'ValidationError') {
@@ -151,52 +164,51 @@ router.post('/login', async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      user: userToReturn
+      user: userToReturn,
     });
-
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error during login' });
   }
 });
 
-// Get all users (excluding sensitive fields)
+// Get all users (excluding sensitive fields) - public endpoint
 router.get('/', async (req, res) => {
   try {
     // Exclude password and phone_number at the query level
     const users = await User.find({}, '-password -phone_number').lean();
 
     // Remove sensitive payment info from each user
-    users.forEach(user => {
+    users.forEach((user) => {
       if (user.Payment) {
         delete user.Payment.cardNumber;
         delete user.Payment.cvv;
       }
     });
 
-    res.status(200).json({ 
+    res.status(200).json({
       success: true,
-      data: users 
+      data: users,
     });
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Server error while fetching users',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 });
 
-// Get user by ID
+// Get user by ID - public endpoint
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id, '-password -phone_number').lean();
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -208,14 +220,14 @@ router.get('/:id', async (req, res) => {
 
     res.json({
       success: true,
-      data: user
+      data: user,
     });
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({
       success: false,
       message: 'Server error while fetching user',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 });
