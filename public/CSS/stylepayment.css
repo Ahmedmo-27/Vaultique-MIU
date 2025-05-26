@@ -1,0 +1,545 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.cdnfonts.com/css/futura-pt");
+
+* {
+  font-family: "futura pt", "Nunito Sans", "PT Sans", "Didact Gothic", "Garet",
+    sans-serif;
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  transition: 0.5s;
+  outline: none;
+  border: none;
+  text-decoration: none;
+}
+
+body {
+  background-color: #e8d9c4;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0 20%;
+}
+
+.logo {
+  font-family: sans-serif;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 40px;
+  font-weight: 700;
+  margin-top: 120px;
+  color: #050a30;
+}
+
+.progress-checkout-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 60%;
+  margin-top: 10px;
+}
+
+.progress-step-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.step-check {
+  /* background-color: #9b3900; */
+  background-color: #000;
+  height: 30px;
+  width: 30px;
+  border-radius: 30px;
+  margin-bottom: 1rem;
+  position: relative;
+  /* background-image: url(Resources/check.svg); */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 60%;
+}
+/* General styling */
+.progress-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Progress bar line */
+.progress-bar {
+  position: relative;
+  width: 80%;
+  height: 5px;
+  background: #e0e0e0;
+  margin-bottom: 15px;
+  border-radius: 3px;
+}
+
+.progress {
+  position: absolute;
+  height: 100%;
+  width: 50%; /* Adjust based on progress */
+  background: #050a30;
+  border-radius: 3px;
+}
+
+/* Progress steps */
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+/* Completed steps */
+.step.completed .circle {
+  background: #050a30;
+  color: white;
+  border: none;
+}
+
+/* Active step */
+.step.active .circle {
+  border: 2px solid #e8d9c4;
+}
+
+/* Step labels */
+.label {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.progress-step-container:nth-of-type(3) .step-check::after {
+  display: none;
+}
+.progress-step-container:nth-of-type(3) .step-check {
+  background-image: none;
+  background-color: white;
+  border: 2px solid grey;
+}
+
+.progress-step-container:nth-of-type(2) .step-check::after {
+  background-color: grey;
+}
+
+.progress-step-container:nth-of-type(2) .step-check {
+  background-image: none;
+  background-color: white;
+  /* border: 2px solid #9b3900; */
+  border: 2px solid #000000;
+}
+
+.step-check::after {
+  content: "";
+  width: 15vw;
+  height: 2px;
+  background-color: inherit;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateX(100%) translateY(-50%);
+}
+
+.step-title {
+  color: grey;
+}
+
+.container {
+  min-height: 100vh;
+  background: #050a30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: column;
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+
+.container form {
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 600px;
+  padding-top: 160px;
+}
+
+.container form .inputBox {
+  margin-top: 20px;
+}
+
+.container form .inputBox span {
+  display: block;
+  color: #999;
+  padding-bottom: 5px;
+}
+
+.container form .inputBox input,
+.container form .inputBox select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  color: #444;
+}
+
+.container form .flexbox {
+  display: flex;
+  gap: 15px;
+}
+
+.container form .flexbox .inputBox {
+  flex: 1 1 150px;
+}
+
+.container form .submit-btn {
+  /* width: 100%;
+      background:linear-gradient(45deg, #090979, #00d4ff);
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 20px;
+      color:#fff;
+      border-radius: 10px; */
+  cursor: pointer;
+  transition: 0.2s linear;
+
+  font-family: "futura pt";
+  font-weight: 500;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #1f1f1f;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 15px;
+  text-align: center;
+  width: 560px;
+  padding: 15px 43px;
+  text-decoration: none;
+  line-height: 0.8rem;
+  margin-top: 15px;
+}
+
+.submit-btn {
+  /* width: 100%;
+      background:linear-gradient(45deg, #090979, #00d4ff);
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 20px;
+      color:#fff;
+      border-radius: 10px; */
+  cursor: pointer;
+  transition: 0.2s linear;
+
+  font-family: "futura pt";
+  font-weight: 500;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #1f1f1f;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 15px;
+  text-align: center;
+  width: 605px;
+  padding: 15px 43px;
+  text-decoration: none;
+  border-radius: 50;
+  line-height: 0.8rem;
+}
+
+.container form .submit-btn:hover {
+  letter-spacing: 2px;
+  opacity: 0.8;
+}
+
+.container .card-container {
+  margin-bottom: -150px;
+  position: relative;
+  height: 250px;
+  width: 400px;
+}
+
+.container .card-container .front {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  /* background:linear-gradient(45deg,   #090979, #00d4ff); */
+  background: linear-gradient(45deg, #000000, #292929);
+  border-radius: 5px;
+  backface-visibility: hidden;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  transform: perspective(1000px) rotateY(0deg);
+  transition: transform 0.4s ease-out;
+}
+
+.container .card-container .front .image {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+}
+
+.container .card-container .front .image img {
+  height: 50px;
+}
+
+.container .card-container .front .card-number-box {
+  padding: 30px 0;
+  font-size: 22px;
+  color: #fff;
+}
+
+.container .card-container .front .flexbox {
+  display: flex;
+}
+
+.container .card-container .front .flexbox .box:nth-child(1) {
+  margin-right: auto;
+}
+
+.container .card-container .front .flexbox .box {
+  font-size: 15px;
+  color: #fff;
+}
+
+.container .card-container .back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  /* background:linear-gradient(45deg, #090979, #00d4ff); */
+  background: linear-gradient(45deg, #000000, #292929);
+  border-radius: 5px;
+  padding: 20px 0;
+  text-align: right;
+  backface-visibility: hidden;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  transform: perspective(1000px) rotateY(180deg);
+  transition: transform 0.4s ease-out;
+}
+
+.container .card-container .back .stripe {
+  /* background: #000; */
+  background: #353232;
+  width: 100%;
+  margin: 10px 0;
+  height: 50px;
+}
+
+.container .card-container .back .box {
+  padding: 0 20px;
+}
+
+.container .card-container .back .box span {
+  color: #fff;
+  font-size: 15px;
+}
+
+.container .card-container .back .box .cvv-box {
+  height: 50px;
+  padding: 10px;
+  margin-top: 5px;
+  color: #333;
+  background: #fff;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.container .card-container .back .box img {
+  margin-top: 30px;
+  height: 30px;
+}
+.form-container {
+  width: 60%;
+  margin-top: 3rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.form-title {
+  color: #050a30;
+  font-size: 36px;
+  margin-bottom: 2.5rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.checkout-form {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
+}
+
+.input-line {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+label {
+  font-size: 16px;
+  color: grey;
+  margin-bottom: 0.5rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  border: none;
+  font-size: 18px;
+}
+
+input[type="text"]::placeholder {
+  font-size: 14px;
+  color: #b9b9b9;
+}
+
+.input-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.input-container .input-line {
+  width: 48%;
+}
+
+input[type="button"] {
+  font-family: "futura pt";
+  font-weight: 500;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #1f1f1f;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 15px;
+  text-align: center;
+  width: 605px;
+  padding: 15px 43px;
+  text-decoration: none;
+  line-height: 0.8rem;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+input[type="button"]:hover {
+  /* background-color: rgb(4, 88, 167); */
+  background: rgba(0, 0, 0, 0);
+  color: #1f1f1f;
+}
+
+.hidden {
+  display: none;
+}
+.invalid {
+  border-color: red;
+  background-color: #ffe6e6; /* Light red background color */
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.login-message-popup {
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+  bottom: 0;
+  right: 0;
+  width: 350px;
+  display: none;
+  flex-direction: column;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.496
+  ); /* Semi-transparent background for popup */
+  backdrop-filter: blur(4px); /* Blur effect for background */
+  padding: 20px;
+  margin: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.759); /* Optional: Box shadow for depth */
+  /* transition: opacity 0.5s ease-in-out; */
+  animation: fadeinout 3s;
+  z-index: 99999999999999;
+}
+
+@keyframes fadeinout {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.login-message-popup.show {
+  display: flex;
+  /* opacity: 1; */
+}
+
+.login-message-popup h2 {
+  font-family: "futura pt";
+  color: #ffffff;
+  font-weight: 500;
+  font-size: medium;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.login-message-popup i {
+  color: rgb(54, 192, 84);
+  font-size: larger;
+}
