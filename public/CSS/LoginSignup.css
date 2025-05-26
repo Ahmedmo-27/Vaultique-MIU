@@ -111,7 +111,7 @@ body {
 }
 
 /* Buttons */
-button {
+.button-login-signup {
     width: 100%;
     padding: 10px;
     border: none;
@@ -124,7 +124,7 @@ button {
     transition: background 0.3s;
 }
 
-button:hover {
+.button:hover {
     background: rgba(255, 255, 255, 0.5);
 }
 
