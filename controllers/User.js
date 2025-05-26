@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const Product = require('../models/Products');
 const Brand = require('../models/Brands');
@@ -321,6 +321,18 @@ authenticatedRoutes.get('/account-details', async (req, res) => {
         .select('-password -Payment.cardNumber -Payment.cvv')
         .lean();
     }
+  }catch{}
+});
+authenticatedRoutes.get("/account-details", async (req, res) => {
+  try {
+    // Get user data, but handle cases where it might not exist
+    let userData = null;
+
+    if (req.user && req.user._id) {
+      userData = await User.findById(req.user._id)
+        .select("-password -Payment.cardNumber -Payment.cvv")
+        .lean();
+    }
 
     if (!userData) {
       console.log('User data not found for account details page');
@@ -329,6 +341,15 @@ authenticatedRoutes.get('/account-details', async (req, res) => {
         _id: req.user?._id || '',
         Name: req.user?.Name || '',
         email: req.user?.email || '',
+      };
+    }
+    if (!userData) {
+      console.log("User data not found for account details page");
+      // Still render the page but with empty data
+      userData = {
+        _id: req.user?._id || "",
+        Name: req.user?.Name || "",
+        email: req.user?.email || "",
       };
     }
 
@@ -356,7 +377,78 @@ authenticatedRoutes.get('/account-details', async (req, res) => {
   }
 });
 
+// Change from POST to GET
+router.get("/submit-payment", (req, res) => {
+  // Render the Payment.ejs page
+  res.render("Payment"); // Assuming your Payment form is in views/Payment.ejs
+});
+
+router.post("/submit-payment", async (req, res) => {
+  const { name, card_number, bank_name, expiry, cvv } = req.body;
+
+  try {
+    const newOrder = new Order({
+      payment: {
+        name,
+        card_number,
+        bank_name,
+        expiry,
+        cvv,
+      },
+    });
+
+    await newOrder.save();
+
+    // Redirect to shipping form with order ID
+    res.redirect(`/shipping?orderId=${newOrder._id}`);
+  } catch (error) {
+    console.error("Payment submission error:", error);
+    res.status(500).send("Payment could not be processed.");
+  }
+});
+
+router.get("/submit-shipping", async (req, res) => {
+  const { orderId } = req.query;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).send("Order not found");
+
+    res.render("Shipping", { orderId });
+  } catch (error) {
+    console.error("Error loading shipping page:", error);
+    res.status(500).send("Error loading shipping form.");
+  }
+});
+
+router.post("/submit-shipping", async (req, res) => {
+  const { orderId, name, email, address, city, state, zipcode } = req.body;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).send("Order not found");
+
+    order.shipping = {
+      name,
+      email,
+      address,
+      city,
+      state,
+      zipcode,
+    };
+
+    await order.save();
+
+    res.render("confirmation", { order }); // Or redirect to a success page
+  } catch (error) {
+    console.error("Shipping submission error:", error);
+    res.status(500).send("Shipping info could not be saved.");
+  }
+});
+
 // Add the authenticated routes
 router.use(authenticatedRoutes);
 
 module.exports = router;
+
+
