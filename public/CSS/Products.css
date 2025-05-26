@@ -1241,10 +1241,3 @@ body.dark-mode .tag {
         min-height: 60vh;
     }
 }
-
-/* Handle high-DPI screens */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .video-container video {
-        filter: brightness(0.7);
-    }
-}

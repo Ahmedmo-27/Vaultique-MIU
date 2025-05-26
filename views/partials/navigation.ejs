@@ -35,7 +35,11 @@
 
             <div class="user-data">
                 <nav class="navigation">
-                    <a href="/user/Account-Details">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <a href="/user/Account-Details">
+                    <% } else { %>
+                        <a href="/user/LoginSignup">
+                    <% } %>
                         <i class='fas fa-user-alt'></i>
                         <p>Account</p>
                     </a>
@@ -304,7 +308,11 @@
         <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
         <a href="/user/home">Home</a>
         <a href="/user/contact-us">Contact Us</a>
-        <a href="/user/account">Account</a>
+        <% if (typeof user !== 'undefined' && user) { %>
+            <a href="/user/Account-Details">Account</a>
+        <% } else { %>
+            <a href="/user/LoginSignup">Account</a>
+        <% } %>
         <a href="/user/wishlist">WishList</a>
         <a href="/user/shopping-cart">Cart</a>
         <a href="/user/products" data-translate="shopall">Shop All</a>
@@ -338,7 +346,7 @@
             </div>
         </div>
 
-        <a href="#">Recommendation System </a>
+        <a href="/user/Recommendation-System">Recommendation System</a>
 
         <a id="toggle-button-side" class="toggle-button" data-theme-toggle>
             <i class="fa-solid fa-sun"></i>
@@ -348,8 +356,6 @@
 
     </div>
 </div>
-
-<script src="/Javascript/notifications.js"></script>
 <script>
     // Logout confirmation
     function confirmLogout() {

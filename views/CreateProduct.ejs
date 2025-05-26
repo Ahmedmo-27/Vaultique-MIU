@@ -120,12 +120,12 @@
                 <div class="form-group full-width">
                     <label for="image">Main Image</label>
                     <div class="image-upload-container">
-                        <input type="file" id="image" name="image" accept="image/*" required class="file-input">
+                        <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png" required class="file-input">
                         <div class="image-preview-container">
                             <img id="imagePreview" src="#" alt="Image Preview" class="image-preview hidden">
                             <div class="upload-placeholder">
                                 <i class="fas fa-cloud-upload-alt"></i>
-                                <span>Click to upload main image</span>
+                                <span>Click to upload main image (.jpg, .jpeg, .png)</span>
                             </div>
                         </div>
                     </div>
@@ -135,12 +135,12 @@
                 <div class="form-group full-width">
                     <label for="galleryImages">Gallery Images</label>
                     <div class="gallery-upload-container">
-                        <input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="file-input">
+                        <input type="file" id="galleryImages" name="galleryImages" accept=".jpg,.jpeg,.png" multiple class="file-input">
                         <div class="gallery-preview-container">
                             <div id="galleryPreview" class="gallery-preview"></div>
                             <div class="upload-placeholder">
                                 <i class="fas fa-images"></i>
-                                <span>Click to upload gallery images</span>
+                                <span>Click to upload gallery images (.jpg, .jpeg, .png)</span>
                             </div>
                         </div>
                     </div>
@@ -150,12 +150,12 @@
                 <div class="form-group full-width">
                     <label for="video">Video</label>
                     <div class="video-upload-container">
-                        <input type="file" id="video" name="video" accept="video/*" class="file-input">
+                        <input type="file" id="video" name="video" accept=".mp4" class="file-input">
                         <div class="video-preview-container">
                             <video id="videoPreview" class="video-preview hidden" controls></video>
                             <div class="upload-placeholder">
                                 <i class="fas fa-video"></i>
-                                <span>Click to upload video</span>
+                                <span>Click to upload video (.mp4)</span>
                             </div>
                         </div>
                     </div>
@@ -165,11 +165,11 @@
                 <div class="form-group full-width">
                     <label for="model3D">3D Model</label>
                     <div class="model-upload-container">
-                        <input type="file" id="model3D" name="model3D" accept=".glb,.gltf" class="file-input">
+                        <input type="file" id="model3D" name="model3D" accept=".glb" class="file-input">
                         <div class="model-preview-container">
                             <div class="upload-placeholder">
                                 <i class="fas fa-cube"></i>
-                                <span>Click to upload 3D model (.glb or .gltf)</span>
+                                <span>Click to upload 3D model (.glb)</span>
                             </div>
                         </div>
                     </div>

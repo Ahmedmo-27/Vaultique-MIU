@@ -16,239 +16,263 @@ let pageInfo;
 document.addEventListener('DOMContentLoaded', initApp);
 
 function initApp() {
-    // Initialize DOM elements
-    productGrid = document.getElementById('productGrid');
-    prevPageBtn = document.getElementById('prevPage');
-    nextPageBtn = document.getElementById('nextPage');
-    pageInfo = document.getElementById('pageInfo');
+  // Initialize DOM elements
+  productGrid = document.getElementById('productGrid');
+  prevPageBtn = document.getElementById('prevPage');
+  nextPageBtn = document.getElementById('nextPage');
+  pageInfo = document.getElementById('pageInfo');
 
-    if (!productGrid) {
-        console.error('Product grid container not found!');
-        return;
+  if (!productGrid) {
+    console.error('Product grid container not found!');
+    return;
+  }
+
+  // Create quick view modal elements
+  quickViewModal = document.createElement('div');
+  quickViewModal.id = 'quickView';
+  quickViewModal.className = 'quick-view-modal';
+  document.body.appendChild(quickViewModal);
+
+  quickViewOverlay = document.createElement('div');
+  quickViewOverlay.id = 'quickViewOverlay';
+  quickViewOverlay.className = 'quick-view-overlay';
+  document.body.appendChild(quickViewOverlay);
+
+  // Initialize from server-side data if available
+  if (window.initialState) {
+    const { products, pagination, filters } = window.initialState;
+
+    if (pagination) {
+      currentPage = pagination.currentPage || 1;
+      totalPages = pagination.totalPages || 1;
     }
 
-    // Create quick view modal elements
-    quickViewModal = document.createElement('div');
-    quickViewModal.id = 'quickView';
-    quickViewModal.className = 'quick-view-modal';
-    document.body.appendChild(quickViewModal);
-  
-    quickViewOverlay = document.createElement('div');
-    quickViewOverlay.id = 'quickViewOverlay';
-    quickViewOverlay.className = 'quick-view-overlay';
-    document.body.appendChild(quickViewOverlay);
+    if (filters && filters.current) {
+      currentFilters = filters.current;
+    }
 
-    // Initialize from server-side data if available
-    if (window.initialState) {
-        const { products, pagination, filters } = window.initialState;
-        
-        if (pagination) {
-            currentPage = pagination.currentPage || 1;
-            totalPages = pagination.totalPages || 1;
-        }
-        
-        if (filters && filters.current) {
-            currentFilters = filters.current;
-        }
-        
-        // Only render if we have products
-        if (products && products.length > 0) {
-            renderProducts(products);
-            updatePaginationUI();
-        } else {
-            loadProducts();
-        }
+    // Only render if we have products
+    if (products && products.length > 0) {
+      renderProducts(products);
+      updatePaginationUI();
     } else {
-        loadProducts();
+      loadProducts();
     }
+  } else {
+    loadProducts();
+  }
 
-    initializeFilters();
-    setupEventListeners();
+  initializeFilters();
+  setupEventListeners();
 }
 
 function initializeFilters() {
-    try {
-        // Get current URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Set dropdown values from current filters
-        const filterElements = {
-            'collection': 'Vcollection',
-            'brand': 'brand',
-            'gender': 'gender',
-            'Strap_Material': 'strapMaterial',
-            'Movement': 'movement',
-            'Water_Resistance': 'waterResistance',
-            'Case_Material': 'caseMaterial'
-        };
+  try {
+    // Get current URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
 
-        // Set dropdown values
-        Object.entries(filterElements).forEach(([elementId, paramName]) => {
-            const element = document.getElementById(elementId);
-            if (element) {
-                element.value = urlParams.get(paramName) || 'All';
-            }
-        });
+    // Set dropdown values from current filters
+    const filterElements = {
+      collection: 'Vcollection',
+      brand: 'brand',
+      gender: 'gender',
+      Strap_Material: 'strapMaterial',
+      Movement: 'movement',
+      Water_Resistance: 'waterResistance',
+      Case_Material: 'caseMaterial',
+    };
 
-        // Set price range
-        const priceRangeFrom = document.getElementById('priceRangeFrom');
-        const priceRangeTo = document.getElementById('priceRangeTo');
-        if (priceRangeFrom) {
-            priceRangeFrom.value = urlParams.get('minPrice') || '0';
-        }
-        if (priceRangeTo) {
-            priceRangeTo.value = urlParams.get('maxPrice') || '50000000';
-        }
+    // Set dropdown values
+    Object.entries(filterElements).forEach(([elementId, paramName]) => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.value = urlParams.get(paramName) || 'All';
+      }
+    });
 
-        // Set dial colors
-        const dialColors = urlParams.get('dialColor');
-        if (dialColors && dialColors !== 'All') {
-            const colorArray = dialColors.split(',');
-            const dialColorCheckboxes = document.querySelectorAll('.dial-color');
-            if (dialColorCheckboxes.length > 0) {
-                dialColorCheckboxes.forEach(checkbox => {
-                    if (checkbox) {
-                        checkbox.checked = colorArray.includes(checkbox.value);
-                    }
-                });
-            }
-        } else {
-            // If no dial colors specified or 'All' selected, check the 'All' checkbox
-            const allDialColorCheckbox = document.querySelector('.dial-color[value="All"]');
-            if (allDialColorCheckbox) {
-                allDialColorCheckbox.checked = true;
-            }
-        }
-
-        // Set in stock filter
-        const inStockFilter = document.getElementById('inStockFilter');
-        if (inStockFilter) {
-            inStockFilter.checked = urlParams.get('inStock') === 'true';
-        }
-
-        // Set sort option
-        const sortButtons = document.querySelectorAll('[data-sort]');
-        if (sortButtons.length > 0) {
-            const currentSort = urlParams.get('sort') || 'default';
-            sortButtons.forEach(button => {
-                if (button) {
-                    button.classList.toggle('active', button.dataset.sort === currentSort);
-                }
-            });
-        }
-
-    } catch (error) {
-        console.error('Error initializing filters:', error);
+    // Set price range
+    const priceRangeFrom = document.getElementById('priceRangeFrom');
+    const priceRangeTo = document.getElementById('priceRangeTo');
+    if (priceRangeFrom) {
+      priceRangeFrom.value = urlParams.get('minPrice') || '0';
     }
+    if (priceRangeTo) {
+      priceRangeTo.value = urlParams.get('maxPrice') || '50000000';
+    }
+
+    // Set dial colors
+    const dialColors = urlParams.get('dialColor');
+    if (dialColors && dialColors !== 'All') {
+      const colorArray = dialColors.split(',');
+      const dialColorCheckboxes = document.querySelectorAll('.dial-color');
+      if (dialColorCheckboxes.length > 0) {
+        dialColorCheckboxes.forEach((checkbox) => {
+          if (checkbox) {
+            checkbox.checked = colorArray.includes(checkbox.value);
+          }
+        });
+      }
+    } else {
+      // If no dial colors specified or 'All' selected, check the 'All' checkbox
+      const allDialColorCheckbox = document.querySelector('.dial-color[value="All"]');
+      if (allDialColorCheckbox) {
+        allDialColorCheckbox.checked = true;
+      }
+    }
+
+    // Set in stock filter
+    const inStockFilter = document.getElementById('inStockFilter');
+    if (inStockFilter) {
+      inStockFilter.checked = urlParams.get('inStock') === 'true';
+    }
+
+    // Set sort option
+    const sortButtons = document.querySelectorAll('[data-sort]');
+    if (sortButtons.length > 0) {
+      const currentSort = urlParams.get('sort') || 'default';
+      sortButtons.forEach((button) => {
+        if (button) {
+          button.classList.toggle('active', button.dataset.sort === currentSort);
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error initializing filters:', error);
+  }
 }
 
 function setupEventListeners() {
-    // Sort buttons
-    document.querySelectorAll('[data-sort]').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            currentSort = this.dataset.sort;
-            currentPage = 1;
-            loadProducts();
-        });
+  // Sort buttons
+  document.querySelectorAll('[data-sort]').forEach((button) => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+      currentSort = this.dataset.sort;
+      currentPage = 1;
+      loadProducts();
+    });
+  });
+
+  // Pagination
+  if (prevPageBtn && nextPageBtn) {
+    prevPageBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        loadProducts();
+      }
     });
 
-    // Pagination
-    if (prevPageBtn && nextPageBtn) {
-        prevPageBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                loadProducts();
-            }
-        });
-
-        nextPageBtn.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                loadProducts();
-            }
-        });
-    }
-
-    // Filter panel
-    document.querySelector('[data-action="open-filter-panel"]')?.addEventListener('click', openFilterPanel);
-    document.querySelector('[data-action="close-filter-panel"]')?.addEventListener('click', closeFilterPanel);
-    document.getElementById('overlay')?.addEventListener('click', closeFilterPanel);
-
-    // Filter submit
-    const submitBtn = document.querySelector('.submit');
-    if (submitBtn) {
-        submitBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            currentPage = 1;
-            updateCurrentFilters();
-            loadProducts();
-        });
-    }
-
-    // Clear filters
-    const clearBtn = document.querySelector('.clear');
-    if (clearBtn) {
-        clearBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            resetFilters();
-            currentPage = 1;
-            loadProducts();
-        });
-    }
-
-    // Keyboard events
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeFilterPanel();
-        }
+    nextPageBtn.addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        loadProducts();
+      }
     });
+  }
+
+  // Filter panel
+  document
+    .querySelector('[data-action="open-filter-panel"]')
+    ?.addEventListener('click', openFilterPanel);
+  document
+    .querySelector('[data-action="close-filter-panel"]')
+    ?.addEventListener('click', closeFilterPanel);
+  document.getElementById('overlay')?.addEventListener('click', closeFilterPanel);
+
+  // Filter submit
+  const submitBtn = document.querySelector('.submit');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      currentPage = 1;
+      updateCurrentFilters();
+      loadProducts();
+    });
+  }
+
+  // Clear filters
+  const clearBtn = document.querySelector('.clear');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      resetFilters();
+      currentPage = 1;
+      loadProducts();
+    });
+  }
+
+  // Keyboard events
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeFilterPanel();
+    }
+  });
 }
 
 async function loadProducts() {
-    try {
-        // Merge current filters with any new ones
-        updateCurrentFilters();
-        
-        const queryString = new URLSearchParams({
-            ...currentFilters,
-            page: currentPage,
-            sort: currentSort,
-            format: 'json'
-        }).toString();
-        
-        const response = await fetch(`/api/products?${queryString}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        
-        if (!result.success) {
-            throw new Error(result.error || 'API request failed');
-        }
-        
-        // Update pagination info from the response
-        if (result.data && result.data.pagination) {
-            totalPages = result.data.pagination.totalPages;
-            currentPage = result.data.pagination.currentPage;
-        }
-        
-        updatePaginationUI();
-        renderProducts(result.data.products || []);
-        
-    } catch (error) {
-        console.error('Error loading products:', error);
-        showErrorModal(error);
+  try {
+    // Merge current filters with any new ones
+    updateCurrentFilters();
+
+    const queryString = new URLSearchParams({
+      ...currentFilters,
+      page: currentPage,
+      sort: currentSort,
+      format: 'json',
+    }).toString();
+
+    console.log('Fetching products with query:', queryString);
+    const response = await fetch(`/api/products?${queryString}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API error response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || 'API request failed');
+    }
+
+    // Update pagination info from the response
+    if (result.data && result.data.pagination) {
+      totalPages = result.data.pagination.totalPages;
+      currentPage = result.data.pagination.currentPage;
+    }
+
+    updatePaginationUI();
+    renderProducts(result.data.products || []);
+  } catch (error) {
+    console.error('Error loading products:', error);
+    
+    // Show a more descriptive error message based on the error
+    let errorMessage = 'Failed to load products. Please try again later.';
+    if (error.message.includes('status: 500')) {
+      errorMessage = 'Server error occurred. The development team has been notified.';
+    } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      errorMessage = 'Network error. Please check your internet connection.';
+    }
+    
+    showNotification('error', errorMessage);
+    
+    // Display a message in the product grid
+    if (productGrid) {
+      productGrid.innerHTML = `
+        <div class="error-message">
+          <p>${errorMessage}</p>
+          <button onclick="loadProducts()">Try Again</button>
+        </div>
+      `;
+    }
+  }
 }
 
 function renderProducts(products) {
@@ -266,7 +290,8 @@ function renderProducts(products) {
 
   // If products array is empty
   if (products.length === 0) {
-    productGrid.innerHTML = '<div class="no-products">No products found matching your criteria.</div>';
+    productGrid.innerHTML =
+      '<div class="no-products">No products found matching your criteria.</div>';
     return;
   }
 
@@ -275,22 +300,23 @@ function renderProducts(products) {
 
   setTimeout(() => {
     try {
-      productGrid.innerHTML = products.map((product, index) => {
-        if (!product || typeof product !== 'object') {
-          console.warn('Invalid product data at index:', index);
-          return '';
-        }
+      productGrid.innerHTML = products
+        .map((product, index) => {
+          if (!product || typeof product !== 'object') {
+            console.warn('Invalid product data at index:', index);
+            return '';
+          }
 
-        let stockBadge;
-        if (product.stock || (product.stockCount && product.stockCount > 0)) {
-          stockBadge = `<p class="stock in-stock">In Stock</p>`;
-        } else {
-          stockBadge = '<p class="stock out-of-stock">Out of Stock</p>';
-        }
-        
-        // Store product data as a data attribute instead of inline onclick
-        return `
-        <div class="product-card" style="animation-delay: ${index * 50}ms" data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'>
+          let stockBadge;
+          if (product.stock || (product.stockCount && product.stockCount > 0)) {
+            stockBadge = `<p class="stock in-stock">In Stock</p>`;
+          } else {
+            stockBadge = '<p class="stock out-of-stock">Out of Stock</p>';
+          }
+
+          // Store product data as a data attribute instead of inline onclick
+          return `
+        <div class="product-card" style="animation-delay: ${index * 50}ms" data-product='${JSON.stringify(product).replace(/'/g, '&apos;')}'>
             <div class="product-image-container">
                 <div class="wishlist-icon" data-product-id="${product._id}">
                     <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -298,7 +324,7 @@ function renderProducts(products) {
                     </svg>
                 </div>
                 <a href="${product.productPageUrl || '#'}">
-                    <img src="${product.image}" alt="${product.name}" loading="lazy">
+                    <img src="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}" alt="${product.name}" loading="lazy">
                 </a>
             </div>
             <div class="product-details">
@@ -314,32 +340,34 @@ function renderProducts(products) {
             </div>
         </div>
         `;
-      }).join('');
-      
+        })
+        .join('');
+
       // Add event listeners after rendering
       addProductCardEventListeners();
-      
+
       void productGrid.offsetWidth;
       productGrid.style.opacity = '1';
     } catch (error) {
       console.error('Error rendering products:', error);
-      productGrid.innerHTML = '<div class="error-message">Error displaying products. Please try again.</div>';
+      productGrid.innerHTML =
+        '<div class="error-message">Error displaying products. Please try again.</div>';
     }
   }, 200);
 }
 
 function addProductCardEventListeners() {
   // Add event listeners for wishlist icons
-  document.querySelectorAll('.wishlist-icon').forEach(icon => {
-    icon.addEventListener('click', function() {
+  document.querySelectorAll('.wishlist-icon').forEach((icon) => {
+    icon.addEventListener('click', function () {
       const productId = this.dataset.productId;
       toggleWishlist(this, productId);
     });
   });
-  
+
   // Add event listeners for quick view buttons
-  document.querySelectorAll('.quick-view').forEach(button => {
-    button.addEventListener('click', function() {
+  document.querySelectorAll('.quick-view').forEach((button) => {
+    button.addEventListener('click', function () {
       const productCard = this.closest('.product-card');
       const productData = JSON.parse(productCard.dataset.product);
       toggleQuickView(productData);
@@ -348,47 +376,47 @@ function addProductCardEventListeners() {
 }
 
 function updatePaginationUI() {
-    if (!prevPageBtn || !nextPageBtn || !pageInfo) return;
+  if (!prevPageBtn || !nextPageBtn || !pageInfo) return;
 
-    prevPageBtn.disabled = currentPage <= 1;
-    nextPageBtn.disabled = currentPage >= totalPages;
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+  prevPageBtn.disabled = currentPage <= 1;
+  nextPageBtn.disabled = currentPage >= totalPages;
+  pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 }
 
 function updateCurrentFilters() {
-    // Store current brand/collection values
-    const currentBrand = document.getElementById('brand')?.value || 'All';
-    const currentCollection = document.getElementById('collection')?.value || 'All';
+  // Store current brand/collection values
+  const currentBrand = document.getElementById('brand')?.value || 'All';
+  const currentCollection = document.getElementById('collection')?.value || 'All';
 
-    currentFilters = {
-        Vcollection: currentCollection,
-        brand: currentBrand,
-        gender: document.getElementById('gender')?.value || 'All',
-        strapMaterial: document.getElementById('Strap_Material')?.value || 'All',
-        movement: document.getElementById('Movement')?.value || 'All',
-        waterResistance: document.getElementById('Water_Resistance')?.value || 'All',
-        caseMaterial: document.getElementById('Case_Material')?.value || 'All',
-        minPrice: document.getElementById('priceRangeFrom')?.value || '',
-        maxPrice: document.getElementById('priceRangeTo')?.value || '',
-        dialColor: getSelectedDialColors(),
-        inStock: document.getElementById('inStockFilter')?.checked ? 'true' : 'false',
-        sort: currentSort
-    };
+  currentFilters = {
+    Vcollection: currentCollection,
+    brand: currentBrand,
+    gender: document.getElementById('gender')?.value || 'All',
+    strapMaterial: document.getElementById('Strap_Material')?.value || 'All',
+    movement: document.getElementById('Movement')?.value || 'All',
+    waterResistance: document.getElementById('Water_Resistance')?.value || 'All',
+    caseMaterial: document.getElementById('Case_Material')?.value || 'All',
+    minPrice: document.getElementById('priceRangeFrom')?.value || '',
+    maxPrice: document.getElementById('priceRangeTo')?.value || '',
+    dialColor: getSelectedDialColors(),
+    inStock: document.getElementById('inStockFilter')?.checked ? 'true' : 'false',
+    sort: currentSort,
+  };
 }
 
 function openFilterPanel() {
-    document.getElementById('filterPanel').classList.add('open');
-    document.getElementById('overlay').classList.add('show');
+  document.getElementById('filterPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
 }
 
 function closeFilterPanel() {
-    document.getElementById('filterPanel').classList.remove('open');
-    document.getElementById('overlay').classList.remove('show');
+  document.getElementById('filterPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
 }
 
 function getSelectedDialColors() {
   const checkboxes = document.querySelectorAll('.dial-color:checked');
-  const selected = Array.from(checkboxes).map(cb => cb.value);
+  const selected = Array.from(checkboxes).map((cb) => cb.value);
   return selected.includes('All') ? 'All' : selected.join(',');
 }
 
@@ -404,10 +432,10 @@ function resetFilters() {
     { id: 'Water_Resistance', value: 'All' },
     { id: 'Case_Material', value: 'All' },
     { id: 'priceRangeFrom', value: 0 },
-    { id: 'priceRangeTo', value: 500000 }
+    { id: 'priceRangeTo', value: 500000 },
   ];
 
-  resetElements.forEach(el => {
+  resetElements.forEach((el) => {
     const element = document.getElementById(el.id);
     if (element) element.value = el.value;
   });
@@ -418,7 +446,7 @@ function resetFilters() {
   if (brandSelect) brandSelect.value = currentBrand;
   if (collectionSelect) collectionSelect.value = currentCollection;
 
-  document.querySelectorAll('.dial-color').forEach(checkbox => {
+  document.querySelectorAll('.dial-color').forEach((checkbox) => {
     checkbox.checked = checkbox.value === 'All';
   });
 
@@ -436,18 +464,23 @@ function toggleQuickView(product = null) {
   if (!quickViewModal || !quickViewOverlay) return;
 
   const isOpening = !quickViewModal.classList.contains('open');
-  
+
   if (isOpening && product) {
     // Create thumbnail items - use galleryImages if available, otherwise just the main image
-    const thumbnails = (product.galleryImages && product.galleryImages.length > 0) 
-      ? product.galleryImages.map((img, idx) => `
-          <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-image="${img}">
-            <img src="${img}" alt="Thumbnail ${idx + 1}">
+    const thumbnails =
+      product.galleryImages && product.galleryImages.length > 0
+        ? product.galleryImages
+            .map(
+              (img, idx) => `
+          <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-image="${img.startsWith('/') ? img : `/public/Assets/Images/Watches/${img}`}">
+            <img src="${img.startsWith('/') ? img : `/public/Assets/Images/Watches/${img}`}" alt="Thumbnail ${idx + 1}">
           </div>
-        `).join('')
-      : `
-          <div class="thumbnail active" data-image="${product.image}">
-            <img src="${product.image}" alt="Product Thumbnail">
+        `
+            )
+            .join('')
+        : `
+          <div class="thumbnail active" data-image="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}">
+            <img src="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}" alt="Product Thumbnail">
           </div>
         `;
 
@@ -457,7 +490,7 @@ function toggleQuickView(product = null) {
         <section class="product-gallery">
           <div class="all_image">
             <div class="main-image">
-              <img src="${product.image}" alt="${product.name}" id="quickViewMainImage">
+              <img src="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}" alt="${product.name}" id="quickViewMainImage">
               <div class="zoom-lens"></div>
             </div>
             <div class="thumbnail-container">
@@ -503,25 +536,25 @@ function toggleQuickView(product = null) {
 
     // Add event listeners after rendering
     document.getElementById('closeQuickView').addEventListener('click', toggleQuickView);
-    
+
     // Add thumbnail click handlers
-    document.querySelectorAll('.thumbnail-container .thumbnail').forEach(thumb => {
-      thumb.addEventListener('click', function() {
+    document.querySelectorAll('.thumbnail-container .thumbnail').forEach((thumb) => {
+      thumb.addEventListener('click', function () {
         const newImageSrc = this.getAttribute('data-image');
         document.getElementById('quickViewMainImage').src = newImageSrc;
-        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.thumbnail').forEach((t) => t.classList.remove('active'));
         this.classList.add('active');
       });
     });
-    
+
     // Add wishlist button event listener
-    document.querySelector('.wishlist-btn').addEventListener('click', function() {
+    document.querySelector('.wishlist-btn').addEventListener('click', function () {
       const productId = this.dataset.productId;
       toggleWishlist(this, productId);
     });
-    
+
     // Add add-to-cart button event listener
-    document.querySelector('.add-to-cart').addEventListener('click', function() {
+    document.querySelector('.add-to-cart').addEventListener('click', function () {
       const productId = this.dataset.productId;
       addToCartFromQuickView(productId);
     });
@@ -541,64 +574,64 @@ function toggleQuickView(product = null) {
 function createModal(title, content, buttons = []) {
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
-  
+
   const modalContainer = document.createElement('div');
   modalContainer.className = 'modal-container';
-  
+
   const modalHeader = document.createElement('div');
   modalHeader.className = 'modal-header';
   modalHeader.innerHTML = `
       <h3>${title}</h3>
       <span class="close-modal">&times;</span>
   `;
-  
+
   const modalBody = document.createElement('div');
   modalBody.className = 'modal-body';
   modalBody.innerHTML = content;
-  
+
   const modalFooter = document.createElement('div');
   modalFooter.className = 'modal-footer';
-  
-  buttons.forEach(button => {
-      const btn = document.createElement('button');
-      btn.className = button.class || 'confirm-btn';
-      btn.textContent = button.text;
-      if (button.clickHandler) {
-          btn.addEventListener('click', button.clickHandler);
-      }
-      modalFooter.appendChild(btn);
+
+  buttons.forEach((button) => {
+    const btn = document.createElement('button');
+    btn.className = button.class || 'confirm-btn';
+    btn.textContent = button.text;
+    if (button.clickHandler) {
+      btn.addEventListener('click', button.clickHandler);
+    }
+    modalFooter.appendChild(btn);
   });
-  
+
   modalContainer.appendChild(modalHeader);
   modalContainer.appendChild(modalBody);
   modalContainer.appendChild(modalFooter);
   modal.appendChild(modalContainer);
-  
+
   document.body.appendChild(modal);
-  
+
   // Show modal with animation
   setTimeout(() => {
-      modal.classList.add('show');
+    modal.classList.add('show');
   }, 50); // Reduced from 2000ms to 50ms for better UX
-  
+
   // Close modal handlers
   modal.querySelector('.close-modal').addEventListener('click', () => {
-      closeModal(modal);
+    closeModal(modal);
   });
-  
+
   modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-          closeModal(modal);
-      }
+    if (e.target === modal) {
+      closeModal(modal);
+    }
   });
-  
+
   return modal;
 }
 
 function closeModal(modal) {
   modal.classList.remove('show');
   setTimeout(() => {
-      modal.remove();
+    modal.remove();
   }, 300);
 }
 
@@ -610,108 +643,102 @@ function addToCartFromQuickView(productId) {
 
 // Add to cart function
 async function addToCart(productId) {
-    try {
-        const response = await fetch('/user/cart/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productId })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            showNotification('success', 'Product added to cart successfully');
-        } else {
-            showNotification('error', data.message || 'Failed to add product to cart');
-        }
-    } catch (error) {
-        showNotification('error', 'Failed to add product to cart');
+  try {
+    const response = await fetch('/user/cart/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showNotification('success', 'Product added to cart successfully');
+    } else {
+      showNotification('error', data.message || 'Failed to add product to cart');
     }
+  } catch (error) {
+    showNotification('error', 'Failed to add product to cart');
+  }
 }
 
 // Remove from cart function
 async function removeFromCart(productId) {
-    showConfirmation(
-        'Are you sure you want to remove this item from your cart?',
-        async () => {
-            try {
-                const response = await fetch('/user/cart/remove', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ productId })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showNotification('success', 'Product removed from cart successfully');
-                    // Refresh cart or update UI
-                    location.reload();
-                } else {
-                    showNotification('error', data.message || 'Failed to remove product from cart');
-                }
-            } catch (error) {
-                showNotification('error', 'Failed to remove product from cart');
-            }
-        }
-    );
+  showConfirmation('Are you sure you want to remove this item from your cart?', async () => {
+    try {
+      const response = await fetch('/user/cart/remove', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showNotification('success', 'Product removed from cart successfully');
+        // Refresh cart or update UI
+        location.reload();
+      } else {
+        showNotification('error', data.message || 'Failed to remove product from cart');
+      }
+    } catch (error) {
+      showNotification('error', 'Failed to remove product from cart');
+    }
+  });
 }
 
 // Add to wishlist function
 async function addToWishlist(productId) {
-    try {
-        const response = await fetch('/user/wishlist/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productId })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            showNotification('success', 'Product added to wishlist successfully');
-        } else {
-            showNotification('error', data.message || 'Failed to add product to wishlist');
-        }
-    } catch (error) {
-        showNotification('error', 'Failed to add product to wishlist');
+  try {
+    const response = await fetch('/user/wishlist/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showNotification('success', 'Product added to wishlist successfully');
+    } else {
+      showNotification('error', data.message || 'Failed to add product to wishlist');
     }
+  } catch (error) {
+    showNotification('error', 'Failed to add product to wishlist');
+  }
 }
 
 // Remove from wishlist function
 async function removeFromWishlist(productId) {
-    showConfirmation(
-        'Are you sure you want to remove this item from your wishlist?',
-        async () => {
-            try {
-                const response = await fetch('/user/wishlist/remove', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ productId })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showNotification('success', 'Product removed from wishlist successfully');
-                    // Refresh wishlist or update UI
-                    location.reload();
-                } else {
-                    showNotification('error', data.message || 'Failed to remove product from wishlist');
-                }
-            } catch (error) {
-                showNotification('error', 'Failed to remove product from wishlist');
-            }
-        }
-    );
+  showConfirmation('Are you sure you want to remove this item from your wishlist?', async () => {
+    try {
+      const response = await fetch('/user/wishlist/remove', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showNotification('success', 'Product removed from wishlist successfully');
+        // Refresh wishlist or update UI
+        location.reload();
+      } else {
+        showNotification('error', data.message || 'Failed to remove product from wishlist');
+      }
+    } catch (error) {
+      showNotification('error', 'Failed to remove product from wishlist');
+    }
+  });
 }
 
 // Make functions available globally
@@ -721,3 +748,8 @@ window.loadProducts = loadProducts;
 window.resetFilters = resetFilters;
 window.openFilterPanel = openFilterPanel;
 window.closeFilterPanel = closeFilterPanel;
+
+// Add the showErrorModal function to show error notifications
+function showErrorModal(error) {
+  showNotification('error', error.message || 'An error occurred. Please try again later.');
+}

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated, isAdmin } = require('../middleware/auth');
+const { authenticateJWT, isAdmin } = require('../middleware/jwt');
 
 // Import API route handlers
 const brandsRouter = require('./BrandsRoutes');
@@ -13,30 +13,15 @@ router.use('/brands', brandsRouter);
 router.use('/collections', collectionsRouter);
 router.use('/users', usersRouter);
 
-// Product routes - split between public and protected
-// Public product routes
-const publicProductsRouter = express.Router();
-publicProductsRouter.get('/', productsRouter.route('/').get);
-publicProductsRouter.get('/:id', productsRouter.route('/:id').get);
-publicProductsRouter.get('/name/:name', productsRouter.route('/name/:name').get);
-
-// Protected product routes (require authentication)
-const protectedProductsRouter = express.Router();
-protectedProductsRouter.use(isAuthenticated);
-protectedProductsRouter.post('/', productsRouter.route('/').post);
-protectedProductsRouter.put('/:id', productsRouter.route('/:id').put);
-protectedProductsRouter.delete('/:id', productsRouter.route('/:id').delete);
-
-// Combine product routers
-router.use('/products', publicProductsRouter);
-router.use('/products', protectedProductsRouter);
+// Use the entire products router - it has the routes defined internally
+router.use('/products', productsRouter);
 
 // Health check endpoint
 router.get('/health', (req, res) => {
-    res.json({
-        status: 'OK',
-        timestamp: new Date().toISOString()
-    });
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+  });
 });
 
-module.exports = router; 
+module.exports = router;
