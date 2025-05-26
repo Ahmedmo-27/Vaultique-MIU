@@ -411,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       brandProducts.forEach((product, index) => {
         const productLink = document.createElement('a');
-        productLink.href = `/product.html?id=${product._id || product.id}`;
+        productLink.href = `/user/product?id=${product._id || product.id}`;
         productLink.classList.add('search-result-item');
         productLink.setAttribute('role', 'option');
         productLink.setAttribute('tabindex', '0');

@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 const Product = require('../models/Products');
 const Brand = require('../models/Brands');
@@ -321,18 +321,6 @@ authenticatedRoutes.get('/account-details', async (req, res) => {
         .select('-password -Payment.cardNumber -Payment.cvv')
         .lean();
     }
-  }catch{}
-});
-authenticatedRoutes.get("/account-details", async (req, res) => {
-  try {
-    // Get user data, but handle cases where it might not exist
-    let userData = null;
-
-    if (req.user && req.user._id) {
-      userData = await User.findById(req.user._id)
-        .select("-password -Payment.cardNumber -Payment.cvv")
-        .lean();
-    }
 
     if (!userData) {
       console.log('User data not found for account details page');
@@ -341,15 +329,6 @@ authenticatedRoutes.get("/account-details", async (req, res) => {
         _id: req.user?._id || '',
         Name: req.user?.Name || '',
         email: req.user?.email || '',
-      };
-    }
-    if (!userData) {
-      console.log("User data not found for account details page");
-      // Still render the page but with empty data
-      userData = {
-        _id: req.user?._id || "",
-        Name: req.user?.Name || "",
-        email: req.user?.email || "",
       };
     }
 
@@ -450,5 +429,3 @@ router.post("/submit-shipping", async (req, res) => {
 router.use(authenticatedRoutes);
 
 module.exports = router;
-
-
