@@ -8,7 +8,8 @@ const Brands = [
     name: 'Rolex',
     slug: 'rolex',
     logo: 'Rolex',
-    coverImage: '/Assets/Images/photos/Rolex Cover Image.jpg',
+    coverImage: '/Assets/Images/photos/Rolex Cover Image2.jpg',
+    coverImage2: '/Assets/Images/photos/Rolex Cover Image.avif',
     heroVideo: '/Assets/Videos/The Rolex Watch Collection - Rolex®.mp4',
     header: 'Swiss Watchmaking Excellence',
     description:
@@ -72,6 +73,7 @@ const Brands = [
     slug: 'omega',
     logo: 'Omega',
     coverImage: '/Assets/Images/photos/Omega Cover Image.jpg',
+    coverImage2: '/Assets/Images/photos/Omega Cover Image2.avif',
     heroVideo: '/Assets/Videos/De Ville Trésor _ OMEGA.mp4',
     header: 'Swiss Excellence Since 1848',
     description:
@@ -113,6 +115,7 @@ const Brands = [
     slug: 'cartier',
     logo: 'Cartier',
     coverImage: '/Assets/Images/photos/Cartier Cover Image.avif',
+    coverImage2: '/Assets/Images/photos/Cartier Cover Image.avif',
     heroVideo: '/Assets/Videos/Cartier watchmaking.mp4',
     header: 'The Art of Watchmaking Since 1847',
     description:
@@ -146,7 +149,8 @@ const Brands = [
     name: 'Patek Philippe',
     slug: 'patek-philippe',
     logo: 'Patek Philippe',
-    coverImage: '/Assets/Images/photos/Patek Philippe Cover Image.jpg',
+    coverImage: '/Assets/Images/photos/Patek Philippe Cover Image2.jpg',
+    coverImage2: '/Assets/Images/photos/Patek Philippe Cover Image.jpg',
     heroVideo: '/Assets/Videos/Patek Philippe Background Video.mp4',
     header: 'Begin Your Own Tradition',
     description:
@@ -194,7 +198,8 @@ const Brands = [
     name: 'Audemars Piguet',
     slug: 'audemars-piguet',
     logo: 'Audemars Piguet',
-    coverImage: '/Assets/Images/photos/Audemars Piguet Cover Image.avif',
+    coverImage: '/Assets/Images/photos/Audemars Piguet Cover Image2.avif',
+    coverImage2: '/Assets/Images/photos/Audemars Piguet Cover Image.avif',
     heroVideo: '/Assets/Videos/Audemars Piguet - Royal Oak.mp4',
     header: 'To Break the Rules, You Must First Master Them',
     description:
@@ -236,6 +241,7 @@ const Brands = [
     slug: 'a-lange-sohne',
     logo: 'A.Lange & Söhne',
     coverImage: '/Assets/Images/photos/A.Lange & Söhne Cover Image.jpeg',
+    coverImage2: '/Assets/Images/photos/A.Lange & Söhne Cover Image.jpeg',
     heroVideo: '/Assets/Videos/A.Lange & Söhne 1815 RATTRAPANTE PERPETUAL CALENDAR.mp4',
     header: 'The Art of Precision Since 1845',
     description:
@@ -276,7 +282,8 @@ const Brands = [
     name: 'Vacheron Constantin',
     slug: 'vacheron-constantin',
     logo: 'Vacheron Constantin',
-    coverImage: '/Assets/Images/photos/Vacheron Constantin Cover Image.avif',
+    coverImage: '/Assets/Images/photos/Vacheron Constantin Cover Image2.avif',
+    coverImage2: '/Assets/Images/photos/Vacheron Constantin Cover Image.avif',
     heroVideo: '/Assets/Videos/Vacheron Constantin Overseas Moon Phase Retrograde Date.mp4',
     header: 'One of Not Many Since 1755',
     description:
@@ -317,7 +324,8 @@ const Brands = [
     name: 'Jacob & Co',
     slug: 'jacob-co',
     logo: 'Jacob & Co',
-    coverImage: '/Assets/Images/photos/Jacob & Co Cover Image.jpeg',
+    coverImage: '/Assets/Images/photos/Jacob & Co Cover Image2.jpeg',
+    coverImage2: '/Assets/Images/photos/Jacob & Co Cover Image.jpg',
     heroVideo: '/Assets/Videos/Jacob&C0. Billionaire III Diamonds & Rubies.mp4',
     header: 'Daring, Bold, Unconventional',
     description:
@@ -362,7 +370,8 @@ const Brands = [
     name: 'Richard Mille',
     slug: 'richard-mille',
     logo: 'Richard Mille',
-    coverImage: '/Assets/Images/photos/Richard Mille Cover Image.jpg',
+    coverImage: '/Assets/Images/photos/Richard Mille Cover Image2.jpg',
+    coverImage2: '/Assets/Images/photos/Richard Mille Cover Image.jpg',
     heroVideo: '/Assets/Videos/RM 65-01 Collection — RICHARD MILLE.mp4',
     header: 'A Racing Machine on the Wrist',
     description:
@@ -408,6 +417,7 @@ const Brands = [
     slug: 'breitling',
     logo: 'Breitling',
     coverImage: '/Assets/Images/photos/Breitling Cover Image.avif',
+    coverImage2: '/Assets/Images/photos/Breitling Cover Image.avif',
     heroVideo: '/Assets/Videos/Breitling Navitimer GMT & Automatic 41.mp4',
     header: 'Aviation Inspired Since 1884',
     description:
