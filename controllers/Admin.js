@@ -377,46 +377,220 @@ exports.getAllProducts = async (req, res) => {
 };
 
 exports.createProduct = async (req, res) => {
-  try {
-    const product = await Product.create(req.body);
-    res.status(201).json({
-      success: true,
-      data: product,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error creating product",
-      error: error.message,
-    });
-  }
+    try {
+        console.log('Received product creation request:', {
+            body: req.body,
+            files: req.files
+        });
+
+        // Validate required fields
+        const requiredFields = ['id', 'name', 'brand', 'price', 'description', 'strapMaterial', 'movement', 'waterResistance', 'caseMaterial', 'dialColor', 'Vcollection', 'gender'];
+        const missingFields = requiredFields.filter(field => !req.body[field]);
+        if (missingFields.length > 0) {
+            console.log('Missing required fields:', missingFields);
+            return res.status(400).json({
+                success: false,
+                message: `Missing required fields: ${missingFields.join(', ')}`
+            });
+        }
+
+        // Check for product image
+        if (!req.files?.image) {
+            console.log('No product image provided');
+            return res.status(400).json({
+                success: false,
+                message: 'Product image is required'
+            });
+        }
+
+        // Find the brand by name
+        const brand = await Brand.findOne({ name: req.body.brand });
+        if (!brand) {
+            console.log('Brand not found:', req.body.brand);
+            return res.status(400).json({
+                success: false,
+                message: `Brand "${req.body.brand}" not found`
+            });
+        }
+
+        // Process file paths
+        const imagePath = req.files.image[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+        const galleryPaths = req.files.galleryImages?.map(file => file.path.replace(/\\/g, '/').replace(/^.*?public/, '')) || [];
+        const videoPath = req.files.video?.[0]?.path.replace(/\\/g, '/').replace(/^.*?public/, '');
+        const modelPath = req.files.model3D?.[0]?.path.replace(/\\/g, '/').replace(/^.*?public/, '');
+
+        // Format special features
+        const specialFeatures = [];
+        if (req.body.featureName && req.body.featureDesc) {
+            const featureNames = Array.isArray(req.body.featureName) ? req.body.featureName : [req.body.featureName];
+            const featureDescs = Array.isArray(req.body.featureDesc) ? req.body.featureDesc : [req.body.featureDesc];
+            
+            for (let i = 0; i < featureNames.length; i++) {
+                if (featureNames[i] && featureDescs[i]) {
+                    specialFeatures.push({
+                        featureName: featureNames[i],
+                        featureDesc: featureDescs[i]
+                    });
+                }
+            }
+        }
+
+        // Format specifications
+        const specifications = [];
+        if (req.body.specName && req.body.specValue) {
+            const specNames = Array.isArray(req.body.specName) ? req.body.specName : [req.body.specName];
+            const specValues = Array.isArray(req.body.specValue) ? req.body.specValue : [req.body.specValue];
+            
+            for (let i = 0; i < specNames.length; i++) {
+                if (specNames[i] && specValues[i]) {
+                    specifications.push({
+                        specName: specNames[i],
+                        specValue: specValues[i]
+                    });
+                }
+            }
+        }
+
+        // Create product data object
+        const productData = {
+            id: req.body.id,
+            name: req.body.name,
+            brand: brand._id, // Use the brand's _id (String)
+            strapMaterial: req.body.strapMaterial,
+            movement: req.body.movement,
+            waterResistance: req.body.waterResistance,
+            caseMaterial: req.body.caseMaterial,
+            dialColor: req.body.dialColor,
+            price: Number(req.body.price),
+            stock: req.body.stock === 'true',
+            stockCount: Number(req.body.stockCount),
+            Vcollection: req.body.Vcollection,
+            gender: req.body.gender,
+            image: imagePath,
+            galleryImages: galleryPaths,
+            video: videoPath,
+            model3D: modelPath,
+            productPageUrl: req.body.productPageUrl,
+            description: req.body.description,
+            specialFeatures,
+            specifications
+        };
+
+        console.log('Creating product with data:', productData);
+
+        // Create the product
+        const product = await Product.create(productData);
+
+        res.status(201).json({
+            success: true,
+            message: 'Product created successfully',
+            data: product
+        });
+    } catch (error) {
+        console.error('Error creating product:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            errors: error.errors
+        });
+
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.values(error.errors).map(err => ({
+                field: err.path,
+                message: err.message,
+                value: err.value
+            }));
+            console.log('Validation errors:', validationErrors);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: validationErrors
+            });
+        }
+
+        // Handle duplicate key error
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            return res.status(400).json({
+                success: false,
+                message: `A product with this ${field} already exists`
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create product',
+            error: error.message
+        });
+    }
 };
 
 exports.updateProduct = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    try {
+        const productId = req.params.id;
+        const updateData = { ...req.body };
 
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
+        // Find the brand by name
+        if (updateData.brand) {
+            const brand = await Brand.findOne({ name: updateData.brand });
+            if (!brand) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Brand "${updateData.brand}" not found`
+                });
+            }
+            updateData.brand = brand._id;
+        }
+
+        // Handle file uploads if new files are provided
+        if (req.files) {
+            if (req.files.image) {
+                updateData.image = req.files.image[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+            }
+            if (req.files.galleryImages) {
+                updateData.galleryImages = req.files.galleryImages.map(file => 
+                    file.path.replace(/\\/g, '/').replace(/^.*?public/, '')
+                );
+            }
+            if (req.files.video) {
+                updateData.video = req.files.video[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+            }
+            if (req.files.model3D) {
+                updateData.model3D = req.files.model3D[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+            }
+        }
+
+        // Find and update the product
+        const product = await Product.findByIdAndUpdate(
+            productId,
+            updateData,
+            {
+                new: true,
+                runValidators: true
+            }
+        ).populate('brand', 'name');
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Product updated successfully',
+            data: product
+        });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating product',
+            error: error.message
+        });
     }
-
-    res.status(200).json({
-      success: true,
-      data: product,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error updating product",
-      error: error.message,
-    });
-  }
 };
 
 exports.deleteProduct = async (req, res) => {
@@ -900,24 +1074,49 @@ exports.renderUsers = async (req, res) => {
 
 exports.renderProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    const collections = await Collection.find();
-    const brands = await Brand.find();
+    // Handle pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    res.render("products", {
-      title: "Manage Products",
+    // Get total count for pagination
+    const totalProducts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // Get paginated products with populated brand information
+    const products = await Product.find()
+      .populate('brand', 'name')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.render('ManageProducts', {
+      title: 'Manage Products',
       products,
-      collections,
-      brands,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1
+      },
       user: req.user,
-      isAdmin: true,
+      error: null
     });
   } catch (error) {
-    res.status(500).render("error", {
-      title: "Error",
-      type: "error",
-      message: "Error loading products",
-      error: error.message,
+    console.error('Error in renderProducts:', error);
+    res.status(500).render('ManageProducts', {
+      title: 'Manage Products',
+      products: [],
+      pagination: {
+        currentPage: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false
+      },
+      user: req.user,
+      error: error.message || 'Error loading products. Please try again later.'
     });
   }
 };
@@ -1087,4 +1286,83 @@ exports.getUserOrders = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+exports.getProductById = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).populate('brand', 'name');
+        
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: product
+        });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching product',
+            error: error.message
+        });
+    }
+};
+
+exports.renderProductView = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).populate('brand', 'name');
+        
+        if (!product) {
+            return res.status(404).render('error', {
+                title: 'Error',
+                type: 'error',
+                message: 'Product not found'
+            });
+        }
+
+        res.render('ViewProduct', {
+            title: 'View Product',
+            product,
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            type: 'error',
+            message: 'Error loading product details'
+        });
+    }
+};
+
+exports.renderProductEdit = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).populate('brand', 'name');
+        
+        if (!product) {
+            return res.status(404).render('error', {
+                title: 'Error',
+                type: 'error',
+                message: 'Product not found'
+            });
+        }
+
+        res.render('EditProduct', {
+            title: 'Edit Product',
+            product,
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            type: 'error',
+            message: 'Error loading product details'
+        });
+    }
 };

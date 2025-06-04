@@ -181,8 +181,19 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/admin/products/create', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'include'
             });
+
+            if (!response.ok) {
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            }
 
             const data = await response.json();
             console.log('Server response:', data);
@@ -217,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error creating product:', error);
-            showNotification('error', 'Failed to create product. Please try again.');
+            showNotification('error', error.message || 'Failed to create product. Please try again.');
         }
     });
 });
