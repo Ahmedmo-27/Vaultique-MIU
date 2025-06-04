@@ -1,0 +1,6 @@
+/* Remove the container styles */ 
+
+.container-fluid {
+    padding: 2rem;
+    margin-top: 150px; /* Increased from 120px to 150px for more space */
+} 

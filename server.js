@@ -22,6 +22,14 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Configure MIME types
+app.use((req, res, next) => {
+    if (req.url.endsWith('.css')) {
+        res.type('text/css');
+    }
+    next();
+});
+
 // Enhanced MongoDB Connection with better error handling
 const connectDB = async () => {
   try {
@@ -83,11 +91,11 @@ app.use(
         scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
         scriptSrcElem: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https:', 'http:'],
         styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
-        imgSrc: ["'self'", 'data:', 'https:', 'http:'],
+        imgSrc: ["'self'", 'data:', 'https:', 'http:', 'blob:'],
         connectSrc: ["'self'", 'https:', 'http:', 'ws:', 'wss:'],
         fontSrc: ["'self'", 'https:', 'http:', 'data:'],
         objectSrc: ["'none'"],
-        mediaSrc: ["'self'", 'https:', 'http:'],
+        mediaSrc: ["'self'", 'https:', 'http:', 'blob:'],
         frameSrc: ["'self'"],
         upgradeInsecureRequests: [],
       },
@@ -212,7 +220,12 @@ app.get('/admin/dashboard', isAdmin, adminController.renderDashboard);
 app.get('/admin/users', isAdmin, adminController.renderUsers);
 app.get('/admin/products', isAdmin, adminController.renderProducts);
 app.get('/admin/products/create', isAdmin, adminController.renderCreateProduct);
+app.get('/admin/products/:id', isAdmin, adminController.renderProductView);
+app.get('/admin/products/:id/edit', isAdmin, adminController.renderProductEdit);
 app.get('/admin/analytics', isAdmin, adminController.renderAnalytics);
+
+// Add delete product route
+app.delete('/admin/products/:id', isAdmin, adminController.deleteProduct);
 
 // Admin logout route
 app.get('/admin/logout', (req, res) => {

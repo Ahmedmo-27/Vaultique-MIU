@@ -417,10 +417,10 @@ exports.createProduct = async (req, res) => {
         }
 
         // Process file paths
-        const imagePath = req.files.image[0].path.replace('public', '');
-        const galleryPaths = req.files.galleryImages?.map(file => file.path.replace('public', '')) || [];
-        const videoPath = req.files.video?.[0]?.path.replace('public', '');
-        const modelPath = req.files.model3D?.[0]?.path.replace('public', '');
+        const imagePath = req.files.image[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+        const galleryPaths = req.files.galleryImages?.map(file => file.path.replace(/\\/g, '/').replace(/^.*?public/, '')) || [];
+        const videoPath = req.files.video?.[0]?.path.replace(/\\/g, '/').replace(/^.*?public/, '');
+        const modelPath = req.files.model3D?.[0]?.path.replace(/\\/g, '/').replace(/^.*?public/, '');
 
         // Format special features
         const specialFeatures = [];
@@ -530,30 +530,70 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.updateProduct = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    try {
+        const productId = req.params.id;
+        const updateData = { ...req.body };
 
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found',
-      });
+        // Find the brand by name
+        if (updateData.brand) {
+            const brand = await Brand.findOne({ name: updateData.brand });
+            if (!brand) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Brand "${updateData.brand}" not found`
+                });
+            }
+            updateData.brand = brand._id;
+        }
+
+        // Handle file uploads if new files are provided
+        if (req.files) {
+            if (req.files.image) {
+                updateData.image = req.files.image[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+            }
+            if (req.files.galleryImages) {
+                updateData.galleryImages = req.files.galleryImages.map(file => 
+                    file.path.replace(/\\/g, '/').replace(/^.*?public/, '')
+                );
+            }
+            if (req.files.video) {
+                updateData.video = req.files.video[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+            }
+            if (req.files.model3D) {
+                updateData.model3D = req.files.model3D[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+            }
+        }
+
+        // Find and update the product
+        const product = await Product.findByIdAndUpdate(
+            productId,
+            updateData,
+            {
+                new: true,
+                runValidators: true
+            }
+        ).populate('brand', 'name');
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Product updated successfully',
+            data: product
+        });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating product',
+            error: error.message
+        });
     }
-
-    res.status(200).json({
-      success: true,
-      data: product,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error updating product',
-      error: error.message,
-    });
-  }
 };
 
 exports.deleteProduct = async (req, res) => {
@@ -1027,24 +1067,49 @@ exports.renderUsers = async (req, res) => {
 
 exports.renderProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    const collections = await Collection.find();
-    const brands = await Brand.find();
+    // Handle pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    res.render('products', {
+    // Get total count for pagination
+    const totalProducts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // Get paginated products with populated brand information
+    const products = await Product.find()
+      .populate('brand', 'name')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.render('ManageProducts', {
       title: 'Manage Products',
       products,
-      collections,
-      brands,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1
+      },
       user: req.user,
-      isAdmin: true,
+      error: null
     });
   } catch (error) {
-    res.status(500).render('error', {
-      title: 'Error',
-      type: 'error',
-      message: 'Error loading products',
-      error: error.message,
+    console.error('Error in renderProducts:', error);
+    res.status(500).render('ManageProducts', {
+      title: 'Manage Products',
+      products: [],
+      pagination: {
+        currentPage: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false
+      },
+      user: req.user,
+      error: error.message || 'Error loading products. Please try again later.'
     });
   }
 };
@@ -1210,4 +1275,83 @@ exports.getUserOrders = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+exports.getProductById = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).populate('brand', 'name');
+        
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: product
+        });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching product',
+            error: error.message
+        });
+    }
+};
+
+exports.renderProductView = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).populate('brand', 'name');
+        
+        if (!product) {
+            return res.status(404).render('error', {
+                title: 'Error',
+                type: 'error',
+                message: 'Product not found'
+            });
+        }
+
+        res.render('ViewProduct', {
+            title: 'View Product',
+            product,
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            type: 'error',
+            message: 'Error loading product details'
+        });
+    }
+};
+
+exports.renderProductEdit = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).populate('brand', 'name');
+        
+        if (!product) {
+            return res.status(404).render('error', {
+                title: 'Error',
+                type: 'error',
+                message: 'Product not found'
+            });
+        }
+
+        res.render('EditProduct', {
+            title: 'Edit Product',
+            product,
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            type: 'error',
+            message: 'Error loading product details'
+        });
+    }
 };

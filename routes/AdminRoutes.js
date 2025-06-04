@@ -4,8 +4,21 @@ const adminController = require('../controllers/Admin');
 const { isAdmin } = require('../middleware/jwt');
 const { upload, handleMulterError } = require('../middleware/upload');
 
-// Apply admin middleware to all routes
-router.use(isAdmin);
+// Admin middleware
+const isAdminMiddleware = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).render('error', {
+            title: 'Access Denied',
+            message: 'You do not have permission to access this page',
+            error: { status: 403 }
+        });
+    }
+};
+
+// Apply admin middleware to all admin routes
+router.use(isAdminMiddleware);
 
 // Admin dashboard
 router.get('/dashboard', adminController.renderDashboard);
@@ -31,6 +44,18 @@ router.post('/products/create',
     handleMulterError,
     adminController.createProduct
 );
+router.get('/products/:id', adminController.getProductById);
+router.put('/products/:id', 
+    upload.fields([
+        { name: 'image', maxCount: 1 },
+        { name: 'galleryImages', maxCount: 10 },
+        { name: 'video', maxCount: 1 },
+        { name: 'model3D', maxCount: 1 }
+    ]),
+    handleMulterError,
+    adminController.updateProduct
+);
+router.delete('/products/:id', adminController.deleteProduct);
 
 // Analytics routes
 router.get('/analytics', adminController.renderAnalytics);

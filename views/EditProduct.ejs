@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Admin Dashboard</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
+    <!-- Custom JavaScript -->
+    <script src="/Javascript/nav-bar.js"></script>
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        .container-fluid {
+            margin-top: 20px;
+        }
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+            margin: 10px 0;
+        }
+        .gallery-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .gallery-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/Admin-navigation') %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-md-12 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Edit Product</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="/admin/products" class="btn btn-secondary me-2">
+                            <i class="fas fa-arrow-left"></i> Back to Products
+                        </a>
+                    </div>
+                </div>
+
+                <form id="editProductForm" enctype="multipart/form-data">
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Basic Information</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Product Name</label>
+                                        <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="brand" class="form-label">Brand</label>
+                                        <select id="brand" name="brand" class="form-control" required>
+                                            <option value="" disabled>Select a brand</option>
+                                            <option value="Rolex" <%= product.brand && product.brand.name === 'Rolex' ? 'selected' : '' %>>Rolex</option>
+                                            <option value="Omega" <%= product.brand && product.brand.name === 'Omega' ? 'selected' : '' %>>Omega</option>
+                                            <option value="Cartier" <%= product.brand && product.brand.name === 'Cartier' ? 'selected' : '' %>>Cartier</option>
+                                            <option value="Patek Philippe" <%= product.brand && product.brand.name === 'Patek Philippe' ? 'selected' : '' %>>Patek Philippe</option>
+                                            <option value="Audemars Piguet" <%= product.brand && product.brand.name === 'Audemars Piguet' ? 'selected' : '' %>>Audemars Piguet</option>
+                                            <option value="Lange & Sohne" <%= product.brand && product.brand.name === 'Lange & Sohne' ? 'selected' : '' %>>Lange & Sohne</option>
+                                            <option value="Vacheron Constantin" <%= product.brand && product.brand.name === 'Vacheron Constantin' ? 'selected' : '' %>>Vacheron Constantin</option>
+                                            <option value="Jacob & Co" <%= product.brand && product.brand.name === 'Jacob & Co' ? 'selected' : '' %>>Jacob & Co</option>
+                                            <option value="Richard Mille" <%= product.brand && product.brand.name === 'Richard Mille' ? 'selected' : '' %>>Richard Mille</option>
+                                            <option value="Breitling" <%= product.brand && product.brand.name === 'Breitling' ? 'selected' : '' %>>Breitling</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="price" class="form-label">Price</label>
+                                        <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" step="0.01" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="Vcollection" class="form-label">Collection</label>
+                                        <input type="text" class="form-control" id="Vcollection" name="Vcollection" value="<%= product.Vcollection %>" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="stockCount" class="form-label">Stock Count</label>
+                                        <input type="number" class="form-control" id="stockCount" name="stockCount" value="<%= product.stockCount %>" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="stock" name="stock" <%= product.stock ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="stock">
+                                                In Stock
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Specifications -->
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Specifications</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label for="strapMaterial" class="form-label">Strap Material</label>
+                                        <input type="text" class="form-control" id="strapMaterial" name="strapMaterial" value="<%= product.strapMaterial %>" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="movement" class="form-label">Movement</label>
+                                        <input type="text" class="form-control" id="movement" name="movement" value="<%= product.movement %>" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="waterResistance" class="form-label">Water Resistance</label>
+                                        <input type="text" class="form-control" id="waterResistance" name="waterResistance" value="<%= product.waterResistance %>" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="caseMaterial" class="form-label">Case Material</label>
+                                        <input type="text" class="form-control" id="caseMaterial" name="caseMaterial" value="<%= product.caseMaterial %>" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="dialColor" class="form-label">Dial Color</label>
+                                        <input type="text" class="form-control" id="dialColor" name="dialColor" value="<%= product.dialColor %>" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Media -->
+                        <div class="col-md-12">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Media</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Main Image</label>
+                                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                        <img src="<%= product.image %>" alt="Current Image" class="preview-image">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="galleryImages" class="form-label">Gallery Images</label>
+                                        <input type="file" class="form-control" id="galleryImages" name="galleryImages" accept="image/*" multiple>
+                                        <div class="gallery-preview">
+                                            <% if (product.galleryImages && product.galleryImages.length > 0) { %>
+                                                <% product.galleryImages.forEach(image => { %>
+                                                    <img src="<%= image %>" alt="Gallery Image">
+                                                <% }); %>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-md-12">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Description</h5>
+                                    <div class="mb-3">
+                                        <textarea class="form-control" id="description" name="description" rows="4" required><%= product.description %></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special Features -->
+                        <div class="col-md-12">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Special Features</h5>
+                                    <div id="specialFeatures">
+                                        <% if (product.specialFeatures && product.specialFeatures.length > 0) { %>
+                                            <% product.specialFeatures.forEach((feature, index) => { %>
+                                                <div class="feature-entry mb-3">
+                                                    <div class="row">
+                                                        <div class="col-md-5">
+                                                            <input type="text" class="form-control" name="featureName[]" placeholder="Feature Name" value="<%= feature.name %>">
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <input type="text" class="form-control" name="featureDesc[]" placeholder="Feature Description" value="<%= feature.description %>">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger remove-feature">Remove</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        <% } %>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" id="addFeature">Add Feature</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="col-md-12">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add Feature button
+            document.getElementById('addFeature').addEventListener('click', function() {
+                const featureEntry = document.createElement('div');
+                featureEntry.className = 'feature-entry mb-3';
+                featureEntry.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" name="featureName[]" placeholder="Feature Name">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" name="featureDesc[]" placeholder="Feature Description">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger remove-feature">Remove</button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('specialFeatures').appendChild(featureEntry);
+            });
+
+            // Remove Feature button
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-feature')) {
+                    e.target.closest('.feature-entry').remove();
+                }
+            });
+
+            // Form submission
+            document.getElementById('editProductForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                
+                try {
+                    const response = await fetch('/api/admin/products/<%= product._id %>', {
+                        method: 'PUT',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert('Product updated successfully');
+                        window.location.href = '/admin/products';
+                    } else {
+                        alert('Error updating product: ' + data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error updating product. Please try again.');
+                }
+            });
+
+            // Image preview
+            document.getElementById('image').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.querySelector('.preview-image').src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Gallery images preview
+            document.getElementById('galleryImages').addEventListener('change', function(e) {
+                const files = e.target.files;
+                const preview = document.querySelector('.gallery-preview');
+                preview.innerHTML = '';
+
+                for (let file of files) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
