@@ -18,16 +18,16 @@ const Users = [
       addressType: 'Home',
       state: 'Cairo',
       country: 'Egypt',
-      postalCode: '11511'
+      postalCode: '11511',
     },
     Payment: {
       cardNumber: '4111111111111111',
       cardHolder: 'Ahmed Mostafa',
       expiryDate: '12/25',
       cvv: '123',
-      paymentType: 'Credit Card'
+      paymentType: 'Credit Card',
     },
-    role: 'admin'
+    role: 'admin',
   },
   {
     id: new mongoose.Types.ObjectId().toString(),
@@ -44,16 +44,16 @@ const Users = [
       addressType: 'Work',
       state: 'Cairo',
       country: 'Egypt',
-      postalCode: '11511'
+      postalCode: '11511',
     },
     Payment: {
       cardNumber: '5500000000000004',
       cardHolder: 'Fouad Khaled',
       expiryDate: '11/24',
       cvv: '456',
-      paymentType: 'Debit Card'
+      paymentType: 'Debit Card',
     },
-    role: 'user'
+    role: 'user',
   },
   {
     id: new mongoose.Types.ObjectId().toString(),
@@ -70,17 +70,43 @@ const Users = [
       addressType: 'Other',
       state: 'Cairo',
       country: 'Egypt',
-      postalCode: '11511'
+      postalCode: '11511',
     },
     Payment: {
       cardNumber: '340000000000009',
       cardHolder: 'Mohamed Wael',
       expiryDate: '01/27',
       cvv: '789',
-      paymentType: 'Credit Card'
+      paymentType: 'Credit Card',
     },
-    role: 'user'
-  }
+    role: 'user',
+  },
+  {
+    id: new mongoose.Types.ObjectId().toString(),
+    Name: 'Ahmed Khalid',
+    username: 'ahmedkhalidddd',
+    email: 'ahmedkhalid@gmail.com',
+    password: '556256215',
+    DOB: new Date('2005-01-15'),
+    phone_number: '22562187135',
+    language: 'English',
+    Address: {
+      city: '10th of Ramadan',
+      street: '789 King Rd',
+      addressType: 'Other',
+      state: 'Cairo',
+      country: 'Egypt',
+      postalCode: '11511',
+    },
+    Payment: {
+      cardNumber: '340005456120000009',
+      cardHolder: 'Ahmed Khalis',
+      expiryDate: '01/27',
+      cvv: '789',
+      paymentType: 'Credit Card',
+    },
+    role: 'user',
+  },
 ];
 
 async function seedDatabase() {
@@ -100,7 +126,7 @@ async function seedDatabase() {
     // Close the connection before exiting
     await mongoose.connection.close();
     console.log('MongoDB connection closed');
-    
+
     process.exit(0);
   } catch (err) {
     console.error('Seeding error:', err);

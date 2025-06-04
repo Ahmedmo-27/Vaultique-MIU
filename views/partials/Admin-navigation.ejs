@@ -1,9 +1,9 @@
 <div class="navbar-wrapper">
-    <header class="header-unscrolled">
+    <header class="header-unscrolled" style="background-color: white;">
         <div class="header-top-unscrolled" id="header-top" style="display: none;">
             <div class="store-services" id="store-services">
 
-                <a id="toggle-button" class="toggle-button" onclick="toggleLightDarkMode()">
+                <a id="toggle-button" class="toggle-button" data-theme-toggle>
                     <i class="fa-solid fa-sun"></i>
                     <i class="fa-solid fa-moon"></i>
                     <span class="toggle-button-slider"></span>
@@ -19,7 +19,6 @@
                         <option value="ar">AR</option>
                     </select>
                 </nav>
-
             </div>
 
             <div class="user-data">
@@ -39,13 +38,26 @@
                 </a>
             </div>
 
-            <a href="/admin/dashboard" class="logo-unscrolled" id="logo">Vaultique</a>
-            <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
-
+            <a href="/admin/dashboard" class="logo-unscrolled" id="logo" style="color: black;">Vaultique</a>
+            
+            <div id="top-move-on-scroll" style="display: none;" class="middleDev">
                 <nav class="navigation">
                     <a href="/admin/Account-Details" style="display: none;">
                         <i class='fas fa-user-alt'></i>
-                    </a>        
+                    </a>
+                    
+                    <a id="toggle-button" class="toggle-button" data-theme-toggle style="display:none;">
+                        <i class="fa-solid fa-sun"></i>
+                        <i class="fa-solid fa-moon"></i>
+                        <span class="toggle-button-slider"></span>
+                    </a>
+
+                    <a style="display: none;">
+                        <select id="language" class="tag">
+                            <option value="en">EN</option>
+                            <option value="ar">AR</option>
+                        </select>
+                    </a>
                 </nav>
             </div>
         </div>
@@ -55,7 +67,7 @@
                 <a href="/admin/dashboard">Home</a>
                 <a href="/admin/users">Manage Users</a>
                 <a href="/admin/analytics" class="extension">Analytics</a>
-                <a href="/admin/products/create" >Manage Products</a>
+                <a href="/admin/products">Manage Products</a>
                 <a href="/admin/settings">Settings</a>
                 <a href="/admin/logout" class="logout">Logout</a>
             </nav>
@@ -68,15 +80,43 @@
         <a href="/admin/dashboard">Home</a>
         <a href="/admin/users">Manage Users</a>
         <a href="/admin/analytics" class="extension">Analytics</a>
-        <a href="/admin/products/create">Add Products</a>
+        <a href="/admin/products">Manage Products</a>
         <a href="/admin/settings">Settings</a>
         <a href="/admin/logout" class="logout">Logout</a>
             
-        <a id="toggle-button-side" class="toggle-button" onclick="toggleLightDarkMode()">
+        <a id="toggle-button-side" class="toggle-button" data-theme-toggle>
             <i class="fa-solid fa-sun"></i>
             <i class="fa-solid fa-moon"></i>
             <span class="toggle-button-slider"></span>
         </a>
-
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make sure Font Awesome is loaded
+        if (typeof FontAwesome === 'undefined') {
+            const fontAwesomeLink = document.createElement('link');
+            fontAwesomeLink.rel = 'stylesheet';
+            fontAwesomeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
+            document.head.appendChild(fontAwesomeLink);
+        }
+        
+        // Manual initialization for side panel
+        const sideIcon = document.getElementById('side-icon');
+        const closebtn = document.getElementById('closebtn');
+        
+        if(sideIcon) {
+            sideIcon.addEventListener('click', function() {
+                const panel = document.getElementById('mySidepanel');
+                panel.style.display = 'block';
+                panel.style.width = '250px';
+            });
+        }
+        
+        if(closebtn) {
+            closebtn.addEventListener('click', function() {
+                document.getElementById('mySidepanel').style.width = '0';
+            });
+        }
+    });
+</script>

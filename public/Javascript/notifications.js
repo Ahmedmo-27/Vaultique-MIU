@@ -1,14 +1,15 @@
 // Notification utility functions
-const showNotification = (type, message, title = type === 'success' ? 'Success' : 'Error') => {
+if (typeof window.showNotification === 'undefined') {
+  const showNotification = (type, message, title = type === 'success' ? 'Success' : 'Error') => {
     // Create modal overlay
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.id = 'notificationModal';
-    
+
     // Create modal container
     const modalContainer = document.createElement('div');
     modalContainer.className = 'modal-container';
-    
+
     // Create modal header
     const modalHeader = document.createElement('div');
     modalHeader.className = 'modal-header';
@@ -16,7 +17,7 @@ const showNotification = (type, message, title = type === 'success' ? 'Success' 
         <h3>${title}</h3>
         <button class="close-modal" onclick="closeNotification()">&times;</button>
     `;
-    
+
     // Create modal body
     const modalBody = document.createElement('div');
     modalBody.className = 'modal-body';
@@ -28,61 +29,71 @@ const showNotification = (type, message, title = type === 'success' ? 'Success' 
             ${message}
         </div>
     `;
-    
+
     // Create modal footer
     const modalFooter = document.createElement('div');
     modalFooter.className = 'modal-footer';
     modalFooter.innerHTML = `
         <button onclick="closeNotification()">Close</button>
     `;
-    
+
     // Assemble modal
     modalContainer.appendChild(modalHeader);
     modalContainer.appendChild(modalBody);
     modalContainer.appendChild(modalFooter);
     modal.appendChild(modalContainer);
-    
+
     // Add to document
     document.body.appendChild(modal);
-    
+
     // Show modal with animation
     setTimeout(() => {
-        modal.classList.add('show');
+      modal.classList.add('show');
     }, 50);
-    
+
     // Auto close after 5 seconds
     setTimeout(() => {
-        closeNotification();
+      closeNotification();
     }, 5000);
-};
+  };
 
-// Close notification function
-const closeNotification = () => {
+  // Export showNotification to window
+  window.showNotification = showNotification;
+}
+
+// Close notification function - only define if it doesn't already exist
+if (typeof window.closeNotification === 'undefined') {
+  const closeNotification = () => {
     const modal = document.getElementById('notificationModal');
     if (modal) {
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.remove();
-        }, 300);
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.remove();
+      }, 300);
     }
-};
+  };
+  
+  // Export closeNotification to window
+  window.closeNotification = closeNotification;
+}
 
 // Confirmation dialog
-const showConfirmation = (message, onConfirm, onCancel = () => {}) => {
+if (typeof window.showConfirmation === 'undefined') {
+  const showConfirmation = (message, onConfirm, onCancel = () => {}) => {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.id = 'confirmationModal';
-    
+
     const modalContainer = document.createElement('div');
     modalContainer.className = 'modal-container';
-    
+
     const modalHeader = document.createElement('div');
     modalHeader.className = 'modal-header';
     modalHeader.innerHTML = `
         <h3>Confirm Action</h3>
         <button class="close-modal" onclick="closeConfirmation()">&times;</button>
     `;
-    
+
     const modalBody = document.createElement('div');
     modalBody.className = 'modal-body';
     modalBody.innerHTML = `
@@ -90,49 +101,53 @@ const showConfirmation = (message, onConfirm, onCancel = () => {}) => {
             ${message}
         </div>
     `;
-    
+
     const modalFooter = document.createElement('div');
     modalFooter.className = 'modal-footer';
     modalFooter.innerHTML = `
         <button class="cancel-btn" onclick="closeConfirmation()">Cancel</button>
         <button class="confirm-btn" onclick="confirmAction()">Confirm</button>
     `;
-    
+
     modalContainer.appendChild(modalHeader);
     modalContainer.appendChild(modalBody);
     modalContainer.appendChild(modalFooter);
     modal.appendChild(modalContainer);
-    
+
     document.body.appendChild(modal);
-    
+
     setTimeout(() => {
-        modal.classList.add('show');
+      modal.classList.add('show');
     }, 50);
-    
+
     // Close confirmation function
     window.closeConfirmation = () => {
-        const modal = document.getElementById('confirmationModal');
-        if (modal) {
-            modal.classList.remove('show');
-            setTimeout(() => {
-                modal.remove();
-                onCancel();
-            }, 300);
-        }
+      const modal = document.getElementById('confirmationModal');
+      if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+          modal.remove();
+          onCancel();
+        }, 300);
+      }
     };
-    
+
     // Confirm action function
     window.confirmAction = () => {
-        const modal = document.getElementById('confirmationModal');
-        if (modal) {
-            modal.classList.remove('show');
-            setTimeout(() => {
-                modal.remove();
-                onConfirm();
-            }, 300);
-        }
+      const modal = document.getElementById('confirmationModal');
+      if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+          modal.remove();
+          onConfirm();
+        }, 300);
+      }
     };
-};
+  };
+
+  // Export to window
+  window.showConfirmation = showConfirmation;
+}
 
 // Add styles
 const style = document.createElement('style');
@@ -277,8 +292,3 @@ style.textContent = `
 `;
 
 document.head.appendChild(style);
-
-// Export functions
-window.showNotification = showNotification;
-window.showConfirmation = showConfirmation;
-window.closeNotification = closeNotification; 

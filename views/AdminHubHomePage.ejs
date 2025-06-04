@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AdminHub</title>
-    <!-- Boxicons -->
+    <!-- Font Awesome and Boxicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
     <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
@@ -116,6 +117,29 @@
     <!-- CONTENT -->
 
     <script src="/Javascript/AdminHub.js"></script>
+    
+    <!-- Inline script to ensure side panel works -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sideIcon = document.getElementById('side-icon');
+            const closebtn = document.getElementById('closebtn');
+            const mySidepanel = document.getElementById('mySidepanel');
+            
+            if (sideIcon) {
+                sideIcon.onclick = function() {
+                    mySidepanel.style.width = '250px';
+                    console.log('Side panel opened');
+                };
+            }
+            
+            if (closebtn) {
+                closebtn.onclick = function() {
+                    mySidepanel.style.width = '0';
+                    console.log('Side panel closed');
+                };
+            }
+        });
+    </script>
 </body>
 
 </html>

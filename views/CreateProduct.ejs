@@ -7,7 +7,6 @@
     <title>Create New Product</title>
     <link rel="stylesheet" href="/CSS/CreateProduct.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="/Javascript/nav-bar.js"></script>
 </head>
 
@@ -16,7 +15,7 @@
     <div class="container">
         <div class="form-container">
             <h2>Create New Product</h2>
-            <form id="productForm">
+            <form id="productForm" action="/api/admin/products/create" method="POST" enctype="multipart/form-data">
                 <!-- Basic Information -->
                 <div class="form-group">
                     <label for="id">Product ID</label>
@@ -120,12 +119,12 @@
                 <div class="form-group full-width">
                     <label for="image">Main Image</label>
                     <div class="image-upload-container">
-                        <input type="file" id="image" name="image" accept="image/*" required class="file-input">
+                        <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png" required class="file-input">
                         <div class="image-preview-container">
                             <img id="imagePreview" src="#" alt="Image Preview" class="image-preview hidden">
                             <div class="upload-placeholder">
                                 <i class="fas fa-cloud-upload-alt"></i>
-                                <span>Click to upload main image</span>
+                                <span>Click to upload main image (.jpg, .jpeg, .png)</span>
                             </div>
                         </div>
                     </div>
@@ -135,12 +134,12 @@
                 <div class="form-group full-width">
                     <label for="galleryImages">Gallery Images</label>
                     <div class="gallery-upload-container">
-                        <input type="file" id="galleryImages" name="galleryImages" accept="image/*" multiple class="file-input">
+                        <input type="file" id="galleryImages" name="galleryImages" accept=".jpg,.jpeg,.png" multiple class="file-input">
                         <div class="gallery-preview-container">
                             <div id="galleryPreview" class="gallery-preview"></div>
                             <div class="upload-placeholder">
                                 <i class="fas fa-images"></i>
-                                <span>Click to upload gallery images</span>
+                                <span>Click to upload gallery images (.jpg, .jpeg, .png)</span>
                             </div>
                         </div>
                     </div>
@@ -150,12 +149,12 @@
                 <div class="form-group full-width">
                     <label for="video">Video</label>
                     <div class="video-upload-container">
-                        <input type="file" id="video" name="video" accept="video/*" class="file-input">
+                        <input type="file" id="video" name="video" accept=".mp4" class="file-input">
                         <div class="video-preview-container">
                             <video id="videoPreview" class="video-preview hidden" controls></video>
                             <div class="upload-placeholder">
                                 <i class="fas fa-video"></i>
-                                <span>Click to upload video</span>
+                                <span>Click to upload video (.mp4)</span>
                             </div>
                         </div>
                     </div>
@@ -165,11 +164,237 @@
                 <div class="form-group full-width">
                     <label for="model3D">3D Model</label>
                     <div class="model-upload-container">
-                        <input type="file" id="model3D" name="model3D" accept=".glb,.gltf" class="file-input">
+                        <input type="file" id="model3D" name="model3D" accept=".glb" class="file-input">
                         <div class="model-preview-container">
                             <div class="upload-placeholder">
                                 <i class="fas fa-cube"></i>
-                                <span>Click to upload 3D model (.glb or .gltf)</span>
+                                <span>Click to upload 3D model (.glb)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="error-message" id="model3DError"></span>
+                </div>
+
+                <!-- Product Information -->
+                <div class="form-group full-width">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="narrow-textarea"></textarea>
+                    <span class="error-message" id="descriptionError"></span>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="productPageUrl">Product Page URL</label>
+                    <input type="text" id="productPageUrl" name="productPageUrl">
+                    <span class="error-message" id="productPageUrlError"></span>
+                </div>
+
+                <!-- Special Features -->
+                <div class="form-group full-width">
+                    <label>Special Features</label>
+                    <div id="specialFeatures">
+                        <div class="feature-entry">
+                            <input type="text" name="featureName[]" placeholder="Feature Name">
+                            <input type="text" name="featureDesc[]" placeholder="Feature Description">
+                            <button type="button" class="remove-feature">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addFeature">Add Feature</button>
+                </div>
+
+                <!-- Specifications -->
+                <div class="form-group full-width">
+                    <label>Specifications</label>
+                    <div id="specifications">
+                        <div class="spec-entry">
+                            <input type="text" name="specName[]" placeholder="Specification Name">
+                            <input type="text" name="specValue[]" placeholder="Specification Value">
+                            <button type="button" class="remove-spec">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addSpec">Add Specification</button>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="create-btn">Create Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="notification" class="notification hidden"></div>
+    <%- include('partials/notification') %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Product</title>
+    <link rel="stylesheet" href="/CSS/CreateProduct.css">
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="/Javascript/nav-bar.js"></script>
+</head>
+
+<body>
+    <%- include('partials/Admin-navigation') %>
+    <div class="container">
+        <div class="form-container">
+            <h2>Create New Product</h2>
+            <form id="productForm" action="/api/admin/products/create" method="POST" enctype="multipart/form-data">
+                <!-- Basic Information -->
+                <div class="form-group">
+                    <label for="id">Product ID</label>
+                    <input type="text" id="id" name="id" required>
+                    <span class="error-message" id="idError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Product Name</label>
+                    <input type="text" id="name" name="name" required>
+                    <span class="error-message" id="nameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="brand">Brand</label>
+                    <select id="brand" name="brand" required>
+                        <option value="" disabled selected>Select a brand</option>
+                        <option value="Rolex">Rolex</option>
+                        <option value="Omega">Omega</option>
+                        <option value="Cartier">Cartier</option>
+                        <option value="Patek Philippe">Patek Philippe</option>
+                        <option value="Audemars Piguet">Audemars Piguet</option>
+                        <option value="Lange & Sohne">Lange & Sohne</option>
+                        <option value="Vacheron Constantin">Vacheron Constantin</option>
+                        <option value="Jacob & Co">Jacob & Co</option>
+                        <option value="Richard Mille">Richard Mille</option>
+                        <option value="Breitling">Breitling</option>
+                    </select>
+                    <span class="error-message" id="brandError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Vcollection">Collection</label>
+                    <select id="Vcollection" name="Vcollection" required>
+                        <option value="" disabled selected>Select a collection</option>
+                        <option value="Classic & Dress">Classic & Dress</option>
+                        <option value="Casual & Everyday">Casual & Everyday</option>
+                        <option value="Sports & Adventure">Sports & Adventure</option>
+                        <option value="Aviation & Travel">Aviation & Travel</option>
+                        <option value="Luxury & Heritage">Luxury & Heritage</option>
+                    </select>
+                    <span class="error-message" id="collectionError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="" disabled selected>Select gender</option>
+                        <option value="Men">Men</option>
+                        <option value="Women">Women</option>
+                        <option value="Unisex">Unisex</option>
+                    </select>
+                    <span class="error-message" id="genderError"></span>
+                </div>
+
+                <!-- Technical Specifications -->
+                <div class="form-group">
+                    <label for="strapMaterial">Strap Material</label>
+                    <input type="text" id="strapMaterial" name="strapMaterial" required>
+                    <span class="error-message" id="strapMaterialError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="movement">Movement</label>
+                    <input type="text" id="movement" name="movement" required>
+                    <span class="error-message" id="movementError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="waterResistance">Water Resistance</label>
+                    <input type="text" id="waterResistance" name="waterResistance" required>
+                    <span class="error-message" id="waterResistanceError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="caseMaterial">Case Material</label>
+                    <input type="text" id="caseMaterial" name="caseMaterial" required>
+                    <span class="error-message" id="caseMaterialError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="dialColor">Dial Color</label>
+                    <input type="text" id="dialColor" name="dialColor" required>
+                    <span class="error-message" id="dialColorError"></span>
+                </div>
+
+                <!-- Pricing and Stock -->
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" id="price" name="price" min="0" step="0.01" required>
+                    <span class="error-message" id="priceError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="stockCount">Stock Count</label>
+                    <input type="number" id="stockCount" name="stockCount" min="0" required>
+                    <span class="error-message" id="stockCountError"></span>
+                </div>
+
+                <!-- Media -->
+                <div class="form-group full-width">
+                    <label for="image">Main Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png" required class="file-input">
+                        <div class="image-preview-container">
+                            <img id="imagePreview" src="#" alt="Image Preview" class="image-preview hidden">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload main image (.jpg, .jpeg, .png)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="error-message" id="imageError"></span>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="galleryImages">Gallery Images</label>
+                    <div class="gallery-upload-container">
+                        <input type="file" id="galleryImages" name="galleryImages" accept=".jpg,.jpeg,.png" multiple class="file-input">
+                        <div class="gallery-preview-container">
+                            <div id="galleryPreview" class="gallery-preview"></div>
+                            <div class="upload-placeholder">
+                                <i class="fas fa-images"></i>
+                                <span>Click to upload gallery images (.jpg, .jpeg, .png)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="error-message" id="galleryImagesError"></span>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="video">Video</label>
+                    <div class="video-upload-container">
+                        <input type="file" id="video" name="video" accept=".mp4" class="file-input">
+                        <div class="video-preview-container">
+                            <video id="videoPreview" class="video-preview hidden" controls></video>
+                            <div class="upload-placeholder">
+                                <i class="fas fa-video"></i>
+                                <span>Click to upload video (.mp4)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="error-message" id="videoError"></span>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="model3D">3D Model</label>
+                    <div class="model-upload-container">
+                        <input type="file" id="model3D" name="model3D" accept=".glb" class="file-input">
+                        <div class="model-preview-container">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cube"></i>
+                                <span>Click to upload 3D model (.glb)</span>
                             </div>
                         </div>
                     </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> <%= user.name %> | Account Details</title>
+    <title><%= user?.Name || 'User' %> | Account Details</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
@@ -39,12 +39,12 @@
                 
                 <div class="form-group">
                     <label class="form-label">Full Name</label>
-                    <div class="form-value"><%= user.name %></div>
+                    <div class="form-value"><%= user?.Name || 'Not provided' %></div>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Email</label>
-                    <div class="form-value"><%= user.email %></div>
+                    <div class="form-value"><%= user?.email || 'Not provided' %></div>
                 </div>
     
                 <div class="form-group">
@@ -54,7 +54,7 @@
     
                 <div class="form-group">
                     <label class="form-label">Date of Birth</label>
-                    <div class="form-value"><%= user.dob %></div>
+                    <div class="form-value"><%= user?.DOB ? new Date(user.DOB).toLocaleDateString() : 'Not provided' %></div>
                 </div>
     
                 <div class="form-group">
@@ -63,15 +63,15 @@
                         <select id="countrySelect" class="country-select">
                             <!-- Options populated by JavaScript -->
                         </select>
-                        <input id="phoneNumber" type="tel" value="<%= user.phone %>" placeholder="Phone number">
+                        <input id="phoneNumber" type="tel" value="<%= user?.phone_number || '' %>" placeholder="Phone number">
                     </div>
                 </div>
     
                 <div class="form-group">
                     <label class="form-label">Preferred Language</label>
                     <select id="languageSelect">
-                        <option value="English" <%= user.language === 'English' ? 'selected' : '' %>>English</option>
-                        <option value="Arabic" <%= user.language === 'Arabic' ? 'selected' : '' %>>Arabic</option>
+                        <option value="English" <%= user?.language === 'English' ? 'selected' : '' %>>English</option>
+                        <option value="Arabic" <%= user?.language === 'Arabic' ? 'selected' : '' %>>Arabic</option>
                     </select>
                 </div>
             </div>
@@ -81,19 +81,25 @@
                 <div class="section-title">My Addresses</div>
                 
                 <div class="address-list">
-                    <div class="address-card default">
-                        <div class="address-header">
-                            <h4><%= user.address.addressType %> Address</h4>
-                            <span class="default-badge">Default</span>
+                    <% if (user?.Address) { %>
+                        <div class="address-card default">
+                            <div class="address-header">
+                                <h4><%= user.Address.addressType || 'Home' %> Address</h4>
+                                <span class="default-badge">Default</span>
+                            </div>
+                            <p><%= user.Address.street || 'No street provided' %></p>
+                            <p><%= user.Address.city || '' %><%= user.Address.city && user.Address.state ? ', ' : '' %><%= user.Address.state || '' %></p>
+                            <p><%= user.Address.country || '' %></p>
+                            <div class="address-actions">
+                                <button class="edit-address">Edit</button>
+                                <button class="remove-address">Remove</button>
+                            </div>
                         </div>
-                        <p><%= user.address.street %></p>
-                        <p><%= user.address.city %>, <%= user.address.state %></p>
-                        <p><%= user.address.country %></p>
-                        <div class="address-actions">
-                            <button class="edit-address">Edit</button>
-                            <button class="remove-address">Remove</button>
+                    <% } else { %>
+                        <div class="no-addresses">
+                            <p>No addresses have been added yet.</p>
                         </div>
-                    </div>
+                    <% } %>
                     
                     <button class="add-address-btn">
                         <i class="fas fa-plus"></i> Add New Address
@@ -117,7 +123,7 @@
                 </div>
                 
                 <div class="orders-list">
-                    <% if (user.orders && user.orders.length > 0) { %>
+                    <% if (user?.orders && user.orders.length > 0) { %>
                         <% user.orders.forEach(order => { %>
                             <div class="order-card">
                                 <div class="order-header">
@@ -128,15 +134,19 @@
                                 </div>
                                 
                                 <div class="order-products">
-                                    <% order.items.forEach(item => { %>
-                                        <div class="order-product">
-                                            <img src="<%= item.product.image %>" alt="<%= item.product.name %>">
-                                            <div class="product-info">
-                                                <h5><%= item.product.name %></h5>
-                                                <p>Qty: <%= item.quantity %></p>
-                                            </div>
-                                        </div>
-                                    <% }); %>
+                                    <% if (order.items && order.items.length > 0) { %>
+                                        <% order.items.forEach(item => { %>
+                                            <% if (item && item.product) { %>
+                                                <div class="order-product">
+                                                    <img src="<%= item.product.image || '/Assets/Images/product-placeholder.jpg' %>" alt="<%= item.product.name || 'Product' %>">
+                                                    <div class="product-info">
+                                                        <h5><%= item.product.name || 'Unknown Product' %></h5>
+                                                        <p>Qty: <%= item.quantity || 1 %></p>
+                                                    </div>
+                                                </div>
+                                            <% } %>
+                                        <% }); %>
+                                    <% } %>
                                 </div>
                                 
                                 <div class="order-actions">
@@ -162,21 +172,23 @@
                 <div class="section-title">My Wishlist</div>
                 
                 <div class="wishlist-grid">
-                    <% if (user.wishlist && user.wishlist.length > 0) { %>
+                    <% if (user?.wishlist && user.wishlist.length > 0) { %>
                         <% user.wishlist.forEach(item => { %>
-                            <div class="wishlist-item">
-                                <div class="wishlist-image">
-                                    <img src="<%= item.product.image %>" alt="<%= item.product.name %>">
-                                    <button class="remove-wishlist" data-product-id="<%= item.product._id %>">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                            <% if (item && item.product) { %>
+                                <div class="wishlist-item">
+                                    <div class="wishlist-image">
+                                        <img src="<%= item.product.image || '/Assets/Images/product-placeholder.jpg' %>" alt="<%= item.product.name || 'Product' %>">
+                                        <button class="remove-wishlist" data-product-id="<%= item.product._id %>">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="wishlist-details">
+                                        <h5><%= item.product.name || 'Unknown Product' %></h5>
+                                        <div class="wishlist-price">$<%= item.product.price ? item.product.price.toFixed(2) : '0.00' %></div>
+                                        <button class="add-to-cart" data-product-id="<%= item.product._id %>">Add to Cart</button>
+                                    </div>
                                 </div>
-                                <div class="wishlist-details">
-                                    <h5><%= item.product.name %></h5>
-                                    <div class="wishlist-price">$<%= item.product.price.toFixed(2) %></div>
-                                    <button class="add-to-cart" data-product-id="<%= item.product._id %>">Add to Cart</button>
-                                </div>
-                            </div>
+                            <% } %>
                         <% }); %>
                     <% } else { %>
                         <div class="no-wishlist">
@@ -191,7 +203,7 @@
                 <div class="section-title">My Refunds</div>
                 
                 <div class="refunds-list">
-                    <% if (user.refunds && user.refunds.length > 0) { %>
+                    <% if (user?.refunds && user.refunds.length > 0) { %>
                         <% user.refunds.forEach(refund => { %>
                             <div class="refund-card <%= refund.status.toLowerCase() %>">
                                 <div class="refund-header">
@@ -199,10 +211,16 @@
                                     <div class="refund-status"><%= refund.status %></div>
                                 </div>
                                 <div class="refund-details">
-                                    <p><strong>Order:</strong> #<%= refund.order.orderId %> - <%= refund.order.items[0].product.name %></p>
-                                    <p><strong>Reason:</strong> <%= refund.reason %></p>
-                                    <p><strong>Amount:</strong> $<%= refund.amount.toFixed(2) %></p>
-                                    <p><strong><%= refund.status === 'Pending' ? 'Requested' : 'Processed' %> on:</strong> <%= new Date(refund.date).toLocaleDateString() %></p>
+                                    <% if (refund.order && refund.order.orderId) { %>
+                                        <p><strong>Order:</strong> #<%= refund.order.orderId %> 
+                                            <% if (refund.order.items && refund.order.items.length > 0 && refund.order.items[0].product) { %>
+                                                - <%= refund.order.items[0].product.name || 'Product' %>
+                                            <% } %>
+                                        </p>
+                                    <% } %>
+                                    <p><strong>Reason:</strong> <%= refund.reason || 'Not specified' %></p>
+                                    <p><strong>Amount:</strong> $<%= refund.amount ? refund.amount.toFixed(2) : '0.00' %></p>
+                                    <p><strong><%= refund.status === 'Pending' ? 'Requested' : 'Processed' %> on:</strong> <%= refund.date ? new Date(refund.date).toLocaleDateString() : 'Unknown date' %></p>
                                 </div>
                                 <div class="refund-actions">
                                     <button class="view-details">View Details</button>
@@ -225,28 +243,28 @@
                 <div class="section-title">Payment Methods</div>
                 
                 <div class="payment-methods-list">
-                    <% if (user.payment && user.payment.cardNumber) { %>
-                    <div class="payment-method-card default">
-                        <div class="payment-method-header">
-                            <div class="payment-method-type">
-                                <i class="fab fa-cc-<%= user.payment.paymentType.toLowerCase().includes('visa') ? 'visa' : 'mastercard' %>"></i>
-                                <span><%= user.payment.paymentType %></span>
+                    <% if (user?.Payment && user.Payment.cardNumber) { %>
+                        <div class="payment-method-card default">
+                            <div class="payment-method-header">
+                                <div class="payment-method-type">
+                                    <i class="fab fa-cc-<%= (user.Payment.paymentType && user.Payment.paymentType.toLowerCase().includes('visa')) ? 'visa' : 'mastercard' %>"></i>
+                                    <span><%= user.Payment.paymentType || 'Credit Card' %></span>
+                                </div>
+                                <span class="default-badge">Default</span>
                             </div>
-                            <span class="default-badge">Default</span>
+                            <div class="payment-method-details">
+                                <p>**** **** **** <%= user.Payment.cardNumber.slice(-4) %></p>
+                                <p>Expires <%= user.Payment.expiryDate || 'N/A' %></p>
+                            </div>
+                            <div class="payment-method-actions">
+                                <button class="edit-method">Edit</button>
+                                <button class="remove-method">Remove</button>
+                            </div>
                         </div>
-                        <div class="payment-method-details">
-                            <p>**** **** **** <%= user.payment.cardNumber.slice(-4) %></p>
-                            <p>Expires <%= user.payment.expiryDate %></p>
-                        </div>
-                        <div class="payment-method-actions">
-                            <button class="edit-method">Edit</button>
-                            <button class="remove-method">Remove</button>
-                        </div>
-                    </div>
                     <% } else { %>
-                    <div class="no-payment-methods">
-                        <p>No payment methods added yet.</p>
-                    </div>
+                        <div class="no-payment-methods">
+                            <p>No payment methods added yet.</p>
+                        </div>
                     <% } %>
                     
                     <button class="add-payment-method">
@@ -260,32 +278,34 @@
                 <div class="section-title">My Reviews</div>
                 
                 <div class="reviews-list">
-                    <% if (user.reviews && user.reviews.length > 0) { %>
+                    <% if (user?.reviews && user.reviews.length > 0) { %>
                         <% user.reviews.forEach(review => { %>
-                            <div class="review-card">
-                                <div class="review-header">
-                                    <div class="review-product">
-                                        <img src="<%= review.product.image %>" alt="<%= review.product.name %>">
-                                        <h5><%= review.product.name %></h5>
-                                    </div>
-                                    <div class="review-rating">
-                                        <div class="stars">
-                                            <% for(let i = 1; i <= 5; i++) { %>
-                                                <i class="<%= i <= review.rating ? 'fas' : 'far' %> fa-star"></i>
-                                            <% } %>
+                            <% if (review && review.product) { %>
+                                <div class="review-card">
+                                    <div class="review-header">
+                                        <div class="review-product">
+                                            <img src="<%= review.product.image || '/Assets/Images/product-placeholder.jpg' %>" alt="<%= review.product.name || 'Product' %>">
+                                            <h5><%= review.product.name || 'Unknown Product' %></h5>
                                         </div>
-                                        <div class="review-date"><%= new Date(review.date).toLocaleDateString() %></div>
+                                        <div class="review-rating">
+                                            <div class="stars">
+                                                <% for(let i = 1; i <= 5; i++) { %>
+                                                    <i class="<%= i <= review.rating ? 'fas' : 'far' %> fa-star"></i>
+                                                <% } %>
+                                            </div>
+                                            <div class="review-date"><%= review.date ? new Date(review.date).toLocaleDateString() : 'Unknown date' %></div>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <h6><%= review.title || '' %></h6>
+                                        <p><%= review.content || 'No content provided.' %></p>
+                                    </div>
+                                    <div class="review-actions">
+                                        <button class="edit-review" data-review-id="<%= review._id %>">Edit Review</button>
+                                        <button class="delete-review" data-review-id="<%= review._id %>">Delete</button>
                                     </div>
                                 </div>
-                                <div class="review-content">
-                                    <h6><%= review.title %></h6>
-                                    <p><%= review.content %></p>
-                                </div>
-                                <div class="review-actions">
-                                    <button class="edit-review" data-review-id="<%= review._id %>">Edit Review</button>
-                                    <button class="delete-review" data-review-id="<%= review._id %>">Delete</button>
-                                </div>
-                            </div>
+                            <% } %>
                         <% }); %>
                     <% } else { %>
                         <div class="no-reviews">
@@ -299,11 +319,10 @@
     
     <%- include('partials/footer') %>
 
-
     <%- include('partials/notification', { 
-        type: locals.type || 'error',
-        message: locals.message || 'An error occurred',
-        show: locals.show || false 
+        type: type || 'info',
+        message: message || '',
+        show: show || false 
     }) %>
 
 </body>

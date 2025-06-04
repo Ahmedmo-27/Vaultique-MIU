@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/LoginSignup.css">
+    <link rel="stylesheet" href="/CSS/notifications.css">
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Javascript/nav-bar.js"></script>
+    <script src="/Javascript/notifications.js"></script>
+    <script src="/Javascript/auth.js"></script>
+    <script defer src="/Javascript/LoginSignup.js"></script>
+    <script src="/Javascript/Light-Mode.js"></script>
+</head>
+
+<body>
+
+    <%- include('partials/loading-screen') %>
+    <%- include('partials/navigation') %>
+
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline class="bg-video">
+        <source src="/Assets/Videos/AUDEMARS PIGUET.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Flipping Container -->
+    <div class="flip-container">
+        <div class="inner-container">
+            <!-- Login Form -->
+            <div id="login-form" class="form-container">
+                <h2>Login</h2>
+                <form id="login-form-id" autocomplete="off">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" autocomplete="new-email" required>
+                    </div>
+                    <div class="input-group password-container">
+                        <label for="password">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="password" placeholder="Enter your password" autocomplete="new-password" required>
+                            <span class="toggle-password"><i class="far fa-eye"></i></span>
+                        </div>
+                    </div>
+                    <div class="options">
+                        <label><input type="checkbox"> Remember me</label>
+                        <a href="#" id="forgot-password">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="button-login-signup">Login</button>
+                    
+                    <div class="social-login">
+                        <div class="social-divider">or continue with</div>
+                        <div class="social-buttons">
+                            <button class="social-btn btn-google">
+                                <i class="fab fa-google"></i>
+                                <span>Google</span>
+                            </button>
+                            <button class="social-btn btn-facebook">
+                                <i class="fab fa-facebook-f"></i>
+                                <span>Facebook</span>
+                            </button>
+                        </div>
+                    </div>
+                    <p>Don't have an account? <a href="#" id="register-link">Register</a></p>
+                </form>
+            </div>
+
+            <!-- Multi-step Signup Form -->
+            <div id="signup-form" class="form-container">
+                <h2>Sign Up</h2>
+                <form id="signup-form-id">
+                    <!-- Step 1 -->
+                    <div class="signup-step" id="step1">
+                        <div class="input-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" placeholder="Enter your username" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="email-signup">Email</label>
+                            <input type="email" id="email-signup" placeholder="Enter your email" required>
+                        </div>
+                        <div class="input-group password-container">
+                            <label for="password-signup">Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="password-signup" placeholder="At least 8 characters with 1 capital letter and number" required>
+                                <span class="toggle-password"><i class="far fa-eye"></i></span>
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-meter"></div>
+                                <div class="strength-text"></div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="phone">Phone Number (Optional)</label>
+                            <input type="tel" id="phone" placeholder="Enter your phone number">
+                        </div>
+                        <div class="input-group">
+                            <label for="dob">Date of Birth (Optional)</label>
+                            <input type="date" id="dob">
+                        </div>
+                        <div class="input-group">
+                            <label for="language-signup">Preferred Language</label>
+                            <select class="select-option" id="language-signup">
+                                <option value="English">English</option>
+                                <option value="Arabic">Arabic</option>
+                            </select>
+                        </div>
+                        <button type="button" id="next-step1" class="next-btn">Next</button>
+                    </div>
+
+                    <!-- Step 2 - Address -->
+                    <div class="signup-step" id="step2" style="display:none;">
+                        <h3>Address Information</h3>
+                        <div class="input-group">
+                            <label for="street">Street Address</label>
+                            <input type="text" id="street" placeholder="123 Main St">
+                        </div>
+                        <div class="input-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" placeholder="City">
+                        </div>
+                        <div class="input-group">
+                            <label for="state">State/Province</label>
+                            <input type="text" id="state" placeholder="State/Province">
+                        </div>
+                        <div class="input-group">
+                            <label for="zip">ZIP/Postal Code</label>
+                            <input type="text" id="zip" placeholder="ZIP/Postal Code">
+                        </div>
+                        <div class="input-group">
+                            <label for="country">Country</label>
+                            <select class="select-option" id="country">
+                                <option value="">Select country</option>
+                                <option value="US">United States</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="EG">Egypt</option>
+                            </select>
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" id="prev-step2" class="prev-btn">Back</button>
+                            <button type="button" id="skip-step2" class="skip-btn">Skip for now</button>
+                            <button type="button" id="next-step2" class="next-btn">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 - Payment -->
+                    <div class="signup-step" id="step3" style="display:none;">
+                        <h3>Payment Information</h3>
+                        <div class="input-group">
+                            <label for="card-type">Card Type</label>
+                            <select class="select-option" id="card-type">
+                                <option value="">Select card type</option>
+                                <option value="visa">Visa</option>
+                                <option value="mastercard">Mastercard</option>
+                                <option value="amex">American Express</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="card-number">Card Number</label>
+                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456">
+                        </div>
+                        <div class="input-group-row">
+                            <div class="input-group">
+                                <label for="expiry">Expiry Date</label>
+                                <input type="text" id="expiry" placeholder="MM/YY">
+                            </div>
+                            <div class="input-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" placeholder="123">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="card-name">Name on Card</label>
+                            <input type="text" id="card-name" placeholder="John Doe">
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" id="prev-step3" class="prev-btn">Back</button>
+                            <button type="button" id="complete-signup" class="submit-btn">Complete Sign Up</button>
+                        </div>
+                    </div>
+                </form>
+                <p>Already have an account? <a href="#" id="login-link">Login</a></p>
+            </div>
+
+            <!-- Forgot Password Container -->
+            <div id="forgot-password-container" class="forgot-password-container">
+                <div class="forgot-password-box">
+                    <h3>Enter your email</h3>
+                    <input type="email" id="forgot-email" placeholder="Your email">
+                    <button id="send-reset-link">Send Reset Link</button>
+                    <button id="close-forgot-password">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
