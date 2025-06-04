@@ -1,20 +1,20 @@
-const User = require('../models/Users');
-const Product = require('../models/Products');
-const Order = require('../models/Orders');
-const Collection = require('../models/Collections');
-const Brand = require('../models/Brands');
-const Todo = require('../models/Todos');
-const Session = require('../models/Sessions');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const validator = require('validator');
+const User = require("../models/Users");
+const Product = require("../models/Products");
+const Order = require("../models/Orders");
+const Collection = require("../models/Collections");
+const Brand = require("../models/Brands");
+const Todo = require("../models/Todos");
+const Session = require("../models/Sessions");
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const validator = require("validator");
 
 // Load users from database
 const loadUsers = async () => {
   try {
     // Check database connection
     if (!mongoose.connection.readyState) {
-      throw new Error('Database connection not established');
+      throw new Error("Database connection not established");
     }
 
     // Try to load users with timeout
@@ -30,28 +30,28 @@ const loadUsers = async () => {
           role: 1,
           createdAt: 1,
           Address: 1,
-          'Payment.cardHolder': 1,
-          'Payment.expiryDate': 1,
-          'Payment.paymentType': 1,
+          "Payment.cardHolder": 1,
+          "Payment.expiryDate": 1,
+          "Payment.paymentType": 1,
         })
         .sort({ createdAt: -1 }),
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Database query timeout')), 5000)
+        setTimeout(() => reject(new Error("Database query timeout")), 5000)
       ),
     ]);
 
     if (!users || !Array.isArray(users)) {
-      throw new Error('Invalid user data received from database');
+      throw new Error("Invalid user data received from database");
     }
 
     console.log(`Successfully loaded ${users.length} users`);
     return users;
   } catch (error) {
-    console.error('Error loading users:', error);
-    if (error.name === 'MongoError') {
-      throw new Error('Database error occurred while loading users');
-    } else if (error.name === 'ValidationError') {
-      throw new Error('Invalid user data in database');
+    console.error("Error loading users:", error);
+    if (error.name === "MongoError") {
+      throw new Error("Database error occurred while loading users");
+    } else if (error.name === "ValidationError") {
+      throw new Error("Invalid user data in database");
     } else {
       throw new Error(`Failed to load users: ${error.message}`);
     }
@@ -78,7 +78,7 @@ exports.getDashboard = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching dashboard data',
+      message: "Error fetching dashboard data",
       error: error.message,
     });
   }
@@ -87,7 +87,7 @@ exports.getDashboard = async (req, res) => {
 // User Management
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password -Payment');
+    const users = await User.find().select("-password -Payment");
     res.status(200).json({
       success: true,
       data: users,
@@ -95,167 +95,167 @@ exports.getAllUsers = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching users',
+      message: "Error fetching users",
       error: error.message,
     });
   }
 };
 
 exports.getUserById = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        console.log('Fetching user with ID:', userId);
-        
-        // Validate the ID format
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            console.log('Invalid user ID format:', userId);
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid user ID format'
-            });
-        }
-
-        // Find user and explicitly select fields
-        const user = await User.findById(userId).select({
-            Name: 1,
-            username: 1,
-            email: 1,
-            DOB: 1,
-            phone_number: 1,
-            language: 1,
-            role: 1,
-            Address: 1,
-            createdAt: 1
-        });
-        
-        if (!user) {
-            console.log('User not found with ID:', userId);
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-
-        console.log('Successfully fetched user:', user);
-        res.status(200).json({
-            success: true,
-            data: user
-        });
-    } catch (error) {
-        console.error('Error in getUserById:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching user',
-            error: error.message
-        });
+  try {
+    const userId = req.params.id;
+    console.log('Fetching user with ID:', userId);
+    
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log('Invalid user ID format:', userId);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format'
+      });
     }
+
+    // Find user and explicitly select fields
+    const user = await User.findById(userId).select({
+      Name: 1,
+      username: 1,
+      email: 1,
+      DOB: 1,
+      phone_number: 1,
+      language: 1,
+      role: 1,
+      Address: 1,
+      createdAt: 1
+    });
+    
+    if (!user) {
+      console.log('User not found with ID:', userId);
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    console.log('Successfully fetched user:', user);
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    console.error('Error in getUserById:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching user',
+      error: error.message
+    });
+  }
 };
 
 exports.updateUser = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        
-        // Only allow specific fields to be updated
-        const allowedFields = [
-            'Name',
-            'username',
-            'email',
-            'phone_number',
-            'DOB',
-            'language',
-            'role',
-            'Address'
-        ];
+  try {
+    const userId = req.params.id;
+    
+    // Only allow specific fields to be updated
+    const allowedFields = [
+      'Name',
+      'username',
+      'email',
+      'phone_number',
+      'DOB',
+      'language',
+      'role',
+      'Address'
+    ];
 
-        // Filter out any fields that aren't in the allowed list
-        const updateData = Object.keys(req.body)
-            .filter(key => allowedFields.includes(key))
-            .reduce((obj, key) => {
-                obj[key] = req.body[key];
-                return obj;
-            }, {});
+    // Filter out any fields that aren't in the allowed list
+    const updateData = Object.keys(req.body)
+      .filter(key => allowedFields.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = req.body[key];
+        return obj;
+      }, {});
 
-        // Validate the ID format
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid user ID format'
-            });
-        }
-
-        // Get the current user data
-        const currentUser = await User.findById(userId);
-        if (!currentUser) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-
-        // Only check for duplicates if email or username is being changed
-        if (updateData.email && updateData.email.toLowerCase() !== currentUser.email.toLowerCase()) {
-            const existingEmail = await User.findOne({ 
-                email: updateData.email.toLowerCase(),
-                _id: { $ne: userId }
-            });
-            if (existingEmail) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Email is already taken by another user'
-                });
-            }
-        }
-
-        if (updateData.username && updateData.username !== currentUser.username) {
-            const existingUsername = await User.findOne({ 
-                username: updateData.username,
-                _id: { $ne: userId }
-            });
-            if (existingUsername) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Username is already taken by another user'
-                });
-            }
-        }
-
-        // Handle password update
-        if (req.body.password) {
-            const salt = await bcrypt.genSalt(10);
-            updateData.password = await bcrypt.hash(req.body.password, salt);
-        }
-
-        // Update the user using findOneAndUpdate with strict field selection
-        const updatedUser = await User.findOneAndUpdate(
-            { _id: userId },
-            { $set: updateData },
-            { 
-                new: true, 
-                runValidators: true,
-                select: 'Name username email DOB phone_number language role Address createdAt' // Explicitly select only these fields
-            }
-        );
-
-        if (!updatedUser) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: 'User updated successfully',
-            data: updatedUser
-        });
-    } catch (error) {
-        console.error('Error updating user:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error updating user',
-            error: error.message
-        });
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format'
+      });
     }
+
+    // Get the current user data
+    const currentUser = await User.findById(userId);
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Only check for duplicates if email or username is being changed
+    if (updateData.email && updateData.email.toLowerCase() !== currentUser.email.toLowerCase()) {
+      const existingEmail = await User.findOne({ 
+        email: updateData.email.toLowerCase(),
+        _id: { $ne: userId }
+      });
+      if (existingEmail) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is already taken by another user'
+        });
+      }
+    }
+
+    if (updateData.username && updateData.username !== currentUser.username) {
+      const existingUsername = await User.findOne({ 
+        username: updateData.username,
+        _id: { $ne: userId }
+      });
+      if (existingUsername) {
+        return res.status(400).json({
+          success: false,
+          message: 'Username is already taken by another user'
+        });
+      }
+    }
+
+    // Handle password update
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    // Update the user using findOneAndUpdate with strict field selection
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: updateData },
+      { 
+        new: true, 
+        runValidators: true,
+        select: 'Name username email DOB phone_number language role Address createdAt'
+      }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully',
+      data: updatedUser
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating user',
+      error: error.message
+    });
+  }
 };
 
 exports.deleteUser = async (req, res) => {
@@ -282,8 +282,7 @@ exports.deleteUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const { Name, username, email, password, DOB, phone_number, language, role, Address, Payment } =
-      req.body;
+    const { Name, username, email, password, DOB, phone_number, language, role, Address, Payment } = req.body;
 
     // Validate required fields
     if (!Name || !username || !email || !password) {
@@ -325,8 +324,8 @@ exports.addUser = async (req, res) => {
       password: hashedPassword,
       DOB: DOB || undefined,
       phone_number: phone_number || undefined,
-      language: language || 'English',
-      role: role || 'user', // Default to 'user' if role not specified
+      language: language || "English",
+      role: role || "user",
       Address: Address || undefined,
       Payment: Payment || undefined,
     });
@@ -335,10 +334,8 @@ exports.addUser = async (req, res) => {
     await newUser.save();
 
     // Remove sensitive information from response
-    //        // Remove sensitive information before sending response
     const userResponse = newUser.toObject();
     delete userResponse.password;
-
     delete userResponse.Payment;
     if (userResponse.Payment) {
       delete userResponse.Payment.cvv;
@@ -373,7 +370,7 @@ exports.getAllProducts = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching products',
+      message: "Error fetching products",
       error: error.message,
     });
   }
@@ -602,17 +599,17 @@ exports.deleteProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found',
+        message: "Product not found",
       });
     }
     res.status(200).json({
       success: true,
-      message: 'Product deleted successfully',
+      message: "Product deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error deleting product',
+      message: "Error deleting product",
       error: error.message,
     });
   }
@@ -621,7 +618,7 @@ exports.deleteProduct = async (req, res) => {
 // Order Management
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate('user', 'Name email');
+    const orders = await Order.find().populate("user", "Name email");
     res.status(200).json({
       success: true,
       data: orders,
@@ -629,7 +626,7 @@ exports.getAllOrders = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching orders',
+      message: "Error fetching orders",
       error: error.message,
     });
   }
@@ -637,11 +634,14 @@ exports.getAllOrders = async (req, res) => {
 
 exports.getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('user', 'Name email');
+    const order = await Order.findById(req.params.id).populate(
+      "user",
+      "Name email"
+    );
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: 'Order not found',
+        message: "Order not found",
       });
     }
     res.status(200).json({
@@ -651,7 +651,7 @@ exports.getOrderById = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching order',
+      message: "Error fetching order",
       error: error.message,
     });
   }
@@ -669,7 +669,7 @@ exports.updateOrderStatus = async (req, res) => {
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: 'Order not found',
+        message: "Order not found",
       });
     }
 
@@ -680,7 +680,7 @@ exports.updateOrderStatus = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error updating order status',
+      message: "Error updating order status",
       error: error.message,
     });
   }
@@ -697,7 +697,7 @@ exports.getAllCollections = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching collections',
+      message: "Error fetching collections",
       error: error.message,
     });
   }
@@ -713,7 +713,7 @@ exports.createCollection = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error creating collection',
+      message: "Error creating collection",
       error: error.message,
     });
   }
@@ -721,15 +721,16 @@ exports.createCollection = async (req, res) => {
 
 exports.updateCollection = async (req, res) => {
   try {
-    const collection = await Collection.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const collection = await Collection.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
 
     if (!collection) {
       return res.status(404).json({
         success: false,
-        message: 'Collection not found',
+        message: "Collection not found",
       });
     }
 
@@ -740,7 +741,7 @@ exports.updateCollection = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error updating collection',
+      message: "Error updating collection",
       error: error.message,
     });
   }
@@ -752,17 +753,17 @@ exports.deleteCollection = async (req, res) => {
     if (!collection) {
       return res.status(404).json({
         success: false,
-        message: 'Collection not found',
+        message: "Collection not found",
       });
     }
     res.status(200).json({
       success: true,
-      message: 'Collection deleted successfully',
+      message: "Collection deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error deleting collection',
+      message: "Error deleting collection",
       error: error.message,
     });
   }
@@ -779,7 +780,7 @@ exports.getAllBrands = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching brands',
+      message: "Error fetching brands",
       error: error.message,
     });
   }
@@ -795,7 +796,7 @@ exports.createBrand = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error creating brand',
+      message: "Error creating brand",
       error: error.message,
     });
   }
@@ -811,7 +812,7 @@ exports.updateBrand = async (req, res) => {
     if (!brand) {
       return res.status(404).json({
         success: false,
-        message: 'Brand not found',
+        message: "Brand not found",
       });
     }
 
@@ -822,7 +823,7 @@ exports.updateBrand = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error updating brand',
+      message: "Error updating brand",
       error: error.message,
     });
   }
@@ -834,17 +835,17 @@ exports.deleteBrand = async (req, res) => {
     if (!brand) {
       return res.status(404).json({
         success: false,
-        message: 'Brand not found',
+        message: "Brand not found",
       });
     }
     res.status(200).json({
       success: true,
-      message: 'Brand deleted successfully',
+      message: "Brand deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error deleting brand',
+      message: "Error deleting brand",
       error: error.message,
     });
   }
@@ -856,8 +857,8 @@ exports.getSalesAnalytics = async (req, res) => {
     const salesData = await Order.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          totalSales: { $sum: '$total' },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          totalSales: { $sum: "$total" },
           orderCount: { $sum: 1 },
         },
       },
@@ -871,7 +872,7 @@ exports.getSalesAnalytics = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching sales analytics',
+      message: "Error fetching sales analytics",
       error: error.message,
     });
   }
@@ -882,7 +883,7 @@ exports.getUserAnalytics = async (req, res) => {
     const userData = await User.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
           newUsers: { $sum: 1 },
         },
       },
@@ -896,7 +897,7 @@ exports.getUserAnalytics = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching user analytics',
+      message: "Error fetching user analytics",
       error: error.message,
     });
   }
@@ -905,23 +906,25 @@ exports.getUserAnalytics = async (req, res) => {
 exports.getProductAnalytics = async (req, res) => {
   try {
     const productData = await Order.aggregate([
-      { $unwind: '$items' },
+      { $unwind: "$items" },
       {
         $group: {
-          _id: '$items.product',
-          totalSold: { $sum: '$items.quantity' },
-          totalRevenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } },
+          _id: "$items.product",
+          totalSold: { $sum: "$items.quantity" },
+          totalRevenue: {
+            $sum: { $multiply: ["$items.price", "$items.quantity"] },
+          },
         },
       },
       {
         $lookup: {
-          from: 'products',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'productDetails',
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails",
         },
       },
-      { $unwind: '$productDetails' },
+      { $unwind: "$productDetails" },
     ]);
 
     res.status(200).json({
@@ -931,7 +934,7 @@ exports.getProductAnalytics = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching product analytics',
+      message: "Error fetching product analytics",
       error: error.message,
     });
   }
@@ -944,19 +947,19 @@ exports.renderDashboard = async (req, res) => {
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
     const totalSales = await Order.aggregate([
-      { $match: { status: 'Completed' } },
-      { $group: { _id: null, total: { $sum: '$total' } } },
+      { $match: { status: "Completed" } },
+      { $group: { _id: null, total: { $sum: "$total" } } },
     ]);
 
     const recentOrders = await Order.find()
       .sort({ dateOrder: -1 })
       .limit(5)
-      .populate('user', 'name');
+      .populate("user", "name");
 
     const todos = await Todo.find().sort({ createdAt: -1 }).limit(5);
 
-    res.render('AdminHubHomePage', {
-      title: 'Admin Dashboard',
+    res.render("AdminHubHomePage", {
+      title: "Admin Dashboard",
       totalUsers,
       totalProducts,
       totalOrders,
@@ -966,10 +969,10 @@ exports.renderDashboard = async (req, res) => {
       user: req.user,
     });
   } catch (error) {
-    res.status(500).render('error', {
-      title: 'Error',
-      type: 'error',
-      message: 'Error loading dashboard',
+    res.status(500).render("error", {
+      title: "Error",
+      type: "error",
+      message: "Error loading dashboard",
       error: error.message,
     });
   }
@@ -992,12 +995,14 @@ exports.renderUsers = async (req, res) => {
     // If editing a specific user
     let editUser = null;
     if (req.query.edit) {
-      editUser = allUsers.find((user) => user._id.toString() === req.query.edit);
+      editUser = allUsers.find(
+        (user) => user._id.toString() === req.query.edit
+      );
       if (!editUser) {
-        return res.status(404).render('error', {
-          title: 'Error',
-          type: 'error',
-          message: 'User not found',
+        return res.status(404).render("error", {
+          title: "Error",
+          type: "error",
+          message: "User not found",
         });
       }
     }
@@ -1006,20 +1011,22 @@ exports.renderUsers = async (req, res) => {
     let userDetails = null;
     let userOrders = null;
     if (req.params.id) {
-      userDetails = allUsers.find((user) => user._id.toString() === req.params.id);
+      userDetails = allUsers.find(
+        (user) => user._id.toString() === req.params.id
+      );
       if (!userDetails) {
-        return res.status(404).render('error', {
-          title: 'Error',
-          type: 'error',
-          message: 'User not found',
+        return res.status(404).render("error", {
+          title: "Error",
+          type: "error",
+          message: "User not found",
         });
       }
 
       // If viewing user orders
-      if (req.query.view === 'orders') {
+      if (req.query.view === "orders") {
         userOrders = await Order.find({ user: req.params.id })
           .sort({ date: -1 })
-          .populate('items.product', 'name price');
+          .populate("items.product", "name price");
       }
     }
 
@@ -1028,8 +1035,8 @@ exports.renderUsers = async (req, res) => {
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
-    res.render('ManageUsers', {
-      title: 'Manage Users',
+    res.render("ManageUsers", {
+      title: "Manage Users",
       users,
       userDetails,
       userOrders,
@@ -1046,9 +1053,9 @@ exports.renderUsers = async (req, res) => {
       error: null,
     });
   } catch (error) {
-    console.error('Error in renderUsers:', error);
-    res.status(500).render('ManageUsers', {
-      title: 'Manage Users',
+    console.error("Error in renderUsers:", error);
+    res.status(500).render("ManageUsers", {
+      title: "Manage Users",
       users: [],
       userDetails: null,
       userOrders: null,
@@ -1060,7 +1067,7 @@ exports.renderUsers = async (req, res) => {
         hasPrevPage: false,
       },
       user: req.user,
-      error: error.message || 'Error loading users. Please try again later.',
+      error: error.message || "Error loading users. Please try again later.",
     });
   }
 };
@@ -1119,17 +1126,17 @@ exports.renderCreateProduct = async (req, res) => {
     const collections = await Collection.find();
     const brands = await Brand.find();
 
-    res.render('CreateProduct', {
-      title: 'Create Product',
+    res.render("CreateProduct", {
+      title: "Create Product",
       collections,
       brands,
       user: req.user,
     });
   } catch (error) {
-    res.status(500).render('error', {
-      title: 'Error',
-      type: 'error',
-      message: 'Error loading create product page',
+    res.status(500).render("error", {
+      title: "Error",
+      type: "error",
+      message: "Error loading create product page",
       error: error.message,
     });
   }
@@ -1146,7 +1153,7 @@ exports.renderAnalytics = async (req, res) => {
     const userGrowth = await User.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
           count: { $sum: 1 },
         },
       },
@@ -1157,7 +1164,7 @@ exports.renderAnalytics = async (req, res) => {
     const sessionGrowth = await Session.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
           count: { $sum: 1 },
         },
       },
@@ -1169,9 +1176,9 @@ exports.renderAnalytics = async (req, res) => {
     const bounceRates = await Session.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
           total: { $sum: 1 },
-          bounced: { $sum: { $cond: [{ $eq: ['$duration', 0] }, 1, 0] } },
+          bounced: { $sum: { $cond: [{ $eq: ["$duration", 0] }, 1, 0] } },
         },
       },
       { $sort: { _id: -1 } },
@@ -1190,23 +1197,27 @@ exports.renderAnalytics = async (req, res) => {
     const sessionDurations = await Session.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
-          avgDuration: { $avg: '$duration' },
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          avgDuration: { $avg: "$duration" },
         },
       },
       { $sort: { _id: -1 } },
       { $limit: 2 },
     ]);
 
-    const currentDuration = sessionDurations[0] ? sessionDurations[0].avgDuration : 0;
-    const previousDuration = sessionDurations[1] ? sessionDurations[1].avgDuration : 0;
+    const currentDuration = sessionDurations[0]
+      ? sessionDurations[0].avgDuration
+      : 0;
+    const previousDuration = sessionDurations[1]
+      ? sessionDurations[1].avgDuration
+      : 0;
     const sessionDurationChange = previousDuration
       ? ((currentDuration - previousDuration) / previousDuration) * 100
       : 0;
 
     const brandStats = await Order.aggregate([
-      { $unwind: '$items' },
-      { $group: { _id: '$items.brand', sales: { $sum: '$items.price' } } },
+      { $unwind: "$items" },
+      { $group: { _id: "$items.brand", sales: { $sum: "$items.price" } } },
       { $sort: { sales: -1 } },
       { $limit: 5 },
     ]);
