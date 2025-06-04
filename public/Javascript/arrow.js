@@ -178,8 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             loadingScreen.style.display = 'none';
             initializeScroll();
-        }, 1200);
-    }, 3000);
+        }, 5000);
+    }, 5000);
 
     window.addEventListener('beforeunload', () => {
         clearTimeout(autoScrollTimeout);

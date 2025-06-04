@@ -1,3 +1,118 @@
+*
+{
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: all .3s cubic-bezier(.39,.575,.565,1);
+}
+
+.main {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: top;
+    overflow: hidden;
+    padding-top: 60px;
+    margin-left: -1px;
+}
+
+.main h1 {
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+    line-height: 2.5rem;
+    font-weight: 600;
+    font-family: 'Futura PT';
+    text-transform: uppercase;
+    color: #f6e8c0;
+}
+
+.main-text {
+    margin-top: 450px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+.button {
+    border: 0.0625rem solid #FFFFFF;
+    background-color: transparent;
+    color: #fff;
+    font-family: futura-pt, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.0625rem;
+    line-height: 1.5rem;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1.75rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Glow effect on hover */
+.button:hover 
+{
+    background-color: #F6E8C0;
+    color: rgb(58, 57, 57);
+}
+
+/* Optional: Animated border glow */
+.button::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 1px solid transparent;
+    border-radius: inherit;
+    animation: pulse 2s infinite;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.button:hover::before {
+    opacity: 1;
+    border-color: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+#video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 120%; 
+    object-fit: cover; 
+    z-index: -1; 
+    margin-left: -2px;
+}
+
 /* Gender Section Styles */
 .gender {
     position: relative;
@@ -9,22 +124,13 @@
     width: 100%;
 }
 
-
-.him-her
-{
+.him-her {
     margin-bottom: -80px;
-    
 }
 
-
-
-
-
-body 
-{
-    background-color: #1C2E4A;
+body {
+    background-color: #000;
 }
-
 
 .text-overlay-indulge,
 .text-overlay-your {
@@ -69,8 +175,11 @@ body
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     transition: transform 0.5s ease;
-    z-index: 1; /* Ensure image stays visible */
+    z-index: 0;
+    top: 0;
+    left: 0;
 }
 
 .male:hover #male-img,
@@ -78,7 +187,6 @@ body
     transform: scale(1.05);
 }
 
-/* Modified canvas for subtle movement effect */
 #male-fluid-canvas,
 #female-fluid-canvas {
     position: absolute;
@@ -87,7 +195,7 @@ body
     width: 100%;
     height: 100%;
     z-index: 2;
-    opacity: 0.3; /* More subtle effect */
+    opacity: 0.3;
     mix-blend-mode: overlay;
 }
 
@@ -100,15 +208,15 @@ body
     text-align: center;
 }
 
-/* Updated Text Container Styles */
+/* Fixed Text Container Styles */
 .text-container {
     background-color: rgba(0, 0, 0, 0.6);
-    padding: 20px 20px;
-    border-radius: 8px;  
+    padding: 20px;
+    border-radius: 8px;
     position: absolute;
-    top: 4%;
-    width: 150%;
-    max-width: 500px;
+    top: 10%;
+    width: 80%;
+    max-width: 400px;
     z-index: 10;
     color: #F6E8C0;
     pointer-events: none;
@@ -117,80 +225,71 @@ body
 
 /* Female (left) side text alignment */
 .female .text-container {
-    left: 2%;
-    right: auto;
-    transform: none;
+    left: 5%;
     text-align: left;
-    padding-left: 20px;
 }
 
 /* Male (right) side text alignment */
 .male .text-container {
-    left: auto;
-    right: 10%;
-    transform: none;
+    right: 5%;
     text-align: right;
-    padding-right: 20px;
 }
 
-/* Smaller text sizes */
+/* Text sizes */
 .section-title {
-    font-size: 2rem; /* Reduced from 3rem */
+    font-size: 2rem;
     font-weight: 700;
-    letter-spacing: 3px; /* Reduced from 4px */
+    letter-spacing: 3px;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    margin-bottom: 0.5rem; /* Reduced from 1rem */
+    margin-bottom: 0.5rem;
     text-transform: uppercase;
 }
 
 .section-description {
-    font-size: 1rem; /* Reduced from 1.2rem */
+    font-size: 1rem;
     font-weight: 300;
-    letter-spacing: 0.5px; /* Reduced from 1px */
+    letter-spacing: 0.5px;
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+    line-height: 1.4;
 }
 
-/* RTL (Arabic) Support - swapped left/right */
+/* RTL (Arabic) Support */
 [dir="rtl"] .female .text-container {
-    right: 10%;
+    right: 5%;
     left: auto;
     text-align: right;
-    padding-right: 20px;
-    padding-left: 0;
 }
 
 [dir="rtl"] .male .text-container {
-    left: 10%;
+    left: 5%;
     right: auto;
     text-align: left;
-    padding-left: 20px;
-    padding-right: 0;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .section-title {
-        font-size: 1.5rem; /* Smaller on mobile */
+        font-size: 1.5rem;
         letter-spacing: 2px;
     }
     
     .section-description {
-        font-size: 0.9rem; /* Smaller on mobile */
+        font-size: 0.9rem;
+    }
+    
+    .text-container {
+        width: 90%;
+        left: 5% !important;
+        right: auto !important;
+        text-align: center;
+        top: 15%;
     }
     
     .female .text-container,
     .male .text-container {
-        width: 90%;
         left: 5%;
-        right: 5%;
+        right: auto;
         text-align: center;
-        padding: 0;
-    }
-    
-    [dir="rtl"] .female .text-container,
-    [dir="rtl"] .male .text-container {
-        left: 5%;
-        right: 5%;
     }
 }
 
@@ -220,7 +319,7 @@ body
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.3);
-    z-index: 1;
+    z-index: 2;
     transition: background 0.3s ease;
 }
 

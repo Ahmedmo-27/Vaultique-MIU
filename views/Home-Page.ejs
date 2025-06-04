@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Public/CSS/Landing-page.css">
+    <link rel="icon" type="image/x-icon" href="/images/Logo.png">
+    <link rel="stylesheet" href="/Public/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link rel="stylesheet" href="/Public/CSS/footer.css">
+    <link rel="stylesheet" href="/Public/CSS/Home-Page-Slider.css">
+    <link rel="stylesheet" href="/Public/CSS/Genders.css">
+    <link rel="stylesheet" href="/Public/CSS/limited.css">
+    <link rel="stylesheet" href="/Public/CSS/masnory.css">
+    <link rel="stylesheet" href="/Public/CSS/google-reviews.css">
+    <link rel="stylesheet" href="/Public/CSS/about-quick.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="/Public/javascript/nav-bar.js"></script>
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Public/javascript/Home-Page-Slider.js"></script>
+    <script src="/Public/javascript/Genders.js"></script>
+    <script src="/Public/javascript/google-reviews.js"></script>
+    <script src="/Public/javascript/Light-Mode.js"></script>
+
+    <title>Vaultique | Home</title>
+</head>
+
+<body>
+
+    <%- include('partials/loading-screen') %>
+
+    <!-- Include navigation partial -->
+    <%- include('partials/navigation') %>
+
+    <section class="main" id="main">
+        <video src="/Public/Assets/Videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop=""
+            muted=""></video>
+        <div class="main-text">
+            <h1>Your Signature in Time</h1>
+            <a class="button" href="/Sobhi/Recommendation.html">TAKE THE QUIZ</a>
+        </div>
+    </section>
+
+    <!--Section For Him / For Her-->
+    <section class="him-her">
+        <div class="gender">
+            <div class="female">
+                <canvas id="female-fluid-canvas"></canvas>
+                <img id="female-img" src="images/Charlize Breitling.webp" alt="For Her Watches">
+                <div class="text-overlay">
+                    <button onclick="window.location.href='watches-for-women.html'">For Her</button>
+                </div>
+            </div>
+
+            <div class="male">
+                <canvas id="male-fluid-canvas"></canvas>
+                <img id="male-img" src="images/Patek Philippe Grand Master Chime Jay Z .jpg" alt="For Him Watches">
+                <div class="text-overlay">
+                    <button onclick="window.location.href='watches-for-men.html'">For Him</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Collections Section -->
+    <section class="collections">
+        <h2>Collections</h2>
+
+        <section class="slider-container">
+            <div class="slider-wrapper">
+                <div class="slider" id="watchSlider">
+                    <!-- Slide 1 - Classic & Dress Collection -->
+                    <div class="slide">
+                        <div class="collection-grid">
+                            <div class="collection-card">
+                                <div class="collection-image">
+                                    <img src="images/Cartier Tank.jpg" alt="Cartier Tank Watch">
+                                </div>
+                                <div class="collection-info">
+                                    <h3>Classic & Dress Collection</h3>
+                                    <p>Timeless elegance for formal occasions</p>
+                                    <button class="explore-btn">Explore</button>
+                                </div>
+                            </div>
+
+                            <div class="collection-card">
+                                <div class="collection-image">
+                                    <img src="images/John-Legends-Omega-Seamaster-300m-007-Edition.jpg"
+                                        alt="Patek Philippe Watch">
+                                </div>
+                                <div class="collection-info">
+                                    <h3>Casual & Everyday Collection</h3>
+                                    <p>Sophisticated timepieces for daily wear</p>
+                                    <button class="explore-btn">Explore</button>
+                                </div>
+                            </div>
+
+                            <div class="collection-card">
+                                <div class="collection-image">
+                                    <img src="images/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.avif"
+                                        alt="Omega Seamaster Watch">
+                                </div>
+                                <div class="collection-info">
+                                    <h3>Sports & Adventure Collection</h3>
+                                    <p>Robust watches for active lifestyles</p>
+                                    <button class="explore-btn">Explore</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2 - Luxury & Heritage -->
+                    <div class="slide">
+                        <div class="collection-grid">
+                            <div class="collection-card">
+                                <div class="collection-image">
+                                    <img src="images/Charlize Breitling.webp" alt="Breitling Watch">
+                                </div>
+                                <div class="collection-info">
+                                    <h3>Aviation & Travel Collection</h3>
+                                    <p>Precision timepieces for global explorers</p>
+                                    <button class="explore-btn">Explore</button>
+                                </div>
+                            </div>
+
+                            <div class="collection-card">
+                                <div class="collection-image">
+                                    <img src="images/Jay-Z-Patek-Philippe-Grandmaster-Chime-6300g-001.jpg"
+                                        alt="Luxury Watch">
+                                </div>
+                                <div class="collection-info">
+                                    <h3>Luxury & Heritage Collection</h3>
+                                    <p>Prestigious timepieces with rich history</p>
+                                    <button class="explore-btn">Explore</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="slider-arrow prev" id="prevBtn" aria-label="Previous slide">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <button class="slider-arrow next" id="nextBtn" aria-label="Next slide">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="slider-dots" id="sliderDots"></div>
+        </section>
+    </section>
+
+    <section class="product-container">
+        <h2 class="hometitle">
+            <span class="has-paging__title">Limited Edition</span>
+        </h2>
+        <div class="product-grid">
+
+
+            <!-- Cartier Santos de Cartier -->
+            <div class="product-card" data-brand="Cartier" data-strap-material="Metal" data-movement="Automatic"
+                data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="White"
+                data-price="8600">
+                <div class="product-image-container">
+                    <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                        <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="heart"
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z" />
+                        </svg>
+                    </div>
+                    <a href="#">
+                        <img src="/Ahmed/Watches/Santos de Cartier.png" alt="Cartier Santos de Cartier">
+                        <div class="hover-buttons">
+                            <button class="quick-view">Quick View</button>
+                            <button class="compare">Compare</button>
+                        </div>
+                    </a>
+                </div>
+                <h4>Santos de Cartier</h4>
+                <p class="price">$8,600</p>
+                <p class="stock in-stock">In Stock</p>
+            </div>
+
+            <!-- Cartier Tank Must -->
+            <div class="product-card" data-brand="Cartier" data-strap-material="Leather" data-movement="Manual"
+                data-water-resistance="30m" data-case-material="Stainless Steel" data-dial-color="Black"
+                data-price="3350">
+                <div class="product-image-container">
+                    <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                        <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="heart"
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z" />
+                        </svg>
+                    </div>
+                    <a href="#">
+                        <img src="/Ahmed/Watches/Cartier Tank Must.png" alt="Cartier Tank Must">
+                        <div class="hover-buttons">
+                            <button class="quick-view">Quick View</button>
+                            <button class="compare">Compare</button>
+                        </div>
+                    </a>
+                </div>
+                <h4>Cartier Tank Must</h4>
+                <p class="price">$3,350</p>
+                <p class="stock in-stock">In Stock</p>
+            </div>
+
+            <!-- Cartier Panthère de Cartier -->
+            <div class="product-card" data-brand="Cartier" data-strap-material="Metal" data-movement="Manual"
+                data-water-resistance="30m" data-case-material="Stainless Steel" data-dial-color="White"
+                data-price="4850">
+                <div class="product-image-container">
+                    <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                        <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="heart"
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z" />
+                        </svg>
+                    </div>
+                    <a href="#">
+                        <img src="/Ahmed/Watches/Panthère de Cartier.png" alt="Cartier Panthère de Cartier">
+                        <div class="hover-buttons">
+                            <button class="quick-view">Quick View</button>
+                            <button class="compare">Compare</button>
+                        </div>
+                    </a>
+                </div>
+                <h4>Panthère de Cartier</h4>
+                <p class="price">$4,850</p>
+                <p class="stock in-stock">In Stock</p>
+            </div>
+
+            <!-- Cartier Tank Louis Cartier -->
+            <div class="product-card" data-brand="Cartier" data-strap-material="Leather" data-movement="Manual"
+                data-water-resistance="30m" data-case-material="Silver" data-dial-color="White" data-price="13550">
+                <div class="product-image-container">
+                    <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                        <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="heart"
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z" />
+                        </svg>
+                    </div>
+                    <a href="#">
+                        <img src="/Ahmed/Watches/Tank Louis Cartier.png" alt="Cartier Tank Louis Cartier">
+                        <div class="hover-buttons">
+                            <button class="quick-view">Quick View</button>
+                            <button class="compare">Compare</button>
+                        </div>
+                    </a>
+                </div>
+                <h4>Tank Louis Cartier</h4>
+                <p class="price">$13,550</p>
+                <p class="stock in-stock">In Stock</p>
+            </div>
+
+            <!-- Cartier Santos de Cartier Skeleton -->
+            <div class="product-card" data-brand="Cartier" data-strap-material="Metal" data-movement="Automatic"
+                data-water-resistance="100m" data-case-material="Stainless Steel" data-dial-color="Else"
+                data-price="32000">
+                <div class="product-image-container">
+                    <div class="wishlist-icon" onclick="toggleWishlist(this)">
+                        <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="heart"
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z" />
+                        </svg>
+                    </div>
+                    <a href="#">
+                        <img src="/Ahmed/Watches/Santos de Cartier Skeleton.png"
+                            alt="Cartier Santos de Cartier Skeleton">
+                        <div class="hover-buttons">
+                            <button class="quick-view">Quick View</button>
+                            <button class="compare">Compare</button>
+                        </div>
+                    </a>
+                </div>
+                <h4>Santos de Cartier Skeleton</h4>
+                <p class="price">$32,000</p>
+                <p class="stock in-stock">In Stock</p>
+            </div>
+        </div>
+        <!-- Shop All Button -->
+        <div class="button-container">
+            <a href="/shop-all" class="button">Shop All</a>
+        </div>
+    </section>
+
+    <section class="container section-padding masonry-section">
+        <div class="section-padding pt-0">
+            <h2 class="text-center no-bold mb-0">Brands</h2>
+        </div>
+
+        <div class="masonry-grid">
+            <!-- Left column -->
+            <div class="masonry-column left-column">
+                <!-- Top row with two small cells -->
+                <div class="masonry-row">
+                    <div data-aos="fade-in" class="masonry-cell small-cell">
+                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                            <div class="img-container">
+                                <img src="images/Rolex.png" alt="Rolex" class="brand-logo">
+                            </div>
+                        </a>
+                    </div>
+
+                    <div data-aos="fade-in" class="masonry-cell small-cell">
+                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                            <div class="img-container">
+                                <img src="images/Omega.png" alt="Omega" class="brand-logo">
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Middle row with two small cells -->
+                <div class="masonry-row">
+                    <div data-aos="fade-in" class="masonry-cell small-cell">
+                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                            <div class="img-container">
+                                <img src="images/Cartier.png" alt="Cartier" class="brand-logo">
+                            </div>
+                        </a>
+                    </div>
+
+                    <div data-aos="fade-in" class="masonry-cell small-cell">
+                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                            <div class="img-container">
+                                <img src="/Ahmed/Brands Logos/Patek Philippe logo.png" alt="Patek Philippe"
+                                    class="brand-logo">
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bottom row with two small cells -->
+                <div class="masonry-row">
+                    <div data-aos="fade-in" class="masonry-cell small-cell">
+                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                            <div class="img-container">
+                                <img src="/wael/images/Audemars Piguet Logo.png" alt="Audemars Piguet"
+                                    class="brand-logo">
+                            </div>
+                        </a>
+                    </div>
+
+                    <div data-aos="fade-in" class="masonry-cell small-cell">
+                        <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                            <div class="img-container">
+                                <img src="/Ahmed/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Söhne Logo"
+                                    class="brand-logo">
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column - Reordered to put Vacheron Constantin at the bottom -->
+            <div class="masonry-column right-column">
+                <!-- First wide cell - Jacob & Co (moved up) -->
+                <div data-aos="fade-in" class="masonry-cell wide-cell">
+                    <a href="#" class="cell-wrapper bg-placeholder cover-img zoom-shadow">
+                        <div class="img-container">
+                            <img src="/Ahmed/Brands Logos/Jacob & Co Logo.png" alt="Jacob & Co Logo" class="brand-logo">
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Second wide cell - Richard Mille (moved up) -->
+                <div data-aos="fade-in" class="masonry-cell wide-cell">
+                    <a href="#" class="cell-wrapper bg-placeholder cover-img zoom-shadow">
+                        <div class="img-container">
+                            <img src="/Ahmed/Brands Logos/Richard Mille Logo.png" alt="Richard Mille"
+                                class="brand-logo">
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Third wide cell - Breitling (moved up) -->
+                <div data-aos="fade-in" class="masonry-cell wide-cell">
+                    <a href="#" class="cell-wrapper bg-placeholder cover-img zoom-shadow">
+                        <div class="img-container">
+                            <img src="/Ahmed/Brands Logos/Breitling Logo.png" alt="Breitling Logo" class="brand-logo">
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vacheron Constantin stretched across the bottom - now stretched almost full width -->
+        <div class="masonry-row" style="margin-top: 20px; width: 100%;">
+            <div data-aos="fade-in" class="masonry-cell" style="width: 100%; margin-left: 0%; height: 180px;">
+                <a href="#" class="cell-wrapper bg-placeholder zoom-shadow">
+                    <div class="img-container">
+                        <img src="/Ahmed/Brands Logos/Vacheron Constantin logo.png" alt="Vacheron Constantin logo"
+                            class="brand-logo">
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Shop All Button -->
+        <div class="button-container">
+            <a href="/shop-all" class="button">See All</a>
+        </div>
+    </section>
+
+    <div class="reviews-header">
+        <div class="reviews-title">
+            <h2>Client Testimonials</h2>
+            <p class="subtitle">Discover what our distinguished clients have to say about their experience</p>
+        </div>
+    </div>
+
+    <div class="reviews-carousel">
+        <div class="reviews-track" id="reviewsTrack">
+            <!-- Existing Reviews (Review 1 to Review 10) -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">J</div>
+                        <div class="reviewer-name-date">
+                            <h4>James Wilson</h4>
+                            <p class="review-date">2 weeks ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>Exceptional service and an incredible selection of timepieces. I purchased a Patek Philippe
+                        Nautilus and couldn't be happier with the experience.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Patek Philippe Nautilus</span>
+                </div>
+            </div>
+            <!-- Repeat for Reviews 2 to 10 -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">C</div>
+                        <div class="reviewer-name-date">
+                            <h4>Chris Anderson</h4>
+                            <p class="review-date">1 week ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>The attention to detail in their customer service is unmatched. I purchased a Cartier
+                        Santos-Dumont, and the entire process was seamless.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Cartier Santos-Dumont</span>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">C</div>
+                        <div class="reviewer-name-date">
+                            <h4>Chris Anderson</h4>
+                            <p class="review-date">1 week ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>The attention to detail in their customer service is unmatched. I purchased a Cartier
+                        Santos-Dumont, and the entire process was seamless.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Cartier Santos-Dumont</span>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">C</div>
+                        <div class="reviewer-name-date">
+                            <h4>Chris Anderson</h4>
+                            <p class="review-date">1 week ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>The attention to detail in their customer service is unmatched. I purchased a Cartier
+                        Santos-Dumont, and the entire process was seamless.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Cartier Santos-Dumont</span>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">C</div>
+                        <div class="reviewer-name-date">
+                            <h4>Chris Anderson</h4>
+                            <p class="review-date">1 week ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>The attention to detail in their customer service is unmatched. I purchased a Cartier
+                        Santos-Dumont, and the entire process was seamless.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Cartier Santos-Dumont</span>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">C</div>
+                        <div class="reviewer-name-date">
+                            <h4>Chris Anderson</h4>
+                            <p class="review-date">1 week ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>The attention to detail in their customer service is unmatched. I purchased a Cartier
+                        Santos-Dumont, and the entire process was seamless.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Cartier Santos-Dumont</span>
+                </div>
+            </div>
+
+            <!-- New Review 11 -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">C</div>
+                        <div class="reviewer-name-date">
+                            <h4>Chris Anderson</h4>
+                            <p class="review-date">1 week ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>The attention to detail in their customer service is unmatched. I purchased a Cartier
+                        Santos-Dumont, and the entire process was seamless.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Cartier Santos-Dumont</span>
+                </div>
+            </div>
+
+            <!-- New Review 12 -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">A</div>
+                        <div class="reviewer-name-date">
+                            <h4>Ava Martinez</h4>
+                            <p class="review-date">3 weeks ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="half-star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>I had a wonderful experience purchasing a Breguet Classique. The staff was courteous, and the
+                        watch was delivered earlier than expected.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Breguet Classique</span>
+                </div>
+            </div>
+
+            <!-- New Review 13 -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-initial">M</div>
+                        <div class="reviewer-name-date">
+                            <h4>Mark Taylor</h4>
+                            <p class="review-date">1 month ago</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="review-rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="review-content">
+                    <p>Their trade-in program made upgrading my Omega Seamaster effortless. I received a fair offer and
+                        found my dream watch in no time.</p>
+                </div>
+                <div class="review-watch">
+                    <span>Omega Seamaster Diver 300M</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="reviews-navigation">
+        <button class="nav-button prev" id="prevButton">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
+        <div class="reviews-dots" id="reviewsDots">
+            <!-- Dots will be added by JavaScript -->
+        </div>
+        <button class="nav-button next" id="nextButton">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="reviews-footer">
+        <a href="https://www.google.com/maps/place/Luxury+Watch+Store" target="_blank" class="view-all-button">
+            View All Reviews
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </a>
+    </div>
+
+    <section class="content-section">
+        <div class="center">
+            <h2>About Vaultique</h2>
+            <div class="text-container">
+                <p>At Vaultique, we understand that a watch is more than just a timepiece—it is a reflection of your
+                    style,
+                    personality, and ambitions. Whether you seek a statement piece, a reliable everyday watch, or a
+                    timepiece built for adventure
+                    , we make the search effortless and tailored to you.
+                </p>
+            </div>
+
+            <div class="button-container">
+                <a href="/shop-all" class="button">Read more</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Include footer partial -->
+    <%- include('partials/footer') %>
+
+</body>
+
+</html>

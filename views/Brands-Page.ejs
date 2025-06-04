@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaultique | Brands</title>
+      <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/footer.css">
+    <link rel="stylesheet" href="/CSS/Brands-Page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Javascript/Brands-Page.js"></script>
+    <script src="/Javascript/nav-bar.js"></script>
+    <script src="/Javascript/Light-Mode.js"></script>
+    <script src="/Javascript/Landing-Page.js"></script>
+    
+    
+</head>
+
+<body>
+
+    <!--Loading Screen-->
+     <%- include('partials/loading-screen') %>
+
+    <!--Scroll Arrow--
+    <div class="scroll-indicator">
+        <div class="scroll-circle">
+            <div class="scroll-indicator-inner"></div>
+            <div class="scroll-progress"></div>
+            <div class="scroll-arrow">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M12 19L19 12M12 19L5 12" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
+    </div>-->
+
+
+    <!--Nav-Bar-->
+     <%- include('partials/navigation') %>
+
+    <section class="main" id="main">
+        <video src="/Assets/Videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop="" muted=""></video>
+        <div class="main-text">
+            <h1>Your Signature in Time</h1>
+            <a class="button" href="/Sobhi/Recommendation.html">TAKE THE QUIZ</a>
+        </div>
+    </section>
+
+   <!--Section For Him / For Her-->
+  <!-- Section For Him / For Her -->
+<% if (brands && brands.length > 0) { %>
+  <% for(let i = 0; i < brands.length; i += 2) { %>
+    <section class="him-her">
+      <div class="gender">
+        <% if (i < brands.length) { %>
+          <div class="female">
+            <canvas id="female-fluid-canvas"></canvas>
+            <img id="female-img-<%= i %>" src="<%= brands[i].coverImage %>" alt="<%= brands[i].name %>">
+            <div class="text-container">
+              <div class="section-title"><%= brands[i].name %></div>
+              <div class="section-description">
+                <%= brands[i].description.substring(0, 150) + (brands[i].description.length > 150 ? '...' : '') %>
+              </div>
+            </div>
+            <div class="text-overlay">
+              <button onclick="window.location.href='/brands/<%= brands[i].slug %>'">Explore</button>
+            </div>
+          </div>
+        <% } %>
+        
+        <% if (i + 1 < brands.length) { %>
+          <div class="male">
+            <canvas id="male-fluid-canvas"></canvas>
+            <img id="male-img-<%= i+1 %>" src="<%= brands[i+1].coverImage %>" alt="<%= brands[i+1].name %>">
+            <div class="text-container">
+              <div class="section-title"><%= brands[i+1].name %></div>
+              <div class="section-description">
+                <%= brands[i+1].description.substring(0, 150) + (brands[i+1].description.length > 150 ? '...' : '') %>
+              </div>
+            </div>
+            <div class="text-overlay">
+              <button onclick="window.location.href='/brands/<%= brands[i+1].slug %>'">Explore</button>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  <% } %>
+<% } else { %>
+  <section class="no-brands">
+    <p>No brands available at the moment</p>
+  </section>
+<% } %>
+
+
+   
+
+
+
+   <!-- Include footer partial -->
+    <%- include('partials/footer') %>
+
+    <!-- <script src="JavaScript/translations.js"></script>
+    <script src="JavaScript/language-switch.js"></script> -->
+    
+    <script>
+        if(history.scrollRestoration)
+        {
+            history.scrollRestoration='manual';
+        }
+    
+        window.onbeforeunload = function () 
+        {
+            window.scrollTo(0, 0);
+        };
+    </script>
+
+
+</body>
+
+</html>
