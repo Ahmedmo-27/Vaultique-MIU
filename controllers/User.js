@@ -89,7 +89,7 @@ router.get('/Configurator', async (req, res) => {
   {
 
     //Fetch from Database
-    const configurator = await Configurator.find();
+    //const configurator = await Configurator.find();
 
     res.render('Configure-Page');
   }

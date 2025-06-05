@@ -1,274 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vaultique | Configurator</title>
-  <link rel="stylesheet" href="/CSS/configure-3D.css">
-  <link rel="stylesheet" href="/CSS/nav-bar.css">
- <link rel="stylesheet" href="/CSS/footer.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaultique | Configurator</title>
+    <link rel="stylesheet" href="/CSS/configure-3D.css">
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/footer.css">
+    <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Import Three.js directly from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-  <!-- Import Three.js directly from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-
-   <script src="/Javascript/nav-bar.js"></script>
-   <script src="/Javascript/Loading Screen.js"></script>
-  <script src="/Javascript/configure-3D.js"></script>
-  <script src="/Javascript/Light-Mode.js"></script>
+    <script src="/Javascript/nav-bar.js"></script>
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Javascript/configure-3D.js"></script>
+    <script src="/Javascript/Light-Mode.js"></script>
 </head>
+
 <body>
+    <!-- Loading Screen -->
+    <%- include('partials/loading-screen') %>
+    <!-- Nav-Bar -->
+    <%- include('partials/navigation') %>
 
-  <!--Loading Screen-->
-     <%- include('partials/loading-screen') %>
-
-  <!--Nav-Bar-->
-     <%- include('partials/navigation') %>
-
-  <div class="app" id="configurator-app">
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-
-    <main class="main" id="main-content" role="main">
-        <div class="container">
-            <header class="page-header">
-                <nav aria-label="Breadcrumb navigation">
-                    <ol class="breadcrumb-list">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/watches">Watches</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Submariner Configurator</li>
-                    </ol>
-                </nav>
-            </header>
-
-            <div class="grid">
-                <!-- Left Column - Configurator -->
-                <section class="configurator-column" aria-labelledby="configurator-heading">
-                    <h1 id="configurator-heading"><%= locals.watch?.name || 'Submariner' %></h1>
-
-                    <!-- Watch Specs -->
-                    <div class="watch-specs" aria-labelledby="specs-heading">
-                        <h2 id="specs-heading" class="visually-hidden">Technical Specifications</h2>
-                        <div class="spec-item">
-                            <i class="fas fa-clock" aria-hidden="true"></i>
-                            <span><%= locals.watch?.specs?.movement || '3235 Calibre' %></span>
+    <div class="app" id="configurator-app">
+        <main class="main" id="main-content" role="main">
+            <div class="container">
+                <div class="grid">
+                    <!-- Left Column - Configurator -->
+                    <div class="configurator-column">
+                        <!-- Watch Specs -->
+                        <h1 id="specs-heading" class="visually-hidden">3D Previewer</h1>
+                        <div class="model-selector">
+                            <label for="watch-model">Select Watch Model:</label>
+                            <select id="watch-model" class="model-dropdown">
+                                <% const watchModels=[ { value: 'submariner' , label: 'Submariner' }, { value: 'datejust' , label: 'Datejust' }, { value: 'daytona' , label: 'Daytona' }, { value: 'gmt-master' , label: 'GMT-Master II' } ]; %>
+                                <% watchModels.forEach(model=> { %>
+                                    <option value="<%= model.value %>" <%=model.value==='submariner' ? 'selected' : '' %>>
+                                        <%= model.label %>
+                                    </option>
+                                <% }); %>
+                            </select>
                         </div>
-                        <div class="spec-item">
-                            <i class="fas fa-tint" aria-hidden="true"></i>
-                            <span><%= locals.watch?.specs?.waterResistance || '300m Water Resistant' %></span>
+                        <br>
+                        <div class="watch-specs-horizontal">
+                            <div class="spec-item">
+                                <i class="fas fa-clock" aria-hidden="true"></i>
+                                <span><%= locals.watch?.specs?.movement || '3235 Calibre' %></span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-tint" aria-hidden="true"></i>
+                                <span><%= locals.watch?.specs?.waterResistance || '300m Water Resistant' %></span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-battery-full" aria-hidden="true"></i>
+                                <span><%= locals.watch?.specs?.powerReserve || '70h Power Reserve' %></span>
+                            </div>
                         </div>
-                        <div class="spec-item">
-                            <i class="fas fa-battery-full" aria-hidden="true"></i>
-                            <span><%= locals.watch?.specs?.powerReserve || '70h Power Reserve' %></span>
-                        </div>
+
+                        <!-- 3D Viewer -->
+                        <section class="watch-viewer" aria-labelledby="viewer-heading">
+                            <div class="model-container">
+                                <model-viewer src="/Assets/3D Models/Omega Sea Master.glb"
+                                    alt="3D model of Omega Sea Master Watch" camera-controls auto-rotate ar
+                                    shadow-intensity="1.5" environment-image="neutral" exposure="0.85"
+                                    field-of-view="25deg" id="watch-model">
+                                    <div class="progress-bar" slot="progress-bar"></div>
+                                    <div slot="poster" style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;">
+                                        Loading 3D Model...
+                                    </div>
+                                </model-viewer>
+                            </div>
+                        </section>
+                        <br><br>
+
+                        <!-- Configuration Tabs -->
+                        <section class="config-tabs" aria-labelledby="config-heading">
+                            <h2 id="config-heading" class="visually-hidden">Configuration Options</h2>
+                            <br>
+                            <div class="config-tabs">
+                                <div class="tabs-list">
+                                    <button class="tab-trigger active" data-tab="dial">Dial</button>
+                                    <button class="tab-trigger" data-tab="bracelet">Bracelet</button>
+                                    <button class="tab-trigger" data-tab="material">Material</button>
+                                    <button class="tab-trigger" data-tab="bezel">Bezel</button>
+                                </div>
+
+                                <!-- Dial options -->
+                                <div class="tab-content active" id="dial-tab">
+                                    <h3 class="option-title">Select Dial Color</h3>
+                                    <div class="option-grid">
+                                        <% const dialOptions=[ { id: 'dial-black' , value: 'black' , name: 'Black' , image: 'black.jpg' , checked: true }, { id: 'dial-blue' , value: 'blue' , name: 'Blue' , image: 'blue.jpg' }, { id: 'dial-green' , value: 'green' , name: 'Green' , image: 'green.jpg' }, { id: 'dial-silver' , value: 'silver' , name: 'Silver' , image: 'silver.jpg' } ]; %>
+                                        <% dialOptions.forEach(option=> { %>
+                                            <div class="option-item">
+                                                <input type="radio" name="dial" id="<%= option.id %>"
+                                                    value="<%= option.value %>" <%=option.checked ? 'checked' : '' %> class="option-input">
+                                                <label for="<%= option.id %>" class="option-label">
+                                                    <div class="option-image-container">
+                                                        <img src="images/dials/<%= option.image %>"
+                                                            alt="<%= option.name %> Dial"
+                                                            class="option-image">
+                                                    </div>
+                                                    <span class="option-name"><%= option.name %></span>
+                                                </label>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+
+                                <!-- Bracelet options -->
+                                <div class="tab-content" id="bracelet-tab">
+                                    <h3 class="option-title">Select Bracelet Style</h3>
+                                    <div class="option-grid">
+                                        <% const braceletOptions=[ { id: 'bracelet-oyster' , value: 'oyster' , name: 'Oyster' , image: 'oyster.jpg' , checked: true }, { id: 'bracelet-jubilee' , value: 'jubilee' , name: 'Jubilee' , image: 'jubilee.jpg' , price: '+$500' }, { id: 'bracelet-leather' , value: 'leather' , name: 'Leather' , image: 'leather.jpg' , price: '+$800' }, { id: 'bracelet-oysterflex' , value: 'oysterflex' , name: 'Oysterflex' , image: 'oysterflex.jpg' , price: '+$1,200' } ]; %>
+                                        <% braceletOptions.forEach(option=> { %>
+                                            <div class="option-item">
+                                                <input type="radio" name="bracelet" id="<%= option.id %>"
+                                                    value="<%= option.value %>" <%=option.checked ? 'checked' : '' %> class="option-input">
+                                                <label for="<%= option.id %>" class="option-label">
+                                                    <div class="option-image-container">
+                                                        <img src="images/bracelets/<%= option.image %>"
+                                                            alt="<%= option.name %> Bracelet"
+                                                            class="option-image">
+                                                    </div>
+                                                    <span class="option-name"><%= option.name %></span>
+                                                    <% if (option.price) { %>
+                                                        <span class="option-price"><%= option.price %></span>
+                                                    <% } %>
+                                                </label>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+
+                                <!-- Material options -->
+                                <div class="tab-content" id="material-tab">
+                                    <h3 class="option-title">Select Case Material</h3>
+                                    <div class="option-grid">
+                                        <% const materialOptions=[ { id: 'material-steel' , value: 'steel' , name: 'Oystersteel' , image: 'steel.jpg' , checked: true }, { id: 'material-yellow-gold' , value: 'yellow-gold' , name: 'Yellow Gold' , image: 'yellow-gold.jpg' , price: '+$12,000' }, { id: 'material-white-gold' , value: 'white-gold' , name: 'White Gold' , image: 'white-gold.jpg' , price: '+$14,000' }, { id: 'material-everose' , value: 'everose' , name: 'Everose Gold' , image: 'everose.jpg' , price: '+$16,000' } ]; %>
+                                        <% materialOptions.forEach(option=> { %>
+                                            <div class="option-item">
+                                                <input type="radio" name="material" id="<%= option.id %>"
+                                                    value="<%= option.value %>" <%=option.checked ? 'checked' : '' %> class="option-input">
+                                                <label for="<%= option.id %>" class="option-label">
+                                                    <div class="option-image-container">
+                                                        <img src="images/materials/<%= option.image %>"
+                                                            alt="<%= option.name %>" class="option-image">
+                                                    </div>
+                                                    <span class="option-name"><%= option.name %></span>
+                                                    <% if (option.price) { %>
+                                                        <span class="option-price"><%= option.price %></span>
+                                                    <% } %>
+                                                </label>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+
+                                <!-- Bezel options -->
+                                <div class="tab-content" id="bezel-tab">
+                                    <h3 class="option-title">Select Bezel Type</h3>
+                                    <div class="option-grid">
+                                        <% const bezelOptions=[ { id: 'bezel-black' , value: 'black' , name: 'Black Ceramic' , image: 'black.jpg' , checked: true }, { id: 'bezel-blue' , value: 'blue' , name: 'Blue Ceramic' , image: 'blue.jpg' , price: '+$500' }, { id: 'bezel-green' , value: 'green' , name: 'Green Ceramic' , image: 'green.jpg' , price: '+$800' }, { id: 'bezel-fluted' , value: 'fluted' , name: 'Fluted' , image: 'fluted.jpg' , price: '+$2,000' } ]; %>
+                                        <% bezelOptions.forEach(option=> { %>
+                                            <div class="option-item">
+                                                <input type="radio" name="bezel" id="<%= option.id %>"
+                                                    value="<%= option.value %>" <%=option.checked ? 'checked' : '' %> class="option-input">
+                                                <label for="<%= option.id %>" class="option-label">
+                                                    <div class="option-image-container">
+                                                        <img src="images/bezels/<%= option.image %>"
+                                                            alt="<%= option.name %>" class="option-image">
+                                                    </div>
+                                                    <span class="option-name"><%= option.name %></span>
+                                                    <% if (option.price) { %>
+                                                        <span class="option-price"><%= option.price %></span>
+                                                    <% } %>
+                                                </label>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
-                    <!-- 3D Viewer -->
-                    <section class="watch-viewer" aria-labelledby="viewer-heading">
-                        <h2 id="viewer-heading" class="visually-hidden">3D Watch Preview</h2>
-                        <div id="watch-canvas-container" 
-                             class="watch-canvas-container" 
-                             role="img" 
-                             aria-label="Interactive 3D watch preview"
-                             tabindex="0">
-                            <div class="canvas-loading" id="canvas-loading">
-                                <div class="spinner"></div>
-                                <span>Loading 3D Model...</span>
-                            </div>
-                            <div class="controls-hint">
-                                <kbd>Drag</kbd> to rotate • <kbd>Scroll</kbd> to zoom
-                            </div>
-                            <div class="canvas-error" id="canvas-error" style="display: none;">
-                                <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
-                                <span>Failed to load model. Please refresh.</span>
-                                <button class="btn btn-outline" onclick="location.reload()">Refresh</button>
-                            </div>
+                    <!-- Right Column - Watch Details and Summary -->
+                    <div>
+                        <div class="watch-details">
+                            <h2 id="details-heading"><%= locals.watch?.name || 'Submariner' %></h2>
+                            <p>
+                                <%= locals.watch?.description || 'The Submariner is robust and functional design has made it an iconic timepiece. The 41 mm Oystersteel case, distinctive dial with large luminescent hour markers, and unidirectional rotatable bezel with Cerachrom insert make the Submariner immediately recognizable.' %>
+                            </p>
                         </div>
-                    </section>
 
-                    <!-- Configuration Tabs -->
-                    <section class="config-tabs" aria-labelledby="config-heading">
-                        <h2 id="config-heading" class="visually-hidden">Configuration Options</h2>
-                        <div class="tabs-list" role="tablist">
-                            <% 
-                            const tabs = [
-                                { key: 'dial', label: 'Dial', icon: 'fas fa-circle' },
-                                { key: 'bracelet', label: 'Bracelet', icon: 'fas fa-link' },
-                                { key: 'material', label: 'Material', icon: 'fas fa-gem' },
-                                { key: 'bezel', label: 'Bezel', icon: 'fas fa-ring' }
-                            ];
-                            %>
-                            <% tabs.forEach((tab, index) => { %>
-                                <button class="tab-trigger <%= index === 0 ? 'active' : '' %>"
-                                        role="tab"
-                                        data-tab="<%= tab.key %>"
-                                        id="tab-<%= tab.key %>"
-                                        aria-controls="<%= tab.key %>-panel"
-                                        aria-selected="<%= index === 0 ? 'true' : 'false' %>">
-                                    <i class="<%= tab.icon %>"></i>
-                                    <%= tab.label %>
+                        <!-- Configuration Summary -->
+                        <aside class="config-summary" aria-labelledby="summary-heading">
+                            <h3 id="summary-heading">Your Configuration</h3>
+                            <br>
+                            <div class="summary-details" aria-live="polite">
+                                <div class="summary-row">
+                                    <span>Model</span>
+                                    <span><%= locals.watch?.name || 'Submariner' %></span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Dial</span>
+                                    <span id="summary-dial">Black</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Bracelet</span>
+                                    <span id="summary-bracelet">Oyster</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Material</span>
+                                    <span id="summary-material">Oystersteel</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Bezel</span>
+                                    <span id="summary-bezel">Black Ceramic</span>
+                                </div>
+                                <div class="summary-row summary-total">
+                                    <span>Total Price</span>
+                                    <span id="summary-price" aria-live="polite">$<%= (locals.watch?.basePrice || 10000).toLocaleString() %></span>
+                                </div>
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="summary-actions">
+                                <button class="btn btn-primary" data-action="add-to-cart">
+                                    Add To Cart
+                                    <i class="fas fa-shopping-cart"></i>
                                 </button>
-                            <% }); %>
-                        </div>
+                                <button class="btn btn-primary" data-action="continue-shopping">
+                                    Continue Shopping
+                                </button>
+                            </div>
+                        </aside>
 
-                        <!-- Tab Panels -->
-                        <% 
-                        const options = {
-                            dial: [
-                                { value: 'black', name: 'Black', image: 'black.jpg', price: 0 },
-                                { value: 'blue', name: 'Blue', image: 'blue.jpg', price: 0 },
-                                { value: 'green', name: 'Green', image: 'green.jpg', price: 0 },
-                                { value: 'silver', name: 'Silver', image: 'silver.jpg', price: 0 }
-                            ],
-                            bracelet: [
-                                { value: 'oyster', name: 'Oyster', image: 'oyster.jpg', price: 0 },
-                                { value: 'jubilee', name: 'Jubilee', image: 'jubilee.jpg', price: 500 },
-                                { value: 'leather', name: 'Leather', image: 'leather.jpg', price: 800 },
-                                { value: 'oysterflex', name: 'Oysterflex', image: 'oysterflex.jpg', price: 1200 }
-                            ],
-                            material: [
-                                { value: 'steel', name: 'Oystersteel', image: 'steel.jpg', price: 0 },
-                                { value: 'yellow-gold', name: 'Yellow Gold', image: 'yellow-gold.jpg', price: 12000 },
-                                { value: 'white-gold', name: 'White Gold', image: 'white-gold.jpg', price: 14000 },
-                                { value: 'everose', name: 'Everose Gold', image: 'everose.jpg', price: 16000 }
-                            ],
-                            bezel: [
-                                { value: 'black', name: 'Black Ceramic', image: 'black.jpg', price: 0 },
-                                { value: 'blue', name: 'Blue Ceramic', image: 'blue.jpg', price: 500 },
-                                { value: 'green', name: 'Green Ceramic', image: 'green.jpg', price: 800 },
-                                { value: 'fluted', name: 'Fluted', image: 'fluted.jpg', price: 2000 }
-                            ]
-                        };
-                        %>
-                        <% Object.entries(options).forEach(([key, opts], idx) => { %>
-                            <div class="tab-content <%= idx === 0 ? 'active' : '' %>"
-                                 id="<%= key %>-panel"
-                                 role="tabpanel"
-                                 aria-labelledby="tab-<%= key %>">
-                                <h3>Select <%= tabs.find(t => t.key === key).label %></h3>
-                                <div class="option-grid" role="radiogroup" aria-required="true">
-                                    <% opts.forEach((opt, index) => { %>
-                                        <div class="option-item">
-                                            <input type="radio"
-                                                   name="<%= key %>"
-                                                   id="<%= key %>-<%= opt.value %>"
-                                                   value="<%= opt.value %>"
-                                                   data-price="<%= opt.price %>"
-                                                   <%= index === 0 ? 'checked' : '' %>
-                                                   class="option-input">
-                                            <label for="<%= key %>-<%= opt.value %>" class="option-label">
-                                                <img src="/images/<%= key %>s/<%= opt.image %>"
-                                                     alt="<%= opt.name %>"
-                                                     class="option-image"
-                                                     loading="lazy"
-                                                     width="100"
-                                                     height="100">
-                                                <span><%= opt.name %></span>
-                                                <% if (opt.price > 0) { %>
-                                                    <span>+$<%= opt.price.toLocaleString() %></span>
-                                                <% } %>
-                                            </label>
+                        <!-- Trust Indicators -->
+                        <div class="trust-container" style="background-color: var(--muted); border-radius: var(--radius); border: 1px solid var(--border); padding: 1.5rem; margin-top: 1.5rem;">
+                            <section class="trust-indicators" aria-labelledby="trust-heading">
+                                <h3 id="trust-heading" style="font-size: 1.125rem; font-weight: 500; margin-bottom: 1rem;">Trust Information</h3>
+                                <div class="trust-grid">
+                                    <div class="trust-item">
+                                        <i class="fas fa-shield-alt" style="color: var(--primary);"></i>
+                                        <div>
+                                            <h4 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Warranty</h4>
+                                            <p style="font-size: 0.8125rem; color: var(--muted-foreground);"><%= locals.watch?.warranty || '5-year warranty' %></p>
                                         </div>
-                                    <% }); %>
+                                    </div>
+                                    <div class="trust-item">
+                                        <i class="fas fa-shipping-fast" style="color: var(--primary);"></i>
+                                        <div>
+                                            <h4 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Free Shipping</h4>
+                                            <p style="font-size: 0.8125rem; color: var(--muted-foreground);">Worldwide delivery</p>
+                                        </div>
+                                    </div>
+                                    <div class="trust-item">
+                                        <i class="fas fa-medal" style="color: var(--primary);"></i>
+                                        <div>
+                                            <h4 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Authenticity</h4>
+                                            <p style="font-size: 0.8125rem; color: var(--muted-foreground);">Certified timepiece</p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        <% }); %>
-                    </section>
-                </section>
-
-                <!-- Right Column - Summary -->
-                <section class="details-column" aria-labelledby="details-heading">
-                    <h2 id="details-heading"><%= locals.watch?.name || 'Submariner' %></h2>
-                    <p><%= locals.watch?.description || 'The Submariner is an iconic timepiece with a 41 mm Oystersteel case, luminescent dial, and Cerachrom bezel.' %></p>
-
-                    <!-- Configuration Summary -->
-                    <aside class="config-summary" aria-labelledby="summary-heading">
-                        <h3 id="summary-heading">Your Configuration</h3>
-                        <div class="summary-details" aria-live="polite">
-                            <div class="summary-row">
-                                <span>Model</span>
-                                <span><%= locals.watch?.name || 'Submariner' %></span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Dial</span>
-                                <span id="summary-dial">Black</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Bracelet</span>
-                                <span id="summary-bracelet">Oyster</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Material</span>
-                                <span id="summary-material">Oystersteel</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Bezel</span>
-                                <span id="summary-bezel">Black Ceramic</span>
-                            </div>
-                            <div class="summary-row summary-total">
-                                <span>Total Price</span>
-                                <span id="summary-price" aria-live="polite">$<%= (locals.watch?.basePrice || 10000).toLocaleString() %></span>
-                            </div>
+                            </section>
                         </div>
-
-                        <!-- Action Buttons -->
-                        <div class="summary-actions">
-                            <button class="btn btn-primary" data-action="add-to-cart">
-                                Add To Cart
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                            <button class="btn btn-secondary" data-action="continue-shopping">
-                                Continue Shopping
-                            </button>
-                            <div class="secondary-actions">
-                                <button class="btn btn-outline" data-action="save-config">
-                                    <i class="fas fa-bookmark"></i> Save
-                                </button>
-                                <button class="btn btn-outline" data-action="share-config">
-                                    <i class="fas fa-share-alt"></i> Share
-                                </button>
-                            </div>
-                        </div>
-                    </aside>
-
-                    <!-- Trust Indicators -->
-                    <section class="trust-indicators" aria-labelledby="trust-heading">
-                        <h3 id="trust-heading" class="visually-hidden">Trust Information</h3>
-                        <div class="trust-grid">
-                            <div class="trust-item">
-                                <i class="fas fa-shield-alt"></i>
-                                <div>
-                                    <h4>Warranty</h4>
-                                    <p><%= locals.watch?.warranty || '5-year warranty' %></p>
-                                </div>
-                            </div>
-                            <div class="trust-item">
-                                <i class="fas fa-shipping-fast"></i>
-                                <div>
-                                    <h4>Free Shipping</h4>
-                                    <p>Worldwide delivery</p>
-                                </div>
-                            </div>
-                            <div class="trust-item">
-                                <i class="fas fa-medal"></i>
-                                <div>
-                                    <h4>Authenticity</h4>
-                                    <p>Certified timepiece</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </section>
+                    </div>
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
+        <%- include('partials/footer') %>
+    </div>
 
-    <%- include('partials/footer') %>
-</div>
-
-  <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modelViewer = document.querySelector('model-viewer');
+            // Add your event listeners and logic here
+            modelViewer.addEventListener('progress', (event) => {
+                const progressBar = document.querySelector('.progress-bar');
+                progressBar.style.setProperty('--progress', event.detail.totalProgress * 100 + '%');
+            });
+            modelViewer.addEventListener('load', () => {
+                console.log('3D model loaded successfully');
+            });
+            modelViewer.addEventListener('error', () => {
+                console.error('Error loading 3D model');
+            });
+        });
+    </script>
 </body>
-</html>
 
+</html>
