@@ -82,6 +82,25 @@ router.get('/Brands', async (req, res) => {
     }
 });
 
+// Configurator Page
+router.get('/Configurator', async (req, res) => {
+  
+  try 
+  {
+
+    //Fetch from Database
+    const configurator = await Configurator.find();
+
+    res.render('Configure-Page');
+  }
+
+  catch (error)
+  {
+    res.render('Error Loading Configurator Page', error);
+    renderNotification(res, 'error', 'Failed to load Configurator Page. Please try again later.');
+  }
+});
+
 // Public routes (no auth required)
 
 // Login/Signup page
