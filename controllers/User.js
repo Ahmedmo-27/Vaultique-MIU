@@ -16,6 +16,91 @@ const renderNotification = (res, type, message, title = 'Notification') => {
   });
 };
 
+//Collections Page
+router.get('/Collections', async (req, res) => {
+    try {
+        // Get all collections
+        const allCollections = await Collection.find();
+        
+        // Define the desired order
+        const desiredOrder = [
+            "Classic & Dress",
+            "Casual & Everyday",
+            "Sports & Adventure",
+            "Aviation & Travel",
+            "Luxury & Heritage"
+        ];
+        
+        // Sort collections according to the desired order
+        const collections = allCollections.sort((a, b) => {
+            return desiredOrder.indexOf(a.name) - desiredOrder.indexOf(b.name);
+        });
+        
+        res.render('Collections-Page', { collections });
+    } catch(error) {
+        res.render('Error Loading Collections Page', error);
+        renderNotification(res, 'error', 'Failed to load Collections Page. Please try again later.');
+    }
+})
+
+
+// Brands Page Route with Custom Order
+router.get('/Brands', async (req, res) => {
+    try {
+        // Define the exact brand order you want
+        const brandOrder = [
+            "Rolex", 
+            "Omega",
+            "Cartier",
+            "Patek Philippe",
+            "Audemars Piguet",
+            "A.Lange & Söhne",
+            "Vacheron Constantin",
+            "Jacob & Co",
+            "Richard Mille",
+            "Breitling"
+        ];
+        
+        // Fetch all brands from database
+        const brands = await Brand.find();
+        
+        // Sort brands according to the custom order
+        const sortedBrands = brandOrder
+            .map(name => brands.find(brand => brand.name === name))
+            .filter(brand => brand !== undefined); // Remove any undefined if brand not found
+        
+        // Render the Brands-Page template with the sorted brands
+        res.render('Brands-Page', { 
+            brands: sortedBrands
+        });
+    } catch (error) {
+        console.error('Error loading Brands Page:', error);
+        res.status(500).render('error', {
+            message: 'Failed to load Brands Page. Please try again later.',
+            error: process.env.NODE_ENV === 'development' ? error : {}
+        });
+    }
+});
+
+// Configurator Page
+router.get('/Configurator', async (req, res) => {
+  
+  try 
+  {
+
+    //Fetch from Database
+    const configurator = await Configurator.find();
+
+    res.render('Configure-Page');
+  }
+
+  catch (error)
+  {
+    res.render('Error Loading Configurator Page', error);
+    renderNotification(res, 'error', 'Failed to load Configurator Page. Please try again later.');
+  }
+});
+
 // Public routes (no auth required)
 
 // Login/Signup page

@@ -1,18 +1,44 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// Get project root directory
+const projectRoot = path.resolve(__dirname, '..');
+
+// Create required upload directories
+const createUploadDirectories = () => {
+    const baseDir = path.join(projectRoot, 'public', 'Assets');
+    const subDirs = ['Images', 'Videos', '3D Models'];
+
+    // Create base directory if it doesn't exist
+    if (!fs.existsSync(baseDir)) {
+        fs.mkdirSync(baseDir, { recursive: true });
+    }
+
+    // Create subdirectories
+    subDirs.forEach(dir => {
+        const fullPath = path.join(baseDir, dir);
+        if (!fs.existsSync(fullPath)) {
+            fs.mkdirSync(fullPath, { recursive: true });
+        }
+    });
+};
+
+// Create directories when module is loaded
+createUploadDirectories();
 
 // Configure storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        let uploadPath = 'public/Assets';
+        let uploadPath = path.join(projectRoot, 'public', 'Assets');
         
-        // Determine subdirectory based on file type
-        if (file.mimetype.startsWith('Image/')) {
-            uploadPath += 'Images/';
-        } else if (file.mimetype.startsWith('video/')) {
-            uploadPath += 'Videos/';
+        // Determine subdirectory based on file type (case-insensitive)
+        if (file.mimetype.toLowerCase().startsWith('image/')) {
+            uploadPath = path.join(uploadPath, 'Images');
+        } else if (file.mimetype.toLowerCase().startsWith('video/')) {
+            uploadPath = path.join(uploadPath, 'Videos');
         } else if (file.originalname.endsWith('.glb')) {
-            uploadPath += '3D Models/';
+            uploadPath = path.join(uploadPath, '3D Models');
         }
         
         cb(null, uploadPath);

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vaultique | Configurator</title>
+  <link rel="stylesheet" href="/CSS/configure-3D.css">
+  <link rel="stylesheet" href="/CSS/nav-bar.css">
+ <link rel="stylesheet" href="/CSS/footer.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Import Three.js directly from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+
+   <script src="/Javascript/nav-bar.js"></script>
+   <script src="/Javascript/Loading Screen.js"></script>
+  <script src="/Javascript/configure-3D.js"></script>
+  <script src="/Javascript/Light-Mode.js"></script>
+</head>
+<body>
+
+  <!--Loading Screen-->
+     <%- include('partials/loading-screen') %>
+
+  <!--Nav-Bar-->
+     <%- include('partials/navigation') %>
+
+  <div class="app" id="configurator-app">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <main class="main" id="main-content" role="main">
+        <div class="container">
+            <header class="page-header">
+                <nav aria-label="Breadcrumb navigation">
+                    <ol class="breadcrumb-list">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/watches">Watches</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Submariner Configurator</li>
+                    </ol>
+                </nav>
+            </header>
+
+            <div class="grid">
+                <!-- Left Column - Configurator -->
+                <section class="configurator-column" aria-labelledby="configurator-heading">
+                    <h1 id="configurator-heading"><%= locals.watch?.name || 'Submariner' %></h1>
+
+                    <!-- Watch Specs -->
+                    <div class="watch-specs" aria-labelledby="specs-heading">
+                        <h2 id="specs-heading" class="visually-hidden">Technical Specifications</h2>
+                        <div class="spec-item">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            <span><%= locals.watch?.specs?.movement || '3235 Calibre' %></span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-tint" aria-hidden="true"></i>
+                            <span><%= locals.watch?.specs?.waterResistance || '300m Water Resistant' %></span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-battery-full" aria-hidden="true"></i>
+                            <span><%= locals.watch?.specs?.powerReserve || '70h Power Reserve' %></span>
+                        </div>
+                    </div>
+
+                    <!-- 3D Viewer -->
+                    <section class="watch-viewer" aria-labelledby="viewer-heading">
+                        <h2 id="viewer-heading" class="visually-hidden">3D Watch Preview</h2>
+                        <div id="watch-canvas-container" 
+                             class="watch-canvas-container" 
+                             role="img" 
+                             aria-label="Interactive 3D watch preview"
+                             tabindex="0">
+                            <div class="canvas-loading" id="canvas-loading">
+                                <div class="spinner"></div>
+                                <span>Loading 3D Model...</span>
+                            </div>
+                            <div class="controls-hint">
+                                <kbd>Drag</kbd> to rotate • <kbd>Scroll</kbd> to zoom
+                            </div>
+                            <div class="canvas-error" id="canvas-error" style="display: none;">
+                                <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                                <span>Failed to load model. Please refresh.</span>
+                                <button class="btn btn-outline" onclick="location.reload()">Refresh</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Configuration Tabs -->
+                    <section class="config-tabs" aria-labelledby="config-heading">
+                        <h2 id="config-heading" class="visually-hidden">Configuration Options</h2>
+                        <div class="tabs-list" role="tablist">
+                            <% 
+                            const tabs = [
+                                { key: 'dial', label: 'Dial', icon: 'fas fa-circle' },
+                                { key: 'bracelet', label: 'Bracelet', icon: 'fas fa-link' },
+                                { key: 'material', label: 'Material', icon: 'fas fa-gem' },
+                                { key: 'bezel', label: 'Bezel', icon: 'fas fa-ring' }
+                            ];
+                            %>
+                            <% tabs.forEach((tab, index) => { %>
+                                <button class="tab-trigger <%= index === 0 ? 'active' : '' %>"
+                                        role="tab"
+                                        data-tab="<%= tab.key %>"
+                                        id="tab-<%= tab.key %>"
+                                        aria-controls="<%= tab.key %>-panel"
+                                        aria-selected="<%= index === 0 ? 'true' : 'false' %>">
+                                    <i class="<%= tab.icon %>"></i>
+                                    <%= tab.label %>
+                                </button>
+                            <% }); %>
+                        </div>
+
+                        <!-- Tab Panels -->
+                        <% 
+                        const options = {
+                            dial: [
+                                { value: 'black', name: 'Black', image: 'black.jpg', price: 0 },
+                                { value: 'blue', name: 'Blue', image: 'blue.jpg', price: 0 },
+                                { value: 'green', name: 'Green', image: 'green.jpg', price: 0 },
+                                { value: 'silver', name: 'Silver', image: 'silver.jpg', price: 0 }
+                            ],
+                            bracelet: [
+                                { value: 'oyster', name: 'Oyster', image: 'oyster.jpg', price: 0 },
+                                { value: 'jubilee', name: 'Jubilee', image: 'jubilee.jpg', price: 500 },
+                                { value: 'leather', name: 'Leather', image: 'leather.jpg', price: 800 },
+                                { value: 'oysterflex', name: 'Oysterflex', image: 'oysterflex.jpg', price: 1200 }
+                            ],
+                            material: [
+                                { value: 'steel', name: 'Oystersteel', image: 'steel.jpg', price: 0 },
+                                { value: 'yellow-gold', name: 'Yellow Gold', image: 'yellow-gold.jpg', price: 12000 },
+                                { value: 'white-gold', name: 'White Gold', image: 'white-gold.jpg', price: 14000 },
+                                { value: 'everose', name: 'Everose Gold', image: 'everose.jpg', price: 16000 }
+                            ],
+                            bezel: [
+                                { value: 'black', name: 'Black Ceramic', image: 'black.jpg', price: 0 },
+                                { value: 'blue', name: 'Blue Ceramic', image: 'blue.jpg', price: 500 },
+                                { value: 'green', name: 'Green Ceramic', image: 'green.jpg', price: 800 },
+                                { value: 'fluted', name: 'Fluted', image: 'fluted.jpg', price: 2000 }
+                            ]
+                        };
+                        %>
+                        <% Object.entries(options).forEach(([key, opts], idx) => { %>
+                            <div class="tab-content <%= idx === 0 ? 'active' : '' %>"
+                                 id="<%= key %>-panel"
+                                 role="tabpanel"
+                                 aria-labelledby="tab-<%= key %>">
+                                <h3>Select <%= tabs.find(t => t.key === key).label %></h3>
+                                <div class="option-grid" role="radiogroup" aria-required="true">
+                                    <% opts.forEach((opt, index) => { %>
+                                        <div class="option-item">
+                                            <input type="radio"
+                                                   name="<%= key %>"
+                                                   id="<%= key %>-<%= opt.value %>"
+                                                   value="<%= opt.value %>"
+                                                   data-price="<%= opt.price %>"
+                                                   <%= index === 0 ? 'checked' : '' %>
+                                                   class="option-input">
+                                            <label for="<%= key %>-<%= opt.value %>" class="option-label">
+                                                <img src="/images/<%= key %>s/<%= opt.image %>"
+                                                     alt="<%= opt.name %>"
+                                                     class="option-image"
+                                                     loading="lazy"
+                                                     width="100"
+                                                     height="100">
+                                                <span><%= opt.name %></span>
+                                                <% if (opt.price > 0) { %>
+                                                    <span>+$<%= opt.price.toLocaleString() %></span>
+                                                <% } %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </section>
+                </section>
+
+                <!-- Right Column - Summary -->
+                <section class="details-column" aria-labelledby="details-heading">
+                    <h2 id="details-heading"><%= locals.watch?.name || 'Submariner' %></h2>
+                    <p><%= locals.watch?.description || 'The Submariner is an iconic timepiece with a 41 mm Oystersteel case, luminescent dial, and Cerachrom bezel.' %></p>
+
+                    <!-- Configuration Summary -->
+                    <aside class="config-summary" aria-labelledby="summary-heading">
+                        <h3 id="summary-heading">Your Configuration</h3>
+                        <div class="summary-details" aria-live="polite">
+                            <div class="summary-row">
+                                <span>Model</span>
+                                <span><%= locals.watch?.name || 'Submariner' %></span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Dial</span>
+                                <span id="summary-dial">Black</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Bracelet</span>
+                                <span id="summary-bracelet">Oyster</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Material</span>
+                                <span id="summary-material">Oystersteel</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Bezel</span>
+                                <span id="summary-bezel">Black Ceramic</span>
+                            </div>
+                            <div class="summary-row summary-total">
+                                <span>Total Price</span>
+                                <span id="summary-price" aria-live="polite">$<%= (locals.watch?.basePrice || 10000).toLocaleString() %></span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="summary-actions">
+                            <button class="btn btn-primary" data-action="add-to-cart">
+                                Add To Cart
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                            <button class="btn btn-secondary" data-action="continue-shopping">
+                                Continue Shopping
+                            </button>
+                            <div class="secondary-actions">
+                                <button class="btn btn-outline" data-action="save-config">
+                                    <i class="fas fa-bookmark"></i> Save
+                                </button>
+                                <button class="btn btn-outline" data-action="share-config">
+                                    <i class="fas fa-share-alt"></i> Share
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Trust Indicators -->
+                    <section class="trust-indicators" aria-labelledby="trust-heading">
+                        <h3 id="trust-heading" class="visually-hidden">Trust Information</h3>
+                        <div class="trust-grid">
+                            <div class="trust-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <div>
+                                    <h4>Warranty</h4>
+                                    <p><%= locals.watch?.warranty || '5-year warranty' %></p>
+                                </div>
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-shipping-fast"></i>
+                                <div>
+                                    <h4>Free Shipping</h4>
+                                    <p>Worldwide delivery</p>
+                                </div>
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-medal"></i>
+                                <div>
+                                    <h4>Authenticity</h4>
+                                    <p>Certified timepiece</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

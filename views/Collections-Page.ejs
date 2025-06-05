@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaultique | Collections</title>
+    <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/Products.css">
+    <link rel="stylesheet" href="/CSS/footer.css">
+    <link rel="stylesheet" href="/CSS/Landing-page.css">
+    <link rel="stylesheet" href="/CSS/arrow.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Javascript/nav-bar.js"></script>
+    <script src="/Javascript/Light-Mode.js"></script>
+    <script src="/JavaScript/arrow.js"></script>
+    <script src="/JavaScript/Landing-Page.js"></script>
+    
+    
+</head>
+
+<body>
+
+  <%- include('partials/loading-screen') %>
+
+    <!--Scroll Arrow-->
+    <div class="scroll-indicator">
+        <div class="scroll-circle">
+            <div class="scroll-indicator-inner"></div>
+            <div class="scroll-progress"></div>
+            <div class="scroll-arrow">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M12 19L19 12M12 19L5 12" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+
+     <!-- Include navigation partial -->
+    <%- include('partials/navigation') %>
+
+    <section class="main" id="main">
+        <video src="/Assets/Videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop="" muted=""></video>
+        <div class="main-text">
+            <h1>Your Signature in Time</h1>
+            <a class="button" href="/Sobhi/Recommendation.html">TAKE THE QUIZ</a>
+        </div>
+    </section>
+
+    <main>
+    <% if (collections && collections.length > 0) { %>
+        <% collections.forEach((collection) => { %>
+            <section class="section hero">
+            <div class="video-container">
+                <video autoplay muted loop playsinline>
+                    <source src="<%=collection.heroVideo%>" type="video/mp4">
+                </video>
+            </div>
+            <div class="content hover-text">
+                <h2 data-translate="classicDressSection"><%=collection.name%></h2>
+                <br>
+                <p data-translate="classicDressDesc1">
+                    <%=collection.description%>
+                </p>
+                <br><br>
+                <a class="button" href="/classic-dress">See <%=collection.name%> Collection</a>
+            </div>
+        </section>
+    <%})}%>
+    </main>
+    <style>
+        /* Hover effect for all text sections */
+        .hover-text {
+            color:#f6e8c0;
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding: 5px 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background-color: rgba(8, 8, 8, 0.429);
+            margin-right: 55%;
+        }
+
+        .hover-text h1,
+        .hover-text h2,
+        .hover-text p {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Glow effect on headings */
+        .hover-text:hover h1,
+        .hover-text:hover h2 {
+            text-shadow: 0 0 10px rgba(7, 7, 7, 0.8);
+            transform: translateY(-2px);
+        }
+
+        /* Subtle glow on descriptions */
+        .hover-text:hover p {
+            text-shadow: 0 0 5px rgba(30, 30, 30, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* Animated border effect */
+        .hover-text::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+
+        .hover-text:hover::before {
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Pulse animation on hover */
+        @keyframes text-pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .hover-text:hover h1,
+        .hover-text:hover h2 {
+            animation: text-pulse 1.5s infinite;
+        }
+
+        
+
+    </style>
+
+    <script>
+        // Click navigation for all text sections
+        document.querySelectorAll('.hover-text').forEach(textElement => {
+            textElement.addEventListener('click', () => {
+                window.location.href = textElement.getAttribute('data-href');
+            });
+        });
+    </script>
+
+
+
+
+
+ <!-- Include footer partial -->
+    <%- include('partials/footer') %>
+
+    <script src="JavaScript/translations.js"></script>
+    <script src="JavaScript/language-switch.js"></script>
+    <script src="JavaScript/language-utility.js"></script>
+    <script src="JavaScript/auto-translate.js"></script>
+    <!--<script src="JavaScript/translator.js"></script>-->
+    
+    <script>
+        if(history.scrollRestoration)
+        {
+            history.scrollRestoration='manual';
+        }
+    
+        window.onbeforeunload = function () 
+        {
+            window.scrollTo(0, 0);
+        };
+    </script>
+
+
+</body>
+
+</html>

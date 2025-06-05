@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Admin Dashboard</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
+    <!-- Custom JavaScript -->
+    <script src="/Javascript/nav-bar.js"></script>
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        .container-fluid {
+            margin-top: 20px;
+        }
+        .product-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .gallery-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .specifications-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .specifications-table th {
+            width: 30%;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/Admin-navigation') %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-md-12 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Product Details</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="/admin/products" class="btn btn-secondary me-2">
+                            <i class="fas fa-arrow-left"></i> Back to Products
+                        </a>
+                        <a href="/admin/products/<%= product._id %>/edit" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Product
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Product Images -->
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Product Images</h5>
+                                <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image mb-3">
+                                
+                                <% if (product.galleryImages && product.galleryImages.length > 0) { %>
+                                    <h6>Gallery Images</h6>
+                                    <div class="d-flex flex-wrap">
+                                        <% product.galleryImages.forEach(image => { %>
+                                            <img src="<%= image %>" alt="Gallery Image" class="gallery-image">
+                                        <% }); %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Product Information</h5>
+                                <table class="table">
+                                    <tr>
+                                        <th>Name:</th>
+                                        <td><%= product.name %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Brand:</th>
+                                        <td><%= product.brand ? product.brand.name : 'N/A' %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Price:</th>
+                                        <td>$<%= product.price.toFixed(2) %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Collection:</th>
+                                        <td><%= product.Vcollection %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Stock Status:</th>
+                                        <td>
+                                            <% if (product.stock) { %>
+                                                <span class="badge bg-success">In Stock</span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger">Out of Stock</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Stock Count:</th>
+                                        <td><%= product.stockCount %></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Specifications -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Specifications</h5>
+                                <table class="table specifications-table">
+                                    <tr>
+                                        <th>Strap Material:</th>
+                                        <td><%= product.strapMaterial %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Movement:</th>
+                                        <td><%= product.movement %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Water Resistance:</th>
+                                        <td><%= product.waterResistance %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Case Material:</th>
+                                        <td><%= product.caseMaterial %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Dial Color:</th>
+                                        <td><%= product.dialColor %></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Description</h5>
+                                <p><%= product.description %></p>
+                            </div>
+                        </div>
+
+                        <!-- Special Features -->
+                        <% if (product.specialFeatures && product.specialFeatures.length > 0) { %>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Special Features</h5>
+                                    <ul class="list-group">
+                                        <% product.specialFeatures.forEach(feature => { %>
+                                            <li class="list-group-item">
+                                                <strong><%= feature.name %>:</strong> <%= feature.description %>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -1,4 +1,4 @@
-let users = window.initialData?.users || [];
+let users = [];
 
 async function fetchUsers() {
   try {
@@ -98,15 +98,57 @@ async function deleteUser(userId) {
   }
 }
 
-// Initialize search functionality
-if (searchInput) {
-  searchInput.addEventListener('input', () => {
-    const keyword = searchInput.value.toLowerCase();
-    const filtered = users.filter(
-      (u) => u.Name.toLowerCase().includes(keyword) || u.email.toLowerCase().includes(keyword)
-    );
-    updateUsersTable(filtered);
-  });
+// Function to update the users table
+function updateUsersTable(usersToDisplay) {
+    const tableBody = document.getElementById('userTableBody');
+    if (!tableBody) {
+        console.error('Table body element not found');
+        return;
+    }
+
+    tableBody.innerHTML = '';
+
+    if (!usersToDisplay || !Array.isArray(usersToDisplay)) {
+        console.error('Invalid data received:', usersToDisplay);
+        return;
+    }
+
+    usersToDisplay.forEach((user) => {
+        const row = `
+            <tr>
+                <td>${user.Name || '-'}</td>
+                <td>${user.email || '-'}</td>
+                <td>${user.role || '-'}</td>
+                <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
+                <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+                <td>
+                    <button onclick="viewUserDetails('${user._id}')" class="view-btn">View</button>
+                    <button onclick="viewUserOrders('${user._id}')" class="orders-btn">Orders</button>
+                    <button onclick="editUser('${user._id}')" class="edit-btn">Edit</button>
+                    <button onclick="deleteUser('${user._id}')" class="delete-btn">Delete</button>
+                </td>
+            </tr>
+        `;
+        tableBody.insertAdjacentHTML('beforeend', row);
+    });
+}
+
+// Function to handle search
+function handleSearch(searchTerm) {
+    if (!users || !Array.isArray(users)) {
+        console.error('Users array is not properly initialized');
+        return;
+    }
+
+    const searchTermLower = searchTerm.toLowerCase().trim();
+    
+    const filteredUsers = users.filter(user => {
+        const name = (user.Name || '').toLowerCase().trim();
+        const email = (user.email || '').toLowerCase().trim();
+        return name.includes(searchTermLower) || email.includes(searchTermLower);
+    });
+
+    updateUsersTable(filteredUsers);
 }
 
 document.getElementById('addUserBtn').onclick = () => {
@@ -147,7 +189,7 @@ document.getElementById('closeModalBtn').onclick = () => {
 async function saveUser(userData) {
   try {
     console.log('Saving user data:', userData);
-    const response = await fetch('/api/admin/users/add', {
+    const response = await fetch('/admin/users/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -159,7 +201,7 @@ async function saveUser(userData) {
     const data = await response.json();
     console.log('Save response data:', data);
 
-    if (data.success) {
+    if (response.ok) {
       // Add the new user to the local array
       users.push(data.data);
       // Update the table with the new user
@@ -461,40 +503,6 @@ function showNotification(type, message) {
   }, 3000);
 }
 
-function updateUsersTable(users) {
-  const tableBody = document.getElementById('userTableBody');
-  if (!tableBody) {
-    console.error('Table body element not found');
-    return;
-  }
-
-  tableBody.innerHTML = '';
-
-  if (!users || !Array.isArray(users)) {
-    console.error('Invalid data received:', users);
-    return;
-  }
-
-  users.forEach((user) => {
-    const row = `
-      <tr>
-        <td>${user.Name || '-'}</td>
-        <td>${user.email || '-'}</td>
-        <td>${user.role || '-'}</td>
-        <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
-        <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
-        <td>
-          <button onclick="viewUserDetails('${user._id}')" class="view-btn">View</button>
-          <button onclick="viewUserOrders('${user._id}')" class="orders-btn">Orders</button>
-          <button onclick="editUser('${user._id}')" class="edit-btn">Edit</button>
-          <button onclick="deleteUser('${user._id}')" class="delete-btn">Delete</button>
-        </td>
-      </tr>
-    `;
-    tableBody.insertAdjacentHTML('beforeend', row);
-  });
-}
-
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
     // Get all required elements
@@ -506,16 +514,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeOrdersBtn = document.getElementById('closeOrdersBtn');
     const userForm = document.getElementById('userForm');
 
-    // Initialize search functionality
+    // Initialize users array from initialData
+    if (window.initialData?.users) {
+        users = window.initialData.users;
+        updateUsersTable(users);
+    }
+
+    // Set up search functionality
     if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const keyword = searchInput.value.toLowerCase();
-            const filtered = users.filter(
-                (u) =>
-                    (u.Name && u.Name.toLowerCase().includes(keyword)) ||
-                    (u.email && u.email.toLowerCase().includes(keyword))
-            );
-            updateUsersTable(filtered);
+        searchInput.addEventListener('input', (e) => {
+            handleSearch(e.target.value);
         });
     }
 
