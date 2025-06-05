@@ -28,6 +28,7 @@ body {
     background-image: linear-gradient(135deg, var(--navy), #003366);
 }
 
+
 .progress-container {
     position: fixed;
     top: 0;

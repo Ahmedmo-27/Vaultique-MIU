@@ -44,6 +44,7 @@ router.get('/Collections', async (req, res) => {
 })
 
 
+
 // Brands Page Route with Custom Order
 router.get('/Brands', async (req, res) => {
     try {
