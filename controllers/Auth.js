@@ -8,6 +8,9 @@ const validator = require('validator');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 const { generateToken } = require('../middleware/jwt');
+const { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail, sendOrderConfirmationEmail } = require('../utils/emailService');
+const { sendWelcomeSMS } = require('../utils/smsService');
+const { setSessionCookie, removeCookie } = require('../utils/cookieManager');
 // Authentication security is handled by JWT middleware
 
 // Rate limiting for login attempts
@@ -206,7 +209,18 @@ router.post('/login', loginLimiter, loginValidation, async (req, res) => {
         });
         return res.status(401).json({
           success: false,
-          message: 'Your account has been deactivated. Please contact support.',
+          message: 'Your account is not active. Please verify your email or contact support.',
+        });
+      }
+
+      // Check if email is verified
+      if (!user.isEmailVerified) {
+        console.log('Unverified email attempt:', {
+          email: user.email,
+        });
+        return res.status(401).json({
+          success: false,
+          message: 'Please verify your email before logging in.',
         });
       }
 
@@ -231,12 +245,7 @@ router.post('/login', loginLimiter, loginValidation, async (req, res) => {
       const token = generateToken(user);
 
       // Set the JWT token in an HTTP-only cookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        sameSite: 'lax',
-      });
+      setSessionCookie(res, 'token', token);
 
       // Create safe user object for response
       const userResponse = {
@@ -332,7 +341,7 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
         });
       }
 
-      // Hash password with stronger salt rounds - use bcryptjs for consistency
+      // Hash password with stronger salt rounds
       console.log('Hashing password...');
       const salt = await bcryptjs.genSalt(12);
       const hashedPassword = await bcryptjs.hash(password, salt);
@@ -345,7 +354,8 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
         email: email.toLowerCase(),
         password: hashedPassword,
         role: 'user',
-        status: 'active',
+        status: 'active', // Set user as active immediately
+        isEmailVerified: true, // Set email as verified
         createdAt: new Date(),
       };
 
@@ -353,11 +363,10 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
       if (DOB) userData.DOB = DOB;
       if (phone_number) userData.phone_number = phone_number;
       if (language) {
-        // Map language codes to full names if needed
         const languageMap = {
           en: 'English',
           ar: 'Arabic',
-          fr: 'English', // Default to English for unsupported languages
+          fr: 'English',
         };
         userData.language = languageMap[language] || language;
         console.log('Language value:', language, '→', userData.language);
@@ -368,6 +377,24 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
       const newUser = await User.create(userData);
       console.log('User created successfully:', newUser._id);
 
+      // Send welcome email
+      try {
+        await sendWelcomeEmail(newUser);
+        console.log('Welcome email sent successfully to:', newUser.email);
+      } catch (emailErr) {
+        console.error('Failed to send welcome email:', emailErr);
+      }
+
+      // Send welcome SMS if phone number is provided
+      if (newUser.phone_number) {
+        try {
+          await sendWelcomeSMS(newUser);
+          console.log('Welcome SMS sent successfully to:', newUser.phone_number);
+        } catch (smsErr) {
+          console.error('Failed to send welcome SMS:', smsErr);
+        }
+      }
+
       // Remove sensitive information
       const userResponse = newUser.toObject();
       delete userResponse.password;
@@ -376,23 +403,14 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
       const token = generateToken(newUser);
 
       // Set session cookie
-      const sessionConfig = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        path: '/',
-        domain: process.env.COOKIE_DOMAIN || undefined,
-      };
-
-      res.cookie('token', token, sessionConfig);
+      setSessionCookie(res, 'token', token);
 
       res.status(201).json({
         success: true,
-        message: 'Signup successful',
+        message: 'Signup successful! Welcome email has been sent.',
         data: {
           user: userResponse,
-          token: token, // Add token to response
+          token: token,
         },
       });
     } catch (dbError) {
@@ -407,9 +425,7 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
       code: error.code,
     });
 
-    // Send more specific error messages based on the error type
     if (error.code === 11000) {
-      // MongoDB duplicate key error
       return res.status(400).json({
         success: false,
         message: 'Username or email already exists',
@@ -456,15 +472,15 @@ router.post(
 
       await user.save();
 
-      // TODO: Implement email sending with reset link
-      // For development only - remove in production
-      if (process.env.NODE_ENV === 'development') {
-        return res.json({
-          success: true,
-          message: 'Password reset link sent to your email',
-          resetToken, // Remove in production
-        });
+      // Send password reset email
+      try {
+        await sendPasswordResetEmail(user, resetToken);
+      } catch (emailErr) {
+        console.error('Failed to send password reset email:', emailErr);
       }
+
+      // Create reset link
+      const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
       res.json({
         success: true,
@@ -481,85 +497,169 @@ router.post(
 );
 
 // Reset password
-router.post(
-  '/reset-password/:token',
-  [
-    body('password').custom((value, { req }) => {
-      const errors = validatePassword(value);
-      if (errors.length > 0) {
-        throw new Error(errors.join('. '));
-      }
-      return true;
-    }),
-  ],
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          success: false,
-          errors: errors.array(),
-        });
-      }
-
-      const { token } = req.params;
-      const { password } = req.body;
-
-      // Hash token
-      const resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
-
-      // Find user with valid token
-      const user = await User.findOne({
-        resetPasswordToken,
-        resetPasswordExpire: { $gt: Date.now() },
-      });
-
-      if (!user) {
-        return res.status(400).json({
-          success: false,
-          message: 'Password reset token is invalid or has expired',
-        });
-      }
-
-      // Hash new password with stronger salt rounds
-      const salt = await bcryptjs.genSalt(12);
-      user.password = await bcryptjs.hash(password, salt);
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
-      user.failedLoginAttempts = 0; // Reset failed attempts
-      user.lastFailedLogin = undefined;
-
-      await user.save();
-
-      res.json({
-        success: true,
-        message: 'Password has been reset successfully',
-      });
-    } catch (error) {
-      console.error('Password reset error:', error);
-      res.status(500).json({
+router.post('/reset-password', [
+  body('token').notEmpty().withMessage('Token is required'),
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/[A-Z]/)
+    .withMessage('Password must contain at least one uppercase letter')
+    .matches(/[0-9]/)
+    .withMessage('Password must contain at least one number'),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
         success: false,
-        message: 'An error occurred while resetting your password',
+        errors: errors.array(),
       });
     }
+
+    const { token, password } = req.body;
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Find user by reset token and check expiration
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired password reset token',
+      });
+    }
+
+    // Hash new password
+    const salt = await bcryptjs.genSalt(12);
+    user.password = await bcryptjs.hash(password, salt);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password has been reset successfully',
+    });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error resetting password',
+    });
   }
-);
+});
 
 // Logout route
 router.post('/logout', (req, res) => {
-  // Clear all session cookies
-  res.cookie('token', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    expires: new Date(0),
-    path: '/',
-    domain: process.env.COOKIE_DOMAIN || undefined,
-  });
-
+  removeCookie(res, 'token');
   res.json({
     success: true,
     message: 'Logged out successfully',
   });
+});
+
+// Test email route (for development only)
+router.post('/test-email', async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({
+      success: false,
+      message: 'This route is only available in development mode'
+    });
+  }
+
+  try {
+    const testUser = {
+      email: 'ahmedmostafa142004@gmail.com',
+      name: 'Ahmed Mostafa'
+    };
+
+    const emailType = req.body.type || 'welcome';
+    let emailResponse;
+
+    switch (emailType) {
+      case 'welcome':
+        emailResponse = await sendWelcomeEmail(testUser);
+        break;
+      case 'password-reset':
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password/test-token`;
+        emailResponse = await sendPasswordResetEmail(testUser, resetLink);
+        break;
+      case 'verification':
+        const verificationLink = `${process.env.FRONTEND_URL}/verify-email/test-token`;
+        emailResponse = await sendVerificationEmail(testUser, verificationLink);
+        break;
+      case 'order':
+        const orderDetails = {
+          orderNumber: 'TEST-123456',
+          date: new Date().toLocaleDateString(),
+          total: '$1,999.99',
+          items: [
+            { name: 'Luxury Watch Model X', quantity: 1 },
+            { name: 'Watch Care Kit', quantity: 1 }
+          ]
+        };
+        emailResponse = await sendOrderConfirmationEmail(testUser, orderDetails);
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid email type. Available types: welcome, password-reset, verification, order'
+        });
+    }
+
+    res.json({
+      success: true,
+      message: `${emailType} email sent successfully`,
+      data: emailResponse
+    });
+  } catch (error) {
+    console.error('Test email error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending test email',
+      error: error.message
+    });
+  }
+});
+
+// Email verification route
+router.get('/verify-email/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      verificationToken: hashedToken,
+      verificationTokenExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification token',
+      });
+    }
+
+    user.isEmailVerified = true;
+    user.status = 'active';
+    user.verificationToken = undefined;
+    user.verificationTokenExpire = undefined;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Email verified successfully. You can now log in.',
+    });
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error verifying email',
+    });
+  }
 });
 
 module.exports = router;

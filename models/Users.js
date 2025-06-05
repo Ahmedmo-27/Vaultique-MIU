@@ -245,10 +245,16 @@ const UserSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['active', 'inactive', 'suspended'],
-    default: 'active',
+    default: 'inactive',
     required: true,
     select: true,
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: String,
+  verificationTokenExpire: Date,
   failedLoginAttempts: {
     type: Number,
     default: 0,
