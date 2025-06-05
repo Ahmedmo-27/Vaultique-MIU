@@ -44,6 +44,7 @@ router.get('/Collections', async (req, res) => {
 })
 
 
+
 // Brands Page Route with Custom Order
 router.get('/Brands', async (req, res) => {
     try {
@@ -339,11 +340,25 @@ router.get('/logout', (req, res) => {
 const authenticatedRoutes = express.Router();
 authenticatedRoutes.use(authenticateJWT);
 
+router.get('/cart',async (req,res)=>
+{
+  try
+  {
+    res.render('cart');
+  }
+  catch(error)
+  {
+    console.log('error loading cart')
+  }
+}
+)
+
 // Cart routes require auth
 authenticatedRoutes.get('/cart', async (req, res) => {
   try {
     // cart retrieval logic here
     renderNotification(res, 'success', 'Cart retrieved successfully');
+    res.render('cart')
   } catch (error) {
     renderNotification(res, 'error', 'Failed to retrieve cart');
   }

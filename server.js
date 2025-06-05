@@ -8,13 +8,13 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { optionalJWT, isAdmin } = require('./middleware/jwt');
 const config = require('./config/env');
+const { removeCookie } = require('./utils/cookieManager');
 
 // Import route files
 const apiRouter = require('./routes/api');
 const userController = require('./controllers/User');
 const adminRoutes = require('./routes/AdminRoutes');
 const adminController = require('./controllers/Admin');
-const streamChatRoutes = require('./routes/StreamChat');
 const authRoutes = require('./controllers/Auth');
 const app = express();
 
@@ -106,27 +106,8 @@ app.use(
   })
 );
 
-// Static File Serving Configuration - IMPROVED VERSION FOR RAILWAY
+// Static File Serving Configuration
 const publicPath = path.join(__dirname, 'public');
-console.log('Public path configured as:', publicPath);
-
-// Explicit MIME type handlers
-const serveStaticWithType = (directory, contentType) => {
-  return (req, res, next) => {
-    const filePath = path.join(directory, req.path);
-    const fs = require('fs');
-    
-    // Check if file exists
-    if (fs.existsSync(filePath)) {
-      console.log(`Serving static file: ${filePath} as ${contentType}`);
-      res.set('Content-Type', contentType);
-      res.sendFile(filePath);
-    } else {
-      console.log(`File not found: ${filePath}`);
-      next();
-    }
-  };
-};
 
 // Primary static file serving
 app.use(express.static(publicPath));
@@ -161,28 +142,6 @@ app.use('/javascript', express.static(path.join(publicPath, 'Javascript')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')));
 
-// Debug route for troubleshooting static files
-app.get('/debug-static-files', (req, res) => {
-  const fs = require('fs');
-  const cssPath = path.join(publicPath, 'CSS/account-details.css');
-  const jsPath = path.join(publicPath, 'Javascript/account-details.js');
-  
-  res.json({
-    nodeEnv: process.env.NODE_ENV,
-    publicPath,
-    cssExists: fs.existsSync(cssPath),
-    jsExists: fs.existsSync(jsPath),
-    cssPath,
-    jsPath,
-    cssDir: fs.existsSync(path.join(publicPath, 'CSS')) 
-      ? fs.readdirSync(path.join(publicPath, 'CSS')) 
-      : 'Directory not found',
-    jsDir: fs.existsSync(path.join(publicPath, 'Javascript')) 
-      ? fs.readdirSync(path.join(publicPath, 'Javascript')) 
-      : 'Directory not found'
-  });
-});
-
 // Public routes (no authentication required)
 app.use('/api/auth', authRoutes);
 
@@ -193,20 +152,10 @@ app.use(optionalJWT);
 // Protected API routes
 app.use('/api', apiRouter);
 app.use('/api/admin', adminRoutes); // Already has isAdmin middleware
-app.use('/api/stream-chat', isAdmin, streamChatRoutes);
 
 // Global logout route for client-side usage
 app.get('/logout', (req, res) => {
-  // Clear JWT token cookie
-  res.cookie('token', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    expires: new Date(0),
-    path: '/',
-    domain: process.env.COOKIE_DOMAIN || undefined,
-  });
-  
-  // Redirect to login page
+  removeCookie(res, 'token');
   res.redirect('/user/LoginSignup');
 });
 
@@ -229,16 +178,7 @@ app.delete('/admin/products/:id', isAdmin, adminController.deleteProduct);
 
 // Admin logout route
 app.get('/admin/logout', (req, res) => {
-  // Clear JWT token cookie
-  res.cookie('token', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    expires: new Date(0),
-    path: '/',
-    domain: process.env.COOKIE_DOMAIN || undefined,
-  });
-  
-  // Redirect to login page
+  removeCookie(res, 'token');
   res.redirect('/user/LoginSignup');
 });
 
