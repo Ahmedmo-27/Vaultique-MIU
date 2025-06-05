@@ -4,11 +4,21 @@
     box-sizing: border-box;
 }
 
+body.dark-mode .footer 
+{
+    background-color: #000;
+    color: #fffff0;
+}
+
+body.light-mode .footer 
+{
+    background-color: #fff;
+    color: #000;
+}
+
 footer {
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    background: white;
-    color: black;
 }
 
 /* RTL Support */
@@ -28,9 +38,7 @@ footer {
 }
 
 .footer {
-    background-color: #000;
     padding: 40px 40px;
-    color: #fff;
 }
 
 .footer-content {
