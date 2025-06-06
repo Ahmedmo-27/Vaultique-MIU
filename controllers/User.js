@@ -789,7 +789,7 @@ router.get('/compare', async (req, res) => {
       };
     }));
     
-    res.render('Compare', {
+    res.render('compare', {
       products: productsWithDetails,
       title: 'Product Comparison'
     });
