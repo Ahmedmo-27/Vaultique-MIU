@@ -12,7 +12,8 @@ body.dark-mode .footer
 
 body.light-mode .footer 
 {
-    background-color:#8e6b59;
+    background-color:#8f6e4b;
+    color: #ffffff;
 }
 
 footer {
