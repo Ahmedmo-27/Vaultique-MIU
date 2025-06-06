@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const password = document.getElementById("password").value;
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -201,13 +201,10 @@ document.addEventListener("DOMContentLoaded", function () {
       
       if (response.ok) {
         window.showNotification('success', "Login successful!");
-        // Redirect based on whether it's an admin login
-        if (data.isAdmin) {
-          window.location.href = "Admin Dashboard/AdminHubHomePage.html";
-        } else {
-          // Redirect regular users to their dashboard
-          window.location.href = "User/dashboard.html";
-        }
+        // Use the redirectUrl from the server response
+        setTimeout(() => {
+          window.location.href = data.data.redirectUrl;
+        }, 1000);
       } else {
         window.showNotification('error', data.message || "Invalid credentials");
       }

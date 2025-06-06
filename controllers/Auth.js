@@ -209,11 +209,21 @@ router.post('/login', loginLimiter, loginValidation, async (req, res) => {
         });
         return res.status(401).json({
           success: false,
-          message: 'Your account is not active. Please contact support.',
+          message: 'Your account is not active. Please verify your email or contact support.',
         });
       }
 
-      // Remove email verification check
+      // Check if email is verified
+      if (!user.isEmailVerified) {
+        console.log('Unverified email attempt:', {
+          email: user.email,
+        });
+        return res.status(401).json({
+          success: false,
+          message: 'Please verify your email before logging in.',
+        });
+      }
+
       // Reset failed login attempts and update last login
       user.failedLoginAttempts = 0;
       user.lastLogin = new Date();

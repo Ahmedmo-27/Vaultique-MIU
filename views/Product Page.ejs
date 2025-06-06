@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/CSS/Landing-page.css" />
     <link rel="icon" type="image/x-icon" href="/images/Logo.png" />
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
-    <link rel="stylesheet" href="/CSS/product-type.css" />
     <link rel="stylesheet" href="/CSS/nav-bar.css" />
+    <link rel="stylesheet" href="/CSS/product-type.css" />
+    <link rel="stylesheet" href="/CSS/footer.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -61,14 +61,6 @@
           <h1><%= product.name %></h1>
           <div class="product-meta">
             <div class="price">€ <%= product.price.toLocaleString() %></div>
-            <div class="rating">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star-half-alt"></i>
-              <span>(4.5/5)</span>
-            </div>
           </div>
         </div>
 
@@ -77,9 +69,12 @@
             <i class="far fa-heart"></i>
           </button>
           <br><br>
-          <button class="add-to-cart" data-product-id="<%= product.id %>">
+          <button class="add-to-cart" data-product-id="<%= product._id %>">
             <i class="fas fa-shopping-bag"></i>
             <p>Add to Cart</p>
+          </button>
+          <button class="compare-btn" data-product-id="<%= product._id %>">
+            <p>Compare</p>
           </button>
           <% if (product.model3D) { %>
             <button class="find-store" data-model-url="<%= product.model3D %>">
@@ -144,6 +139,8 @@
       </div>
     </div>
   </div>
+
+  <%- include('partials/footer') %>
 
   <script>
     // Thumbnail click functionality
@@ -214,6 +211,32 @@
             }
           } catch (error) {
             console.error('Error toggling wishlist:', error);
+          }
+        });
+      }
+
+      // Compare functionality
+      const compareBtn = document.querySelector('.compare-btn');
+      if (compareBtn) {
+        compareBtn.addEventListener('click', async function() {
+          const productId = this.getAttribute('data-product-id');
+          try {
+            const response = await fetch('/user/compare/add', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ productId })
+            });
+            const data = await response.json();
+            if (data.success) {
+              alert('Product added to comparison list!');
+            } else {
+              alert(data.message || 'Failed to add product to comparison list');
+            }
+          } catch (error) {
+            console.error('Error adding to comparison:', error);
+            alert('An error occurred while adding to comparison list');
           }
         });
       }
