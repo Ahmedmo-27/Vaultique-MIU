@@ -560,12 +560,16 @@ body.light-mode .wishlist-icon svg
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: zoom-in;
+  transition: all 0.3s ease;
 }
 
 .main-image img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  transition: transform 0.3s ease;
+  will-change: transform;
 }
 
 .thumbnail-container {

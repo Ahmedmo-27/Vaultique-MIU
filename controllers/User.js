@@ -134,18 +134,112 @@ router.get('/home', async (req, res) => {
 router.get('/products', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 12;
     const skip = (page - 1) * limit;
+
+    // Build filter query
+    const filterQuery = {};
+    
+    // Collection filter
+    if (req.query.Vcollection && req.query.Vcollection !== 'All') {
+      const collection = await Collection.findOne({ name: req.query.Vcollection });
+      if (collection) {
+        filterQuery.Vcollection = collection._id;
+      }
+    }
+
+    // Brand filter
+    if (req.query.brand && req.query.brand !== 'All') {
+      const brand = await Brand.findOne({ name: req.query.brand });
+      if (brand) {
+        filterQuery.brand = brand._id;
+      }
+    }
+
+    // Other filters
+    if (req.query.gender && req.query.gender !== 'All') {
+      filterQuery.gender = req.query.gender;
+    }
+    if (req.query.strapMaterial && req.query.strapMaterial !== 'All') {
+      filterQuery.strapMaterial = req.query.strapMaterial;
+    }
+    if (req.query.movement && req.query.movement !== 'All') {
+      filterQuery.movement = req.query.movement;
+    }
+    if (req.query.waterResistance && req.query.waterResistance !== 'All') {
+      filterQuery.waterResistance = req.query.waterResistance;
+    }
+    if (req.query.caseMaterial && req.query.caseMaterial !== 'All') {
+      filterQuery.caseMaterial = req.query.caseMaterial;
+    }
+    if (req.query.dialColor && req.query.dialColor !== 'All') {
+      filterQuery.dialColor = req.query.dialColor;
+    }
+
+    // Price range
+    if (req.query.minPrice) {
+      filterQuery.price = { ...filterQuery.price, $gte: parseFloat(req.query.minPrice) };
+    }
+    if (req.query.maxPrice) {
+      filterQuery.price = { ...filterQuery.price, $lte: parseFloat(req.query.maxPrice) };
+    }
+
+    // Stock filter
+    if (req.query.inStock === 'true') {
+      filterQuery.stock = true;
+    }
+
+    // Sort options
+    let sortQuery = {};
+    switch (req.query.sort) {
+      case 'price-asc':
+        sortQuery = { price: 1 };
+        break;
+      case 'price-desc':
+        sortQuery = { price: -1 };
+        break;
+      case 'new':
+        sortQuery = { createdAt: -1 };
+        break;
+      case 'popularity':
+        sortQuery = { popularity: -1 };
+        break;
+      default:
+        sortQuery = { createdAt: -1 }; // Default sort by newest
+    }
 
     // Get all necessary data in parallel
     const [products, totalProducts, brands, collections] = await Promise.all([
-      Product.find().skip(skip).limit(limit).populate('brand Vcollection'),
-      Product.countDocuments(),
+      Product.find(filterQuery)
+        .sort(sortQuery)
+        .skip(skip)
+        .limit(limit)
+        .populate('brand Vcollection'),
+      Product.countDocuments(filterQuery),
       Brand.find(),
       Collection.find(),
     ]);
 
     const totalPages = Math.ceil(totalProducts / limit);
+
+    // If it's an API request or format=json, return JSON
+    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.json({
+        success: true,
+        data: {
+          products,
+          pagination: {
+            currentPage: page,
+            totalPages,
+            totalProducts,
+          },
+          filters: {
+            brands,
+            collections,
+          },
+        },
+      });
+    }
 
     res.render('products', {
       title: 'Shop All',
@@ -164,6 +258,7 @@ router.get('/products', async (req, res) => {
         sort: req.query.sort || 'default',
         Vcollection: req.query.Vcollection || 'All',
         brand: req.query.brand || 'All',
+        gender: req.query.gender || 'All',
         strapMaterial: req.query.strapMaterial || 'All',
         movement: req.query.movement || 'All',
         waterResistance: req.query.waterResistance || 'All',
@@ -172,7 +267,6 @@ router.get('/products', async (req, res) => {
         minPrice: req.query.minPrice || null,
         maxPrice: req.query.maxPrice || null,
         inStock: req.query.inStock || 'false',
-        gender: req.query.gender || 'All',
       },
       user: req.user || null,
     });
@@ -523,6 +617,67 @@ router.post("/submit-shipping", async (req, res) => {
     console.error("Shipping submission error:", error);
     res.status(500).send("Shipping info could not be saved.");
   }
+});
+
+// Product page
+router.get('/product', async (req, res) => {
+    try {
+        const productId = req.query.id;
+        
+        if (!productId) {
+            return res.status(400).render('404', {
+                title: 'Invalid Request',
+                message: 'Product ID is required.'
+            });
+        }
+
+        const product = await Product.findById(productId)
+            .populate('brand')
+            .populate('Vcollection');
+
+        if (!product) {
+            return res.status(404).render('404', {
+                title: 'Product Not Found',
+                message: 'The requested product could not be found.'
+            });
+        }
+
+        // Get related products (same brand or collection)
+        const relatedProducts = await Product.find({
+            $or: [
+                { brand: product.brand._id },
+                { Vcollection: product.Vcollection._id }
+            ],
+            _id: { $ne: product._id } // Exclude current product
+        })
+        .limit(4)
+        .populate('brand')
+        .populate('Vcollection');
+
+        // If it's an API request or format=json, return JSON
+        if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
+            return res.json({
+                success: true,
+                data: {
+                    product,
+                    relatedProducts
+                }
+            });
+        }
+
+        res.render('Product Page', {
+            title: product.name,
+            product: product,
+            relatedProducts: relatedProducts,
+            user: req.user || null
+        });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'An error occurred while fetching the product details.'
+        });
+    }
 });
 
 // Add the authenticated routes
