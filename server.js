@@ -124,19 +124,27 @@ app.get('/CSS/*', (req, res, next) => {
   });
 });
 
-// JavaScript files with explicit MIME type
+// JavaScript files with explicit MIME type and case-insensitive handling
 app.get('/Javascript/*', (req, res, next) => {
   const jsPath = path.join(publicPath, req.path);
   res.set('Content-Type', 'application/javascript');
   res.sendFile(jsPath, err => {
     if (err) {
-      console.error(`JS file error for ${jsPath}:`, err.message);
-      next();
+      // Try with lowercase filename
+      const jsDir = path.dirname(jsPath);
+      const jsFile = path.basename(jsPath);
+      const jsPathLower = path.join(jsDir, jsFile.toLowerCase());
+      res.sendFile(jsPathLower, err2 => {
+        if (err2) {
+          console.error(`JS file error for ${jsPath}:`, err.message);
+          next();
+        }
+      });
     }
   });
 });
 
-// Image files with explicit MIME types
+// Image files with explicit MIME types and case-insensitive handling
 app.get('/Assets/Images/*', (req, res, next) => {
   const imagePath = path.join(publicPath, req.path);
   const ext = path.extname(imagePath).toLowerCase();
@@ -152,27 +160,32 @@ app.get('/Assets/Images/*', (req, res, next) => {
   };
   
   res.set('Content-Type', mimeTypes[ext] || 'application/octet-stream');
-  res.sendFile(imagePath, err => {
-    if (err) {
-      console.error(`Image file error for ${imagePath}:`, err.message);
-      // Try alternative paths for brand images
-      const brandImagePath = path.join(publicPath, 'Assets/Images/Watches', path.basename(req.path));
-      res.sendFile(brandImagePath, err2 => {
-        if (err2) {
-          console.error(`Brand image file error for ${brandImagePath}:`, err2.message);
-          // Try one more time with the original path but different case
-          const originalPath = path.join(publicPath, req.path);
-          const originalPathLower = originalPath.toLowerCase();
-          res.sendFile(originalPathLower, err3 => {
-            if (err3) {
-              console.error(`Final attempt failed for ${originalPathLower}:`, err3.message);
-              next();
-            }
-          });
-        }
-      });
+  
+  // Try multiple paths for the image
+  const tryPaths = [
+    imagePath, // Original path
+    path.join(publicPath, 'Assets/Images/Watches', path.basename(req.path)), // Watches directory
+    path.join(publicPath, 'Assets/Images/Brands Logos', path.basename(req.path)), // Brands Logos directory
+    path.join(publicPath, 'Assets/Images/Photos', path.basename(req.path)), // Photos directory
+    path.join(path.dirname(imagePath), path.basename(imagePath).toLowerCase()) // Lowercase version
+  ];
+
+  const tryNextPath = (index) => {
+    if (index >= tryPaths.length) {
+      console.error(`All attempts failed for image: ${req.path}`);
+      next();
+      return;
     }
-  });
+
+    res.sendFile(tryPaths[index], err => {
+      if (err) {
+        console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err.message);
+        tryNextPath(index + 1);
+      }
+    });
+  };
+
+  tryNextPath(0);
 });
 
 // Fallback static file handlers (case-insensitive)
