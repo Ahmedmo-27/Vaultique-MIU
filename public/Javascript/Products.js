@@ -323,18 +323,18 @@ function renderProducts(products) {
                         <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
                     </svg>
                 </div>
-                <a href="${product.productPageUrl || '#'}">
+                <a href="/user/product?id=${product._id}">
                     <img src="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}" alt="${product.name}" loading="lazy">
-                </a>
-            </div>
-            <div class="product-details">
-                <a href="${product.productPageUrl || '#'}">
-                    <h4>${product.name}</h4>
                 </a>
                 <div class="hover-buttons">
                     <button class="quick-view" data-product-id="${product._id}">Quick View</button>
                     <button class="compare">Compare</button>
                 </div>
+            </div>
+            <div class="product-details">
+                <a href="/user/product?id=${product._id}">
+                    <h4>${product.name}</h4>
+                </a>
                 <p class="price">$${product.price.toLocaleString()}</p>
                 ${stockBadge}
             </div>
@@ -491,7 +491,6 @@ function toggleQuickView(product = null) {
           <div class="all_image">
             <div class="main-image">
               <img src="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}" alt="${product.name}" id="quickViewMainImage">
-              <div class="zoom-lens"></div>
             </div>
             <div class="thumbnail-container">
               ${thumbnails}
@@ -541,10 +540,40 @@ function toggleQuickView(product = null) {
     document.querySelectorAll('.thumbnail-container .thumbnail').forEach((thumb) => {
       thumb.addEventListener('click', function () {
         const newImageSrc = this.getAttribute('data-image');
-        document.getElementById('quickViewMainImage').src = newImageSrc;
+        const mainImage = document.getElementById('quickViewMainImage');
+        mainImage.src = newImageSrc;
         document.querySelectorAll('.thumbnail').forEach((t) => t.classList.remove('active'));
         this.classList.add('active');
       });
+    });
+
+    // Add zoom functionality to quick view image
+    const quickViewImage = document.getElementById('quickViewMainImage');
+    let isZoomed = false;
+    let originalTransform = '';
+
+    quickViewImage.parentElement.addEventListener('click', function(e) {
+      if (!isZoomed) {
+        // Zoom in
+        originalTransform = quickViewImage.style.transform;
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Calculate zoom center point
+        const centerX = (x / rect.width) * 100;
+        const centerY = (y / rect.height) * 100;
+        
+        quickViewImage.style.transform = `scale(2)`;
+        quickViewImage.style.transformOrigin = `${centerX}% ${centerY}%`;
+        this.style.cursor = 'zoom-out';
+        isZoomed = true;
+      } else {
+        // Zoom out
+        quickViewImage.style.transform = originalTransform;
+        this.style.cursor = 'zoom-in';
+        isZoomed = false;
+      }
     });
 
     // Add wishlist button event listener

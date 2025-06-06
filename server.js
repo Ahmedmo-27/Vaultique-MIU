@@ -136,9 +136,49 @@ app.get('/Javascript/*', (req, res, next) => {
   });
 });
 
+// Image files with explicit MIME types
+app.get('/Assets/Images/*', (req, res, next) => {
+  const imagePath = path.join(publicPath, req.path);
+  const ext = path.extname(imagePath).toLowerCase();
+  
+  // Set appropriate MIME type based on file extension
+  const mimeTypes = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.gif': 'image/gif',
+    '.avif': 'image/avif',
+    '.webp': 'image/webp'
+  };
+  
+  res.set('Content-Type', mimeTypes[ext] || 'application/octet-stream');
+  res.sendFile(imagePath, err => {
+    if (err) {
+      console.error(`Image file error for ${imagePath}:`, err.message);
+      // Try alternative paths for brand images
+      const brandImagePath = path.join(publicPath, 'Assets/Images/Watches', path.basename(req.path));
+      res.sendFile(brandImagePath, err2 => {
+        if (err2) {
+          console.error(`Brand image file error for ${brandImagePath}:`, err2.message);
+          // Try one more time with the original path but different case
+          const originalPath = path.join(publicPath, req.path);
+          const originalPathLower = originalPath.toLowerCase();
+          res.sendFile(originalPathLower, err3 => {
+            if (err3) {
+              console.error(`Final attempt failed for ${originalPathLower}:`, err3.message);
+              next();
+            }
+          });
+        }
+      });
+    }
+  });
+});
+
 // Fallback static file handlers (case-insensitive)
 app.use('/css', express.static(path.join(publicPath, 'CSS')));
 app.use('/javascript', express.static(path.join(publicPath, 'Javascript')));
+app.use('/assets', express.static(path.join(publicPath, 'Assets')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')));
 

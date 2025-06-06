@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/CSS/Landing-page.css" />
+    <link rel="icon" type="image/x-icon" href="/images/Logo.png" />
+    <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link rel="stylesheet" href="/CSS/product-type.css" />
+    <link rel="stylesheet" href="/CSS/nav-bar.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="/Javascript/Light-Mode.js"></script>
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Javascript/nav-bar.js"></script>
+    <script src="/Javascript/image-zoom.js"></script>
+    <title><%= product.name %></title>
+  </head>
+
+  <body>
+    <%- include('partials/loading-screen') %>
+    <%- include('partials/navigation') %>
+
+    <div>
+    <main class="product-container">
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="/">Home</a> / <a href="/shop">Shop All</a> /
+        <span><%= product.name %></span>
+      </div>
+
+      <!-- Product Gallery Section -->
+      <section class="product-gallery">
+        <div class="all_image">
+        <div class="main-image">
+          <img
+            src="<%= product.image %>"
+            alt="<%= product.name %>"
+            id="mainImage"
+          />
+          <div class="zoom-lens"></div>
+        </div>
+        <div class="thumbnail-container">
+          <% product.galleryImages.forEach((image, index) => { %>
+            <div
+              class="thumbnail <%= index === 0 ? 'active' : '' %>"
+              data-image="<%= image %>"
+            >
+              <img src="<%= image %>" alt="Variation <%= index + 1 %>" />
+            </div>
+          <% }); %>
+        </div>
+      </div>
+      </section>
+
+      <!-- Product Info Section -->
+      <section class="product-info">
+        <div class="product-header">
+          <h1><%= product.name %></h1>
+          <div class="product-meta">
+            <div class="price">€ <%= product.price.toLocaleString() %></div>
+            <div class="rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span>(4.5/5)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-actions">
+          <button class="wishlist-btn" data-product-id="<%= product.id %>">
+            <i class="far fa-heart"></i>
+          </button>
+          <br><br>
+          <button class="add-to-cart" data-product-id="<%= product.id %>">
+            <i class="fas fa-shopping-bag"></i>
+            <p>Add to Cart</p>
+          </button>
+          <% if (product.model3D) { %>
+            <button class="find-store" data-model-url="<%= product.model3D %>">
+              <i class="fas fa-cube"></i>
+              <p>View 3D Model</p>
+            </button>
+          <% } %>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <% if (product.video) { %>
+    <div class="container2">
+      <video src="<%= product.video %>" autoplay loop muted playsinline></video>
+    </div>
+  <% } %>
+
+  <div>
+    <div class="watch-container">
+      <!-- Tabs -->
+      <div class="tabs" style="color: #050a30;">
+        <button class="tab active" onclick="showTab(event, 'description')">Description</button>
+        <button class="tab" onclick="showTab(event, 'features')">Special Features</button>
+        <button class="tab" onclick="showTab(event, 'specifications')">Specifications</button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <div id="description" class="tab-pane active">
+          <div class="luxury-description">
+            <p><%= product.description %></p>
+          </div>
+        </div>
+        <div id="features" class="tab-pane">
+          <ul class="feature-list">
+            <% product.specialFeatures.forEach(feature => { %>
+              <li class="feature-item">
+                <span class="feature-name"><%= feature.featureName %></span>
+                <span class="feature-desc"><%= feature.featureDesc %></span>
+              </li>
+            <% }); %>
+          </ul>
+        </div>
+        <div id="specifications" class="tab-pane">
+          <div class="specs-container">
+            <ul class="specs-list">
+              <% product.specifications.forEach(spec => { %>
+                <li class="spec-item">
+                  <span class="spec-name"><%= spec.specName %></span>
+                  <span class="spec-value"><%= spec.specValue %></span>
+                </li>
+              <% }); %>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watch Image -->
+      <div class="watch-image">
+        <img src="<%= product.image %>" alt="<%= product.name %>">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Thumbnail click functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const thumbnails = document.querySelectorAll('.thumbnail');
+      const mainImage = document.getElementById('mainImage');
+      
+      thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+          // Remove active class from all thumbnails
+          thumbnails.forEach(t => t.classList.remove('active'));
+          
+          // Add active class to clicked thumbnail
+          this.classList.add('active');
+          
+          // Update main image
+          const newImageSrc = this.getAttribute('data-image');
+          if (newImageSrc) {
+            mainImage.src = newImageSrc;
+          }
+        });
+      });
+
+      // Add to cart functionality
+      const addToCartBtn = document.querySelector('.add-to-cart');
+      if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', async function() {
+          const productId = this.getAttribute('data-product-id');
+          try {
+            const response = await fetch('/api/cart/add', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ productId })
+            });
+            const data = await response.json();
+            if (data.success) {
+              alert('Product added to cart successfully!');
+            } else {
+              alert('Failed to add product to cart');
+            }
+          } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert('An error occurred while adding to cart');
+          }
+        });
+      }
+
+      // Wishlist functionality
+      const wishlistBtn = document.querySelector('.wishlist-btn');
+      if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', async function() {
+          const productId = this.getAttribute('data-product-id');
+          try {
+            const response = await fetch('/api/wishlist/toggle', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ productId })
+            });
+            const data = await response.json();
+            if (data.success) {
+              const icon = this.querySelector('i');
+              icon.classList.toggle('far');
+              icon.classList.toggle('fas');
+            }
+          } catch (error) {
+            console.error('Error toggling wishlist:', error);
+          }
+        });
+      }
+    });
+
+    function showTab(event, tabId) {
+      // Hide all tab panes
+      let tabPanes = document.querySelectorAll(".tab-pane");
+      tabPanes.forEach(tab => tab.classList.remove("active"));
+
+      // Remove active class from all tabs
+      let tabs = document.querySelectorAll(".tab");
+      tabs.forEach(tab => tab.classList.remove("active"));
+
+      // Show the selected tab content
+      document.getElementById(tabId).classList.add("active");
+
+      // Highlight the clicked tab
+      event.currentTarget.classList.add("active");
+    }
+  </script>
+  </main>
+  </body>
+</html>
