@@ -248,24 +248,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setupIntersectionObserver() {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            if (entry.target === mainSection) {
-              currentSectionIndex = -1;
-            } else {
-              currentSectionIndex = contentSections.indexOf(entry.target);
-            }
-            updateScrollIndicator();
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
 
-    if (mainSection) observer.observe(mainSection);
-    contentSections.forEach((section) => observer.observe(section));
+    contentSections.forEach((section) => {
+      observer.observe(section);
+    });
+  }
+
+  function handleHeaderVisibility() {
+    if (!header) return;
+    
+    const scrollPosition = window.scrollY;
+    const headerHeight = getHeaderHeight();
+    
+    if (scrollPosition > headerHeight) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
   }
 
   function initializeScroll() {
@@ -300,6 +310,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('menu-open');
       });
     }
+
+    // Add scroll event listener for header visibility
+    window.addEventListener('scroll', handleHeaderVisibility);
   }
 
   // Start the page -------------------------------------------------------
