@@ -21,8 +21,6 @@ const productSchema = new mongoose.Schema({
   video: { type: String },
   model3D: { type: String },
 
-  // Product information
-  productPageUrl: { type: String },
   description: { type: String },
   specialFeatures: [
     {

@@ -283,7 +283,7 @@ function updateBrandPage(brandData) {
     const filename = brandData.coverImage.split('/').pop();
 
     // Construct the path relative to the public directory
-    const imagePath = `/Assets/Images/photos/${filename}`;
+    const imagePath = `/Assets/Images/Photos/${filename}`;
 
     // Log the final image path being used
     console.log('Final image path:', imagePath);
