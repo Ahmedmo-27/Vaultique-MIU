@@ -83,6 +83,85 @@ router.get('/Brands', async (req, res) => {
     }
 });
 
+
+async function handleUserQuestion(userQuestion) {
+  // 1. First check if it's a product-related question
+  if (!isProductQuestion(userQuestion)) {
+    return "I specialize in our product information. Please ask about our products, features, or pricing!";
+  }
+
+  // 2. Only process if it's product-related
+  try {
+    const products = await searchProductsInDatabase(userQuestion);
+    
+    if (products.length > 0) {
+      return formatProductResponse(products);
+    } else {
+      return "I couldn't find matching products. Could you ask differently? For example: 'Show me wireless headphones under $100'";
+    }
+  } catch (error) {
+    console.error("Database error:", error);
+    return "Our product catalog is currently unavailable. Please try again later.";
+  }
+}
+
+// Helper Functions
+function isProductQuestion(question) {
+  const productKeywords = [
+    'product', 'products', 'item', 'items', 'buy', 'purchase',
+    'price', 'cost', 'feature', 'features', 'spec', 'specs',
+    'model', 'stock', 'availability', 'watch', 'watches','brand',
+    'brands','collections','collection','strap','straps','movement','water',
+    'resistance','case','material','dial','color','rolex','cartier','omega',
+    'patek phileppe','audemars piguet','vacheron constantin','jacob & co',
+    'richard mille','breitling','classic & dress','casual & everyday','sports & adventure',
+    'aviation & travel','luxury & heritage','strap material','movement type','water resistance',
+    'case material','dial color'
+  ];
+
+  const questionLower = question.toLowerCase();
+  return productKeywords.some(keyword => questionLower.includes(keyword));
+}
+
+async function searchProductsInDatabase(searchQuery) {
+  // Your NoSQL database query implementation
+  // Example for MongoDB:
+  const client = await MongoClient.connect(process.env.MONGO_URI);
+  const collection = client.db("store").collection("products");
+  
+  const results = await collection.find({
+    $text: { $search: extractSearchTerms(searchQuery) }
+  }).limit(5).toArray();
+  
+  await client.close();
+  return results;
+}
+
+function formatProductResponse(products) {
+  if (products.length === 1) {
+    const p = products[0];
+    return `We have this product:\n\n` +
+           `**${p.name}** ($${p.price})\n` +
+           `${p.description}\n` +
+           `Features: ${p.features.join(', ')}`;
+  } else {
+    let response = "I found these products:\n\n";
+    products.forEach(p => {
+      response += `• **${p.name}** - $${p.price}\n` +
+                 `  ${p.features.slice(0, 3).join(', ')}\n\n`;
+    });
+    return response;
+  }
+}
+
+function extractSearchTerms(query) {
+  // Remove common question words
+  const stopWords = new Set(['what','where','how','when','why','do','you','have','any']);
+  return query.toLowerCase().split(' ')
+    .filter(term => term.length > 2 && !stopWords.has(term))
+    .join(' ');
+}
+
 // Configurator Page
 router.get('/Configurator', async (req, res) => {
   
@@ -99,6 +178,17 @@ router.get('/Configurator', async (req, res) => {
   {
     res.render('Error Loading Configurator Page', error);
     renderNotification(res, 'error', 'Failed to load Configurator Page. Please try again later.');
+  }
+});
+
+router.get('/Recommendation-System', async (req, res) => {
+  try {
+    res.render('Recommendation', {
+      title: 'Vaultique | Recommendation System',
+    });
+  } catch (error) {
+    console.error('Error loading recommendation system page:', error);
+    renderNotification(res, 'error', 'Failed to load recommendation system page. Please try again later.');
   }
 });
 
