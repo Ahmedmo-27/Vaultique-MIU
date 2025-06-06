@@ -6,6 +6,7 @@ const path = require('path');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
+const session = require('express-session');
 const { optionalJWT, isAdmin } = require('./middleware/jwt');
 const config = require('./config/env');
 const { removeCookie } = require('./utils/cookieManager');
@@ -16,6 +17,7 @@ const userController = require('./controllers/User');
 const adminRoutes = require('./routes/AdminRoutes');
 const adminController = require('./controllers/Admin');
 const authRoutes = require('./controllers/Auth');
+const productRoutes = require('./routes/ProductsRoutes');
 const app = express();
 
 // Set EJS as the view engine
@@ -55,6 +57,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cookieParser());
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
 
 // CORS Configuration
 app.use(
@@ -232,15 +240,17 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')));
 
 // Public routes (no authentication required)
+app.use('/user', userController);
+app.use('/api', apiRouter);
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 
 // Apply optional authentication to all routes
 // This will set req.user if a valid token is present but won't block access
 app.use(optionalJWT);
 
 // Protected API routes
-app.use('/api', apiRouter);
-app.use('/api/admin', adminRoutes); // Already has isAdmin middleware
+app.use('/api/admin', isAdmin, adminRoutes);
 
 // Global logout route for client-side usage
 app.get('/logout', (req, res) => {
@@ -250,7 +260,6 @@ app.get('/logout', (req, res) => {
 
 // Frontend Routes
 app.get('/', (req, res) => res.redirect('/user/home'));
-app.use('/user', userController); // No authentication required for user pages
 
 // Admin Frontend Routes
 app.get('/admin', (req, res) => res.redirect('/admin/dashboard'));
