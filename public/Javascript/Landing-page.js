@@ -229,6 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateScrollIndicator() {
+    if (!scrollIndicator) return;
+    
     const atFooter =
       window.scrollY + window.innerHeight >= document.body.scrollHeight - FOOTER_OFFSET;
     scrollIndicator.classList.toggle('hidden', atFooter || currentSectionIndex === -1);

@@ -110,38 +110,74 @@ app.use(
 const publicPath = path.join(__dirname, 'public');
 
 // Primary static file serving
-app.use(express.static(publicPath));
+app.use(express.static(publicPath, {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.set('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.css')) {
+      res.set('Content-Type', 'text/css');
+    }
+  }
+}));
 
-// CSS files with explicit MIME type
+// CSS files with explicit MIME type and case-insensitive handling
 app.get('/CSS/*', (req, res, next) => {
   const cssPath = path.join(publicPath, req.path);
   res.set('Content-Type', 'text/css');
-  res.sendFile(cssPath, err => {
-    if (err) {
-      console.error(`CSS file error for ${cssPath}:`, err.message);
+  
+  // Try multiple case variations
+  const tryPaths = [
+    cssPath, // Original path
+    path.join(path.dirname(cssPath), path.basename(cssPath).toLowerCase()), // Lowercase
+    path.join(path.dirname(cssPath), path.basename(cssPath).toUpperCase()) // Uppercase
+  ];
+
+  const tryNextPath = (index) => {
+    if (index >= tryPaths.length) {
+      console.error(`All attempts failed for CSS: ${req.path}`);
       next();
+      return;
     }
-  });
+
+    res.sendFile(tryPaths[index], err => {
+      if (err) {
+        console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err.message);
+        tryNextPath(index + 1);
+      }
+    });
+  };
+
+  tryNextPath(0);
 });
 
 // JavaScript files with explicit MIME type and case-insensitive handling
 app.get('/Javascript/*', (req, res, next) => {
   const jsPath = path.join(publicPath, req.path);
   res.set('Content-Type', 'application/javascript');
-  res.sendFile(jsPath, err => {
-    if (err) {
-      // Try with lowercase filename
-      const jsDir = path.dirname(jsPath);
-      const jsFile = path.basename(jsPath);
-      const jsPathLower = path.join(jsDir, jsFile.toLowerCase());
-      res.sendFile(jsPathLower, err2 => {
-        if (err2) {
-          console.error(`JS file error for ${jsPath}:`, err.message);
-          next();
-        }
-      });
+  
+  // Try multiple case variations
+  const tryPaths = [
+    jsPath, // Original path
+    path.join(path.dirname(jsPath), path.basename(jsPath).toLowerCase()), // Lowercase
+    path.join(path.dirname(jsPath), path.basename(jsPath).toUpperCase()) // Uppercase
+  ];
+
+  const tryNextPath = (index) => {
+    if (index >= tryPaths.length) {
+      console.error(`All attempts failed for JS: ${req.path}`);
+      next();
+      return;
     }
-  });
+
+    res.sendFile(tryPaths[index], err => {
+      if (err) {
+        console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err.message);
+        tryNextPath(index + 1);
+      }
+    });
+  };
+
+  tryNextPath(0);
 });
 
 // Image files with explicit MIME types and case-insensitive handling
