@@ -383,4 +383,67 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Update phone number route
+router.post('/api/update-phone', authenticateJWT, async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+    const userId = req.user._id; // Get user ID from authenticated session
+
+    if (!phoneNumber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number is required'
+      });
+    }
+
+    // Validate phone number format
+    if (!validator.isMobilePhone(phoneNumber)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid phone number format'
+      });
+    }
+
+    // Check if phone number is already taken by another user
+    const existingUser = await User.findOne({ 
+      phone_number: phoneNumber,
+      _id: { $ne: userId }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number is already registered to another user'
+      });
+    }
+
+    // Update user's phone number
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { phone_number: phoneNumber },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Phone number updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Error updating phone number:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating phone number',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

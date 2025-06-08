@@ -671,7 +671,7 @@ router.get('/account-details', authenticateJWT, async (req, res) => {
 
     // Fetch fresh user data with populated wishlist items
     const user = await User.findById(req.user._id)
-      .select('-password -phone_number')
+      .select('-password +phone_number')
       .populate({
         path: 'wishlist.product',
         populate: [

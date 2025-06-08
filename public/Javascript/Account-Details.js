@@ -45,34 +45,339 @@ document.addEventListener('DOMContentLoaded', function () {
     { code: 'nz', name: 'New Zealand', emoji: '🇳🇿', dialCode: '+64' },
   ];
 
-  // Populate country dropdown
+  // Phone number handling
+  const phoneInput = document.getElementById('phoneNumber');
   const countrySelect = document.getElementById('countrySelect');
-  countries.forEach((country) => {
+  const userData = JSON.parse(document.getElementById('userData').textContent);
+
+  console.log('User data from JSON:', userData);
+  console.log('Phone input element:', phoneInput);
+  console.log('Phone input value:', phoneInput?.value);
+  console.log('Phone input placeholder:', phoneInput?.placeholder);
+
+  // Populate country select dropdown
+  countries.forEach(country => {
     const option = document.createElement('option');
-    option.value = country.code;
-    option.setAttribute('data-dial-code', country.dialCode);
-    option.innerHTML = `${country.emoji} ${country.name} (${country.dialCode})`;
+    option.value = country.dialCode;
+    option.textContent = `${country.emoji} ${country.name} (${country.dialCode})`;
     countrySelect.appendChild(option);
   });
 
-  // Set default country to Egypt
-  countrySelect.value = 'eg';
-
-  // Phone number validation
-  const phoneNumberInput = document.getElementById('phoneNumber');
-  phoneNumberInput.addEventListener('blur', function () {
-    if (this.value.trim() && !/^\d+$/.test(this.value)) {
-      alert('Please enter a valid phone number (digits only)');
+  // Function to detect country code from phone number
+  function detectCountryCode(phoneNumber) {
+    const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+    if (cleanNumber.startsWith('+')) {
+      const matchingCountry = countries.find(country => 
+        cleanNumber.startsWith(country.dialCode)
+      );
+      if (matchingCountry) {
+        return matchingCountry.dialCode;
+      }
     }
+    return '+20'; // Default to Egypt
+  }
+
+  // Function to format phone number
+  function formatPhoneNumber(number) {
+    // Remove all non-digit characters
+    const cleaned = number.replace(/\D/g, '');
+    
+    // Format the number with spaces
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `${match[1]} ${match[2]} ${match[3]}`;
+    }
+    return cleaned;
+  }
+
+  // Initialize phone number and country code
+  if (phoneInput && countrySelect) {
+    // Get the phone number from user data or input value
+    const phoneNumber = userData?.phone_number || phoneInput.value;
+    console.log('Phone number to use:', phoneNumber);
+    
+    // Set default country code if no phone number exists
+    if (!phoneNumber) {
+        countrySelect.value = '+20'; // Default to Egypt
+        phoneInput.placeholder = 'Enter your phone number';
+    } else {
+        // Detect country code from the phone number
+        const countryCode = detectCountryCode(phoneNumber);
+        console.log('Detected country code:', countryCode);
+        
+        if (countryCode) {
+            countrySelect.value = countryCode;
+            // Display the number without country code in the input
+            const numberWithoutCode = phoneNumber.replace(countryCode, '').trim();
+            console.log('Number without code:', numberWithoutCode);
+            phoneInput.value = numberWithoutCode;
+        }
+    }
+
+    // Initially lock the phone input
+    phoneInput.readOnly = true;
+    countrySelect.disabled = true;
+
+    // Create and add the change phone number button
+    const phoneInputContainer = phoneInput.parentElement;
+    const changePhoneBtn = document.createElement('button');
+    changePhoneBtn.className = 'change-phone-btn';
+    changePhoneBtn.innerHTML = '<i class="fas fa-edit"></i> Change Phone Number';
+    phoneInputContainer.appendChild(changePhoneBtn);
+
+    // Handle change phone number button click
+    changePhoneBtn.addEventListener('click', function() {
+        if (phoneInput.readOnly) {
+            // Unlock the input
+            phoneInput.readOnly = false;
+            countrySelect.disabled = false;
+            changePhoneBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            phoneInput.focus();
+        } else {
+            // Lock the input and save changes
+            const value = phoneInput.value.replace(/\s/g, '');
+            const fullNumber = countrySelect.value + value;
+            
+            // Save the changes
+            fetch('/api/update-phone', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phoneNumber: fullNumber })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Phone number updated successfully');
+                    phoneInput.readOnly = true;
+                    countrySelect.disabled = true;
+                    changePhoneBtn.innerHTML = '<i class="fas fa-edit"></i> Change Phone Number';
+                } else {
+                    throw new Error(data.message || 'Failed to update phone number');
+                }
+            })
+            .catch(error => {
+                showNotification(error.message, 'error');
+                // Revert to the original phone number on error
+                if (phoneNumber) {
+                    const countryCode = detectCountryCode(phoneNumber);
+                    const numberWithoutCode = phoneNumber.replace(countryCode, '').trim();
+                    phoneInput.value = numberWithoutCode;
+                    countrySelect.value = countryCode;
+                }
+            });
+        }
+    });
+
+    // Handle phone number input formatting
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 0) {
+            // Add spaces every 3 digits
+            value = value.match(/.{1,3}/g).join(' ');
+        }
+        e.target.value = value;
+    });
+  }
+
+  // Password Change Functionality
+  const changePasswordLink = document.getElementById('changePasswordLink');
+  
+  function showPasswordChangeModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>Change Password</h3>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="passwordChangeForm">
+            <div class="form-group">
+              <label for="currentPassword">Current Password</label>
+              <div class="password-input-container">
+                <input type="password" id="currentPassword" required>
+                <button type="button" class="password-toggle" data-target="currentPassword">
+                  <i class="far fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <div class="password-input-container">
+                <input type="password" id="newPassword" required>
+                <button type="button" class="password-toggle" data-target="newPassword">
+                  <i class="far fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">Confirm New Password</label>
+              <div class="password-input-container">
+                <input type="password" id="confirmPassword" required>
+                <button type="button" class="password-toggle" data-target="confirmPassword">
+                  <i class="far fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            <div class="password-requirements">
+              <p>Password must contain:</p>
+              <ul>
+                <li id="length">At least 8 characters</li>
+                <li id="uppercase">One uppercase letter</li>
+                <li id="lowercase">One lowercase letter</li>
+                <li id="number">One number</li>
+                <li id="special">One special character</li>
+              </ul>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="cancel-btn">Cancel</button>
+          <button type="submit" form="passwordChangeForm" class="confirm-btn">Save Changes</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+
+    // Password validation
+    const newPassword = modal.querySelector('#newPassword');
+    const requirements = {
+      length: /.{8,}/,
+      uppercase: /[A-Z]/,
+      lowercase: /[a-z]/,
+      number: /[0-9]/,
+      special: /[!@#$%^&*(),.?":{}|<>]/
+    };
+
+    function validatePassword() {
+      const password = newPassword.value;
+      Object.keys(requirements).forEach(req => {
+        const element = modal.querySelector(`#${req}`);
+        if (requirements[req].test(password)) {
+          element.classList.add('valid');
+        } else {
+          element.classList.remove('valid');
+        }
+      });
+    }
+
+    newPassword.addEventListener('input', validatePassword);
+
+    // Toggle password visibility
+    modal.querySelectorAll('.password-toggle').forEach(button => {
+      button.addEventListener('click', function() {
+        const input = modal.querySelector(`#${this.dataset.target}`);
+        const icon = this.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+      });
+    });
+
+    // Handle form submission
+    const form = modal.querySelector('#passwordChangeForm');
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const currentPassword = modal.querySelector('#currentPassword').value;
+      const newPassword = modal.querySelector('#newPassword').value;
+      const confirmPassword = modal.querySelector('#confirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        showNotification('New passwords do not match', 'error');
+        return;
+      }
+
+      const isValid = Object.values(requirements).every(regex => regex.test(newPassword));
+      if (!isValid) {
+        showNotification('Password does not meet requirements', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch('/user/api/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showNotification('Password updated successfully');
+          modal.classList.remove('show');
+          setTimeout(() => modal.remove(), 300);
+        } else {
+          showNotification(data.message || 'Failed to update password', 'error');
+        }
+      } catch (error) {
+        showNotification('Error updating password', 'error');
+      }
+    });
+
+    // Close modal
+    const closeModal = () => {
+      modal.classList.remove('show');
+      setTimeout(() => modal.remove(), 300);
+    };
+
+    modal.querySelector('.close-modal').addEventListener('click', closeModal);
+    modal.querySelector('.cancel-btn').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  // Add click handler for password change link
+  changePasswordLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    showPasswordChangeModal();
   });
 
-  // Language selection
-  const languageSelect = document.getElementById('languageSelect');
-  languageSelect.addEventListener('change', function () {
-    console.log(`Language changed to: ${this.value}`);
-  });
+  // Handle phone number form submission
+  const phoneForm = phoneInput.closest('form');
+  if (phoneForm) {
+    phoneForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const fullPhoneNumber = countrySelect.value + phoneInput.value.replace(/\D/g, '');
+      
+      try {
+        const response = await fetch('/user/api/update-phone', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ phoneNumber: fullPhoneNumber })
+        });
 
-  // Tab switching functionality
+        const data = await response.json();
+
+        if (data.success) {
+          showNotification('Phone number updated successfully');
+        } else {
+          showNotification(data.message || 'Failed to update phone number', 'error');
+        }
+      } catch (error) {
+        showNotification('Error updating phone number', 'error');
+      }
+    });
+  }
+
+  // Sidebar navigation
   sidebarItems.forEach((item) => {
     item.addEventListener('click', function () {
       // Remove active class from all sidebar items and tabs
@@ -164,94 +469,6 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(() => {
       modal.remove();
     }, 300);
-  }
-
-  // Password Change Handler
-  const changePasswordLink = document.getElementById('changePasswordLink');
-  if (changePasswordLink) {
-    changePasswordLink.addEventListener('click', function (e) {
-      e.preventDefault();
-
-      const modalContent = `
-                <form id="passwordForm">
-                    <div class="form-group">
-                        <label>Current Password</label>
-                        <div style="position:relative">
-                            <input type="password" id="currentPassword" required>
-                            <span class="password-toggle" id="toggleCurrentPassword">
-                                <i class="far fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>New Password</label>
-                        <div style="position:relative">
-                            <input type="password" id="newPassword" required>
-                            <span class="password-toggle" id="toggleNewPassword">
-                                <i class="far fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Confirm New Password</label>
-                        <div style="position:relative">
-                            <input type="password" id="confirmPassword" required>
-                            <span class="password-toggle" id="toggleConfirmPassword">
-                                <i class="far fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                </form>
-            `;
-
-      const modal = createModal('Change Password', modalContent, [
-        {
-          text: 'Cancel',
-          class: 'cancel-btn',
-          clickHandler: () => closeModal(modal),
-        },
-        {
-          text: 'Update Password',
-          clickHandler: async (e) => {
-            e.preventDefault();
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (newPassword !== confirmPassword) {
-              alert('New passwords do not match!');
-              return;
-            }
-
-            try {
-              const response = await fetch('/api/change-password', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  currentPassword,
-                  newPassword,
-                }),
-              });
-
-              const data = await response.json();
-              if (data.success) {
-                alert('Password changed successfully!');
-                closeModal(modal);
-              } else {
-                alert(data.message || 'Failed to change password');
-              }
-            } catch (error) {
-              alert('An error occurred while changing password');
-            }
-          },
-        },
-      ]);
-
-      // Password toggle functionality
-      setupPasswordToggles();
-    });
   }
 
   // Form Validation Functions
@@ -498,31 +715,6 @@ document.addEventListener('DOMContentLoaded', function () {
       ]);
     });
   });
-
-  // Helper Functions
-  function setupPasswordToggles() {
-    const toggles = {
-      toggleCurrentPassword: 'currentPassword',
-      toggleNewPassword: 'newPassword',
-      toggleConfirmPassword: 'confirmPassword',
-    };
-
-    Object.entries(toggles).forEach(([toggleId, inputId]) => {
-      const toggle = document.getElementById(toggleId);
-      const input = document.getElementById(inputId);
-      const icon = toggle.querySelector('i');
-
-      toggle.addEventListener('click', function () {
-        if (input.type === 'password') {
-          input.type = 'text';
-          icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-          input.type = 'password';
-          icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
-      });
-    });
-  }
 
   // Address Modals
   // Edit Address
@@ -1011,4 +1203,16 @@ document.addEventListener('DOMContentLoaded', function () {
       ]);
     });
   });
+
+  // Function to show notification
+  function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+  }
 });
