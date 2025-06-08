@@ -74,11 +74,12 @@ document.addEventListener("DOMContentLoaded", function () {
       
       // Validate step 1 fields
       const username = document.getElementById("username").value;
+      const Name = document.getElementById("Name").value;
       const email = document.getElementById("email-signup").value;
       const password = document.getElementById("password-signup").value;
       const language = document.getElementById("language-signup").value;
       
-      if (!username || !email || !password || !language) {
+      if (!username || !Name || !email || !password || !language) {
           alert("Please fill all required fields");
           return;
       }
@@ -133,13 +134,14 @@ document.addEventListener("DOMContentLoaded", function () {
       
       // Get form data
       const username = document.getElementById("username").value;
+      const Name = document.getElementById("Name").value;
       const email = document.getElementById("email-signup").value;
       const password = document.getElementById("password-signup").value;
       const phone = document.getElementById("phone").value || null;
       const dob = document.getElementById("dob").value || null;
       const language = document.getElementById("language-signup").value;
       
-      console.log("Form data:", { username, email, phone, dob, language });
+      console.log("Form data:", { username, Name, email, phone, dob, language });
       
       try {
         const response = await fetch('http://localhost:3001/api/auth/signup', {
@@ -149,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
             'Accept': 'application/json'
           },
           body: JSON.stringify({ 
-            Name: username,
+            Name: Name,
             username: username,
             email: email.toLowerCase(),
             password,
