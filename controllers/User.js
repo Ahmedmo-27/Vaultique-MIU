@@ -195,15 +195,15 @@ router.get('/Recommendation-System', async (req, res) => {
 // Public routes (no auth required)
 
 // Login/Signup page
-router.get('/LoginSignup', async (req, res) => {
-  try {
-    res.render('LoginSignup', {
-      title: 'Vaultique | Login & Signup',
-    });
-  } catch (error) {
-    console.error('Error loading auth page:', error);
-    renderNotification(res, 'error', 'Failed to load login/signup page. Please try again later.');
+router.get('/LoginSignup', (req, res) => {
+  // If user is already logged in, redirect to account details
+  if (req.user) {
+    return res.redirect('/user/account-details');
   }
+  res.render('LoginSignup', {
+    title: 'Login/Signup',
+    user: req.user
+  });
 });
 
 // Home page
@@ -292,48 +292,57 @@ router.get('/products', async (req, res) => {
         sortQuery = { createdAt: -1 };
         break;
       case 'popularity':
-        sortQuery = { popularity: -1 };
+        sortQuery = { views: -1 };
         break;
       default:
-        sortQuery = { createdAt: -1 }; // Default sort by newest
+        sortQuery = { createdAt: -1 };
     }
 
-    // Get all necessary data in parallel
+    // Get products with pagination
     const [products, totalProducts, brands, collections] = await Promise.all([
       Product.find(filterQuery)
         .sort(sortQuery)
         .skip(skip)
         .limit(limit)
-        .populate('brand Vcollection'),
+        .populate('brand')
+        .populate('Vcollection'),
       Product.countDocuments(filterQuery),
       Brand.find(),
-      Collection.find(),
+      Collection.find()
     ]);
 
+    // Calculate total pages
     const totalPages = Math.ceil(totalProducts / limit);
 
-    // If it's an API request or format=json, return JSON
-    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
-      return res.json({
-        success: true,
-        data: {
-          products,
-          pagination: {
-            currentPage: page,
-            totalPages,
-            totalProducts,
-          },
-          filters: {
-            brands,
-            collections,
-          },
-        },
-      });
+    // Add wishlist status to products
+    let productsWithWishlist = products;
+    if (req.user) {
+      try {
+        const user = await User.findById(req.user._id).select('wishlist');
+        if (user && user.wishlist) {
+          const wishlistItems = user.wishlist.map(item => item.product && item.product.toString());
+          productsWithWishlist = products.map(product => ({
+            ...product.toObject(),
+            inWishlist: wishlistItems.includes(product._id.toString())
+          }));
+        }
+      } catch (error) {
+        console.error('Error checking wishlist for products:', error);
+        productsWithWishlist = products.map(product => ({
+          ...product.toObject(),
+          inWishlist: false
+        }));
+      }
+    } else {
+      productsWithWishlist = products.map(product => ({
+        ...product.toObject(),
+        inWishlist: false
+      }));
     }
 
     res.render('products', {
       title: 'Shop All',
-      products,
+      products: productsWithWishlist,
       pagination: {
         currentPage: page,
         totalPages,
@@ -568,75 +577,130 @@ authenticatedRoutes.post('/cart/remove', async (req, res) => {
 
 // Wishlist routes require auth
 authenticatedRoutes.get('/wishlist', async (req, res) => {
-  try {
-    // wishlist retrieval logic here
-    renderNotification(res, 'success', 'Wishlist retrieved successfully');
-  } catch (error) {
-    renderNotification(res, 'error', 'Failed to retrieve wishlist');
+  if (!req.user) {
+    return res.redirect('/user/LoginSignup');
   }
-});
 
-authenticatedRoutes.post('/wishlist/add', async (req, res) => {
   try {
-    // wishlist addition logic here
-    renderNotification(res, 'success', 'Product added to wishlist successfully');
-  } catch (error) {
-    renderNotification(res, 'error', 'Failed to add product to wishlist');
-  }
-});
+    // Fetch user with populated wishlist items
+    const user = await User.findById(req.user._id)
+      .populate({
+        path: 'wishlist.product',
+        populate: [
+          { path: 'brand', select: 'name' },
+          { path: 'Vcollection', select: 'name' }
+        ]
+      });
 
-authenticatedRoutes.post('/wishlist/remove', async (req, res) => {
-  try {
-    // wishlist removal logic here
-    renderNotification(res, 'success', 'Product removed from wishlist successfully');
-  } catch (error) {
-    renderNotification(res, 'error', 'Failed to remove product from wishlist');
-  }
-});
-
-// Account Details page requires auth
-authenticatedRoutes.get('/account-details', async (req, res) => {
-  try {
-    // Get user data, but handle cases where it might not exist
-    let userData = null;
-
-    if (req.user && req.user._id) {
-      userData = await User.findById(req.user._id)
-        .select('-password -Payment.cardNumber -Payment.cvv')
-        .lean();
+    if (!user) {
+      return res.redirect('/user/LoginSignup');
     }
 
-    if (!userData) {
-      console.log('User data not found for account details page');
-      // Still render the page but with empty data
-      userData = {
-        _id: req.user?._id || '',
-        Name: req.user?.Name || '',
-        email: req.user?.email || '',
+    // Transform wishlist items to include all necessary product data
+    const wishlistItems = user.wishlist.map(item => {
+      if (!item.product) return null;
+      return {
+        ...item.product.toObject(),
+        inWishlist: true
       };
+    }).filter(Boolean); // Remove any null items
+
+    // If it's an API request or format=json, return JSON
+    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.json({
+        success: true,
+        data: {
+          wishlistItems
+        }
+      });
     }
 
-    res.render('Account-Details', {
-      title: 'Account Details',
-      user: userData,
-      // Pass empty notification data for the partial
-      type: '',
+    res.render('wishlist', {
+      title: 'My Wishlist',
+      wishlistItems,
+      user: req.user,
+      type: 'info',
       message: '',
-      show: false,
+      show: false
     });
   } catch (error) {
-    console.error('Error loading account details:', error);
-    res.render('Account-Details', {
+    console.error('Error fetching wishlist:', error);
+    renderNotification(res, 'error', 'Failed to retrieve wishlist. Please try again later.', 'Error');
+  }
+});
+
+// Add wishlist toggle endpoint
+authenticatedRoutes.post('/wishlist/toggle', async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Check if product exists in wishlist
+    const existingIndex = user.wishlist.findIndex(
+      item => item.product.toString() === productId
+    );
+
+    if (existingIndex > -1) {
+      // Remove from wishlist
+      user.wishlist.splice(existingIndex, 1);
+      await user.save();
+      return res.json({ success: true, message: 'Product removed from wishlist' });
+    } else {
+      // Add to wishlist
+      user.wishlist.push({ product: productId });
+      await user.save();
+      return res.json({ success: true, message: 'Product added to wishlist' });
+    }
+  } catch (error) {
+    console.error('Error toggling wishlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to update wishlist' });
+  }
+});
+
+// Account details page (protected route)
+router.get('/account-details', authenticateJWT, async (req, res) => {
+  try {
+    // If no user is found in the request, redirect to login
+    if (!req.user) {
+      return res.redirect('/user/LoginSignup');
+    }
+
+    // Fetch fresh user data with populated wishlist items
+    const user = await User.findById(req.user._id)
+      .select('-password -phone_number')
+      .populate({
+        path: 'wishlist.product',
+        populate: [
+          { path: 'brand', select: 'name' },
+          { path: 'Vcollection', select: 'name' }
+        ]
+      })
+      .lean();
+
+    if (!user) {
+      return res.redirect('/user/LoginSignup');
+    }
+
+    // Remove sensitive payment info
+    if (user.Payment) {
+      delete user.Payment.cardNumber;
+      delete user.Payment.cvv;
+    }
+
+    res.render('account-details', {
       title: 'Account Details',
-      user: {
-        _id: req.user?._id || '',
-        Name: req.user?.Name || '',
-        email: req.user?.email || '',
-      },
-      type: 'error',
-      message: 'Failed to load account details',
-      show: true,
+      user: user,
+      type: req.query.type || 'info',
+      message: req.query.message || '',
+      show: req.query.show === 'true'
     });
+  } catch (error) {
+    console.error('Error fetching account details:', error);
+    res.redirect('/user/LoginSignup');
   }
 });
 
@@ -715,9 +779,11 @@ router.get('/product', async (req, res) => {
         const productId = req.query.id;
         
         if (!productId) {
-            return res.status(400).render('404', {
+            return res.status(400).render('error', {
                 title: 'Invalid Request',
-                message: 'Product ID is required.'
+                message: 'Product ID is required.',
+                type: 'error',
+                show: true
             });
         }
 
@@ -726,17 +792,33 @@ router.get('/product', async (req, res) => {
             .populate('Vcollection');
 
         if (!product) {
-            return res.status(404).render('404', {
+            return res.status(404).render('error', {
                 title: 'Product Not Found',
-                message: 'The requested product could not be found.'
+                message: 'The requested product could not be found.',
+                type: 'error',
+                show: true
             });
+        }
+
+        // Check if product is in user's wishlist
+        let inWishlist = false;
+        if (req.user) {
+            try {
+                const user = await User.findById(req.user._id).select('wishlist');
+                if (user && user.wishlist) {
+                    inWishlist = user.wishlist.some(item => item.product && item.product.toString() === productId);
+                }
+            } catch (error) {
+                console.error('Error checking wishlist:', error);
+                inWishlist = false;
+            }
         }
 
         // Get related products (same brand or collection)
         const relatedProducts = await Product.find({
             $or: [
-                { brand: product.brand._id },
-                { Vcollection: product.Vcollection._id }
+                { brand: product.brand?._id },
+                { Vcollection: product.Vcollection?._id }
             ],
             _id: { $ne: product._id } // Exclude current product
         })
@@ -744,28 +826,60 @@ router.get('/product', async (req, res) => {
         .populate('brand')
         .populate('Vcollection');
 
+        // Add wishlist status to related products
+        let relatedProductsWithWishlist = relatedProducts;
+        if (req.user) {
+            try {
+                const user = await User.findById(req.user._id).select('wishlist');
+                if (user && user.wishlist) {
+                    const wishlistItems = user.wishlist.map(item => item.product && item.product.toString());
+                    relatedProductsWithWishlist = relatedProducts.map(product => ({
+                        ...product.toObject(),
+                        inWishlist: wishlistItems.includes(product._id.toString())
+                    }));
+                }
+            } catch (error) {
+                console.error('Error checking wishlist for related products:', error);
+                relatedProductsWithWishlist = relatedProducts.map(product => ({
+                    ...product.toObject(),
+                    inWishlist: false
+                }));
+            }
+        }
+
+        // Convert product to plain object and add wishlist status
+        const productData = {
+            ...product.toObject(),
+            inWishlist: inWishlist
+        };
+
         // If it's an API request or format=json, return JSON
         if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
             return res.json({
                 success: true,
                 data: {
-                    product,
-                    relatedProducts
+                    product: productData,
+                    relatedProducts: relatedProductsWithWishlist
                 }
             });
         }
 
         res.render('Product Page', {
             title: product.name,
-            product: product,
-            relatedProducts: relatedProducts,
-            user: req.user || null
+            product: productData,
+            relatedProducts: relatedProductsWithWishlist,
+            user: req.user || null,
+            type: 'info',
+            message: '',
+            show: false
         });
     } catch (error) {
         console.error('Error fetching product:', error);
         res.status(500).render('error', {
             title: 'Error',
-            message: 'An error occurred while fetching the product details.'
+            message: 'An error occurred while fetching the product details.',
+            type: 'error',
+            show: true
         });
     }
 });
