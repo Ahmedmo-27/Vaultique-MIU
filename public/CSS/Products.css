@@ -1311,3 +1311,23 @@ body.dark-mode .tag {
         min-height: 60vh;
     }
 }
+
+.wishlist-container
+{
+  margin-top: 150px;
+  align-items: center;
+  justify-content: center;
+}
+
+.wishlist-header
+{
+  align-items: center;
+  font-size: large;
+  color: #D2B68A;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: -100px;
+}
