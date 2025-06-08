@@ -76,14 +76,9 @@ const isValidObjectId = (id) => {
 
 // Function to find brand by ID or name
 const findBrandByIdOrName = async (brandIdentifier) => {
-  // If it's a valid ObjectId, use it directly
-  if (isValidObjectId(brandIdentifier)) {
-    return brandIdentifier;
-  }
-
   try {
-    // Try to find the brand by ID field
-    const brandDoc = await Brand.findOne({ id: brandIdentifier });
+    // Try to find the brand by ID field first
+    const brandDoc = await Brand.findOne({ _id: brandIdentifier });
     if (brandDoc) {
       return brandDoc._id;
     }
