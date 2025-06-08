@@ -69,7 +69,7 @@
               </div>
             </div>
             <div class="text-overlay">
-              <button onclick="window.location.href='/brands/<%= brands[i].slug %>'">Explore</button>
+              <button onclick="window.location.href='/user/brands/<%= brands[i].slug %>'">Explore</button>
             </div>
           </div>
         <% } %>
@@ -105,6 +105,7 @@
 
    <!-- Include footer partial -->
     <%- include('partials/footer') %>
+    <%- include('partials/notification') %>
 
     <!-- <script src="JavaScript/translations.js"></script>
     <script src="JavaScript/language-switch.js"></script> -->
