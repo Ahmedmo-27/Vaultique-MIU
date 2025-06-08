@@ -17,6 +17,7 @@
         <script src="/Javascript/Slider.js"></script>
         <script src="/Javascript/Products.js"></script>
         <script src="/Javascript/Light-Mode.js"></script>
+        <script src="/Javascript/notifications.js"></script>
     </head>
     <body>
 
@@ -227,7 +228,7 @@
                                 </a>
                                 <div class="hover-buttons">
                                     <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
-                                    <button class="compare">Compare</button>
+                                    <button class="compare" data-product-id="<%= product._id %>">Compare</button>
                                 </div>
                                 <p class="price">$<%= product.price.toLocaleString() %></p>
                                 <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>

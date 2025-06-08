@@ -258,6 +258,9 @@ app.use((req, res, next) => {
 // Apply optional JWT middleware to all routes
 app.use(optionalJWT);
 
+// Root route handler - must be before other routes
+app.get('/', (req, res) => res.redirect('/user/home'));
+
 // Public routes (no authentication required)
 app.use('/user', userController);
 app.use('/api', apiRouter);
@@ -273,9 +276,6 @@ app.get('/logout', (req, res) => {
   removeCookie(res, 'token');
   res.redirect('/user/LoginSignup');
 });
-
-// Frontend Routes
-app.get('/', (req, res) => res.redirect('/user/home'));
 
 // Admin Frontend Routes
 app.get('/admin', (req, res) => res.redirect('/admin/dashboard'));

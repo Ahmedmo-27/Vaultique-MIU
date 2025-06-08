@@ -7,10 +7,211 @@ const Product = require('../models/Products');
 const mongoose = require('mongoose');
 const router = express.Router();
 
-// Remove authentication requirement for all routes
-// router.use(authenticateJWT);
+// Store temporary wishlists for non-logged-in users
+const temporaryWishlists = new Map();
 
-// Sign-up route
+// Middleware to handle temporary wishlist
+const handleTemporaryWishlist = (req, res, next) => {
+  if (!req.user) {
+    // Generate or get temporary user ID
+    const tempUserId = req.cookies.tempUserId || new mongoose.Types.ObjectId().toString();
+    if (!req.cookies.tempUserId) {
+      res.cookie('tempUserId', tempUserId, { maxAge: 30 * 24 * 60 * 60 * 1000 }); // 30 days
+    }
+    req.tempUserId = tempUserId;
+    
+    // Initialize temporary wishlist if it doesn't exist
+    if (!temporaryWishlists.has(tempUserId)) {
+      temporaryWishlists.set(tempUserId, []);
+    }
+  }
+  next();
+};
+
+// Apply temporary wishlist middleware to all routes
+router.use(handleTemporaryWishlist);
+
+// Public routes (no authentication required)
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find({}, '-password -phone_number -Payment.cardNumber -Payment.cvv').lean();
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching users',
+    });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format',
+      });
+    }
+
+    const user = await User.findById(req.params.id, '-password -phone_number -Payment.cardNumber -Payment.cvv').lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching user',
+    });
+  }
+});
+
+// Protected routes (authentication required)
+router.get('/account/details', authenticateJWT, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id, '-password -Payment.cardNumber -Payment.cvv').lean();
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+    res.json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error('Error fetching account details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching account details',
+    });
+  }
+});
+
+// Wishlist routes
+router.post('/wishlist/toggle', async (req, res) => {
+  try {
+    const { productId } = req.body;
+    
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID',
+      });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    if (req.user) {
+      // Handle wishlist for logged-in user
+      const user = await User.findById(req.user.id);
+      const wishlistItem = user.wishlist.find(item => item.product.toString() === productId);
+      
+      if (wishlistItem) {
+        user.wishlist = user.wishlist.filter(item => item.product.toString() !== productId);
+        await user.save();
+        return res.json({
+          success: true,
+          message: 'Product removed from wishlist',
+          inWishlist: false
+        });
+      } else {
+        user.wishlist.push({ product: productId });
+        await user.save();
+        return res.json({
+          success: true,
+          message: 'Product added to wishlist',
+          inWishlist: true
+        });
+      }
+    } else {
+      // Handle wishlist for non-logged-in user
+      const tempWishlist = temporaryWishlists.get(req.tempUserId);
+      const existingItem = tempWishlist.find(item => item.product.toString() === productId);
+      
+      if (existingItem) {
+        temporaryWishlists.set(
+          req.tempUserId,
+          tempWishlist.filter(item => item.product.toString() !== productId)
+        );
+        return res.json({
+          success: true,
+          message: 'Product removed from wishlist',
+          inWishlist: false
+        });
+      } else {
+        tempWishlist.push({ product: productId, addedAt: new Date() });
+        temporaryWishlists.set(req.tempUserId, tempWishlist);
+        return res.json({
+          success: true,
+          message: 'Product added to wishlist',
+          inWishlist: true
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error toggling wishlist:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while updating wishlist',
+    });
+  }
+});
+
+router.get('/wishlist', async (req, res) => {
+  try {
+    if (req.user) {
+      const user = await User.findById(req.user.id).populate('wishlist.product');
+      return res.json({
+        success: true,
+        data: user.wishlist
+      });
+    } else {
+      const tempWishlist = temporaryWishlists.get(req.tempUserId) || [];
+      const populatedWishlist = await Promise.all(
+        tempWishlist.map(async (item) => {
+          const product = await Product.findById(item.product);
+          return {
+            product,
+            addedAt: item.addedAt
+          };
+        })
+      );
+      return res.json({
+        success: true,
+        data: populatedWishlist
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching wishlist:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching wishlist',
+    });
+  }
+});
+
+// Sign-up route with wishlist transfer
 router.post('/signup', async (req, res) => {
   try {
     const {
@@ -23,21 +224,11 @@ router.post('/signup', async (req, res) => {
       language,
       Address,
       Payment,
-      role, // Optional, but only allow 'user' for security
+      role,
     } = req.body;
 
-    // Basic validation for top-level fields
-    if (
-      !Name ||
-      !username ||
-      !email ||
-      !password ||
-      !DOB ||
-      !phone_number ||
-      !language ||
-      !Address ||
-      !Payment
-    ) {
+    // Basic validation
+    if (!Name || !username || !email || !password || !DOB || !phone_number || !language || !Address || !Payment) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -83,7 +274,7 @@ router.post('/signup', async (req, res) => {
     // Only allow 'user' role to be set via signup
     const userRole = role && role.toLowerCase() === 'admin' ? 'user' : role || 'user';
 
-    // Create new user with all fields
+    // Create new user
     const newUser = new User({
       Name,
       username,
@@ -110,7 +301,16 @@ router.post('/signup', async (req, res) => {
       },
     });
 
-    // Save user to database (will trigger schema validation)
+    // Transfer temporary wishlist if exists
+    const tempUserId = req.cookies.tempUserId;
+    if (tempUserId && temporaryWishlists.has(tempUserId)) {
+      const tempWishlist = temporaryWishlists.get(tempUserId);
+      newUser.wishlist = tempWishlist;
+      temporaryWishlists.delete(tempUserId);
+      res.clearCookie('tempUserId');
+    }
+
+    // Save user to database
     const savedUser = await newUser.save();
 
     // Return response (without sensitive data)
@@ -127,7 +327,6 @@ router.post('/signup', async (req, res) => {
       user: userToReturn,
     });
   } catch (error) {
-    // Mongoose validation errors
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: error.message });
     }
@@ -155,6 +354,16 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Transfer temporary wishlist if exists
+    const tempUserId = req.cookies.tempUserId;
+    if (tempUserId && temporaryWishlists.has(tempUserId)) {
+      const tempWishlist = temporaryWishlists.get(tempUserId);
+      user.wishlist = [...user.wishlist, ...tempWishlist];
+      await user.save();
+      temporaryWishlists.delete(tempUserId);
+      res.clearCookie('tempUserId');
+    }
+
     // Return user data (without sensitive information)
     const userToReturn = user.toObject();
     delete userToReturn.password;
@@ -172,181 +381,6 @@ router.post('/login', async (req, res) => {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error during login' });
   }
-});
-
-// Get all users (excluding sensitive fields) - public endpoint
-router.get('/', async (req, res) => {
-  try {
-    // Exclude password and phone_number at the query level
-    const users = await User.find({}, '-password -phone_number').lean();
-
-    // Remove sensitive payment info from each user
-    users.forEach((user) => {
-      if (user.Payment) {
-        delete user.Payment.cardNumber;
-        delete user.Payment.cvv;
-      }
-    });
-
-    res.status(200).json({
-      success: true,
-      data: users,
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching users',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-    });
-  }
-});
-
-// Get user by ID - public endpoint
-router.get('/:id', async (req, res) => {
-  try {
-    // Check if the ID is a valid MongoDB ObjectId
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid user ID format',
-      });
-    }
-
-    const user = await User.findById(req.params.id, '-password -phone_number').lean();
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-      });
-    }
-
-    // Remove sensitive payment info
-    if (user.Payment) {
-      delete user.Payment.cardNumber;
-      delete user.Payment.cvv;
-    }
-
-    res.json({
-      success: true,
-      data: user,
-    });
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching user',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-    });
-  }
-});
-
-// Wishlist routes
-router.post('/api/wishlist/toggle', async (req, res) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Please log in to manage your wishlist'
-      });
-    }
-
-    const { productId } = req.body;
-    if (!productId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Product ID is required'
-      });
-    }
-
-    // Verify product exists
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found'
-      });
-    }
-
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    // Check if product exists in wishlist
-    const wishlistItemIndex = user.wishlist.findIndex(
-      item => item.product && item.product.toString() === productId
-    );
-
-    if (wishlistItemIndex === -1) {
-      // Add to wishlist
-      user.wishlist.push({
-        product: productId,
-        addedAt: new Date()
-      });
-    } else {
-      // Remove from wishlist
-      user.wishlist.splice(wishlistItemIndex, 1);
-    }
-
-    await user.save();
-
-    res.json({
-      success: true,
-      message: wishlistItemIndex === -1 ? 'Product added to wishlist' : 'Product removed from wishlist',
-      inWishlist: wishlistItemIndex === -1
-    });
-  } catch (error) {
-    console.error('Wishlist toggle error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while updating wishlist'
-    });
-  }
-});
-
-router.get('/wishlist', authenticateJWT, async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id)
-            .populate({
-                path: 'wishlist.product',
-                populate: [
-                    { path: 'brand' },
-                    { path: 'Vcollection' }
-                ]
-            });
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-
-        // Format wishlist items with proper brand and collection names
-        const wishlistItems = user.wishlist
-            .filter(item => item.product) // Filter out any null products
-            .map(item => ({
-                ...item.product.toObject(),
-                brand: item.product.brand ? item.product.brand.name : 'Unknown Brand',
-                Vcollection: item.product.Vcollection ? item.product.Vcollection.name : 'Unknown Collection'
-            }));
-
-        console.log('Wishlist items:', wishlistItems); // Debug log
-
-        res.render('wishlist', {
-            title: 'My Wishlist',
-            wishlistItems,
-            user: req.user
-        });
-    } catch (error) {
-        console.error('Error fetching wishlist:', error);
-        res.status(500).render('error', {
-            title: 'Error',
-            message: 'Failed to load wishlist. Please try again later.'
-        });
-    }
 });
 
 module.exports = router;

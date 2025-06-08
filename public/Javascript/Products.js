@@ -418,7 +418,6 @@ function addProductCardEventListeners() {
         const data = await response.json();
         if (data.success) {
           showNotification('success', 'Product added to comparison list!');
-          // Redirect to compare page
         } else {
           showNotification('error', data.message || 'Failed to add product to comparison list');
         }
@@ -552,14 +551,6 @@ function toggleQuickView(product = null) {
             <h1>${product.name}</h1>
             <div class="product-meta">
               <div class="price-qv">$${product.price.toLocaleString()}</div>
-              <div class="rating">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>
-                <span>(4.5/5)</span>
-              </div>
             </div>
           </div>
           
