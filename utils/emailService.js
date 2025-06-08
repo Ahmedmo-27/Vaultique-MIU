@@ -32,21 +32,31 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
   },
-  pool: true, // Use pooled connections
-  maxConnections: 5,
-  maxMessages: 100,
-  rateDelta: 1000, // How many messages to send per second
-  rateLimit: 5 // Max number of messages per rateDelta
+  secure: true,
+  tls: {
+    rejectUnauthorized: false,
+    minVersion: 'TLSv1.2'
+  }
 });
 
 // Verify transporter configuration
 transporter.verify(function(error, success) {
   if (error) {
     console.error('SMTP connection error:', error);
-    console.error('Please check your email credentials and make sure:');
-    console.error('1. EMAIL_USER is a valid Gmail address');
-    console.error('2. EMAIL_PASSWORD is a valid App Password');
-    console.error('3. 2-factor authentication is enabled on your Gmail account');
+    if (error.code === 'ESOCKET') {
+      console.error('\nSSL/TLS connection failed. Please try these steps:');
+      console.error('1. Run: npm install nodemailer@latest');
+      console.error('2. Make sure your .env file has correct credentials:');
+      console.error('   EMAIL_USER=your.email@gmail.com');
+      console.error('   EMAIL_PASSWORD=your-16-digit-app-password');
+      console.error('3. Check if your Gmail account has 2FA enabled');
+      console.error('4. Generate a new App Password from Google Account settings');
+    } else {
+      console.error('Authentication failed. Please check:');
+      console.error('1. Your Gmail address is correct');
+      console.error('2. You are using an App Password (not your regular Gmail password)');
+      console.error('3. 2-Step Verification is enabled on your Google Account');
+    }
     process.exit(1);
   } else {
     console.log('SMTP server is ready to send emails');
