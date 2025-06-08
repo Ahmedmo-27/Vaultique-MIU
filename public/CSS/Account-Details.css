@@ -90,36 +90,72 @@ body
 /* Phone Input Styles */
 .phone-input-container {
     display: flex;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: hidden;
+    gap: 10px;
+    align-items: center;
 }
 
 .country-select {
-    width: 150px;
+    width: 120px;
     padding: 8px;
-    border: none;
-    border-right: 1px solid #ddd;
-    background-color: #f8f8f8;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 15px;
-    cursor: pointer;
-}
-
-.country-select option {
-    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
 }
 
 #phoneNumber {
     flex: 1;
     padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+#phoneNumber:read-only {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.change-phone-btn {
+    padding: 8px 16px;
+    background-color: #050a30;
+    color: white;
     border: none;
-    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.change-phone-btn:hover {
+    background-color: #0a1540;
+}
+
+.change-phone-btn i {
+    font-size: 14px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .country-select,
+    #phoneNumber {
+        background-color: #2d2d2d;
+        border-color: #444;
+        color: #fff;
+    }
+
+    #phoneNumber:read-only {
+        background-color: #1a1a1a;
+    }
+
+    .change-phone-btn {
+        background-color: #785D32;
+    }
+
+    .change-phone-btn:hover {
+        background-color: #8a6d42;
+    }
 }
 
 .country-flag {

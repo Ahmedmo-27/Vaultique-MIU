@@ -13,6 +13,8 @@
     <script src="/Javascript/nav-bar.js"></script>
     <script src="/Javascript/Account-Details.js"></script>
     <script src="/Javascript/Light-Mode.js"></script>
+    <script type="application/json" id="userData"><%- JSON.stringify(user || {}) %></script>
+    <script type="application/json" id="wishlistData"><%- JSON.stringify(user?.wishlist?.filter(item => item.product).map(item => item.product) || []) %></script>
 </head>
 <body>
 
@@ -63,7 +65,11 @@
                         <select id="countrySelect" class="country-select">
                             <!-- Options populated by JavaScript -->
                         </select>
-                        <input id="phoneNumber" type="tel" value="<%= user?.phone_number || '' %>" placeholder="Phone number">
+                        <input id="phoneNumber" type="tel" value="<%= user?.phone_number || '' %>" placeholder="Enter your phone number">
+                        <!-- Debug info -->
+                        <script>
+                            console.log('Phone number:', '<%= user?.phone_number || "" %>');
+                        </script>
                     </div>
                 </div>
     
@@ -347,12 +353,6 @@
         show: locals.show || false 
     }) %>
 
-    <!-- Pass user data to client-side JavaScript -->
-    <script>
-        const userData = JSON.parse('<%- JSON.stringify(user || {}) %>');
-        const wishlistData = JSON.parse('<%- JSON.stringify(user?.wishlist?.filter(item => item.product).map(item => item.product) || []) %>');
-    </script>
-
     <!-- Quick View Modal -->
     <div id="quickViewModal" class="quick-view-modal">
         <button class="close-btn" id="closeQuickView">✖</button>
@@ -404,6 +404,12 @@
             const closeQuickViewBtn = document.getElementById('closeQuickView');
             const wishlistGrid = document.getElementById('wishlistGrid');
             const loadingSpinner = document.querySelector('.wishlist-loading');
+            const userData = JSON.parse(document.getElementById('userData').textContent);
+            const wishlistData = JSON.parse(document.getElementById('wishlistData').textContent);
+
+            console.log(userData);
+            console.log(wishlistData);
+
 
             // Function to show loading state
             function showLoading() {
