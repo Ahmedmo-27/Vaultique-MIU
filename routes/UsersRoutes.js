@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs'); // Using bcryptjs for consistency
 const validator = require('validator');
 const { authenticateJWT } = require('../middleware/jwt');
 const Product = require('../models/Products');
+const mongoose = require('mongoose');
 const router = express.Router();
 
 // Remove authentication requirement for all routes
@@ -204,6 +205,14 @@ router.get('/', async (req, res) => {
 // Get user by ID - public endpoint
 router.get('/:id', async (req, res) => {
   try {
+    // Check if the ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format',
+      });
+    }
+
     const user = await User.findById(req.params.id, '-password -phone_number').lean();
 
     if (!user) {
