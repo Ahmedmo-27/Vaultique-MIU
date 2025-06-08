@@ -691,7 +691,7 @@ router.get('/account-details', authenticateJWT, async (req, res) => {
       delete user.Payment.cvv;
     }
 
-    res.render('account-details', {
+    res.render('Account-Details', {
       title: 'Account Details',
       user: user,
       type: req.query.type || 'info',
