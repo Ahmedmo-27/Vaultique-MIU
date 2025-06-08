@@ -35,14 +35,17 @@
 
             <div class="user-data">
                 <nav class="navigation">
-                    <% if (typeof user !== 'undefined' && user) { %>
-                        <a href="/user/Account-Details">
+                    <% if (typeof user !== 'undefined' && user && user._id) { %>
+                        <a href="/user/account-details" class="user-account-link">
+                            <i class='fas fa-user-alt'></i>
+                            <p>Account</p>
+                        </a>
                     <% } else { %>
-                        <a href="/user/LoginSignup">
+                        <a href="/user/LoginSignup" class="user-account-link">
+                            <i class='fas fa-user-alt'></i>
+                            <p>Account</p>
+                        </a>
                     <% } %>
-                        <i class='fas fa-user-alt'></i>
-                        <p>Account</p>
-                    </a>
 
                     <a href="/user/wishlist">
                         <i class='fas fa-heart'></i>
@@ -51,7 +54,7 @@
 
                     <a href="/user/cart">
                         <i class='fas fa-shopping-cart'></i>
-                        <p>Cart </p>
+                        <p>Cart</p>
                     </a>
                 </nav>
             </div>
@@ -77,19 +80,25 @@
 
                 <nav class="navigation">
 
-                    <a href="/User/Contact-Us" style="display: none;">
+                    <a href="/user/contact-us" style="display: none;">
                         <i class='fas fa-phone-alt'></i>
                     </a>
 
-                    <a href="/User/Account" style="display: none;">
-                        <i class='fas fa-user-alt'></i>
-                    </a>
+                    <% if (typeof user !== 'undefined' && user && user._id) { %>
+                        <a href="/user/account-details" style="display: none;">
+                            <i class='fas fa-user-alt'></i>
+                        </a>
+                    <% } else { %>
+                        <a href="/user/LoginSignup" style="display: none;">
+                            <i class='fas fa-user-alt'></i>
+                        </a>
+                    <% } %>
 
-                    <a href="/User/WishList" style="display: none;">
+                    <a href="/user/wishlist" style="display: none;">
                         <i class='fas fa-heart'></i>
                     </a>
 
-                    <a href="/User/Cart" style="display: none;">
+                    <a href="/user/cart" style="display: none;">
                         <i class='fas fa-shopping-cart'></i>
                     </a>
 
@@ -116,6 +125,7 @@
                 <a href="/user/products">Shop All</a>
                 <a href="/user/collections" id="collections-anchor-with-extension" class="extension">Collections</a>
                 <a href="/user/brands" data-category="Bracelets">Brands</a>
+                <a href="/user/compare">Compare</a>
                 <a href="/user/Recommendation-System">Recommendation System</a>
             </nav>
         </div>
@@ -134,6 +144,8 @@
                     <a href="/user/collections/aviation-and-travel"> Aviation & <br>Travel </a>
                     <br>
                     <a href="/user/collections/luxury-and-heritgae"> Luxury & <br>Heritage </a>
+                    <br>
+                    <a href="/user/collections" style="margin-top: 10px; font-weight: 500; text-decoration:underline" >See All</a>
                 </div>
         
                 <a class="extension-item" href="/user/collections/classic-and-dress">
@@ -188,6 +200,7 @@
                 <a href="/user/brands/jacob-co" data-brand="Jacob & Co">Jacob & Co</a>
                 <a href="/user/brands/richard-mille" data-brand="Richard Mille">Richard Mille</a>
                 <a href="/user/brands/breitling" data-brand="Breitling">Breitling</a>
+                <a href="/user/brands" style="margin-top: 10px; font-weight: 500; text-decoration:underline" >See All</a>
             </div> 
             
             <div class="brands-logos">
@@ -308,8 +321,8 @@
         <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
         <a href="/user/home">Home</a>
         <a href="/user/contact-us">Contact Us</a>
-        <% if (typeof user !== 'undefined' && user) { %>
-            <a href="/user/Account-Details">Account</a>
+        <% if (typeof user !== 'undefined' && user && user._id) { %>
+            <a href="/user/account-details">Account</a>
         <% } else { %>
             <a href="/user/LoginSignup">Account</a>
         <% } %>
@@ -325,6 +338,7 @@
                 <a href="/user/collections/sports-and-adventure"> Sports & Adventure</a>
                 <a href="/user/collections/aviation-and-travel"> Aviation & Travel</a>
                 <a href="/user/collections/luxury-and-heritage"> Luxury & Heritage</a>
+                <a href="/user/collections" style="margin-top: 10px; font-weight: 500; text-decoration:underline">See All</a>
             </div>
         </div>
     
@@ -343,6 +357,7 @@
                 <a href="/user/brands/jacob-co" data-brand="Jacob & Co">Jacob & Co</a>
                 <a href="/user/brands/richard-mille" data-brand="Richard Mille">Richard Mille</a>
                 <a href="/user/brands/breitling" data-brand="Breitling">Breitling</a>
+                <a href="/user/brands" style="margin-top: 10px; font-weight: 500; text-decoration:underline">See All</a>
             </div>
         </div>
 
