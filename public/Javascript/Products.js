@@ -402,6 +402,32 @@ function addProductCardEventListeners() {
       toggleQuickView(productData);
     });
   });
+
+  // Add event listeners for compare buttons
+  document.querySelectorAll('.compare').forEach((button) => {
+    button.addEventListener('click', async function() {
+      const productId = this.dataset.productId;
+      try {
+        const response = await fetch('/user/compare/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productId })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showNotification('success', 'Product added to comparison list!');
+          // Redirect to compare page
+        } else {
+          showNotification('error', data.message || 'Failed to add product to comparison list');
+        }
+      } catch (error) {
+        console.error('Error adding to comparison:', error);
+        showNotification('error', 'An error occurred while adding to comparison list');
+      }
+    });
+  });
 }
 
 function updatePaginationUI() {
