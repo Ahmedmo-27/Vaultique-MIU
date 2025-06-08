@@ -3,6 +3,7 @@ const User = require('../models/Users');
 const bcrypt = require('bcryptjs'); // Using bcryptjs for consistency
 const validator = require('validator');
 const { authenticateJWT } = require('../middleware/jwt');
+const Product = require('../models/Products');
 const router = express.Router();
 
 // Remove authentication requirement for all routes
@@ -230,6 +231,113 @@ router.get('/:id', async (req, res) => {
       error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
+});
+
+// Wishlist routes
+router.post('/api/wishlist/toggle', async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please log in to manage your wishlist'
+      });
+    }
+
+    const { productId } = req.body;
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product ID is required'
+      });
+    }
+
+    // Verify product exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check if product exists in wishlist
+    const wishlistItemIndex = user.wishlist.findIndex(
+      item => item.product && item.product.toString() === productId
+    );
+
+    if (wishlistItemIndex === -1) {
+      // Add to wishlist
+      user.wishlist.push({
+        product: productId,
+        addedAt: new Date()
+      });
+    } else {
+      // Remove from wishlist
+      user.wishlist.splice(wishlistItemIndex, 1);
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: wishlistItemIndex === -1 ? 'Product added to wishlist' : 'Product removed from wishlist',
+      inWishlist: wishlistItemIndex === -1
+    });
+  } catch (error) {
+    console.error('Wishlist toggle error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while updating wishlist'
+    });
+  }
+});
+
+router.get('/wishlist', authenticateJWT, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+            .populate({
+                path: 'wishlist.product',
+                populate: [
+                    { path: 'brand' },
+                    { path: 'Vcollection' }
+                ]
+            });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Format wishlist items with proper brand and collection names
+        const wishlistItems = user.wishlist
+            .filter(item => item.product) // Filter out any null products
+            .map(item => ({
+                ...item.product.toObject(),
+                brand: item.product.brand ? item.product.brand.name : 'Unknown Brand',
+                Vcollection: item.product.Vcollection ? item.product.Vcollection.name : 'Unknown Collection'
+            }));
+
+        console.log('Wishlist items:', wishlistItems); // Debug log
+
+        res.render('wishlist', {
+            title: 'My Wishlist',
+            wishlistItems,
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error fetching wishlist:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Failed to load wishlist. Please try again later.'
+        });
+    }
 });
 
 module.exports = router;

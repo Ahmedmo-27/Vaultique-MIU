@@ -278,7 +278,7 @@ function setupEventListeners() {
             this.classList.remove('filled');
           }
           // Show notification
-          showNotification(data.message, 'success');
+          showNotification(data.message, 'Item added to wishlist');
         } else {
           showNotification(data.message || 'Failed to update wishlist', 'error');
         }
