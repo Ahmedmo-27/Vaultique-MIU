@@ -18,6 +18,7 @@ const adminRoutes = require('./routes/AdminRoutes');
 const adminController = require('./controllers/Admin');
 const authRoutes = require('./controllers/Auth');
 const productRoutes = require('./routes/ProductsRoutes');
+const userRoutes = require('./routes/UsersRoutes');
 const app = express();
 
 // Set EJS as the view engine
@@ -60,8 +61,13 @@ app.use(cookieParser());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: process.env.NODE_ENV === 'production' }
+  saveUninitialized: false,
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'strict',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 
 // CORS Configuration
@@ -239,18 +245,28 @@ app.use('/assets', express.static(path.join(publicPath, 'Assets')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')));
 
+// Middleware to make user data available to all views
+app.use((req, res, next) => {
+  // Get user from session or JWT token
+  const user = req.session.user || (req.user ? req.user.toObject() : null);
+  
+  // Make user data available to all views
+  res.locals.user = user;
+  next();
+});
+
+// Apply optional JWT middleware to all routes
+app.use(optionalJWT);
+
 // Public routes (no authentication required)
 app.use('/user', userController);
 app.use('/api', apiRouter);
 app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
+app.use('/', userRoutes);
 
-// Apply optional authentication to all routes
-// This will set req.user if a valid token is present but won't block access
-app.use(optionalJWT);
-
-// Protected API routes
+// Protected routes (authentication required)
 app.use('/api/admin', isAdmin, adminRoutes);
+app.use('/api/products', productRoutes);
 
 // Global logout route for client-side usage
 app.get('/logout', (req, res) => {
@@ -289,33 +305,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Error Handlers
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-
-  // API errors
-  if (req.path.startsWith('/api')) {
-    return res.status(err.status || 500).json({
-      success: false,
-      message: err.message || 'Internal Server Error',
-      error: config.nodeEnv === 'development' ? err : undefined,
-    });
-  }
-
-  // Frontend errors
-  if (err.status === 404) {
-    return res.status(404).render('404', {
-      title: '404 - Page Not Found',
-      message: err.message || 'The page you are looking for does not exist.',
-    });
-  }
-
-  res.status(err.status || 500).render('error', {
-    title: 'Error',
-    type: 'error',
-    message: err.message || 'Something went wrong!',
-    show: true,
-    error: config.nodeEnv === 'development' ? err : {},
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err : {}
   });
 });
 

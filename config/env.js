@@ -17,7 +17,7 @@ module.exports = {
   mongodbUri: process.env.MONGODB_URI,
   jwtSecret: process.env.JWT_SECRET,
   sessionSecret: process.env.SESSION_SECRET,
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3001',
+  frontendUrl: process.env.FRONTEND_URL || 'https://vaultique.up.railway.app/user/home',
   cookieDomain: process.env.COOKIE_DOMAIN,
   isProduction: process.env.NODE_ENV === 'production',
 };

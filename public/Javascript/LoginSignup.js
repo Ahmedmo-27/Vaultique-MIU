@@ -191,26 +191,63 @@ document.addEventListener("DOMContentLoaded", function () {
     const password = document.getElementById("password").value;
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      console.log('Login attempt details:', { email, hasPassword: !!password });
+      
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        window.showNotification('success', "Login successful!");
-        // Use the redirectUrl from the server response
-        setTimeout(() => {
-          window.location.href = data.data.redirectUrl;
-        }, 1000);
+
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
       } else {
-        window.showNotification('error', data.message || "Invalid credentials");
+        // Handle non-JSON responses (like rate limit messages)
+        const text = await response.text();
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          data = {
+            success: false,
+            message: text
+          };
+        }
+      }
+
+      if (response.ok) {
+        if (data.success) {
+          // Show success message
+          showNotification('success', 'Login successful!');
+          
+          // Redirect based on user role
+          if (data.user.role === 'admin') {
+            window.location.href = '/admin/dashboard';
+          } else {
+            window.location.href = '/user/home';
+          }
+        } else {
+          showNotification('error', data.message || 'Login failed');
+        }
+      } else {
+        // Handle different error status codes
+        switch (response.status) {
+          case 429:
+            showNotification('error', 'Too many login attempts. Please try again later.');
+            break;
+          case 423:
+            showNotification('error', 'Account is temporarily locked. Please try again later.');
+            break;
+          default:
+            showNotification('error', data.message || 'Login failed');
+        }
       }
     } catch (error) {
       console.error('Login error:', error);
-      window.showNotification('error', "Error logging in. Please try again.");
+      showNotification('error', 'An error occurred during login');
     }
   });
 
