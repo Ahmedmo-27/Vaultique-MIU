@@ -3,10 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/CSS/Products.css">
+    <title><%= title %> - Error</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <%- include('partials/notification', { type, message, show: true }) %>
+
+    <main class="error-container">
+        <div class="error-content">
+            <h1><%= title %></h1>
+            <p><%= message %></p>
+            <a href="/" class="btn">Return to Home</a>
+        </div>
+    </main>
+
+    <%- include('partials/notification', { 
+        type: locals.type || 'error',
+        message: locals.message || 'An error occurred',
+        show: locals.show || true
+    }) %>
+    
+    <%- include('partials/footer') %>
 </body>
 </html>

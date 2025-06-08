@@ -65,8 +65,9 @@
         </div>
 
         <div class="product-actions">
-          <button class="wishlist-btn" data-product-id="<%= product.id %>">
-            <i class="far fa-heart"></i>
+          <button class="wishlist-btn <%= product.inWishlist ? 'filled' : '' %>" data-product-id="<%= product._id %>">
+            <i class="<%= product.inWishlist ? 'fas' : 'far' %> fa-heart"></i>
+            <p><%= product.inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist' %></p>
           </button>
           <br><br>
           <button class="add-to-cart" data-product-id="<%= product._id %>">
@@ -143,10 +144,58 @@
   <%- include('partials/footer') %>
 
   <script>
-    // Thumbnail click functionality
     document.addEventListener('DOMContentLoaded', function() {
-      const thumbnails = document.querySelectorAll('.thumbnail');
       const mainImage = document.getElementById('mainImage');
+      const mainImageContainer = mainImage.parentElement;
+      let isZoomed = false;
+
+      // Zoom functionality
+      mainImageContainer.addEventListener('click', function(e) {
+        if (!isZoomed) {
+          // Zoom in
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          // Calculate zoom center point
+          const centerX = (x / rect.width) * 100;
+          const centerY = (y / rect.height) * 100;
+          
+          mainImage.style.transform = `scale(2)`;
+          mainImage.style.transformOrigin = `${centerX}% ${centerY}%`;
+          this.style.cursor = 'zoom-out';
+          isZoomed = true;
+        } else {
+          // Zoom out
+          mainImage.style.transform = 'scale(1)';
+          mainImage.style.transformOrigin = 'center';
+          this.style.cursor = 'zoom-in';
+          isZoomed = false;
+        }
+      });
+
+      // Pan functionality when zoomed
+      mainImageContainer.addEventListener('mousemove', function(e) {
+        if (!isZoomed) return;
+
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Calculate the maximum translation values
+        const maxX = (mainImage.offsetWidth * 2 - mainImageContainer.offsetWidth) / 2;
+        const maxY = (mainImage.offsetHeight * 2 - mainImageContainer.offsetHeight) / 2;
+
+        // Calculate new translation values based on mouse position
+        const translateX = Math.max(-maxX, Math.min(maxX, (x - rect.width / 2) * 2));
+        const translateY = Math.max(-maxY, Math.min(maxY, (y - rect.height / 2) * 2));
+
+        // Apply the translation
+        mainImage.style.transform = `scale(2) translate(${translateX}px, ${translateY}px)`;
+      });
+
+      // Thumbnail click functionality
+      const thumbnails = document.querySelectorAll('.thumbnail');
       
       thumbnails.forEach(thumbnail => {
         thumbnail.addEventListener('click', function() {
@@ -160,6 +209,11 @@
           const newImageSrc = this.getAttribute('data-image');
           if (newImageSrc) {
             mainImage.src = newImageSrc;
+            // Reset zoom state when changing images
+            mainImage.style.transform = 'scale(1)';
+            mainImage.style.transformOrigin = 'center';
+            mainImageContainer.style.cursor = 'zoom-in';
+            isZoomed = false;
           }
         });
       });
@@ -206,8 +260,11 @@
             const data = await response.json();
             if (data.success) {
               const icon = this.querySelector('i');
+              const text = this.querySelector('p');
               icon.classList.toggle('far');
               icon.classList.toggle('fas');
+              this.classList.toggle('filled');
+              text.textContent = icon.classList.contains('fas') ? 'Remove from Wishlist' : 'Add to Wishlist';
             }
           } catch (error) {
             console.error('Error toggling wishlist:', error);
@@ -258,6 +315,92 @@
       event.currentTarget.classList.add("active");
     }
   </script>
+
+  <style>
+    .main-image {
+      width: 100%;
+      height: 450px;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #f8f8f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-in;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .main-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+      will-change: transform;
+      transform-origin: center;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      .main-image {
+        background: #2d2d2d;
+      }
+    }
+
+    .wishlist-btn {
+      background-color: transparent;
+      border: 1px solid #333 !important;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .wishlist-btn i {
+      transition: all 0.3s ease;
+      font-size: 1.2em;
+    }
+
+    .wishlist-btn.filled {
+      border-color: #ff4444 !important;
+    }
+
+    .wishlist-btn.filled i {
+      color: #ff4444;
+    }
+
+    .wishlist-btn:hover i {
+      transform: scale(1.2);
+    }
+
+    .wishlist-btn.filled:hover i {
+      color: #ff0000;
+    }
+
+    .wishlist-btn p {
+      margin: 0;
+      font-size: 0.9em;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      .wishlist-btn {
+        border-color: #666 !important;
+        color: #fff;
+      }
+
+      .wishlist-btn i {
+        color: #fff;
+      }
+
+      .wishlist-btn.filled i {
+        color: #ff4444;
+      }
+    }
+  </style>
   </main>
   </body>
 </html>
