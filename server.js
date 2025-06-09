@@ -58,6 +58,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cookieParser());
+
+// Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
@@ -65,7 +67,7 @@ app.use(session({
   cookie: { 
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
@@ -73,7 +75,7 @@ app.use(session({
 // CORS Configuration
 app.use(
   cors({
-    origin: true, // Allow all origins in development
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
@@ -83,7 +85,7 @@ app.use(
       'X-Requested-With',
     ],
     credentials: true,
-    maxAge: 600, // Cache preflight requests for 10 minutes
+    maxAge: 600,
     exposedHeaders: ['Set-Cookie', 'Date', 'ETag'],
   })
 );
@@ -272,9 +274,48 @@ app.use('/api/admin', isAdmin, adminRoutes);
 app.use('/api/products', productRoutes);
 
 // Global logout route for client-side usage
-app.get('/logout', (req, res) => {
-  removeCookie(res, 'token');
-  res.redirect('/user/LoginSignup');
+app.all('/logout', (req, res) => {
+  try {
+    // Clear session
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Session destroy error:', err);
+        }
+      });
+    }
+    
+    // Clear all auth cookies
+    removeCookie(res, 'token');
+    removeCookie(res, 'refreshToken');
+    res.clearCookie('connect.sid', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    
+    // Send success response
+    if (req.xhr || req.headers.accept?.includes('application/json')) {
+      res.json({
+        success: true,
+        message: 'Logged out successfully'
+      });
+    } else {
+      // Redirect to login page for regular requests
+      res.redirect('/user/LoginSignup');
+    }
+  } catch (error) {
+    console.error('Logout error:', error);
+    if (req.xhr || req.headers.accept?.includes('application/json')) {
+      res.status(500).json({
+        success: false,
+        message: 'An error occurred during logout'
+      });
+    } else {
+      res.redirect('/user/LoginSignup');
+    }
+  }
 });
 
 // Admin Frontend Routes
