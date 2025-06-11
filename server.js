@@ -19,6 +19,8 @@ const adminController = require('./controllers/Admin');
 const authRoutes = require('./controllers/Auth');
 const productRoutes = require('./routes/ProductsRoutes');
 const userRoutes = require('./routes/UsersRoutes');
+const collectionsRoutes = require('./routes/CollectionsRoutes');
+const brandsRoutes = require('./routes/BrandsRoutes');
 const app = express();
 
 // Set EJS as the view engine
@@ -266,8 +268,12 @@ app.get('/', (req, res) => res.redirect('/user/home'));
 // Public routes (no authentication required)
 app.use('/user', userController);
 app.use('/api', apiRouter);
+app.use('/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/products', productRoutes);
 app.use('/', userRoutes);
+app.use('/collections', collectionsRoutes);
+app.use('/user/brands', brandsRoutes);
 
 // Protected routes (authentication required)
 app.use('/api/admin', isAdmin, adminRoutes);
