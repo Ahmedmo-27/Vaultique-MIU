@@ -151,6 +151,60 @@
         const wishlistContainer = document.querySelector('.wishlist-container');
         const wishlistData = JSON.parse(decodeURIComponent(wishlistContainer.dataset.wishlist || '[]'));
 
+        // Function to show notification
+        function showNotification(message, type = 'success') {
+          const notification = document.createElement('div');
+          notification.className = `notification ${type}`;
+          notification.textContent = message;
+          document.body.appendChild(notification);
+          
+          setTimeout(() => {
+            notification.remove();
+          }, 3000);
+        }
+
+        // Handle remove from wishlist
+        document.querySelectorAll('.remove-item').forEach(button => {
+          button.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            const productCard = this.closest('.product-card');
+
+            try {
+              const response = await fetch('/user/wishlist/toggle', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productId })
+              });
+
+              const data = await response.json();
+
+              if (data.success) {
+                productCard.remove();
+                showNotification('Product removed from wishlist');
+                
+                // If no items left, show empty state
+                if (document.querySelectorAll('.product-card').length === 0) {
+                  document.querySelector('.product-grid').innerHTML = `
+                    <div class="empty-wishlist">
+                      <i class="far fa-heart"></i>
+                      <h2>Your wishlist is empty</h2>
+                      <p>Start adding products to your wishlist by clicking the heart icon on any product.</p>
+                      <a href="/products" class="browse-products-btn">Browse Products</a>
+                    </div>
+                  `;
+                }
+              } else {
+                throw new Error(data.message || 'Failed to remove from wishlist');
+              }
+            } catch (error) {
+              showNotification(error.message, 'error');
+            }
+          });
+        });
+
         // Pagination elements
         const prevPageBtn = document.getElementById('prevPage');
         const nextPageBtn = document.getElementById('nextPage');
