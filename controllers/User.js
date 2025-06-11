@@ -83,6 +83,150 @@ router.get('/Brands', async (req, res) => {
     }
 });
 
+// Brand Detail Page Route
+router.get('/brands/:brandSlug', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const brandSlug = req.params.brandSlug;
+        console.log(`Searching for brand with slug: ${brandSlug}`);
+
+        let brand = await Brand.findOne({ slug: brandSlug });
+
+        if (!brand) {
+            console.log(`Brand not found with slug: ${brandSlug}`);
+            return res.status(404).render('error', {
+                title: 'Brand Not Found',
+                message: 'The requested brand does not exist.',
+                type: 'error',
+                show: true
+            });
+        }
+
+        // Build filter query
+        const filterQuery = { brand: brand._id };
+        
+        // Apply other filters if present
+        if (req.query.Vcollection && req.query.Vcollection !== 'All') {
+            filterQuery.Vcollection = req.query.Vcollection;
+        }
+        if (req.query.gender && req.query.gender !== 'All') {
+            filterQuery.gender = req.query.gender;
+        }
+        if (req.query.strapMaterial && req.query.strapMaterial !== 'All') {
+            filterQuery.strapMaterial = req.query.strapMaterial;
+        }
+        if (req.query.movement && req.query.movement !== 'All') {
+            filterQuery.movement = req.query.movement;
+        }
+        if (req.query.waterResistance && req.query.waterResistance !== 'All') {
+            filterQuery.waterResistance = req.query.waterResistance;
+        }
+        if (req.query.caseMaterial && req.query.caseMaterial !== 'All') {
+            filterQuery.caseMaterial = req.query.caseMaterial;
+        }
+        if (req.query.dialColor && req.query.dialColor !== 'All') {
+            filterQuery.dialColor = req.query.dialColor;
+        }
+
+        // Price range
+        if (req.query.minPrice) {
+            filterQuery.price = { ...filterQuery.price, $gte: parseFloat(req.query.minPrice) };
+        }
+        if (req.query.maxPrice) {
+            filterQuery.price = { ...filterQuery.price, $lte: parseFloat(req.query.maxPrice) };
+        }
+
+        // Stock filter
+        if (req.query.inStock === 'true') {
+            filterQuery.stock = true;
+        }
+
+        // Get sort option
+        const sort = req.query.sort || 'default';
+        let sortQuery = {};
+        switch (sort) {
+            case 'price-asc':
+                sortQuery = { price: 1 };
+                break;
+            case 'price-desc':
+                sortQuery = { price: -1 };
+                break;
+            case 'new':
+                sortQuery = { createdAt: -1 };
+                break;
+            case 'popularity':
+                sortQuery = { popularityScore: -1 };
+                break;
+            default:
+                sortQuery = { createdAt: -1 };
+        }
+
+        // Get products with pagination
+        const products = await Product.find(filterQuery)
+            .sort(sortQuery)
+            .skip(skip)
+            .limit(limit);
+
+        // Get total count for pagination
+        const totalProducts = await Product.countDocuments(filterQuery);
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        // Get all collections for filter
+        const collections = await Collection.find().sort('name');
+
+        // Get wishlist status for each product if user is logged in
+        let productsWithWishlist = products;
+        if (req.user) {
+            const user = await User.findById(req.user._id).populate('wishlist');
+            productsWithWishlist = products.map(product => ({
+                ...product.toObject(),
+                inWishlist: user.wishlist.some(item => item._id.toString() === product._id.toString())
+            }));
+        }
+
+        // Current filters for maintaining state
+        const currentFilters = {
+            Vcollection: req.query.Vcollection || 'All',
+            gender: req.query.gender || 'All',
+            strapMaterial: req.query.strapMaterial || 'All',
+            movement: req.query.movement || 'All',
+            waterResistance: req.query.waterResistance || 'All',
+            caseMaterial: req.query.caseMaterial || 'All',
+            dialColor: req.query.dialColor || 'All',
+            minPrice: req.query.minPrice || '0',
+            maxPrice: req.query.maxPrice || '50000000',
+            inStock: req.query.inStock || 'false'
+        };
+
+        res.render('Brand-Page', {
+            title: brand.name,
+            brand,
+            products: productsWithWishlist,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalProducts,
+                itemsPerPage: limit
+            },
+            filters: currentFilters,
+            sort,
+            collections,
+            user: req.user || null
+        });
+    } catch (error) {
+        console.error('Error loading brand page:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'An error occurred while loading the brand page.',
+            type: 'error',
+            show: true
+        });
+    }
+});
+
 
 async function handleUserQuestion(userQuestion) {
   // 1. First check if it's a product-related question
@@ -224,7 +368,7 @@ router.get('/home', async (req, res) => {
 router.get('/products', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12;
+    const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
     // Build filter query
@@ -232,10 +376,7 @@ router.get('/products', async (req, res) => {
     
     // Collection filter
     if (req.query.Vcollection && req.query.Vcollection !== 'All') {
-      const collection = await Collection.findOne({ name: req.query.Vcollection });
-      if (collection) {
-        filterQuery.Vcollection = collection._id;
-      }
+      filterQuery.Vcollection = req.query.Vcollection;
     }
 
     // Brand filter
@@ -281,7 +422,8 @@ router.get('/products', async (req, res) => {
 
     // Sort options
     let sortQuery = {};
-    switch (req.query.sort) {
+    const sort = req.query.sort || 'default';
+    switch (sort) {
       case 'price-asc':
         sortQuery = { price: 1 };
         break;
@@ -292,7 +434,7 @@ router.get('/products', async (req, res) => {
         sortQuery = { createdAt: -1 };
         break;
       case 'popularity':
-        sortQuery = { views: -1 };
+        sortQuery = { popularityScore: -1 };
         break;
       default:
         sortQuery = { createdAt: -1 };
@@ -340,6 +482,21 @@ router.get('/products', async (req, res) => {
       }));
     }
 
+    // Prepare current filters
+    const currentFilters = {
+      Vcollection: req.query.Vcollection || 'All',
+      brand: req.query.brand || 'All',
+      gender: req.query.gender || 'All',
+      strapMaterial: req.query.strapMaterial || 'All',
+      movement: req.query.movement || 'All',
+      waterResistance: req.query.waterResistance || 'All',
+      caseMaterial: req.query.caseMaterial || 'All',
+      dialColor: req.query.dialColor || 'All',
+      minPrice: req.query.minPrice || '0',
+      maxPrice: req.query.maxPrice || '500000',
+      inStock: req.query.inStock || 'false'
+    };
+
     res.render('products', {
       title: 'Shop All',
       products: productsWithWishlist,
@@ -349,25 +506,11 @@ router.get('/products', async (req, res) => {
         totalItems: totalProducts,
         itemsPerPage: limit,
       },
-      filters: {
-        brands,
-        Vcollections: collections,
-      },
-      currentFilters: {
-        sort: req.query.sort || 'default',
-        Vcollection: req.query.Vcollection || 'All',
-        brand: req.query.brand || 'All',
-        gender: req.query.gender || 'All',
-        strapMaterial: req.query.strapMaterial || 'All',
-        movement: req.query.movement || 'All',
-        waterResistance: req.query.waterResistance || 'All',
-        caseMaterial: req.query.caseMaterial || 'All',
-        dialColor: req.query.dialColor || 'All',
-        minPrice: req.query.minPrice || null,
-        maxPrice: req.query.maxPrice || null,
-        inStock: req.query.inStock || 'false',
-      },
+      filters: currentFilters,
+      sort: sort,
       user: req.user || null,
+      collections: collections,
+      brands: brands
     });
   } catch (error) {
     console.error('Error loading products:', error);
@@ -375,105 +518,15 @@ router.get('/products', async (req, res) => {
   }
 });
 
-// Brand-specific products page
-router.get('/brands/:brandSlug', async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12;
-    const skip = (page - 1) * limit;
-
-    const brand = await Brand.findOne({ slug: req.params.brandSlug });
-    if (!brand) {
-      return res.status(404).render('404', {
-        title: 'Brand Not Found',
-        message: 'The requested brand does not exist.',
-      });
-    }
-
-    // Simple query matching the collection page implementation
-    const [products, totalProducts, brands, collections] = await Promise.all([
-      Product.find({ brand: brand._id }).skip(skip).limit(limit).populate('Vcollection'),
-      Product.countDocuments({ brand: brand._id }),
-      Brand.find(),
-      Collection.find(),
-    ]);
-
-    const totalPages = Math.ceil(totalProducts / limit);
-
-    // Add brand data for JavaScript
-    const brandData = {
-      name: brand.name,
-      title: brand.header,
-      description: brand.description,
-      featuredModels: brand.featuredModels,
-      coverImage: brand.coverImage,
-      heroVideo: brand.heroVideo,
-    };
-
-    // If it's an API request or format=json, return JSON
-    if (
-      req.query.format === 'json' ||
-      req.xhr ||
-      (req.headers.accept && req.headers.accept.includes('application/json'))
-    ) {
-      return res.json({
-        success: true,
-        data: {
-          products,
-          pagination: {
-            currentPage: page,
-            totalPages,
-            totalProducts,
-          },
-          filters: {
-            brands,
-            collections,
-          },
-        },
-      });
-    }
-
-    res.render('Brand-Page', {
-      title: `${brand.name} Watches`,
-      brandName: brand.name,
-      brand,
-      products,
-      currentPage: page,
-      totalPages,
-      brands,
-      collections,
-      brandData: JSON.stringify(brandData),
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalProducts,
-      },
-      currentFilters: {
-        sort: req.query.sort || 'default',
-        Vcollection: req.query.Vcollection || 'All',
-        movement: req.query.movement || 'All',
-        strapMaterial: req.query.strapMaterial || 'All',
-        waterResistance: req.query.waterResistance || 'All',
-        caseMaterial: req.query.caseMaterial || 'All',
-        dialColor: req.query.dialColor || 'All',
-        minPrice: req.query.minPrice || null,
-        maxPrice: req.query.maxPrice || null,
-        inStock: req.query.inStock || 'false',
-      },
-      user: req.user || null,
-    });
-  } catch (error) {
-    console.error('Error loading brand page:', error);
-    renderNotification(res, 'error', 'Failed to load brand products. Please try again later.');
-  }
-});
-
 // Collection-specific products page
 router.get('/collections/:collectionSlug', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12;
+    const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+
+    // Get all brands first
+    const brands = await Brand.find().sort('name');
 
     const collection = await Collection.findOne({ slug: req.params.collectionSlug });
     if (!collection) {
@@ -483,28 +536,140 @@ router.get('/collections/:collectionSlug', async (req, res) => {
       });
     }
 
-    const [products, totalProducts, brands, collections] = await Promise.all([
-      Product.find({ Vcollection: collection._id }).skip(skip).limit(limit).populate('brand'),
-      Product.countDocuments({ Vcollection: collection._id }),
-      Brand.find(),
-      Collection.find(),
-    ]);
+    // Build filter query
+    const filterQuery = { Vcollection: collection.name };
+    
+    // Apply brand filter if present
+    if (req.query.brand && req.query.brand !== 'All') {
+      const brand = await Brand.findOne({ 
+        name: { $regex: new RegExp(`^${req.query.brand}$`, 'i') }
+      });
+      if (brand) {
+        filterQuery.brand = brand.name;
+      }
+    }
 
+    // Apply other filters if present
+    if (req.query.gender && req.query.gender !== 'All') {
+      filterQuery.gender = req.query.gender;
+    }
+    if (req.query.strapMaterial && req.query.strapMaterial !== 'All') {
+      filterQuery.strapMaterial = req.query.strapMaterial;
+    }
+    if (req.query.movement && req.query.movement !== 'All') {
+      filterQuery.movement = req.query.movement;
+    }
+    if (req.query.waterResistance && req.query.waterResistance !== 'All') {
+      filterQuery.waterResistance = req.query.waterResistance;
+    }
+    if (req.query.caseMaterial && req.query.caseMaterial !== 'All') {
+      filterQuery.caseMaterial = req.query.caseMaterial;
+    }
+    if (req.query.dialColor && req.query.dialColor !== 'All') {
+      // Handle multiple dial colors
+      const colors = Array.isArray(req.query.dialColor) ? req.query.dialColor : [req.query.dialColor];
+      filterQuery.dialColor = { $in: colors };
+    }
+
+    // Price range
+    if (req.query.minPrice) {
+      filterQuery.price = { ...filterQuery.price, $gte: parseFloat(req.query.minPrice) };
+    }
+    if (req.query.maxPrice) {
+      filterQuery.price = { ...filterQuery.price, $lte: parseFloat(req.query.maxPrice) };
+    }
+
+    // Stock filter
+    if (req.query.inStock === 'true') {
+      filterQuery.$or = [{ stock: true }, { stockCount: { $gt: 0 } }];
+    }
+
+    // Sort options
+    let sortQuery = {};
+    const sort = req.query.sort || 'default';
+    switch (sort) {
+      case 'price-asc':
+        sortQuery = { price: 1 };
+        break;
+      case 'price-desc':
+        sortQuery = { price: -1 };
+        break;
+      case 'name-asc':
+        sortQuery = { name: 1 };
+        break;
+      case 'name-desc':
+        sortQuery = { name: -1 };
+        break;
+      default:
+        sortQuery = { createdAt: -1 }; // newest first
+    }
+
+    // Get total count for pagination
+    const totalProducts = await Product.countDocuments(filterQuery);
     const totalPages = Math.ceil(totalProducts / limit);
+
+    // Get products with pagination and sorting
+    const products = await Product.find(filterQuery)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(limit);
+
+    // Get all collections for filter
+    const collections = await Collection.find().sort('name');
+
+    // Build current filters object
+    const currentFilters = {
+      brand: req.query.brand || 'All',
+      gender: req.query.gender || 'All',
+      strapMaterial: req.query.strapMaterial || 'All',
+      movement: req.query.movement || 'All',
+      waterResistance: req.query.waterResistance || 'All',
+      caseMaterial: req.query.caseMaterial || 'All',
+      dialColor: req.query.dialColor || 'All',
+      inStock: req.query.inStock === 'true',
+      minPrice: req.query.minPrice || '',
+      maxPrice: req.query.maxPrice || ''
+    };
+
+    // Add wishlist status to products if user is logged in
+    let productsWithWishlist = products;
+    if (req.user) {
+      try {
+        const user = await User.findById(req.user._id).select('wishlist');
+        if (user && user.wishlist) {
+          const wishlistItems = user.wishlist.map(item => item.product && item.product.toString());
+          productsWithWishlist = products.map(product => ({
+            ...product.toObject(),
+            inWishlist: wishlistItems.includes(product._id.toString())
+          }));
+        }
+      } catch (error) {
+        console.error('Error checking wishlist for products:', error);
+        productsWithWishlist = products.map(product => ({
+          ...product.toObject(),
+          inWishlist: false
+        }));
+      }
+    } else {
+      productsWithWishlist = products.map(product => ({
+        ...product.toObject(),
+        inWishlist: false
+      }));
+    }
 
     res.render('Collection-Page', {
       title: `${collection.name} Collection`,
       collection,
-      products,
+      products: productsWithWishlist,
       pagination: {
         currentPage: page,
         totalPages,
         totalProducts,
       },
-      filters: {
-        brands,
-        Vcollections: collections,
-      },
+      filters: currentFilters,
+      sort: sort,
+      brands,
+      collections,
       user: req.user || null,
     });
   } catch (error) {
