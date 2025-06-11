@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   stock: { type: Boolean, default: true },
   stockCount: { type: Number, default: 0 },
-  Vcollection: { type: String, required: true },
+  Vcollection: { type: String, ref: 'Collection', required: true },
   gender: { type: String, required: true },
 
   // Media fields
