@@ -1,16 +1,85 @@
 // Global variables
 let currentPage = 1;
 let totalPages = 1;
-let currentSort = 'default';
 let currentFilters = {};
 let quickViewModal = null;
 let quickViewOverlay = null;
+let isLoading = false;
 
 // DOM Elements
 let productGrid;
 let prevPageBtn;
 let nextPageBtn;
 let pageInfo;
+
+// Utility functions
+function showError(message) {
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'error-message';
+  errorDiv.innerHTML = `
+    <div class="error-content">
+      <i class="fas fa-exclamation-circle"></i>
+      <p>${message}</p>
+      <button onclick="retryLoading()" class="retry-btn">Retry</button>
+    </div>
+  `;
+  if (productGrid) {
+    productGrid.innerHTML = '';
+    productGrid.appendChild(errorDiv);
+  }
+}
+
+function showLoadingState() {
+  if (!productGrid) return;
+  const loadingDiv = document.createElement('div');
+  loadingDiv.className = 'loading-spinner';
+  loadingDiv.innerHTML = `
+    <div class="spinner"></div>
+    <p>Loading products...</p>
+  `;
+  productGrid.innerHTML = '';
+  productGrid.appendChild(loadingDiv);
+}
+
+function removeLoadingState() {
+  const spinner = document.querySelector('.loading-spinner');
+  if (spinner) {
+    spinner.remove();
+  }
+}
+
+function sanitizeProductData(product) {
+  if (!product) return null;
+  return {
+    _id: product._id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    stock: product.stock,
+    stockCount: product.stockCount,
+    inWishlist: product.inWishlist,
+    description: product.description,
+    brand: product.brand,
+    Vcollection: product.Vcollection
+  };
+}
+
+function retryLoading() {
+  loadProducts();
+}
+
+// Debounce function for filter changes
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initApp);
@@ -37,30 +106,6 @@ function initApp() {
   quickViewOverlay.id = 'quickViewOverlay';
   quickViewOverlay.className = 'quick-view-overlay';
   document.body.appendChild(quickViewOverlay);
-
-  // Initialize from server-side data if available
-  if (window.initialState) {
-    const { products, pagination, filters } = window.initialState;
-
-    if (pagination) {
-      currentPage = pagination.currentPage || 1;
-      totalPages = pagination.totalPages || 1;
-    }
-
-    if (filters && filters.current) {
-      currentFilters = filters.current;
-    }
-
-    // Only render if we have products
-    if (products && products.length > 0) {
-      renderProducts(products);
-      updatePaginationUI();
-    } else {
-      loadProducts();
-    }
-  } else {
-    loadProducts();
-  }
 
   initializeFilters();
   setupEventListeners();
@@ -125,50 +170,12 @@ function initializeFilters() {
     if (inStockFilter) {
       inStockFilter.checked = urlParams.get('inStock') === 'true';
     }
-
-    // Set sort option
-    const sortButtons = document.querySelectorAll('[data-sort]');
-    if (sortButtons.length > 0) {
-      const currentSort = urlParams.get('sort') || 'default';
-      sortButtons.forEach((button) => {
-        if (button) {
-          button.classList.toggle('active', button.dataset.sort === currentSort);
-        }
-      });
-    }
   } catch (error) {
     console.error('Error initializing filters:', error);
   }
 }
 
 function setupEventListeners() {
-  // Sort buttons
-  document.querySelectorAll('[data-sort]').forEach((button) => {
-    button.addEventListener('click', function (e) {
-      e.preventDefault();
-      currentSort = this.dataset.sort;
-      currentPage = 1;
-      loadProducts();
-    });
-  });
-
-  // Pagination
-  if (prevPageBtn && nextPageBtn) {
-    prevPageBtn.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        loadProducts();
-      }
-    });
-
-    nextPageBtn.addEventListener('click', () => {
-      if (currentPage < totalPages) {
-        currentPage++;
-        loadProducts();
-      }
-    });
-  }
-
   // Filter panel
   document
     .querySelector('[data-action="open-filter-panel"]')
@@ -183,9 +190,10 @@ function setupEventListeners() {
   if (submitBtn) {
     submitBtn.addEventListener('click', function (e) {
       e.preventDefault();
-      currentPage = 1;
-      updateCurrentFilters();
-      loadProducts();
+      const form = document.querySelector('.filter-form');
+      if (form) {
+        form.submit();
+      }
     });
   }
 
@@ -195,8 +203,10 @@ function setupEventListeners() {
     clearBtn.addEventListener('click', function (e) {
       e.preventDefault();
       resetFilters();
-      currentPage = 1;
-      loadProducts();
+      const form = document.querySelector('.filter-form');
+      if (form) {
+        form.submit();
+      }
     });
   }
 
@@ -253,52 +263,32 @@ function setupEventListeners() {
     });
   });
 
-  // Add wishlist button event listener
-  document.querySelectorAll('.wishlist-btn').forEach((button) => {
-    button.addEventListener('click', async function() {
-      const productId = this.dataset.productId;
-      try {
-        const response = await fetch('/user/wishlist/toggle', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ productId })
-        });
-        const data = await response.json();
-        if (data.success) {
-          const icon = this.querySelector('i');
-          if (data.inWishlist) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-            this.classList.add('filled');
-          } else {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-            this.classList.remove('filled');
-          }
-          // Show notification
-          showNotification(data.message, 'Item added to wishlist');
-        } else {
-          showNotification(data.message || 'Failed to update wishlist', 'error');
-        }
-      } catch (error) {
-        console.error('Error toggling wishlist:', error);
-        showNotification('Failed to update wishlist. Please try again.', 'error');
-      }
+  // Add sorting event listeners
+  document.querySelectorAll('.sort-options button').forEach(button => {
+    button.addEventListener('click', function() {
+      const sortValue = this.getAttribute('data-sort');
+      updateSort(sortValue);
     });
   });
 }
 
 async function loadProducts() {
+  if (isLoading) return;
+  
   try {
+    isLoading = true;
+    showLoadingState();
+    
     // Merge current filters with any new ones
     updateCurrentFilters();
 
+    // Get the current collection name from the page
+    const collectionName = document.querySelector('select[name="Vcollection"] option[selected]')?.value || 'All';
+    
     const queryString = new URLSearchParams({
       ...currentFilters,
+      Vcollection: collectionName,
       page: currentPage,
-      sort: currentSort,
       format: 'json',
     }).toString();
 
@@ -331,102 +321,13 @@ async function loadProducts() {
     }
 
     updatePaginationUI();
-    renderProducts(result.data.products || []);
   } catch (error) {
     console.error('Error loading products:', error);
-    
-    // Show a more descriptive error message based on the error
-    let errorMessage = 'Failed to load products. Please try again later.';
-    if (error.message.includes('status: 500')) {
-      errorMessage = 'Server error occurred. The development team has been notified.';
-    } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      errorMessage = 'Network error. Please check your internet connection.';
-    }
-    
-    showNotification('error', errorMessage);
-    
-    // Display a message in the product grid
-    if (productGrid) {
-      productGrid.innerHTML = `
-        <div class="error-message">
-          <p>${errorMessage}</p>
-          <button onclick="loadProducts()">Try Again</button>
-        </div>
-      `;
-    }
+    showError(error.message || 'Failed to load products. Please try again.');
+  } finally {
+    isLoading = false;
+    removeLoadingState();
   }
-}
-
-function renderProducts(products) {
-  if (!productGrid) return;
-
-  productGrid.innerHTML = products.map(product => `
-    <div class="product-card" data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'>
-      <div class="product-image-container">
-        <div class="wishlist-icon ${product.inWishlist ? 'filled' : ''}" data-product-id="${product._id}">
-          <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path class="heart ${product.inWishlist ? 'filled' : ''}" 
-                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"
-                  style="fill: ${product.inWishlist ? 'red' : 'transparent'}"/>
-          </svg>
-        </div>
-        <a href="/user/product?id=${product._id}">
-          <img src="${product.image}" alt="${product.name}" loading="lazy">
-        </a>
-        <div class="hover-buttons">
-          <button class="quick-view" data-product-id="${product._id}">Quick View</button>
-          <button class="compare" data-product-id="${product._id}" >Compare</button>
-        </div>
-      </div>
-      <div class="product-details">
-        <a href="/user/product?id=${product._id}">
-          <h4>${product.name}</h4>
-        </a>
-        <p class="price">$${product.price.toLocaleString()}</p>
-        ${product.stock || (product.stockCount && product.stockCount > 0) 
-          ? '<p class="stock in-stock">In Stock</p>' 
-          : '<p class="stock out-of-stock">Out of Stock</p>'}
-      </div>
-    </div>
-  `).join('');
-
-  addProductCardEventListeners();
-}
-
-function addProductCardEventListeners() {
-  // Add event listeners for quick view buttons
-  document.querySelectorAll('.quick-view').forEach((button) => {
-    button.addEventListener('click', function () {
-      const productCard = this.closest('.product-card');
-      const productData = JSON.parse(productCard.dataset.product);
-      toggleQuickView(productData);
-    });
-  });
-
-  // Add event listeners for compare buttons
-  document.querySelectorAll('.compare').forEach((button) => {
-    button.addEventListener('click', async function() {
-      const productId = this.dataset.productId;
-      try {
-        const response = await fetch('/user/compare/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ productId })
-        });
-        const data = await response.json();
-        if (data.success) {
-          showNotification('success', 'Product added to comparison list!');
-        } else {
-          showNotification('error', data.message || 'Failed to add product to comparison list');
-        }
-      } catch (error) {
-        console.error('Error adding to comparison:', error);
-        showNotification('error', 'An error occurred while adding to comparison list');
-      }
-    });
-  });
 }
 
 function updatePaginationUI() {
@@ -454,7 +355,6 @@ function updateCurrentFilters() {
     maxPrice: document.getElementById('priceRangeTo')?.value || '',
     dialColor: getSelectedDialColors(),
     inStock: document.getElementById('inStockFilter')?.checked ? 'true' : 'false',
-    sort: currentSort,
   };
 }
 
@@ -475,10 +375,6 @@ function getSelectedDialColors() {
 }
 
 function resetFilters() {
-  // Store current brand/collection values
-  const currentBrand = document.getElementById('brand')?.value || 'All';
-  const currentCollection = document.getElementById('collection')?.value || 'All';
-
   const resetElements = [
     { id: 'gender', value: 'All' },
     { id: 'Strap_Material', value: 'All' },
@@ -494,18 +390,11 @@ function resetFilters() {
     if (element) element.value = el.value;
   });
 
-  // Restore brand/collection values
-  const brandSelect = document.getElementById('brand');
-  const collectionSelect = document.getElementById('collection');
-  if (brandSelect) brandSelect.value = currentBrand;
-  if (collectionSelect) collectionSelect.value = currentCollection;
-
   document.querySelectorAll('.dial-color').forEach((checkbox) => {
     checkbox.checked = checkbox.value === 'All';
   });
 
   document.getElementById('inStockFilter').checked = false;
-  currentSort = 'default';
 }
 
 function toggleQuickView(product = null) {
@@ -769,10 +658,8 @@ async function addToWishlist(productId) {
 
     if (data.success) {
       showNotification('success', 'Product added to wishlist successfully');
-    } else {
-      showNotification('error', data.message || 'Failed to add product to wishlist');
     }
-  } catch (error) {
+    } catch (error) {
     showNotification('error', 'Failed to add product to wishlist');
   }
 }
@@ -795,10 +682,9 @@ async function removeFromWishlist(productId) {
         showNotification('success', 'Product removed from wishlist successfully');
         // Refresh wishlist or update UI
         location.reload();
-      } else {
-        showNotification('error', data.message || 'Failed to remove product from wishlist');
       }
-    } catch (error) {
+        }
+    catch (error) {
       showNotification('error', 'Failed to remove product from wishlist');
     }
   });
@@ -810,8 +696,26 @@ window.loadProducts = loadProducts;
 window.resetFilters = resetFilters;
 window.openFilterPanel = openFilterPanel;
 window.closeFilterPanel = closeFilterPanel;
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
 
 // Add the showErrorModal function to show error notifications
 function showErrorModal(error) {
   showNotification('error', error.message || 'An error occurred. Please try again later.');
+}
+
+function updateSort(sortValue) {
+  // Update URL with new sort value
+  const url = new URL(window.location.href);
+  if (sortValue === 'default') {
+    url.searchParams.delete('sort');
+  } else {
+    url.searchParams.set('sort', sortValue);
+  }
+  
+  // Reset to page 1 when sorting changes
+  url.searchParams.set('page', '1');
+  
+  // Navigate to new URL
+  window.location.href = url.toString();
 }
