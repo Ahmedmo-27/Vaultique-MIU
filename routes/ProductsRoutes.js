@@ -5,6 +5,51 @@ const router = express.Router();
 const Brand = require('../models/Brands');
 const Collection = require('../models/Collections');
 const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
+const { body, query, param, validationResult } = require('express-validator');
+
+// Rate limiting configuration
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes'
+  }
+});
+
+// Apply rate limiting to all routes
+router.use(apiLimiter);
+
+// Validation middleware
+const validateRequest = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation error',
+      errors: errors.array(),
+      requestId: req.requestId
+    });
+  }
+  next();
+};
+
+// Request ID middleware
+const addRequestId = (req, res, next) => {
+  req.requestId = Math.random().toString(36).substring(7);
+  next();
+};
+
+// Timing middleware
+const addTiming = (req, res, next) => {
+  req.startTime = Date.now();
+  next();
+};
+
+// Apply common middleware
+router.use(addRequestId);
+router.use(addTiming);
 
 // Product name normalization mappings
 const PRODUCT_MAPPINGS = {
@@ -18,6 +63,29 @@ const PRODUCT_MAPPINGS = {
   dress: 'Dress',
   sports: 'Sports',
   luxury: 'Luxury',
+};
+
+// Input validation schemas
+const productValidation = {
+  create: [
+    body('name').trim().notEmpty().withMessage('Product name is required'),
+    body('price').isNumeric().withMessage('Price must be a number'),
+    body('brand').notEmpty().withMessage('Brand is required'),
+    body('Vcollection').notEmpty().withMessage('Collection is required'),
+    validateRequest
+  ],
+  update: [
+    param('id').isMongoId().withMessage('Invalid product ID'),
+    body('name').optional().trim().notEmpty().withMessage('Product name cannot be empty'),
+    body('price').optional().isNumeric().withMessage('Price must be a number'),
+    validateRequest
+  ],
+  query: [
+    query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+    query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50'),
+    query('sort').optional().isIn(['default', 'new', 'price-asc', 'price-desc', 'popularity']).withMessage('Invalid sort option'),
+    validateRequest
+  ]
 };
 
 // Product name normalization function
@@ -80,7 +148,7 @@ const findBrandByIdOrName = async (brandIdentifier) => {
     // Try to find the brand by ID field first
     const brandDoc = await Brand.findOne({ _id: brandIdentifier });
     if (brandDoc) {
-      return brandDoc._id;
+      return brandDoc.name;
     }
 
     // Try to find by name (case-insensitive)
@@ -89,7 +157,7 @@ const findBrandByIdOrName = async (brandIdentifier) => {
     });
 
     if (brandByName) {
-      return brandByName._id;
+      return brandByName.name;
     }
 
     console.log(`Brand not found: ${brandIdentifier}`);
@@ -100,25 +168,51 @@ const findBrandByIdOrName = async (brandIdentifier) => {
   }
 };
 
+// Function to find collection by slug or name
+const findCollectionBySlugOrName = async (collectionIdentifier) => {
+  try {
+    // Try to find the collection by slug first
+    const collectionBySlug = await Collection.findOne({ slug: collectionIdentifier });
+    if (collectionBySlug) {
+      return collectionBySlug.name;
+    }
+
+    // Try to find by name (case-insensitive)
+    const collectionByName = await Collection.findOne({
+      name: { $regex: new RegExp(`^${collectionIdentifier}$`, 'i') },
+    });
+
+    if (collectionByName) {
+      return collectionByName.name;
+    }
+
+    console.log(`Collection not found: ${collectionIdentifier}`);
+    return null;
+  } catch (err) {
+    console.error(`Error finding collection:`, err);
+    return null;
+  }
+};
+
 // Get products by name - MUST BE BEFORE /:id ROUTE
 router.get('/name/:name', async (req, res) => {
-  const startTime = Date.now();
-  const requestId = Math.random().toString(36).substring(7);
-
   try {
     const rawName = decodeURIComponent(req.params.name);
     if (!rawName || typeof rawName !== 'string') {
       return res.status(400).json({
         success: false,
         message: 'Invalid product name provided',
-        requestId,
+        requestId: req.requestId,
+        timing: {
+          duration: Date.now() - req.startTime
+        }
       });
     }
 
     // Normalize the product name
     const normalizedProductName = normalizeProductName(rawName);
     console.log(
-      `[${requestId}] Searching for product: ${rawName} (normalized: ${normalizedProductName})`
+      `[${req.requestId}] Searching for product: ${rawName} (normalized: ${normalizedProductName})`
     );
 
     // Generate search variations
@@ -139,40 +233,43 @@ router.get('/name/:name', async (req, res) => {
     }
 
     if (!product) {
-      console.log(`[${requestId}] Product not found: ${normalizedProductName}`);
+      console.log(`[${req.requestId}] Product not found: ${normalizedProductName}`);
       return res.status(404).json({
         success: false,
         message: 'Product not found',
         attemptedName: normalizedProductName,
         variations: searchVariations,
-        requestId,
+        requestId: req.requestId,
+        timing: {
+          duration: Date.now() - req.startTime
+        }
       });
     }
 
     // Log success with timing
-    const duration = Date.now() - startTime;
-    console.log(`[${requestId}] Found product: ${product.name} (${duration}ms)`);
+    const duration = Date.now() - req.startTime;
+    console.log(`[${req.requestId}] Found product: ${product.name} (${duration}ms)`);
 
     // Return success response
     res.json({
       success: true,
       data: product,
       source: 'database',
-      requestId,
+      requestId: req.requestId,
       timing: {
         duration,
         cached: false,
       },
     });
   } catch (err) {
-    console.error(`[${requestId}] Error finding product:`, err);
+    console.error(`[${req.requestId}] Error finding product:`, err);
 
     const errorResponse = {
       success: false,
       message: 'Server error',
-      requestId,
+      requestId: req.requestId,
       timing: {
-        duration: Date.now() - startTime,
+        duration: Date.now() - req.startTime,
       },
     };
 
@@ -187,12 +284,10 @@ router.get('/name/:name', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
-  const startTime = Date.now();
-  const requestId = Math.random().toString(36).substring(7);
-
+// Get all products with filters
+router.get(['/', '/api/products'], productValidation.query, async (req, res) => {
   try {
-    console.log(`[${requestId}] API request received: ${JSON.stringify(req.query)}`);
+    console.log(`[${req.requestId}] API request received: ${JSON.stringify(req.query)}`);
     
     // Default values for all parameters
     const {
@@ -218,27 +313,49 @@ router.get('/', async (req, res) => {
     const { page, limit } = validatePaginationParams(rawPage, rawLimit);
     const skip = (page - 1) * limit;
 
-    console.log(`[${requestId}] Building query with pagination: page=${page}, limit=${limit}, skip=${skip}`);
-
     // Build query object
     const query = {};
 
-    // Collection filter
-    if (Vcollection && Vcollection !== 'All') {
-      query.Vcollection = Vcollection;
+    // Enhanced search: if search matches a collection name or slug, filter by that collection only
+    const collectionsList = await Collection.find().lean();
+    let matchedCollection = null;
+    if (search) {
+      matchedCollection = collectionsList.find(
+        c =>
+          c.name.toLowerCase().includes(search.toLowerCase()) ||
+          c.slug.toLowerCase().includes(search.toLowerCase())
+      );
     }
 
-    // Other filters
-    if (brand && brand !== 'All') {
-      const brandId = await findBrandByIdOrName(brand);
-      if (brandId) {
-        query.brand = brandId;
-      } else {
-        // If brand doesn't exist, use an impossible condition
-        query.brand = new mongoose.Types.ObjectId(); // Will not match any products
+    if (matchedCollection) {
+      // If search matches a collection, filter by that collection only
+      query.Vcollection = matchedCollection.name;
+    } else if (search) {
+      // Otherwise, do the normal search
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { brand: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Collection filter
+    if (Vcollection && Vcollection !== 'All') {
+      const collectionName = await findCollectionBySlugOrName(Vcollection);
+      if (collectionName) {
+        query.Vcollection = collectionName;
       }
     }
 
+    // Brand filter
+    if (brand && brand !== 'All') {
+      const brandName = await findBrandByIdOrName(brand);
+      if (brandName) {
+        query.brand = brandName;
+      }
+    }
+
+    // Other filters
     if (strapMaterial && strapMaterial !== 'All') query.strapMaterial = strapMaterial;
     if (movement && movement !== 'All') query.movement = movement;
     if (waterResistance && waterResistance !== 'All') query.waterResistance = waterResistance;
@@ -246,134 +363,123 @@ router.get('/', async (req, res) => {
     if (dialColor && dialColor !== 'All') query.dialColor = { $in: dialColor.split(',') };
     if (gender && gender !== 'All') query.gender = gender;
 
+    // Price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    }
+
     // Stock filter
     if (inStock === 'true') {
       query.$or = [{ stock: true }, { stockCount: { $gt: 0 } }];
     }
 
-    // Price range
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
+    // Sort options
+    let sortQuery = {};
+    switch (sort) {
+      case 'price-asc':
+        sortQuery = { price: 1 };
+        break;
+      case 'price-desc':
+        sortQuery = { price: -1 };
+        break;
+      case 'new':
+        sortQuery = { createdAt: -1 };
+        break;
+      case 'popularity':
+        sortQuery = { popularityScore: -1 };
+        break;
+      default:
+        sortQuery = { createdAt: -1 };
     }
 
-    console.log(`[${requestId}] Final query: ${JSON.stringify(query)}`);
+    // Get products with pagination and sorting
+    const products = await Product.find(query)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
-    // Search functionality
-    if (search) {
-      const searchVariations = generateSearchVariations(normalizeProductName(search));
-      query.$or = [
-        { name: { $regex: new RegExp(search, 'i') } },
-        { description: { $regex: new RegExp(search, 'i') } },
-        { brand: { $regex: new RegExp(search, 'i') } },
-      ];
-    }
+    // Get total count for pagination
+    const totalProducts = await Product.countDocuments(query);
+    const totalPages = Math.ceil(totalProducts / limit);
 
-    // Sorting options
-    const sortOptions = {
-      default: { _id: 1 },
-      new: { createdAt: -1 },
-      'price-asc': { price: 1 },
-      'price-desc': { price: -1 },
-      popularity: { popularityScore: -1, price: -1 },
-    };
-    const sortOption = sortOptions[sort] || sortOptions.default;
+    // Get all brands and collections for filters
+    const [brands, collections] = await Promise.all([
+      Brand.find().lean(),
+      Collection.find().lean()
+    ]);
 
-    console.log(`[${requestId}] Executing database queries`);
-    
-    // Get data with proper population
-    try {
-      const [products, total, allBrands, allCollections] = await Promise.all([
-        Product.find(query).sort(sortOption).skip(skip).limit(limit).populate('brand', 'name logo'),
-        Product.countDocuments(query),
-        Brand.find().select('name logo'),
-        Collection.find().select('name'),
-      ]);
+    // Replace brand ID with brand name in each product (after brands are fetched)
+    const brandMap = brands.reduce((acc, b) => {
+      acc[b._id] = b.name;
+      acc[b.name] = b.name;
+      return acc;
+    }, {});
+    products.forEach(product => {
+      if (product.brand && brandMap[product.brand]) {
+        product.brand = brandMap[product.brand];
+      }
+    });
 
-      console.log(
-        `[${requestId}] Queries completed. Found ${products.length} products, total: ${total}`
-      );
-
-      // Calculate pagination info
-      const totalPages = Math.ceil(total / limit);
-      const hasNextPage = page < totalPages;
-      const hasPreviousPage = page > 1;
-
-      // Prepare response data
-      const responseData = {
+    // Prepare response data
+    const responseData = {
+      success: true,
+      data: {
         products,
         pagination: {
           currentPage: page,
           totalPages,
-          totalItems: total,
+          totalItems: totalProducts,
           itemsPerPage: limit,
-          hasNextPage,
-          hasPreviousPage,
         },
         filters: {
-          available: {
-            brands: allBrands,
-            collections: allCollections,
-          },
-          current: {
-            Vcollection,
-            brand,
-            strapMaterial,
-            movement,
-            waterResistance,
-            caseMaterial,
-            dialColor,
-            minPrice,
-            maxPrice,
-            inStock,
-            gender,
-            sort,
-          },
+          Vcollection,
+          brand,
+          gender,
+          strapMaterial,
+          movement,
+          waterResistance,
+          caseMaterial,
+          dialColor,
+          minPrice,
+          maxPrice,
+          inStock,
         },
-      };
-
-      // Always return JSON for /api/products
-      res.setHeader('Content-Type', 'application/json');
-
-      const duration = Date.now() - startTime;
-      console.log(`[${requestId}] Request completed successfully in ${duration}ms`);
-
-      res.json({
-        success: true,
-        data: responseData,
-        requestId,
-        timing: {
-          duration,
-        },
-      });
-    } catch (dbError) {
-      console.error(`[${requestId}] Database query error:`, dbError);
-      throw dbError; // Re-throw to be caught by the main error handler
-    }
-  } catch (err) {
-    console.error(`[${requestId}] Error fetching products:`, err);
-    console.error(`[${requestId}] Error stack:`, err.stack);
-
-    const errorResponse = {
-      success: false,
-      message: 'Server error',
-      requestId,
-      timing: {
-        duration: Date.now() - startTime,
+        sort,
       },
     };
 
-    if (process.env.NODE_ENV === 'development') {
-      errorResponse.error = {
-        message: err.message,
-        stack: err.stack,
-      };
+    // Send response based on format and route
+    if (req.path === '/api/products' || format === 'json') {
+      res.json(responseData);
+    } else {
+      res.render('products', {
+        title: 'Shop All',
+        products,
+        pagination: responseData.data.pagination,
+        filters: responseData.data.filters,
+        sort,
+        collections,
+        brands,
+        user: req.user || null
+      });
     }
-
-    // Always return JSON for errors too
-    res.setHeader('Content-Type', 'application/json');
-    res.status(500).json(errorResponse);
+  } catch (error) {
+    console.error('Error in products route:', error);
+    if (req.path === '/api/products' || format === 'json') {
+      res.status(500).json({
+        success: false,
+        message: 'Error loading products',
+        error: error.message
+      });
+    } else {
+      res.status(500).render('error', {
+        title: 'Error',
+        message: 'Error loading products. Please try again later.'
+      });
+    }
   }
 });
 
@@ -434,33 +540,35 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new product (API)
-router.post('/', async (req, res) => {
+router.post('/', productValidation.create, async (req, res) => {
   try {
     const product = new Product(req.body);
     await product.save();
+    
     res.status(201).json({
       success: true,
       data: product,
+      requestId: req.requestId,
+      timing: {
+        duration: Date.now() - req.startTime
+      }
     });
   } catch (error) {
     res.status(400).json({
       success: false,
       message: 'Failed to create product',
+      requestId: req.requestId,
       error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      timing: {
+        duration: Date.now() - req.startTime
+      }
     });
   }
 });
 
 // Update product (API)
-router.put('/:id', async (req, res) => {
+router.put('/:id', productValidation.update, async (req, res) => {
   try {
-    if (!isValidObjectId(req.params.id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid product ID',
-      });
-    }
-
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -470,50 +578,67 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Product not found',
+        requestId: req.requestId,
+        timing: {
+          duration: Date.now() - req.startTime
+        }
       });
     }
 
     res.json({
       success: true,
       data: product,
+      requestId: req.requestId,
+      timing: {
+        duration: Date.now() - req.startTime
+      }
     });
   } catch (error) {
     res.status(400).json({
       success: false,
       message: 'Failed to update product',
+      requestId: req.requestId,
       error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      timing: {
+        duration: Date.now() - req.startTime
+      }
     });
   }
 });
 
 // Delete product (API)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', param('id').isMongoId().withMessage('Invalid product ID'), validateRequest, async (req, res) => {
   try {
-    if (!isValidObjectId(req.params.id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid product ID',
-      });
-    }
-
     const product = await Product.findByIdAndDelete(req.params.id);
 
     if (!product) {
       return res.status(404).json({
         success: false,
         message: 'Product not found',
+        requestId: req.requestId,
+        timing: {
+          duration: Date.now() - req.startTime
+        }
       });
     }
 
     res.json({
       success: true,
       message: 'Product deleted successfully',
+      requestId: req.requestId,
+      timing: {
+        duration: Date.now() - req.startTime
+      }
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Failed to delete product',
+      requestId: req.requestId,
       error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      timing: {
+        duration: Date.now() - req.startTime
+      }
     });
   }
 });
