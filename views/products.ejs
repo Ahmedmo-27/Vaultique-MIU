@@ -8,12 +8,14 @@
         <link rel="stylesheet" href="/CSS/nav-bar.css">
         <link rel="stylesheet" href="/CSS/Products.css">
         <link rel="stylesheet" href="/CSS/footer.css">
+        <link rel="stylesheet" href="/CSS/notifications.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <script src="/Javascript/Loading Screen.js"></script>
         <script src="/Javascript/nav-bar.js"></script>
         <script src="/Javascript/notifications.js"></script>
         <script src="/Javascript/Products.js" defer></script>
         <script src="/Javascript/Light-Mode.js"></script>
+        <script src="/Javascript/compare.js" defer></script>
     </head>
     <body>
         
@@ -44,123 +46,122 @@
             </svg>
         </button>
         
-        <div class="sort-options">
-            <h3>Sort By</h3>
-            <button data-sort='default'>Default</button>
-            <button data-sort="new">New</button>
-            <button data-sort="price-asc">Price ↑</button>
-            <button data-sort="price-desc">Price ↓</button>
-            <button data-sort="popularity">Popularity</button>
-        </div>
-    
-        <div class="filters">
-            <h3>Filters</h3>
-
-            <label>Collection:</label>
-            <select id="collection" class="tag">
-                <option value="All">All</option>
-                <option value="Classic & Dress">Classic & Dress</option>
-                <option value="Casual & Everyday">Casual & Everyday</option>
-                <option value="Sports & Adventure">Sports & Adventure</option>
-                <option value="Aviation & Travel">Aviation & Travel</option>
-                <option value="Luxury & Heritage">Luxury & Heritage</option>
-            </select>
-
-            <label>Brand:</label>
-            <select id="brand" class="tag">
-                <option value="All">All</option>
-                <option value="Rolex">Rolex</option>
-                <option value="Omega">Omega</option>
-                <option value="Cartier">Cartier</option>
-                <option value="Patek Philippe">Patek Philippe</option>
-                <option value="Audemars Piguet">Audemars Piguet</option>
-                <option value="A.Lange & Söhne">A.Lange & Söhne</option>
-                <option value="Vacheron Constantin">Vacheron Constantin</option>
-                <option value="Jacob & Co">Jacob & Co</option>
-                <option value="Richard Mille">Richard Mille</option>
-                <option value="Breitling">Breitling</option>
-            </select>
-    
-            <label>Gender:</label>
-            <select id="gender" class="tag">
-                <option value="All">All</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Unisex">Unisex</option>
-            </select>
-
-            <label>Strap Material:</label>
-            <select id="Strap_Material" class="tag">
-                <option value="All">All</option>
-                <option value="Leather">Leather</option>
-                <option value="Metal">Metal</option>
-                <option value="Rubber">Rubber</option>
-                <option value="Gold">Gold</option>
-                <option value="Rose Gold">Rose Gold</option>
-                <option value="White Gold">White Gold</option>
-                <option value="Else">Else</option>
-            </select>
-    
-            <label>Movement:</label>
-            <select id="Movement" class="tag">
-                <option value="All">All</option>
-                <option value="Automatic">Automatic</option>
-                <option value="Quartz">Quartz</option>
-                <option value="Manual">Manual</option>
-            </select>
-    
-            <label>Water Resistance:</label>
-            <select id="Water_Resistance" class="tag">
-                <option value="All">All</option>
-                <option value="30m">30m</option>
-                <option value="50m">50m</option>
-                <option value="100m">100m</option>
-                <option value="200m">200m</option>
-            </select>
-    
-            <label>Case Material:</label>
-            <select id="Case_Material" class="tag">
-                <option value="All">All</option>
-                <option value="Stainless Steel">Stainless Steel</option>
-                <option value="Gold">Gold</option>
-                <option value="Rose Gold">Rose Gold</option>
-                <option value="White Gold">White Gold</option>
-                <option value="Silver">Silver</option>
-                <option value="Titanium">Titanium</option>
-                <option value="Platinum">Platinum</option>
-                <option value="Ceramic">Ceramic</option>
-                <option value="Else">Else</option>
-            </select>
-        </div>
-    
-        <div class="price-range">
-            <h3>Price Range</h3>
-            <input type="number" id="priceRangeFrom" class="priceRangeValue" placeholder="From" value="0">
-            <input type="number" id="priceRangeTo" class="priceRangeValue" placeholder="To" value="500000">
-        </div>
+        <form id="filterForm" class="filter-form" method="GET" action="/user/products">
+            <input type="hidden" name="sort" value="<%= sort %>">
+            <input type="hidden" name="page" value="1">
+            <input type="hidden" name="limit" value="10">
+            <input type="hidden" name="format" value="html">
+            
+            <div class="sort-options">
+                <h3>Sort By</h3>
+                <a href="javascript:void(0)" onclick="updateSort('default')" class="<%= sort === 'default' ? 'active' : '' %>">Default</a>
+                <a href="javascript:void(0)" onclick="updateSort('new')" class="<%= sort === 'new' ? 'active' : '' %>">New</a>
+                <a href="javascript:void(0)" onclick="updateSort('price-asc')" class="<%= sort === 'price-asc' ? 'active' : '' %>">Price ↑</a>
+                <a href="javascript:void(0)" onclick="updateSort('price-desc')" class="<%= sort === 'price-desc' ? 'active' : '' %>">Price ↓</a>
+                <a href="javascript:void(0)" onclick="updateSort('popularity')" class="<%= sort === 'popularity' ? 'active' : '' %>">Popularity</a>
+            </div>
         
-        <div class="filter-options">
-            <h3>Dial Color</h3>
-            <label><input type="checkbox" value="All" class="dial-color" checked> All</label>
-            <label><input type="checkbox" value="Black" class="dial-color"> Black</label>
-            <label><input type="checkbox" value="Silver" class="dial-color"> Silver</label>
-            <label><input type="checkbox" value="Gold" class="dial-color"> Gold</label>
-            <label><input type="checkbox" value="Blue" class="dial-color"> Blue</label>
-            <label><input type="checkbox" value="White" class="dial-color"> White</label>
-            <label><input type="checkbox" value="Green" class="dial-color"> Green</label>
-            <label><input type="checkbox" value="Else" class="dial-color"> Else</label>
-        </div>
-    
-        <div class="stock-filter">
-            <label>
-                <input type="checkbox" id="inStockFilter"> In Stock Only
-            </label>
-        </div>
-    
-        <div class="filter-actions">
-            <button class="submit">Apply Filters</button>
-            <button class="clear">Clear All</button>
-        </div>
+            <div class="filters">
+                <h3>Filters</h3>
+
+                <label>Collection:</label>
+                <select id="collection" name="Vcollection" class="tag">
+                    <option value="All" <%= filters.Vcollection === 'All' ? 'selected' : '' %>>All</option>
+                    <% collections.forEach(collection => { %>
+                        <option value="<%= collection.name %>" <%= filters.Vcollection === collection.name ? 'selected' : '' %>><%= collection.name %></option>
+                    <% }); %>
+                </select>
+
+                <label>Brand:</label>
+                <select id="brand" name="brand" class="tag">
+                    <option value="All" <%= filters.brand === 'All' ? 'selected' : '' %>>All</option>
+                    <% brands.forEach(brand => { %>
+                        <option value="<%= brand.name %>" <%= filters.brand === brand.name ? 'selected' : '' %>><%= brand.name %></option>
+                    <% }); %>
+                </select>
+        
+                <label>Gender:</label>
+                <select id="gender" name="gender" class="tag">
+                    <option value="All" <%= filters.gender === 'All' ? 'selected' : '' %>>All</option>
+                    <option value="Male" <%= filters.gender === 'Male' ? 'selected' : '' %>>Male</option>
+                    <option value="Female" <%= filters.gender === 'Female' ? 'selected' : '' %>>Female</option>
+                    <option value="Unisex" <%= filters.gender === 'Unisex' ? 'selected' : '' %>>Unisex</option>
+                </select>
+
+                <label>Strap Material:</label>
+                <select id="Strap_Material" name="strapMaterial" class="tag">
+                    <option value="All" <%= filters.strapMaterial === 'All' ? 'selected' : '' %>>All</option>
+                    <option value="Leather" <%= filters.strapMaterial === 'Leather' ? 'selected' : '' %>>Leather</option>
+                    <option value="Metal" <%= filters.strapMaterial === 'Metal' ? 'selected' : '' %>>Metal</option>
+                    <option value="Rubber" <%= filters.strapMaterial === 'Rubber' ? 'selected' : '' %>>Rubber</option>
+                    <option value="Gold" <%= filters.strapMaterial === 'Gold' ? 'selected' : '' %>>Gold</option>
+                    <option value="Rose Gold" <%= filters.strapMaterial === 'Rose Gold' ? 'selected' : '' %>>Rose Gold</option>
+                    <option value="White Gold" <%= filters.strapMaterial === 'White Gold' ? 'selected' : '' %>>White Gold</option>
+                    <option value="Else" <%= filters.strapMaterial === 'Else' ? 'selected' : '' %>>Else</option>
+                </select>
+        
+                <label>Movement:</label>
+                <select id="Movement" name="movement" class="tag">
+                    <option value="All" <%= filters.movement === 'All' ? 'selected' : '' %>>All</option>
+                    <option value="Automatic" <%= filters.movement === 'Automatic' ? 'selected' : '' %>>Automatic</option>
+                    <option value="Quartz" <%= filters.movement === 'Quartz' ? 'selected' : '' %>>Quartz</option>
+                    <option value="Manual" <%= filters.movement === 'Manual' ? 'selected' : '' %>>Manual</option>
+                </select>
+        
+                <label>Water Resistance:</label>
+                <select id="Water_Resistance" name="waterResistance" class="tag">
+                    <option value="All" <%= filters.waterResistance === 'All' ? 'selected' : '' %>>All</option>
+                    <option value="30m" <%= filters.waterResistance === '30m' ? 'selected' : '' %>>30m</option>
+                    <option value="50m" <%= filters.waterResistance === '50m' ? 'selected' : '' %>>50m</option>
+                    <option value="100m" <%= filters.waterResistance === '100m' ? 'selected' : '' %>>100m</option>
+                    <option value="200m" <%= filters.waterResistance === '200m' ? 'selected' : '' %>>200m</option>
+                </select>
+        
+                <label>Case Material:</label>
+                <select id="Case_Material" name="caseMaterial" class="tag">
+                    <option value="All" <%= filters.caseMaterial === 'All' ? 'selected' : '' %>>All</option>
+                    <option value="Stainless Steel" <%= filters.caseMaterial === 'Stainless Steel' ? 'selected' : '' %>>Stainless Steel</option>
+                    <option value="Gold" <%= filters.caseMaterial === 'Gold' ? 'selected' : '' %>>Gold</option>
+                    <option value="Rose Gold" <%= filters.caseMaterial === 'Rose Gold' ? 'selected' : '' %>>Rose Gold</option>
+                    <option value="White Gold" <%= filters.caseMaterial === 'White Gold' ? 'selected' : '' %>>White Gold</option>
+                    <option value="Silver" <%= filters.caseMaterial === 'Silver' ? 'selected' : '' %>>Silver</option>
+                    <option value="Titanium" <%= filters.caseMaterial === 'Titanium' ? 'selected' : '' %>>Titanium</option>
+                    <option value="Platinum" <%= filters.caseMaterial === 'Platinum' ? 'selected' : '' %>>Platinum</option>
+                    <option value="Ceramic" <%= filters.caseMaterial === 'Ceramic' ? 'selected' : '' %>>Ceramic</option>
+                    <option value="Else" <%= filters.caseMaterial === 'Else' ? 'selected' : '' %>>Else</option>
+                </select>
+            </div>
+        
+            <div class="price-range">
+                <h3>Price Range</h3>
+                <input type="number" id="priceRangeFrom" name="minPrice" class="priceRangeValue" placeholder="From" value="<%= filters.minPrice || '0' %>">
+                <input type="number" id="priceRangeTo" name="maxPrice" class="priceRangeValue" placeholder="To" value="<%= filters.maxPrice || '50000000' %>">
+            </div>
+            
+            <div class="filter-options">
+                <h3>Dial Color</h3>
+                <% const selectedColors = filters.dialColor ? filters.dialColor.split(',') : ['All']; %>
+                <label><input type="checkbox" name="dialColor" value="All" class="dial-color" <%= selectedColors.includes('All') ? 'checked' : '' %>> All</label>
+                <label><input type="checkbox" name="dialColor" value="Black" class="dial-color" <%= selectedColors.includes('Black') ? 'checked' : '' %>> Black</label>
+                <label><input type="checkbox" name="dialColor" value="Silver" class="dial-color" <%= selectedColors.includes('Silver') ? 'checked' : '' %>> Silver</label>
+                <label><input type="checkbox" name="dialColor" value="Gold" class="dial-color" <%= selectedColors.includes('Gold') ? 'checked' : '' %>> Gold</label>
+                <label><input type="checkbox" name="dialColor" value="Blue" class="dial-color" <%= selectedColors.includes('Blue') ? 'checked' : '' %>> Blue</label>
+                <label><input type="checkbox" name="dialColor" value="White" class="dial-color" <%= selectedColors.includes('White') ? 'checked' : '' %>> White</label>
+                <label><input type="checkbox" name="dialColor" value="Green" class="dial-color" <%= selectedColors.includes('Green') ? 'checked' : '' %>> Green</label>
+                <label><input type="checkbox" name="dialColor" value="Else" class="dial-color" <%= selectedColors.includes('Else') ? 'checked' : '' %>> Else</label>
+            </div>
+        
+            <div class="stock-filter">
+                <label>
+                    <input type="checkbox" id="inStockFilter" name="inStock" value="true" <%= filters.inStock === 'true' ? 'checked' : '' %>> In Stock Only
+                </label>
+            </div>
+        
+            <div class="filter-actions">
+                <button type="submit" class="submit">Apply Filters</button>
+                <button type="button" class="clear" onclick="clearFilters()">Clear All</button>
+            </div>
+        </form>
     </div>
     
 <!-- Product Grid -->
@@ -172,7 +173,9 @@
                     <div class="product-image-container">
                         <div class="wishlist-icon <%= product.inWishlist ? 'filled' : '' %>" data-product-id="<%= product._id %>">
                             <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path class="heart <%= product.inWishlist ? 'filled' : '' %>" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                                <path class="heart <%= product.inWishlist ? 'filled' : '' %>" 
+                                      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"
+                                      fill="<%= product.inWishlist ? 'red' : 'transparent' %>"/>
                             </svg>
                         </div>
                         <a href="/user/product?id=<%= product._id %>">
@@ -180,7 +183,7 @@
                         </a>
                         <div class="hover-buttons">
                             <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
-                            <button class="compare">Compare</button>
+                            <button class="compare" data-product-id="<%= product._id %>">Compare</button>
                         </div>
                     </div>
                     <div class="product-details">
@@ -198,29 +201,59 @@
             <% }); %>
         <% } else { %>
             <div class="no-products">
-                <% if (typeof products !== 'undefined') { %>
-                    No products found matching your criteria.
-                <% } else { %>
-                    Loading products...
-                <% } %>
+                No products found matching your criteria.
             </div>
         <% } %>
     </div>
 </section>
 
-<!-- Pagination -->
-<div class="pagination">
-    <% if (pagination.totalPages > 1) { %>
-        <button id="prevPage" <%= pagination.currentPage <= 1 ? 'disabled' : '' %>>Previous</button>
-        <span id="pageInfo">Page <%= pagination.currentPage %> of <%= pagination.totalPages %></span>
-        <button id="nextPage" <%= pagination.currentPage >= pagination.totalPages ? 'disabled' : '' %>>Next</button>
-    <% } %>
-</div>
+        <!-- Pagination -->
+        <div class="pagination">
+            <% if (pagination.totalPages > 1) { %>
+                <% if (pagination.currentPage > 1) { %>
+                    <a href="?page=<%= pagination.currentPage - 1 %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" class="page-link">Previous</a>
+                <% } %>
+                
+                <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+                    <a href="?page=<%= i %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" 
+                       class="page-link <%= pagination.currentPage === i ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                <% } %>
+                
+                <% if (pagination.currentPage < pagination.totalPages) { %>
+                    <a href="?page=<%= pagination.currentPage + 1 %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" class="page-link">Next</a>
+                <% } %>
+            <% } %>
+        </div>
 
 <!-- Footer -->
 <%- include('partials/footer') %>
 
 <%- include('partials/notification') %>
 
-    </body>
+<script>
+    function updateSort(sortValue) {
+        document.querySelector('input[name="sort"]').value = sortValue;
+        document.getElementById('filterForm').submit();
+    }
+
+    function clearFilters() {
+        // Reset all form fields to their default values
+        document.querySelectorAll('#filterForm select').forEach(select => {
+            select.value = 'All';
+        });
+        document.querySelectorAll('#filterForm input[type="number"]').forEach(input => {
+            input.value = input.placeholder === 'From' ? '0' : '500000';
+        });
+        document.querySelectorAll('#filterForm input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = checkbox.value === 'All';
+        });
+        document.querySelector('input[name="sort"]').value = 'default';
+        document.querySelector('input[name="page"]').value = '1';
+        document.getElementById('filterForm').submit();
+    }
+</script>
+
+</body>
 </html>
