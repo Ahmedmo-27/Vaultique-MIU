@@ -437,12 +437,18 @@
             document.querySelectorAll('.remove-item').forEach(button => {
                 button.addEventListener('click', async function(e) {
                     e.preventDefault();
+                    e.stopPropagation(); // Prevent event bubbling
                     const productId = this.dataset.productId;
                     const productCard = this.closest('.product-card');
 
+                    if (!productId) {
+                        showNotification('Invalid product ID', 'error');
+                        return;
+                    }
+
                     try {
                         showLoading();
-                        const response = await fetch('/user/api/wishlist/toggle', {
+                        const response = await fetch('/user/wishlist/toggle', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -450,28 +456,41 @@
                             body: JSON.stringify({ productId })
                         });
 
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
                         const data = await response.json();
 
                         if (data.success) {
-                            productCard.remove();
-                            showNotification('Product removed from wishlist');
-                            
-                            // If no items left, show empty state
-                            if (document.querySelectorAll('.product-card').length === 0) {
-                                wishlistGrid.innerHTML = `
-                                    <div class="empty-wishlist">
-                                        <i class="far fa-heart"></i>
-                                        <h2>Your wishlist is empty</h2>
-                                        <p>Start adding products to your wishlist by clicking the heart icon on any product.</p>
-                                        <a href="/user/products" class="browse-products-btn">Browse Products</a>
-                                    </div>
-                                `;
-                            }
+                            // Add fade out animation
+                            productCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                            productCard.style.opacity = '0';
+                            productCard.style.transform = 'translateY(10px)';
+
+                            // Remove the card after animation
+                            setTimeout(() => {
+                                productCard.remove();
+                                showNotification('Product removed from wishlist', 'success');
+                                
+                                // If no items left, show empty state
+                                if (document.querySelectorAll('.product-card').length === 0) {
+                                    wishlistGrid.innerHTML = `
+                                        <div class="empty-wishlist">
+                                            <i class="far fa-heart"></i>
+                                            <h2>Your wishlist is empty</h2>
+                                            <p>Start adding products to your wishlist by clicking the heart icon on any product.</p>
+                                            <a href="/user/products" class="browse-products-btn">Browse Products</a>
+                                        </div>
+                                    `;
+                                }
+                            }, 300);
                         } else {
                             throw new Error(data.message || 'Failed to remove from wishlist');
                         }
                     } catch (error) {
-                        showNotification(error.message, 'error');
+                        console.error('Error removing from wishlist:', error);
+                        showNotification(error.message || 'Failed to remove from wishlist', 'error');
                     } finally {
                         hideLoading();
                     }
@@ -680,7 +699,7 @@
                 const productId = this.dataset.productId;
                 try {
                     showLoading();
-                    const response = await fetch('/user/api/wishlist/toggle', {
+                    const response = await fetch('/user/wishlist/toggle', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
