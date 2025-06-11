@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>`;
       console.log('[handleSearch] Showing searchExtension and searchResultsDiv');
       try {
-        const response = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=8`, {
+        const response = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=8&format=json`, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -337,8 +337,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="search-error">
                     <p>Error loading search results</p>
                     <p class="error-details">${error.message}</p>
-                    <button class="retry-button" onclick="handleSearch(event)">Retry</button>
+                    <button class="retry-button">Retry</button>
                 </div>`;
+        // Attach event listener to retry button
+        const retryBtn = searchResultsDiv.querySelector('.retry-button');
+        if (retryBtn) {
+          retryBtn.addEventListener('click', () => {
+            // Re-trigger the search with the current value
+            const searchField = document.getElementById('searchField');
+            if (searchField) {
+              searchField.dispatchEvent(new Event('input'));
+            }
+          });
+        }
       }
     } else if (query.length === 1) {
       searchExtension.style.display = 'flex';
@@ -439,7 +450,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const price = document.createElement('span');
         price.classList.add('search-result-price');
         price.textContent = `$${product.price.toLocaleString()}`;
-
         imgContainer.appendChild(img);
         productInfo.appendChild(productName);
         productInfo.appendChild(price);
@@ -525,83 +535,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (header && window.scrollY === 0) {
       header.classList.remove('header-scrolled');
       header.classList.add('header-unscrolled');
-    }
-  }
-
-  // Attach the debounce function to the search input fields
-  document.addEventListener('DOMContentLoaded', function () {
-    const searchField = document.getElementById('searchField');
-    const searchField2 = document.getElementById('searchField2');
-
-    // Attach input event listeners to both search fields
-    if (searchField) {
-      searchField.addEventListener('input', debounce(handleSearch, 300));
-    }
-    if (searchField2) {
-      searchField2.addEventListener('input', debounce(handleSearch, 300));
-    }
-  });
-
-  // Expand search functionality for the second search field
-  function expandSearch2() {
-    const searchField2 = document.getElementById('searchField2');
-    const searchDiv2 = document.getElementById('search-button2');
-    let buttonCount2 = 0;
-
-    if (buttonCount2 === 0) {
-      if (window.innerWidth < 700) {
-        searchDiv2.style.width = '100px';
-        searchField2.style.width = '100px';
-      } else {
-        searchDiv2.style.width = '200px';
-        searchField2.style.width = '200px';
-      }
-      searchDiv2.style.border = '1px solid black';
-      buttonCount2++;
-    } else if (buttonCount2 === 1 && searchField2.value === '') {
-      searchDiv2.style.border = 'none';
-      searchField2.style.width = '0px';
-      searchDiv2.style.width = '30px';
-      buttonCount2--;
-    }
-  }
-  document.getElementById('exit-search-extension-button').addEventListener('click', () => {
-    searchExtension.style.display = 'none';
-    searchField.value = '';
-    headerBottom.style.display = 'flex'; // Show the headerBottom when search is canceled
-    header.classList.remove('header-scrolled');
-    header.classList.add('header-unscrolled');
-  });
-
-  //second search
-  const searchButtonclick2 = document.getElementById('search2');
-  const searchField2 = document.getElementById('searchField2');
-  const searchDiv2 = document.getElementById('search-button2');
-  let buttonCount2 = 0;
-
-  if (searchButtonclick2) {
-    searchButtonclick2.addEventListener('click', expandSearch2);
-  }
-
-  function expandSearch2() {
-    if (buttonCount2 === 0) {
-      if (window.innerWidth < 700) {
-        console.log('Enter Here');
-        searchDiv2.style.width = '100px';
-        searchField2.style.width = '100px';
-      } else {
-        console.log('Enter Here');
-        searchDiv2.style.width = '200px';
-        searchField2.style.width = '200px';
-      }
-      searchDiv2.style.border = '1px solid black';
-      buttonCount2++;
-    } else if (buttonCount2 === 1 && searchField2.value == '') {
-      searchDiv2.style.border = 'none';
-      searchField2.style.width = '0px';
-      searchDiv2.style.width = '30px';
-      buttonCount2--;
-    } else {
     }
   }
 });
