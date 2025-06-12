@@ -528,6 +528,12 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
+        console.log('Update product request received:', {
+            params: req.params,
+            body: req.body,
+            files: req.files
+        });
+
         const productId = req.params.id;
         const updateData = { ...req.body };
 
@@ -541,6 +547,22 @@ exports.updateProduct = async (req, res) => {
                 });
             }
             updateData.brand = brand._id;
+        }
+
+        // Handle special features
+        if (req.body.featureName && req.body.featureDesc) {
+            const featureNames = Array.isArray(req.body.featureName) ? req.body.featureName : [req.body.featureName];
+            const featureDescs = Array.isArray(req.body.featureDesc) ? req.body.featureDesc : [req.body.featureDesc];
+            
+            updateData.specialFeatures = [];
+            for (let i = 0; i < featureNames.length; i++) {
+                if (featureNames[i] && featureDescs[i]) {
+                    updateData.specialFeatures.push({
+                        name: featureNames[i],
+                        description: featureDescs[i]
+                    });
+                }
+            }
         }
 
         // Handle file uploads if new files are provided
@@ -560,6 +582,21 @@ exports.updateProduct = async (req, res) => {
                 updateData.model3D = req.files.model3D[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
             }
         }
+
+        // Convert stock to boolean
+        if (updateData.stock !== undefined) {
+            updateData.stock = updateData.stock === 'true' || updateData.stock === true;
+        }
+
+        // Convert price and stockCount to numbers
+        if (updateData.price) {
+            updateData.price = Number(updateData.price);
+        }
+        if (updateData.stockCount) {
+            updateData.stockCount = Number(updateData.stockCount);
+        }
+
+        console.log('Updating product with data:', updateData);
 
         // Find and update the product
         const product = await Product.findByIdAndUpdate(
@@ -584,7 +621,27 @@ exports.updateProduct = async (req, res) => {
             data: product
         });
     } catch (error) {
-        console.error('Error updating product:', error);
+        console.error('Error updating product:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            errors: error.errors
+        });
+
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.values(error.errors).map(err => ({
+                field: err.path,
+                message: err.message,
+                value: err.value
+            }));
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: validationErrors
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: 'Error updating product',

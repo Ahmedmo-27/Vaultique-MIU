@@ -267,8 +267,18 @@
                 try {
                     const response = await fetch('/api/admin/products/<%= product._id %>', {
                         method: 'PUT',
-                        body: formData
+                        body: formData,
+                        credentials: 'include',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
                     });
+
+                    // First check if the response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Server did not return JSON');
+                    }
 
                     const data = await response.json();
                     
@@ -276,11 +286,15 @@
                         alert('Product updated successfully');
                         window.location.href = '/admin/products';
                     } else {
-                        alert('Error updating product: ' + data.message);
+                        alert('Error updating product: ' + (data.message || 'Unknown error'));
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Error updating product. Please try again.');
+                    if (error.message === 'Server did not return JSON') {
+                        alert('Server error: Invalid response format');
+                    } else {
+                        alert('Error updating product. Please try again.');
+                    }
                 }
             });
 
