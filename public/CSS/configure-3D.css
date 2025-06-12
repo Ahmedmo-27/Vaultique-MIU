@@ -296,8 +296,6 @@ model-viewer {
   gap: 1rem;
 }
 
-
-
 /* Configuration Summary - Compact layout */
 .config-summary {
   flex: 1;
@@ -650,5 +648,281 @@ model-viewer {
   padding: 1rem; /* Reduced from 1.5rem */
   margin-top: 10%; /* Reduced from 1.5rem */
   margin-bottom: 10%;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--muted-foreground);
+}
+
+.loading-spinner i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+/* Viewer Tips */
+.viewer-tips {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: var(--muted);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    text-align: center;
+}
+
+.viewer-tips i {
+    color: var(--primary);
+    margin-right: 0.5rem;
+}
+
+/* Tab Icons */
+.tab-trigger i {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Summary Styles */
+.summary-label {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+}
+
+.summary-value {
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.summary-value.price {
+    color: var(--primary);
+    font-size: 1.125rem;
+}
+
+/* Trust Content */
+.trust-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.trust-content h4 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.trust-content p {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+/* Button Icons */
+.btn i {
+    margin-right: 0.5rem;
+}
+
+/* Option Grid Improvements */
+.option-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.option-item {
+    transition: transform 0.2s ease;
+}
+
+.option-item:hover {
+    transform: translateY(-2px);
+}
+
+.option-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-input:checked + .option-label {
+    border-color: var(--primary);
+    background-color: var(--muted);
+}
+
+.option-image-container {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: calc(var(--radius) - 2px);
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.option-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.option-label:hover .option-image {
+    transform: scale(1.05);
+}
+
+.option-name {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.option-price {
+    font-size: 0.75rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.controls .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Dark Mode Adjustments */
+.dark .option-label {
+    background-color: var(--card);
+}
+
+.dark .option-input:checked + .option-label {
+    background-color: var(--muted);
+}
+
+.dark .viewer-tips {
+    background-color: var(--card);
+}
+
+.dark .summary-value {
+    color: var(--foreground);
+}
+
+.dark .summary-value.price {
+    color: var(--primary);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .option-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .controls {
+        flex-wrap: wrap;
+    }
+
+    .controls .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .option-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .controls .btn {
+        width: 100%;
+    }
+}
+
+/* Color Options */
+.color-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.color-option {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.color-option.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.color-option::after {
+    content: attr(data-price);
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+}
+
+.color-option[data-price="0"]::after {
+    content: "Standard";
+}
+
+/* Dark Mode Adjustments for Color Options */
+.dark .color-option {
+    border-color: var(--border);
+}
+
+.dark .color-option.active {
+    border-color: var(--primary);
+}
+
+/* Responsive Adjustments for Color Options */
+@media (max-width: 768px) {
+    .color-options {
+        gap: 0.75rem;
+    }
+
+    .color-option {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .color-options {
+        gap: 0.5rem;
+    }
+
+    .color-option {
+        width: 35px;
+        height: 35px;
+    }
 }
 

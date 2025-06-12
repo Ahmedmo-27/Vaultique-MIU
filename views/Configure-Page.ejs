@@ -9,20 +9,83 @@
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/footer.css">
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Import Three.js directly from CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     <script src="/Javascript/nav-bar.js"></script>
     <script src="/Javascript/Loading Screen.js"></script>
-    <script src="/Javascript/configure-3D.js"></script>
     <script src="/Javascript/Light-Mode.js"></script>
+    <style>
+        .customization-panel {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            z-index: 1000;
+        }
+
+        .customization-section {
+            margin-bottom: 20px;
+        }
+
+        .customization-section h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            transition: transform 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: #333;
+        }
+
+        .price-display {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .add-to-cart:hover {
+            background: #444;
+        }
+    </style>
 </head>
 
 <body>
@@ -40,14 +103,17 @@
                         <!-- Watch Specs -->
                         <h1 id="specs-heading" class="visually-hidden">3D Previewer</h1>
                         <div class="model-selector">
-                            <label for="watch-model">Select Watch Model:</label>
-                            <select id="watch-model" class="model-dropdown">
-                                <% const watchModels=[ { value: 'submariner' , label: 'Submariner' }, { value: 'datejust' , label: 'Datejust' }, { value: 'daytona' , label: 'Daytona' }, { value: 'gmt-master' , label: 'GMT-Master II' } ]; %>
-                                <% watchModels.forEach(model=> { %>
-                                    <option value="<%= model.value %>" <%=model.value==='submariner' ? 'selected' : '' %>>
-                                        <%= model.label %>
-                                    </option>
-                                <% }); %>
+                            <label for="model-selector">Select Watch Model:</label>
+                            <select id="model-selector" class="model-selector">
+                                <% if (typeof brands !== 'undefined' && brands.length > 0) { %>
+                                    <% brands.forEach(brand => { %>
+                                        <option value="/Assets/3D Models/<%= encodeURIComponent(brand.Model3d.split('/').pop()) %>" <%= brand.name === 'Omega' ? 'selected' : '' %>>
+                                            <%= brand.name %>
+                                        </option>
+                                    <% }); %>
+                                <% } else { %>
+                                    <option value="" disabled>No models available</option>
+                                <% } %>
                             </select>
                         </div>
                         <br>
@@ -69,127 +135,103 @@
                         <!-- 3D Viewer -->
                         <section class="watch-viewer" aria-labelledby="viewer-heading">
                             <div class="model-container">
-                                <model-viewer src="/Assets/3D Models/Omega Sea Master.glb"
-                                    alt="3D model of Omega Sea Master Watch" camera-controls auto-rotate ar
-                                    shadow-intensity="1.5" environment-image="neutral" exposure="0.85"
-                                    field-of-view="25deg" id="watch-model">
+                                <model-viewer 
+                                    id="watch-model"
+                                    src="<%= brands && brands.length > 0 ? '/Assets/3D Models/' + encodeURIComponent(brands[0].Model3d.split('/').pop()) : '' %>"
+                                    camera-controls
+                                    auto-rotate
+                                    ar
+                                    ar-modes="webxr scene-viewer quick-look"
+                                    camera-orbit="0deg 75deg 105%"
+                                    min-camera-orbit="auto auto 50%"
+                                    max-camera-orbit="auto auto 150%"
+                                    min-field-of-view="30deg"
+                                    max-field-of-view="90deg"
+                                    shadow-intensity="1"
+                                    exposure="1"
+                                    environment-image="neutral"
+                                    style="width: 100%; height: 100%;"
+                                >
                                     <div class="progress-bar" slot="progress-bar"></div>
                                     <div slot="poster" style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;">
-                                        Loading 3D Model...
+                                        <div class="loading-spinner"></div>
                                     </div>
                                 </model-viewer>
                             </div>
-                        </section>
-                        <br><br>
-
-                        <!-- Configuration Tabs -->
-                        <section class="config-tabs" aria-labelledby="config-heading">
-                            <h2 id="config-heading" class="visually-hidden">Configuration Options</h2>
-                            <br>
-                            <div class="config-tabs">
-                                <div class="tabs-list">
-                                    <button class="tab-trigger active" data-tab="dial">Dial</button>
-                                    <button class="tab-trigger" data-tab="bracelet">Bracelet</button>
-                                    <button class="tab-trigger" data-tab="material">Material</button>
-                                    <button class="tab-trigger" data-tab="bezel">Bezel</button>
-                                </div>
-
-                                <!-- Dial options -->
-                                <div class="tab-content active" id="dial-tab">
-                                    <h3 class="option-title">Select Dial Color</h3>
-                                    <div class="option-grid">
-                                        <% const dialOptions=[ { id: 'dial-black' , value: 'black' , name: 'Black' , image: 'black.jpg' , checked: true }, { id: 'dial-blue' , value: 'blue' , name: 'Blue' , image: 'blue.jpg' }, { id: 'dial-green' , value: 'green' , name: 'Green' , image: 'green.jpg' }, { id: 'dial-silver' , value: 'silver' , name: 'Silver' , image: 'silver.jpg' } ]; %>
-                                        <% dialOptions.forEach(option=> { %>
-                                            <div class="option-item">
-                                                <input type="radio" name="dial" id="<%= option.id %>"
-                                                    value="<%= option.value %>" <%=option.checked ? 'checked' : '' %> class="option-input">
-                                                <label for="<%= option.id %>" class="option-label">
-                                                    <div class="option-image-container">
-                                                        <img src="images/dials/<%= option.image %>"
-                                                            alt="<%= option.name %> Dial"
-                                                            class="option-image">
-                                                    </div>
-                                                    <span class="option-name"><%= option.name %></span>
-                                                </label>
-                                            </div>
-                                        <% }); %>
-                                    </div>
-                                </div>
-
-                                <!-- Bracelet options -->
-                                <div class="tab-content" id="bracelet-tab">
-                                    <h3 class="option-title">Select Bracelet Style</h3>
-                                    <div class="option-grid">
-                                        <% const braceletOptions=[ { id: 'bracelet-oyster' , value: 'oyster' , name: 'Oyster' , image: 'oyster.jpg' , checked: true }, { id: 'bracelet-jubilee' , value: 'jubilee' , name: 'Jubilee' , image: 'jubilee.jpg' , price: '+$500' }, { id: 'bracelet-leather' , value: 'leather' , name: 'Leather' , image: 'leather.jpg' , price: '+$800' }, { id: 'bracelet-oysterflex' , value: 'oysterflex' , name: 'Oysterflex' , image: 'oysterflex.jpg' , price: '+$1,200' } ]; %>
-                                        <% braceletOptions.forEach(option=> { %>
-                                            <div class="option-item">
-                                                <input type="radio" name="bracelet" id="<%= option.id %>"
-                                                    value="<%= option.value %>" <%=option.checked ? 'checked' : '' %> class="option-input">
-                                                <label for="<%= option.id %>" class="option-label">
-                                                    <div class="option-image-container">
-                                                        <img src="images/bracelets/<%= option.image %>"
-                                                            alt="<%= option.name %> Bracelet"
-                                                            class="option-image">
-                                                    </div>
-                                                    <span class="option-name"><%= option.name %></span>
-                                                    <% if (option.price) { %>
-                                                        <span class="option-price"><%= option.price %></span>
-                                                    <% } %>
-                                                </label>
-                                            </div>
-                                        <% }); %>
-                                    </div>
-                                </div>
-
-                                <!-- Material options -->
-                                <div class="tab-content" id="material-tab">
-                                    <h3 class="option-title">Select Case Material</h3>
-                                    <div class="option-grid">
-                                        <% const materialOptions=[ { id: 'material-steel' , value: 'steel' , name: 'Oystersteel' , image: 'steel.jpg' , checked: true }, { id: 'material-yellow-gold' , value: 'yellow-gold' , name: 'Yellow Gold' , image: 'yellow-gold.jpg' , price: '+$12,000' }, { id: 'material-white-gold' , value: 'white-gold' , name: 'White Gold' , image: 'white-gold.jpg' , price: '+$14,000' }, { id: 'material-everose' , value: 'everose' , name: 'Everose Gold' , image: 'everose.jpg' , price: '+$16,000' } ]; %>
-                                        <% materialOptions.forEach(option=> { %>
-                                            <div class="option-item">
-                                                <input type="radio" name="material" id="<%= option.id %>"
-                                                    value="<%= option.value %>" <%=option.checked ? 'checked' : '' %> class="option-input">
-                                                <label for="<%= option.id %>" class="option-label">
-                                                    <div class="option-image-container">
-                                                        <img src="images/materials/<%= option.image %>"
-                                                            alt="<%= option.name %>" class="option-image">
-                                                    </div>
-                                                    <span class="option-name"><%= option.name %></span>
-                                                    <% if (option.price) { %>
-                                                        <span class="option-price"><%= option.price %></span>
-                                                    <% } %>
-                                                </label>
-                                            </div>
-                                        <% }); %>
-                                    </div>
-                                </div>
-
-                                <!-- Bezel options -->
-                                <div class="tab-content" id="bezel-tab">
-                                    <h3 class="option-title">Select Bezel Type</h3>
-                                    <div class="option-grid">
-                                        <% const bezelOptions=[ { id: 'bezel-black' , value: 'black' , name: 'Black Ceramic' , image: 'black.jpg' , checked: true }, { id: 'bezel-blue' , value: 'blue' , name: 'Blue Ceramic' , image: 'blue.jpg' , price: '+$500' }, { id: 'bezel-green' , value: 'green' , name: 'Green Ceramic' , image: 'green.jpg' , price: '+$800' }, { id: 'bezel-fluted' , value: 'fluted' , name: 'Fluted' , image: 'fluted.jpg' , price: '+$2,000' } ]; %>
-                                        <% bezelOptions.forEach(option=> { %>
-                                            <div class="option-item">
-                                                <input type="radio" name="bezel" id="<%= option.id %>"
-                                                    value="<%= option.value %>" <%=option.checked ? 'checked' : '' %> class="option-input">
-                                                <label for="<%= option.id %>" class="option-label">
-                                                    <div class="option-image-container">
-                                                        <img src="images/bezels/<%= option.image %>"
-                                                            alt="<%= option.name %>" class="option-image">
-                                                    </div>
-                                                    <span class="option-name"><%= option.name %></span>
-                                                    <% if (option.price) { %>
-                                                        <span class="option-price"><%= option.price %></span>
-                                                    <% } %>
-                                                </label>
-                                            </div>
-                                        <% }); %>
-                                    </div>
-                                </div>
+                            <div class="controls">
+                                <button id="toggle-rotate" class="btn btn-secondary">
+                                    <i class="fas fa-sync-alt"></i> Toggle Rotation
+                                </button>
+                                <button id="reset-camera" class="btn btn-secondary">
+                                    <i class="fas fa-undo"></i> Reset View
+                                </button>
+                                <button id="fullscreen" class="btn btn-secondary">
+                                    <i class="fas fa-expand"></i> Fullscreen
+                                </button>
+                            </div>
+                            <div class="viewer-tips">
+                                <p><i class="fas fa-info-circle"></i> Click and drag to rotate • Scroll to zoom • Right-click to pan</p>
                             </div>
                         </section>
+
+                        <!-- Color Customization Panel -->
+                        <div class="customization-panel">
+                            <div class="customization-section">
+                                <h3>Strap Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #8B4513;" data-color="brown"></div>
+                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
+                                    <div class="color-option" style="background-color: #FFD700;" data-color="gold"></div>
+                                    <div class="color-option" style="background-color: #000080;" data-color="navy"></div>
+                                </div>
+                            </div>
+
+                            <div class="customization-section">
+                                <h3>Case Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
+                                    <div class="color-option" style="background-color: #FFD700;" data-color="gold"></div>
+                                    <div class="color-option" style="background-color: #B87333;" data-color="rose-gold"></div>
+                                </div>
+                            </div>
+
+                            <div class="customization-section">
+                                <h3>Bezel Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
+                                    <div class="color-option" style="background-color: #FFD700;" data-color="gold"></div>
+                                    <div class="color-option" style="background-color: #B87333;" data-color="rose-gold"></div>
+                                </div>
+                            </div>
+
+                            <div class="customization-section">
+                                <h3>Dial Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #FFFFFF;" data-color="white"></div>
+                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
+                                    <div class="color-option" style="background-color: #000080;" data-color="navy"></div>
+                                </div>
+                            </div>
+
+                            <div class="customization-section">
+                                <h3>Numerals Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #FFFFFF;" data-color="white"></div>
+                                    <div class="color-option" style="background-color: #FFD700;" data-color="gold"></div>
+                                </div>
+                            </div>
+
+                            <div class="price-display">
+                                Total: $<span id="total-price">8,500</span>
+                            </div>
+
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
                     </div>
 
                     <!-- Right Column - Watch Details and Summary -->
@@ -204,69 +246,60 @@
                         <!-- Configuration Summary -->
                         <aside class="config-summary" aria-labelledby="summary-heading">
                             <h3 id="summary-heading">Your Configuration</h3>
-                            <br>
                             <div class="summary-details" aria-live="polite">
                                 <div class="summary-row">
-                                    <span>Model</span>
-                                    <span><%= locals.watch?.name || 'Submariner' %></span>
+                                    <span class="summary-label">Model</span>
+                                    <span class="summary-value"><%= locals.watch?.name || 'Submariner' %></span>
                                 </div>
                                 <div class="summary-row">
-                                    <span>Dial</span>
-                                    <span id="summary-dial">Black</span>
+                                    <span class="summary-label">Strap</span>
+                                    <span id="summary-strap" class="summary-value">Black</span>
                                 </div>
                                 <div class="summary-row">
-                                    <span>Bracelet</span>
-                                    <span id="summary-bracelet">Oyster</span>
+                                    <span class="summary-label">Case</span>
+                                    <span id="summary-case" class="summary-value">Silver</span>
                                 </div>
                                 <div class="summary-row">
-                                    <span>Material</span>
-                                    <span id="summary-material">Oystersteel</span>
+                                    <span class="summary-label">Dial</span>
+                                    <span id="summary-dial" class="summary-value">Black</span>
                                 </div>
                                 <div class="summary-row">
-                                    <span>Bezel</span>
-                                    <span id="summary-bezel">Black Ceramic</span>
+                                    <span class="summary-label">Bezel</span>
+                                    <span id="summary-bezel" class="summary-value">Black</span>
                                 </div>
                                 <div class="summary-row summary-total">
-                                    <span>Total Price</span>
-                                    <span id="summary-price" aria-live="polite">$<%= (locals.watch?.basePrice || 10000).toLocaleString() %></span>
+                                    <span class="summary-label">Total Price</span>
+                                    <span id="summary-price" class="summary-value price" aria-live="polite">
+                                        $<%= (locals.watch?.basePrice || 8500).toLocaleString() %>
+                                    </span>
                                 </div>
-                            </div>
-                            <!-- Action Buttons -->
-                            <div class="summary-actions">
-                                <button class="btn btn-primary" data-action="add-to-cart">
-                                    Add To Cart
-                                    <i class="fas fa-shopping-cart"></i>
-                                </button>
-                                <button class="btn btn-primary" data-action="continue-shopping">
-                                    Continue Shopping
-                                </button>
                             </div>
                         </aside>
 
                         <!-- Trust Indicators -->
-                        <div class="trust-container" style="background-color: var(--muted); border-radius: var(--radius); border: 1px solid var(--border); padding: 1.5rem; margin-top: 1.5rem;">
+                        <div class="trust-container">
                             <section class="trust-indicators" aria-labelledby="trust-heading">
-                                <h3 id="trust-heading" style="font-size: 1.125rem; font-weight: 500; margin-bottom: 1rem;">Trust Information</h3>
+                                <h3 id="trust-heading">Trust Information</h3>
                                 <div class="trust-grid">
                                     <div class="trust-item">
-                                        <i class="fas fa-shield-alt" style="color: var(--primary);"></i>
-                                        <div>
-                                            <h4 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Warranty</h4>
-                                            <p style="font-size: 0.8125rem; color: var(--muted-foreground);"><%= locals.watch?.warranty || '5-year warranty' %></p>
+                                        <i class="fas fa-shield-alt"></i>
+                                        <div class="trust-content">
+                                            <h4>Warranty</h4>
+                                            <p><%= locals.watch?.warranty || '5-year warranty' %></p>
                                         </div>
                                     </div>
                                     <div class="trust-item">
-                                        <i class="fas fa-shipping-fast" style="color: var(--primary);"></i>
-                                        <div>
-                                            <h4 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Free Shipping</h4>
-                                            <p style="font-size: 0.8125rem; color: var(--muted-foreground);">Worldwide delivery</p>
+                                        <i class="fas fa-shipping-fast"></i>
+                                        <div class="trust-content">
+                                            <h4>Free Shipping</h4>
+                                            <p>Worldwide delivery</p>
                                         </div>
                                     </div>
                                     <div class="trust-item">
-                                        <i class="fas fa-medal" style="color: var(--primary);"></i>
-                                        <div>
-                                            <h4 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Authenticity</h4>
-                                            <p style="font-size: 0.8125rem; color: var(--muted-foreground);">Certified timepiece</p>
+                                        <i class="fas fa-medal"></i>
+                                        <div class="trust-content">
+                                            <h4>Authenticity</h4>
+                                            <p>Certified timepiece</p>
                                         </div>
                                     </div>
                                 </div>
@@ -280,21 +313,199 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const modelViewer = document.querySelector('model-viewer');
-            // Add your event listeners and logic here
+        document.addEventListener("DOMContentLoaded", function() {
+            const modelViewer = document.querySelector('#watch-model');
+            const modelSelect = document.querySelector('#model-selector');
+            const rotateBtn = document.getElementById('toggle-rotate');
+            const resetBtn = document.getElementById('reset-camera');
+            const fullscreenBtn = document.getElementById('fullscreen');
+            const totalPrice = document.getElementById('total-price');
+            
+            // Material mappings for different watch models
+            const materialMappings = {
+                'Omega Sea Master': {
+                    strap: ['Strap_MORK.001'],
+                    case: ['Screws'],
+                    bezel: ['Urtavla_PrimarOpaqueTEXT.001'],
+                    numerals: ['Siffor+Kvartar_UrtavlaFYLL.001'],
+                    dial: ['Brushed Aluminum 2.001'],
+                    clasp: ['Brushed Aluminum 2']
+                },
+                'Rolex Submariner': {
+                    strap: ['Bracelet', 'Bracelet_Links'],
+                    case: ['Case', 'Case_Metal'],
+                    bezel: ['Bezel', 'Bezel_Insert'],
+                    dial: ['Dial', 'Dial_Base'],
+                    numerals: ['Numerals', 'Hour_Markers']
+                }
+            };
+
+            // Color mappings for different materials and components
+            const colorMappings = {
+                black: [0.0, 0.0, 0.0, 1.0],
+                white: [1.0, 1.0, 1.0, 1.0],
+                silver: [0.75, 0.75, 0.75, 1.0],
+                gold: [1.0, 0.84, 0.0, 1.0],
+                'rose-gold': [0.72, 0.45, 0.2, 1.0],
+                brown: [0.55, 0.27, 0.07, 1.0],
+                navy: [0.0, 0.0, 0.5, 1.0]
+            };
+
+            // Current colors state
+            let currentColors = {
+                strap: 'black',
+                case: 'silver',
+                bezel: 'silver',
+                dial: 'black',
+                numerals: 'white'
+            };
+
+            // Toggle auto-rotation
+            rotateBtn.addEventListener('click', () => {
+                modelViewer.autoRotate = !modelViewer.autoRotate;
+                rotateBtn.classList.toggle('active');
+            });
+
+            // Reset camera
+            resetBtn.addEventListener('click', () => {
+                modelViewer.cameraOrbit = '0deg 75deg 105%';
+                modelViewer.fieldOfView = '45deg';
+            });
+
+            // Toggle fullscreen
+            fullscreenBtn.addEventListener('click', () => {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    modelViewer.requestFullscreen();
+                }
+            });
+
+            // Model loading progress
             modelViewer.addEventListener('progress', (event) => {
                 const progressBar = document.querySelector('.progress-bar');
                 progressBar.style.setProperty('--progress', event.detail.totalProgress * 100 + '%');
             });
+
+            // Model loaded successfully
             modelViewer.addEventListener('load', () => {
                 console.log('3D model loaded successfully');
+                // Apply initial colors for all components
+                Object.entries(currentColors).forEach(([component, color]) => {
+                    updateModelComponent(component, color);
+                });
             });
-            modelViewer.addEventListener('error', () => {
-                console.error('Error loading 3D model');
+
+            // Error handling
+            modelViewer.addEventListener('error', (error) => {
+                console.error('Error loading 3D model:', error);
             });
+
+            // Handle model selection change
+            modelSelect.addEventListener('change', function() {
+                const selectedModel = this.value;
+                modelViewer.src = selectedModel;
+            });
+
+            // Add color selection for all components
+            const colorOptions = document.querySelectorAll('.color-option');
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const color = option.dataset.color;
+                    const section = option.closest('.customization-section');
+                    const component = section.querySelector('h3').textContent.toLowerCase().replace(' color', '');
+                    
+                    // Remove active class from all color options in this section
+                    section.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+
+                    // Update the current color for the component
+                    currentColors[component] = color;
+
+                    // Update the model based on the component
+                    updateModelComponent(component, color);
+
+                    // Update summary
+                    document.querySelector(`#summary-${component}`).textContent = 
+                        color.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+                    // Update price
+                    updateTotalPrice();
+                });
+            });
+
+            function updateModelComponent(component, color) {
+                if (!modelViewer.model || !modelViewer.model.materials) {
+                    console.log('Model or materials not yet loaded');
+                    return;
+                }
+
+                try {
+                    const currentModel = modelSelect.options[modelSelect.selectedIndex].text;
+                    const mappings = materialMappings[currentModel] || materialMappings['Omega Sea Master'];
+                    const componentMaterials = mappings[component] || [];
+
+                    modelViewer.model.materials.forEach((material, index) => {
+                        if (!material || !material.name) return;
+
+                        const materialName = material.name;
+                        const shouldUpdate = componentMaterials.some(name => materialName === name);
+
+                        if (shouldUpdate) {
+                            if (material.pbrMetallicRoughness) {
+                                material.pbrMetallicRoughness.setBaseColorFactor(colorMappings[color] || colorMappings.black);
+                                
+                                // Adjust material properties based on color and component
+                                if (color === 'silver' || color === 'gold' || color === 'rose-gold') {
+                                    material.pbrMetallicRoughness.setMetallicFactor(0.8);
+                                    material.pbrMetallicRoughness.setRoughnessFactor(0.3);
+                                } else {
+                                    material.pbrMetallicRoughness.setMetallicFactor(0.0);
+                                    material.pbrMetallicRoughness.setRoughnessFactor(0.5);
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error updating material:', error);
+                }
+            }
+
+            // Price calculation
+            function updateTotalPrice() {
+                const basePrice = 8500;
+                const priceAdjustments = {
+                    case: {
+                        'silver': 0,
+                        'gold': 2000,
+                        'rose-gold': 2500,
+                        'black': 1500
+                    },
+                    bezel: {
+                        'silver': 0,
+                        'gold': 1000,
+                        'rose-gold': 1500,
+                        'black': 800
+                    }
+                };
+
+                let totalPrice = basePrice;
+                
+                // Add case price adjustment
+                if (priceAdjustments.case[currentColors.case]) {
+                    totalPrice += priceAdjustments.case[currentColors.case];
+                }
+
+                // Add bezel price adjustment
+                if (priceAdjustments.bezel[currentColors.bezel]) {
+                    totalPrice += priceAdjustments.bezel[currentColors.bezel];
+                }
+
+                document.getElementById('total-price').textContent = totalPrice.toLocaleString();
+                document.getElementById('summary-price').textContent = `$${totalPrice.toLocaleString()}`;
+            }
         });
     </script>
 </body>
 
-</html>
+</html> 

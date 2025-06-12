@@ -25,6 +25,8 @@ const brandsRoutes = require('./routes/BrandsRoutes');
 const cartRoutes = require('./routes/CartRoutes');
 const shippingRoutes = require('./routes/ShippingRoutes');
 const paymentRoutes = require('./routes/PaymentRoutes');
+const configuratorRoutes = require('./routes/ConfiguratorRoutes');
+const configuratorController = require('./controllers/Configurator');
 const app = express();
 
 // Set EJS as the view engine
@@ -104,28 +106,23 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "'unsafe-eval'",
-          "'unsafe-hashes'",
-          'https:',
-          'http:',
-        ],
-        scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
-        scriptSrcElem: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https:', 'http:'],
-        styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
-        imgSrc: ["'self'", 'data:', 'https:', 'http:', 'blob:'],
-        connectSrc: ["'self'", 'https:', 'http:', 'ws:', 'wss:'],
-        fontSrc: ["'self'", 'https:', 'http:', 'data:'],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://ajax.googleapis.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://fonts.cdnfonts.com", "https://db.onlinewebfonts.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"],
+        connectSrc: ["'self'", "blob:", "https:"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://fonts.cdnfonts.com", "https://db.onlinewebfonts.com", "https://cdnjs.cloudflare.com"],
         objectSrc: ["'none'"],
-        mediaSrc: ["'self'", 'https:', 'http:', 'blob:'],
+        mediaSrc: ["'self'"],
         frameSrc: ["'self'"],
-        upgradeInsecureRequests: [],
+        workerSrc: ["'self'", "blob:"],
+        childSrc: ["'self'", "blob:"],
+        frameAncestors: ["'self'"],
+        formAction: ["'self'"],
+        upgradeInsecureRequests: []
       },
     },
     crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
     crossOriginOpenerPolicy: false,
   })
 );
@@ -248,6 +245,36 @@ app.get('/Assets/Images/*', (req, res, next) => {
   tryNextPath(0);
 });
 
+// 3D Model files with explicit MIME type and case-insensitive handling
+app.get('/Assets/3D Models/*', (req, res, next) => {
+  const modelPath = path.join(__dirname, '..', 'Ahmed', '3D Models', decodeURIComponent(path.basename(req.path)));
+  res.set('Content-Type', 'model/gltf-binary');
+  
+  // Try multiple case variations
+  const tryPaths = [
+    modelPath, // Original path
+    path.join(path.dirname(modelPath), path.basename(modelPath).toLowerCase()), // Lowercase
+    path.join(path.dirname(modelPath), path.basename(modelPath).toUpperCase()) // Uppercase
+  ];
+
+  const tryNextPath = (index) => {
+    if (index >= tryPaths.length) {
+      console.error(`All attempts failed for 3D model: ${req.path}`);
+      next();
+      return;
+    }
+
+    res.sendFile(tryPaths[index], err => {
+      if (err) {
+        console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err.message);
+        tryNextPath(index + 1);
+      }
+    });
+  };
+
+  tryNextPath(0);
+});
+
 // Fallback static file handlers (case-insensitive)
 app.use('/css', express.static(path.join(publicPath, 'CSS')));
 app.use('/javascript', express.static(path.join(publicPath, 'Javascript')));
@@ -283,6 +310,10 @@ app.use('/api/payment', paymentRoutes);
 // Protected routes (authentication required)
 app.use('/admin', adminRoutes);
 app.use('/api/products', productRoutes);
+
+// Configurator routes
+app.get('/configurator', configuratorController.renderConfigurator);
+app.use('/api/configurator', configuratorRoutes);
 
 // Global logout route for client-side usage
 app.all('/logout', (req, res) => {

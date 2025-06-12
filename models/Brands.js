@@ -18,6 +18,7 @@ const brandSchema = new mongoose.Schema({
       description: { type: String, required: true },
     },
   ],
+  Model3d:{type:String},
 });
 
 module.exports = mongoose.model('Brand', brandSchema);

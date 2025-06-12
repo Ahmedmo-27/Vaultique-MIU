@@ -311,19 +311,11 @@ function extractSearchTerms(query) {
 
 // Configurator Page
 router.get('/Configurator', async (req, res) => {
-  
-  try 
-  {
-
-    //Fetch from Database
-    //const configurator = await Configurator.find();
-
-    res.render('Configure-Page');
-  }
-
-  catch (error)
-  {
-    res.render('Error Loading Configurator Page', error);
+  try {
+    const configuratorController = require('./Configurator');
+    await configuratorController.renderConfigurator(req, res);
+  } catch (error) {
+    console.error('Error loading configurator page:', error);
     renderNotification(res, 'error', 'Failed to load Configurator Page. Please try again later.');
   }
 });
@@ -1455,6 +1447,30 @@ router.post('/payment/process', async (req, res) => {
             total: order.total,
             shipping: order.shipping
         });
+
+        // Update product stock and popularity before saving the order
+        for (const item of order.items) {
+            const product = await Product.findById(item.productId);
+            if (!product) {
+                throw new Error(`Product with ID ${item.productId} not found`);
+            }
+
+            // Decrement stock count
+            if (product.stockCount > 0) {
+                product.stockCount -= item.quantity;
+                // Update stock status if stock count reaches 0
+                if (product.stockCount === 0) {
+                    product.stock = false;
+                }
+            } else {
+                throw new Error(`Product ${product.name} is out of stock`);
+            }
+
+            // Increment popularity score
+            product.popularityScore += 1;
+
+            await product.save();
+        }
 
         await order.save();
 

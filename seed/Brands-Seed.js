@@ -67,6 +67,7 @@ const Brands = [
           'The Day-Date was the first wristwatch to display the date and day of the week spelled out in full in a window on the dial. With the President bracelet, originally created specially for it, the Day-Date continues to be the watch par excellence of influential people.',
       },
     ],
+    Model3d: '/Assets/3D Models/Rolex Daytona.glb',
   },
   {
     _id: 'OMG_1',
@@ -109,6 +110,7 @@ const Brands = [
           "The De Ville collection was created in the 1960s with an elegant and classic design. Today, it continues to represent OMEGA's commitment to luxurious precision.",
       },
     ],
+    Model3d: '/Assets/3D Models/Omega Sea Master.glb',
   },
   {
     _id: 'CAR_1',
@@ -144,6 +146,7 @@ const Brands = [
           'The Ballon Bleu de Cartier watch features a distinctive rounded case and a crown set with a sapphire cabochon. Its elegant design has made it a contemporary classic.',
       },
     ],
+    Model3d: '/Assets/3D Models/Santos.glb',
   },
   {
     _id: 'PPH_1',
@@ -235,6 +238,7 @@ const Brands = [
           "The Millenary collection features distinctive oval cases with off-centered dials, showcasing Audemars Piguet's mastery of unconventional designs. These timepieces reveal their intricate movements through open-worked dials.",
       },
     ],
+    Model3d: '/Assets/3D Models/Audemars Piguet Royal Oak.glb',
   },
   {
     _id: 'ALS_1',

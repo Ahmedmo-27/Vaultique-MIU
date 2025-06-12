@@ -23,7 +23,6 @@ const productSchema = new mongoose.Schema({
   image: { type: String, required: true },
   galleryImages: [String],
   video: { type: String },
-  model3D: { type: String },
 
   description: { type: String },
   specialFeatures: [
