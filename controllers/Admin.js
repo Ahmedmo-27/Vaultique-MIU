@@ -84,6 +84,45 @@ exports.getDashboard = async (req, res) => {
   }
 };
 
+// Render Dashboard View
+exports.renderDashboard = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalProducts = await Product.countDocuments();
+    const totalOrders = await Order.countDocuments();
+    const totalSales = await Order.aggregate([
+      { $match: { status: "Completed" } },
+      { $group: { _id: null, total: { $sum: "$total" } } },
+    ]);
+
+    const recentOrders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate("userId", "Name email");
+
+    const todos = await Todo.find().sort({ createdAt: -1 }).limit(5);
+
+    res.render("AdminHubHomePage", {
+      title: "Admin Dashboard",
+      totalUsers,
+      totalProducts,
+      totalOrders,
+      totalSales: totalSales[0]?.total || 0,
+      recentOrders,
+      todos,
+      user: req.user,
+    });
+  } catch (error) {
+    console.error('Dashboard render error:', error);
+    res.status(500).render("error", {
+      title: "Error",
+      type: "error",
+      message: "Error loading dashboard",
+      error: error.message,
+    });
+  }
+};
+
 // User Management
 exports.getAllUsers = async (req, res) => {
   try {
@@ -941,43 +980,6 @@ exports.getProductAnalytics = async (req, res) => {
 };
 
 // Admin Page Rendering Functions
-exports.renderDashboard = async (req, res) => {
-  try {
-    const totalUsers = await User.countDocuments();
-    const totalProducts = await Product.countDocuments();
-    const totalOrders = await Order.countDocuments();
-    const totalSales = await Order.aggregate([
-      { $match: { status: "Completed" } },
-      { $group: { _id: null, total: { $sum: "$total" } } },
-    ]);
-
-    const recentOrders = await Order.find()
-      .sort({ dateOrder: -1 })
-      .limit(5)
-      .populate("user", "name");
-
-    const todos = await Todo.find().sort({ createdAt: -1 }).limit(5);
-
-    res.render("AdminHubHomePage", {
-      title: "Admin Dashboard",
-      totalUsers,
-      totalProducts,
-      totalOrders,
-      totalSales: totalSales[0]?.total || 0,
-      recentOrders,
-      todos,
-      user: req.user,
-    });
-  } catch (error) {
-    res.status(500).render("error", {
-      title: "Error",
-      type: "error",
-      message: "Error loading dashboard",
-      error: error.message,
-    });
-  }
-};
-
 exports.renderUsers = async (req, res) => {
   try {
     // Load users from database

@@ -4,7 +4,10 @@ const Product = require('../models/Products');
 const Brand = require('../models/Brands');
 const Collection = require('../models/Collections');
 const User = require('../models/Users');
+const Order = require('../models/Orders');
 const { authenticateJWT } = require('../middleware/jwt');
+const Cart = require('../models/cart');
+const { generateOrderNumber } = require('../utils/orderUtils');
 
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification') => {
@@ -698,18 +701,75 @@ router.get('/logout', (req, res) => {
 const authenticatedRoutes = express.Router();
 authenticatedRoutes.use(authenticateJWT);
 
-router.get('/cart',async (req,res)=>
-{
-  try
-  {
-    res.render('cart');
+router.get('/cart', async (req, res) => {
+  try {
+    let cartData = {
+      cartItems: [],
+      subtotal: 0,
+      shippingCost: 20,
+      total: 20,
+      shippingMethod: 'standard'
+    };
+
+    if (req.user) {
+      try {
+        const user = await User.findById(req.user._id);
+        if (user) {
+          const cart = await Cart.findOne({ userId: user._id })
+            .populate({
+              path: 'items.product',
+              model: 'Product',
+              select: '_id name price image'
+            });
+          
+          if (cart && cart.items) {
+            cartData = {
+              cartItems: cart.items
+                .filter(item => item.product) // Filter out items with null products
+                .map(item => ({
+                  productId: item.product._id,
+                  name: item.name || item.product.name,
+                  price: item.price || item.product.price,
+                  quantity: item.quantity,
+                  image: item.image || item.product.image
+                })),
+              subtotal: cart.subtotal || 0,
+              shippingCost: cart.shippingCost || 20,
+              total: cart.total || 20,
+              shippingMethod: cart.shippingMethod || 'standard'
+            };
+          }
+        }
+      } catch (error) {
+        console.error('Error syncing with database cart:', error);
+      }
+    } else {
+      // For non-authenticated users, use session cart
+      if (req.session.cart) {
+        cartData = {
+          cartItems: (req.session.cart.items || [])
+            .filter(item => item && item.productId), // Filter out invalid items
+          subtotal: req.session.cart.subtotal || 0,
+          shippingCost: req.session.cart.shippingCost || 20,
+          total: req.session.cart.total || 20,
+          shippingMethod: req.session.cart.shippingMethod || 'standard'
+        };
+      }
+    }
+
+    res.render('cart', cartData);
+  } catch (error) {
+    console.error('Error loading cart:', error);
+    res.render('cart', {
+      error: 'Failed to load cart. Please try again.',
+      cartItems: [],
+      subtotal: 0,
+      shippingCost: 20,
+      total: 20,
+      shippingMethod: 'standard'
+    });
   }
-  catch(error)
-  {
-    console.log('error loading cart')
-  }
-}
-)
+});
 
 // Cart routes require auth
 authenticatedRoutes.get('/cart', async (req, res) => {
@@ -834,7 +894,7 @@ router.get('/account-details', authenticateJWT, async (req, res) => {
       return res.redirect('/user/LoginSignup');
     }
 
-    // Fetch fresh user data with populated wishlist items
+    // Fetch fresh user data with populated wishlist items and orders
     const user = await User.findById(req.user._id)
       .select('-password +phone_number')
       .populate({
@@ -843,6 +903,14 @@ router.get('/account-details', authenticateJWT, async (req, res) => {
           { path: 'brand', select: 'name' },
           { path: 'Vcollection', select: 'name' }
         ]
+      })
+      .populate({
+        path: 'orders.orderId',
+        model: 'Order',
+        populate: {
+          path: 'items.productId',
+          model: 'Product'
+        }
       })
       .lean();
 
@@ -856,6 +924,42 @@ router.get('/account-details', authenticateJWT, async (req, res) => {
       delete user.Payment.cvv;
     }
 
+    // Transform orders to include all necessary data
+    if (user.orders) {
+      user.orders = user.orders.map(order => {
+        if (!order.orderId) return null;
+        const orderData = order.orderId;
+        return {
+          orderId: orderData._id.toString(),
+          orderNumber: orderData.orderNumber,
+          status: orderData.status,
+          orderDate: orderData.createdAt,
+          total: orderData.total,
+          shippingCost: orderData.shippingCost,
+          tax: orderData.tax,
+          items: orderData.items.map(item => ({
+            product: {
+              _id: item.productId._id,
+              name: item.productId.name,
+              image: item.productId.image,
+              price: item.price
+            },
+            quantity: item.quantity
+          })),
+          shipping: orderData.shipping,
+          payment: orderData.payment
+        };
+      }).filter(Boolean); // Remove any null orders
+    }
+
+    // If it's an API request or format=json, return JSON
+    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.json({
+        success: true,
+        data: user
+      });
+    }
+
     res.render('Account-Details', {
       title: 'Account Details',
       user: user,
@@ -865,6 +969,12 @@ router.get('/account-details', authenticateJWT, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching account details:', error);
+    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error fetching account details'
+      });
+    }
     res.redirect('/user/LoginSignup');
   }
 });
@@ -913,29 +1023,56 @@ router.get("/submit-shipping", async (req, res) => {
   }
 });
 
-router.post("/submit-shipping", async (req, res) => {
-  const { orderId, name, email, address, city, state, zipcode } = req.body;
+router.post("/shipping/submit", async (req, res) => {
+    try {
+        const { fullName, email, address, city, state, zipCode, saveAddress } = req.body;
 
-  try {
-    const order = await Order.findById(orderId);
-    if (!order) return res.status(404).send("Order not found");
+        // Get the latest order for the user
+        const order = await Order.findOne({ userId: req.user?._id })
+            .sort({ createdAt: -1 });
 
-    order.shipping = {
-      name,
-      email,
-      address,
-      city,
-      state,
-      zipcode,
-    };
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'No order found'
+            });
+        }
 
-    await order.save();
+        // Update order with shipping information
+        order.shipping = {
+            name: fullName,
+            email,
+            address,
+            city,
+            state,
+            zipCode
+        };
 
-    res.render("confirmation", { order }); // Or redirect to a success page
-  } catch (error) {
-    console.error("Shipping submission error:", error);
-    res.status(500).send("Shipping info could not be saved.");
-  }
+        await order.save();
+
+        // Save address to user profile if requested and user is authenticated
+        if (saveAddress && req.user?._id) {
+            await User.findByIdAndUpdate(req.user._id, {
+                Address: {
+                    street: address,
+                    city,
+                    state,
+                    country: 'Egypt', // Default country
+                    postalCode: zipCode
+                }
+            });
+        }
+
+        // Redirect to review page
+        res.redirect('/user/review');
+    } catch (error) {
+        console.error('Error submitting shipping:', error);
+        res.status(500).render('error', {
+            title: 'Shipping Error',
+            message: 'Error submitting shipping information',
+            error: process.env.NODE_ENV === 'development' ? error : {}
+        });
+    }
 });
 
 // Product page
@@ -1143,6 +1280,475 @@ router.get('/compare/list', (req, res) => {
   } catch (error) {
     console.error('Error getting comparison list:', error);
     res.status(500).json({ success: false, message: 'Failed to get comparison list' });
+  }
+});
+
+// Payment routes - accessible to both authenticated and non-authenticated users
+router.get('/payment', async (req, res) => {
+    try {
+        // Get cart data from session
+        const cart = req.session.cart || {
+            items: [],
+            subtotal: 0,
+            shippingCost: 20,
+            total: 20
+        };
+
+        // If no items in cart, redirect to cart page
+        if (!cart.items || cart.items.length === 0) {
+            return res.redirect('/cart');
+        }
+
+        // If user is authenticated, get their payment info
+        let paymentInfo = null;
+        if (req.user) {
+            const user = await User.findById(req.user._id);
+            if (user && user.Payment) {
+                paymentInfo = {
+                    name: user.Payment.cardHolder,
+                    bank_name: user.Payment.bankName || '',
+                    card_number: user.Payment.cardNumber ? '**** **** **** ' + user.Payment.cardNumber.slice(-4) : '',
+                    expiry: user.Payment.expiryDate,
+                    cvv: '' // Never send CVV back to client
+                };
+            }
+        } else {
+            // For non-authenticated users, check session for saved payment info
+            if (req.session.paymentInfo) {
+                paymentInfo = {
+                    name: req.session.paymentInfo.name,
+                    bank_name: req.session.paymentInfo.bank_name,
+                    card_number: req.session.paymentInfo.card_number ? '**** **** **** ' + req.session.paymentInfo.card_number.slice(-4) : '',
+                    expiry: req.session.paymentInfo.expiry,
+                    cvv: '' // Never send CVV back to client
+                };
+            }
+        }
+
+        res.render('Payment', {
+            title: 'Secure Checkout || Vaultique',
+            cart,
+            paymentInfo,
+            user: req.user || null,
+            isAuthenticated: !!req.user
+        });
+    } catch (error) {
+        console.error('Error loading payment page:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Failed to load payment page',
+            type: 'error',
+            show: true
+        });
+    }
+});
+
+// Process payment - accessible to both authenticated and non-authenticated users
+router.post('/payment/process', async (req, res) => {
+    try {
+        const { name, card_number, bank_name, expiry, cvv } = req.body;
+
+        // Enhanced validation
+        if (!name || !card_number || !bank_name || !expiry || !cvv) {
+            return res.status(400).json({
+                success: false,
+                message: 'All payment fields are required'
+            });
+        }
+
+        // Validate card number (Luhn algorithm)
+        const cardNumber = card_number.replace(/\s/g, '');
+        if (!isValidCardNumber(cardNumber)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid card number'
+            });
+        }
+
+        // Validate expiry date (MM/YY format and not expired)
+        if (!isValidExpiryDate(expiry)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or expired card'
+            });
+        }
+
+        // Validate CVV (3 or 4 digits)
+        if (!/^\d{3,4}$/.test(cvv)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid CVV'
+            });
+        }
+
+        // Check if cart exists and has items
+        if (!req.session.cart?.items?.length) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cart is empty'
+            });
+        }
+
+        // If user is authenticated, save payment info to their account
+        if (req.user) {
+            await User.findByIdAndUpdate(req.user._id, {
+                Payment: {
+                    cardHolder: name,
+                    cardNumber: cardNumber.slice(-4), // Only store last 4 digits
+                    bankName: bank_name,
+                    expiryDate: expiry,
+                    paymentType: 'credit',
+                    lastUsed: new Date()
+                }
+            });
+        }
+
+        // Store payment info in session for both authenticated and non-authenticated users
+        req.session.paymentInfo = {
+            name,
+            card_number: cardNumber.slice(-4), // Only store last 4 digits
+            bank_name,
+            expiry,
+            paymentType: 'credit'
+        };
+
+        // Create order in database
+        const order = new Order({
+            userId: req.user?._id,
+            orderNumber: generateOrderNumber(),
+            items: req.session.cart.items.map(item => {
+                // Handle both product and productId fields
+                const productId = item.product?._id || item.product || item.productId;
+                if (!productId) {
+                    throw new Error('Product ID is missing from cart item');
+                }
+                return {
+                    productId,
+                    quantity: item.quantity,
+                    price: item.price
+                };
+            }),
+            total: req.session.cart.total,
+            shippingCost: req.session.cart.shippingCost || 20,
+            tax: req.session.cart.tax || 0,
+            status: 'pending',
+            payment: {
+                name,
+                cardNumber: cardNumber.slice(-4),
+                bankName: bank_name,
+                expiry
+            },
+            // Add shipping information from session if available
+            shipping: req.session.shippingInfo || {
+                name: req.user?.name || 'Guest',
+                email: req.user?.email || 'guest@example.com',
+                address: 'To be provided',
+                city: 'To be provided',
+                state: 'To be provided',
+                zipCode: 'To be provided'
+            }
+        });
+
+        // Log the order data for debugging
+        console.log('Creating order with data:', {
+            items: order.items,
+            total: order.total,
+            shipping: order.shipping
+        });
+
+        await order.save();
+
+        // Clear cart after successful payment
+        if (req.user) {
+            await Cart.findOneAndDelete({ userId: req.user._id });
+        }
+        req.session.cart = null;
+
+        // Store order info in session for shipping
+        req.session.orderInfo = {
+            orderId: order._id,
+            paymentProcessed: true,
+            timestamp: new Date(),
+            total: order.total
+        };
+
+        res.json({
+            success: true,
+            message: 'Payment processed successfully',
+            redirect: '/user/shipping',
+            orderId: order._id
+        });
+    } catch (error) {
+        console.error('Error processing payment:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to process payment. Please try again.'
+        });
+    }
+});
+
+// Helper functions for payment validation
+function isValidCardNumber(cardNumber) {
+    // Luhn algorithm implementation
+    let sum = 0;
+    let isEven = false;
+    
+    // Loop through values starting from the rightmost digit
+    for (let i = cardNumber.length - 1; i >= 0; i--) {
+        let digit = parseInt(cardNumber.charAt(i));
+        
+        if (isEven) {
+            digit *= 2;
+            if (digit > 9) {
+                digit -= 9;
+            }
+        }
+        
+        sum += digit;
+        isEven = !isEven;
+    }
+    
+    return (sum % 10) === 0;
+}
+
+function isValidExpiryDate(expiry) {
+    const [month, year] = expiry.split('/');
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() % 100;
+    const currentMonth = currentDate.getMonth() + 1;
+    
+    const expMonth = parseInt(month);
+    const expYear = parseInt(year);
+    
+    if (expMonth < 1 || expMonth > 12) return false;
+    
+    if (expYear < currentYear) return false;
+    if (expYear === currentYear && expMonth < currentMonth) return false;
+    
+    return true;
+}
+
+// Check payment status - accessible to both authenticated and non-authenticated users
+router.get('/payment/check', (req, res) => {
+    // If user has already processed payment, redirect to shipping
+    if (req.session.orderInfo?.paymentProcessed) {
+        return res.redirect('/user/shipping');
+    }
+    
+    // If no cart items, redirect to cart
+    if (!req.session.cart?.items?.length) {
+        return res.redirect('/cart');
+    }
+
+    // Otherwise, proceed to payment
+    res.redirect('/user/payment');
+});
+
+// Add shipping route handler
+router.get("/shipping", async (req, res) => {
+    try {
+        // Get the latest order for the user
+        const order = await Order.findOne({ userId: req.user?._id })
+            .sort({ createdAt: -1 })
+            .populate({
+                path: 'items.productId',
+                model: 'Product'
+            });
+
+        if (!order) {
+            return res.redirect('/cart');
+        }
+
+        // Get user's saved addresses
+        const user = await User.findById(req.user?._id).select('Address');
+        const savedAddresses = user?.Address ? [user.Address] : [];
+
+        res.render('shipping', {
+            order,
+            user: req.user,
+            isAuthenticated: req.isAuthenticated(),
+            savedAddresses,
+            error: null
+        });
+    } catch (error) {
+        console.error('Error in shipping route:', error);
+        res.status(500).render('error', {
+            title: 'Shipping Error',
+            message: 'Error loading shipping page',
+            error: process.env.NODE_ENV === 'development' ? error : {}
+        });
+    }
+});
+
+// Add review route handler
+router.get("/review", async (req, res) => {
+    try {
+        // Get the latest order for the user
+        const order = await Order.findOne({ userId: req.user?._id })
+            .sort({ createdAt: -1 })
+            .populate({
+                path: 'items.productId',
+                model: 'Product'
+            });
+
+        if (!order) {
+            return res.redirect('/cart');
+        }
+
+        // Calculate order summary
+        const orderSummary = {
+            subtotal: order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+            shippingCost: order.shippingCost || 20,
+            total: order.total
+        };
+
+        res.render('review', {
+            order,
+            orderSummary,
+            user: req.user,
+            isAuthenticated: req.isAuthenticated(),
+            error: null
+        });
+    } catch (error) {
+        console.error('Error in review route:', error);
+        res.status(500).render('error', {
+            title: 'Review Error',
+            message: 'Error loading review page',
+            error: process.env.NODE_ENV === 'development' ? error : {}
+        });
+    }
+});
+
+// Add order confirmation route handler
+router.post('/order-confirmation', async (req, res) => {
+  try {
+    // Get the latest order for the user
+    const order = await Order.findOne({ userId: req.user._id })
+      .sort({ createdAt: -1 })
+      .populate('items.productId');
+
+    if (!order) {
+      return res.redirect('/cart');
+    }
+
+    // Get user information
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Validate required shipping information
+    if (!user.Address?.street || !user.Address?.city || !user.Address?.state) {
+      throw new Error('Missing required shipping information');
+    }
+
+    // Update order with user information
+    order.shipping = {
+      name: user.Name,
+      email: user.email,
+      address: user.Address.street,
+      city: user.Address.city,
+      state: user.Address.state,
+      zipCode: user.Address.postalCode || '00000' // Provide a default if missing
+    };
+
+    // Update order status to processing (since it's confirmed)
+    order.status = 'processing';
+    await order.save();
+
+    // Update user's order history
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        orders: {
+          orderId: order._id.toString(),
+          orderDate: new Date(),
+          status: 'Processing',
+          total: order.total,
+          items: order.items.map(item => ({
+            product: item.productId,
+            quantity: item.quantity
+          }))
+        }
+      }
+    });
+
+    // Clear the cart
+    req.session.cart = null;
+
+    res.redirect('/user/order-success');
+  } catch (error) {
+    console.error('Error confirming order:', error);
+    res.render('error', { 
+      message: 'Error confirming order',
+      error: error,
+      title: 'Order Error'
+    });
+  }
+});
+
+// Add order success route handler
+router.get("/order-success", async (req, res) => {
+    try {
+        // Get the latest order for the user
+        const order = await Order.findOne({ userId: req.user?._id })
+            .sort({ createdAt: -1 })
+            .populate({
+                path: 'items.productId',
+                model: 'Product'
+            });
+
+        if (!order) {
+            return res.redirect('/cart');
+        }
+
+        res.render('order-success', {
+            order,
+            user: req.user,
+            isAuthenticated: req.isAuthenticated()
+        });
+    } catch (error) {
+        console.error('Error in order success route:', error);
+        res.status(500).render('error', {
+            title: 'Order Error',
+            message: 'Error loading order confirmation',
+            error: process.env.NODE_ENV === 'development' ? error : {}
+        });
+    }
+});
+
+// Get order details by ID
+router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId)
+      .populate('items.productId')
+      .lean();
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    // Check if the order belongs to the user or if the user is an admin
+    if (order.userId && order.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to view this order'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: order
+    });
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching order details',
+      error: error.message
+    });
   }
 });
 

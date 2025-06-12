@@ -446,4 +446,46 @@ router.post('/api/update-phone', authenticateJWT, async (req, res) => {
   }
 });
 
+// Order details route
+router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const userId = req.user.id;
+
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid order ID format'
+            });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const order = user.orders.find(o => o._id.toString() === orderId);
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: order
+        });
+    } catch (error) {
+        console.error('Error fetching order details:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching order details'
+        });
+    }
+});
+
 module.exports = router;

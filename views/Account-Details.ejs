@@ -131,7 +131,7 @@
                 <div class="orders-list">
                     <% if (user?.orders && user.orders.length > 0) { %>
                         <% user.orders.forEach(order => { %>
-                            <div class="order-card">
+                            <div class="order-card" data-order-id="<%= order.orderId %>">
                                 <div class="order-header">
                                     <div class="order-id">Order #<%= order.orderId %></div>
                                     <div class="order-date">Placed on <%= new Date(order.orderDate).toLocaleDateString() %></div>
@@ -353,6 +353,8 @@
         show: locals.show || false 
     }) %>
 
+    <%- include('partials/modals') %>
+
     <!-- Quick View Modal -->
     <div id="quickViewModal" class="quick-view-modal">
         <button class="close-btn" id="closeQuickView">✖</button>
@@ -396,6 +398,59 @@
     </div>
     <div id="quickViewOverlay" class="quick-view-overlay"></div>
 
+    <!-- Modals Section -->
+    <div id="modalsContainer" style="display: none;">
+        <!-- Order Details Modal -->
+        <div id="orderDetailsModal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3>Order Details</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be dynamically populated -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn">Close</button>
+                    <button type="button" class="track-order-btn">Track Order</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tracking Modal -->
+        <div id="trackingModal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3>Order Tracking</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be dynamically populated -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Refund Details Modal -->
+        <div id="refundDetailsModal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3>Refund Details</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be dynamically populated -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn">Close</button>
+                    <button type="button" class="cancel-request-btn">Cancel Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize modal elements
@@ -410,6 +465,281 @@
             console.log(userData);
             console.log(wishlistData);
 
+            // Function to show modal
+            function showModal(modalId) {
+                console.log('Showing modal:', modalId);
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    console.error('Modal not found:', modalId);
+                }
+            }
+
+            // Function to hide modal
+            function hideModal(modalId) {
+                console.log('Hiding modal:', modalId);
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            }
+
+            // Initialize modals container
+            const modalsContainer = document.getElementById('modalsContainer');
+            if (modalsContainer) {
+                modalsContainer.style.display = 'block';
+            }
+
+            // Close modal when clicking the close button
+            document.querySelectorAll('.close-modal, .cancel-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal-overlay');
+                    if (modal) {
+                        hideModal(modal.id);
+                    }
+                });
+            });
+
+            // Close modal when clicking outside
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        hideModal(this.id);
+                    }
+                });
+            });
+
+            // Close modal when pressing Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+                        hideModal(modal.id);
+                    });
+                }
+            });
+
+            // Order Details button click handler
+            document.querySelectorAll('.order-details').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const orderId = this.closest('.order-card').dataset.orderId;
+                    console.log('Order details button clicked for order:', orderId);
+                    
+                    // Find the order in the user's orders
+                    const order = userData.orders.find(o => o.orderId === orderId);
+                    if (!order) {
+                        console.error('Order not found:', orderId);
+                        return;
+                    }
+
+                    // Create order details content
+                    const content = `
+                        <div class="order-info">
+                            <h4>Order #${order.orderId}</h4>
+                            <p><strong>Status:</strong> <span class="status-${order.status.toLowerCase()}">${order.status}</span></p>
+                            <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+                            <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery || 'Not available'}</p>
+                        </div>
+                        
+                        <div class="order-summary">
+                            <h5>Order Summary</h5>
+                            <div class="summary-grid">
+                                <div><strong>Subtotal:</strong></div>
+                                <div>$${order.total.toFixed(2)}</div>
+                                <div><strong>Shipping:</strong></div>
+                                <div>$${order.shippingCost?.toFixed(2) || '0.00'}</div>
+                                <div><strong>Tax:</strong></div>
+                                <div>$${order.tax?.toFixed(2) || '0.00'}</div>
+                                <div><strong>Total:</strong></div>
+                                <div>$${order.total.toFixed(2)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="order-products">
+                            <h5>Products</h5>
+                            ${order.items.map(item => `
+                                <div class="order-product-detail">
+                                    <img src="${item.product.image || '/Assets/Images/product-placeholder.jpg'}" alt="${item.product.name || 'Product'}">
+                                    <div>
+                                        <h5>${item.product.name || 'Unknown Product'}</h5>
+                                        <p>Qty: ${item.quantity || 1}</p>
+                                        <p>Price: $${item.price?.toFixed(2) || '0.00'}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="shipping-details">
+                            <h5>Shipping Details</h5>
+                            <p><strong>Name:</strong> ${order.shipping?.name || 'N/A'}</p>
+                            <p><strong>Address:</strong> ${order.shipping?.address || 'N/A'}</p>
+                            <p><strong>City:</strong> ${order.shipping?.city || 'N/A'}</p>
+                            <p><strong>State:</strong> ${order.shipping?.state || 'N/A'}</p>
+                            <p><strong>ZIP Code:</strong> ${order.shipping?.zipCode || 'N/A'}</p>
+                        </div>
+                        
+                        <div class="payment-details">
+                            <h5>Payment Details</h5>
+                            <p><strong>Payment Method:</strong> <span class="payment-method">
+                                <i class="fab fa-cc-${order.payment?.bankName?.toLowerCase() || 'credit-card'}"></i> 
+                                ${order.payment?.bankName || 'Credit Card'} ending in ${order.payment?.cardNumber || '****'}
+                            </span></p>
+                            <p><strong>Cardholder:</strong> ${order.payment?.name || 'N/A'}</p>
+                            <p><strong>Expiry:</strong> ${order.payment?.expiry || 'N/A'}</p>
+                        </div>
+                    `;
+
+                    // Update modal content and show it
+                    const modalBody = document.querySelector('#orderDetailsModal .modal-body');
+                    if (modalBody) {
+                        modalBody.innerHTML = content;
+                        showModal('orderDetailsModal');
+                    } else {
+                        console.error('Modal body not found');
+                    }
+                });
+            });
+
+            // Track Order button click handler
+            document.querySelectorAll('.track-order').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const orderId = this.closest('.order-card').dataset.orderId;
+                    console.log('Track order button clicked for order:', orderId);
+                    
+                    // Find the order in the user's orders
+                    const order = userData.orders.find(o => o.orderId === orderId);
+                    if (!order) {
+                        console.error('Order not found:', orderId);
+                        return;
+                    }
+
+                    // Create tracking content
+                    const content = `
+                        <h4>Order #${order.orderId} - Tracking Information</h4>
+                        
+                        <div class="tracking-progress">
+                            <div class="tracking-step ${order.status === 'Placed' ? 'completed' : ''}">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-label">Order Placed</div>
+                                <div class="step-date">${new Date(order.orderDate).toLocaleDateString()}</div>
+                            </div>
+                            <div class="tracking-step ${order.status === 'Processing' ? 'completed' : ''}">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-label">Processing</div>
+                                <div class="step-date">${order.processingDate ? new Date(order.processingDate).toLocaleDateString() : ''}</div>
+                            </div>
+                            <div class="tracking-step ${order.status === 'Shipped' ? 'active' : ''}">
+                                <div class="step-icon"><i class="fas fa-truck"></i></div>
+                                <div class="step-label">Shipped</div>
+                                <div class="step-date">${order.shippingDate ? new Date(order.shippingDate).toLocaleDateString() : ''}</div>
+                            </div>
+                            <div class="tracking-step ${order.status === 'Delivered' ? 'completed' : ''}">
+                                <div class="step-icon"><i class="fas fa-home"></i></div>
+                                <div class="step-label">Delivered</div>
+                                <div class="step-date">${order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : ''}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tracking-details">
+                            <h4>Shipping Details</h4>
+                            <div><strong>Carrier:</strong></div>
+                            <div>${order.shipping?.carrier || 'Standard Shipping'}</div>
+                            <div><strong>Tracking Number:</strong></div>
+                            <div>${order.shipping?.trackingNumber || 'Not available'}</div>
+                            <div><strong>Shipped From:</strong></div>
+                            <div>${order.shipping?.origin || 'Our Warehouse'}</div>
+                            <div><strong>Destination:</strong></div>
+                            <div>${order.shipping?.address}, ${order.shipping?.city}, ${order.shipping?.state} ${order.shipping?.zipCode}</div>
+                            <div><strong>Last Update:</strong></div>
+                            <div>${order.shipping?.lastUpdate ? new Date(order.shipping.lastUpdate).toLocaleDateString() : 'N/A'}</div>
+                            <div><strong>Status:</strong></div>
+                            <div>${order.shipping?.status || order.status}</div>
+                        </div>
+                    `;
+
+                    // Update modal content and show it
+                    const modalBody = document.querySelector('#trackingModal .modal-body');
+                    if (modalBody) {
+                        modalBody.innerHTML = content;
+                        showModal('trackingModal');
+                    } else {
+                        console.error('Modal body not found');
+                    }
+                });
+            });
+
+            // Refund Details button click handler
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const refundId = this.closest('.refund-card').dataset.refundId;
+                    console.log('Refund details button clicked for refund:', refundId);
+                    
+                    // Find the refund in the user's refunds
+                    const refund = userData.refunds.find(r => r._id === refundId);
+                    if (!refund) {
+                        console.error('Refund not found:', refundId);
+                        return;
+                    }
+
+                    // Create refund details content
+                    const content = `
+                        <h4>Refund #${refund.refundId}</h4>
+                        <p><strong>Status:</strong> <span class="status-${refund.status.toLowerCase()}">${refund.status}</span></p>
+                        <p><strong>Order:</strong> #${refund.order?.orderId} - ${refund.order?.items?.[0]?.product?.name || 'Product'}</p>
+                        <p><strong>Request Date:</strong> ${new Date(refund.requestDate).toLocaleDateString()}</p>
+                        ${refund.status === 'Completed' ? `
+                            <p><strong>Processed Date:</strong> ${new Date(refund.processedDate).toLocaleDateString()}</p>
+                        ` : ''}
+                        
+                        <h5 style="margin-top: 20px;">Refund Summary</h5>
+                        <div class="refund-summary">
+                            <div><strong>Product Amount:</strong></div>
+                            <div>$${refund.amount?.toFixed(2) || '0.00'}</div>
+                            <div><strong>Shipping Fee:</strong></div>
+                            <div>$${refund.shippingFee?.toFixed(2) || '0.00'}</div>
+                            <div><strong>Tax:</strong></div>
+                            <div>$${refund.tax?.toFixed(2) || '0.00'}</div>
+                            <div><strong>Total Refund:</strong></div>
+                            <div>$${refund.total?.toFixed(2) || '0.00'}</div>
+                        </div>
+                        
+                        <h5 style="margin-top: 20px;">Reason</h5>
+                        <p>${refund.reason || 'No reason provided'}</p>
+                        
+                        <h5 style="margin-top: 20px;">Additional Notes</h5>
+                        <div class="refund-note">
+                            <i class="fas fa-info-circle"></i>
+                            <p>
+                                ${refund.status === 'Completed' 
+                                    ? 'Your refund has been processed and the amount has been credited back to your original payment method. Please allow 3-5 business days for the amount to reflect in your account.'
+                                    : 'Your refund request is being processed. We will notify you once it has been completed.'}
+                            </p>
+                        </div>
+                        
+                        ${refund.status !== 'Completed' ? `
+                            <h5 style="margin-top: 20px;">Next Steps</h5>
+                            <p>Please ship the item back to us using the provided return label. Once we receive the item, we will process your refund.</p>
+                        ` : ''}
+                    `;
+
+                    // Update modal content and show it
+                    const modalBody = document.querySelector('#refundDetailsModal .modal-body');
+                    if (modalBody) {
+                        modalBody.innerHTML = content;
+                        showModal('refundDetailsModal');
+                    } else {
+                        console.error('Modal body not found');
+                    }
+                });
+            });
 
             // Function to show loading state
             function showLoading() {
@@ -1267,6 +1597,104 @@
 
             .wishlist-btn.filled i {
                 color: #ff4444;
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .modal-footer button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+        }
+
+        .track-order-btn {
+            background-color: #050a30;
+            color: white;
+            border: none;
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .modal-container {
+                background-color: #2d2d2d;
+                color: #fff;
+            }
+
+            .modal-header {
+                border-bottom-color: #444;
+            }
+
+            .modal-footer {
+                border-top-color: #444;
+            }
+
+            .cancel-btn {
+                background-color: #444;
+                border-color: #555;
+                color: #fff;
             }
         }
     </style>

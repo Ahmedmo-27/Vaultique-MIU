@@ -4,22 +4,12 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="Checkout_scripting.js" />
-    <!--    
-  
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-    -->
-    <link rel="stylesheet" href="Checkout_styles.css" />
+    <link rel="stylesheet" href="/Javascript/Checkout_scripting.js" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/CSS/Checkout_styles.css" />
     <link rel="icon" type="image /x-icon" href="/images/logo.ico" />
 
-    <title>Secure Checkout || Vaultique</title>
+    <title>Vaultique | Secure Checkout</title>
   </head>
 
   <body>
@@ -147,45 +137,68 @@
 
     <div class="form-container">
       <h2 class="form-title">BILLING ADDRESS</h2>
-      <form action="/submit-shipping" class="checkout-form" method="post">
+
+      <% if (savedAddresses && savedAddresses.length > 0) { %>
+        <div class="saved-addresses">
+          <h3>Saved Addresses</h3>
+          <% savedAddresses.forEach((address, index) => { %>
+            <div class="saved-address">
+              <input type="radio" name="addressType" id="address<%= index %>" value="<%= index %>" <%= index === 0 ? 'checked' : '' %>>
+              <label for="address<%= index %>">
+                <%= address.street %>, <%= address.city %>, <%= address.state %>, <%= address.postalCode %>
+              </label>
+            </div>
+          <% }); %>
+          <div class="saved-address">
+            <input type="radio" name="addressType" id="newAddress" value="new">
+            <label for="newAddress">Use a new address</label>
+          </div>
+        </div>
+      <% } %>
+
+      <form action="/user/shipping/submit" class="checkout-form" method="post">
         <div class="input-line">
           <label for="name">FULL NAME</label>
           <input
             type="text"
-            name="name"
+            name="fullName"
             id="name"
             placeholder="Your name and surname"
-            value="Mohamed Mekawy"
+            value="<%= user ? user.Name : '' %>"
+            required
           />
         </div>
         <div class="input-line">
           <label for="Email">Email:</label>
           <input
-            type="text"
-            name="Email"
+            type="email"
+            name="email"
             id="Email"
             placeholder="example@example.com"
-            value="mmekawy427@gmail.com"
+            value="<%= user ? user.email : '' %>"
+            required
           />
         </div>
         <div class="input-line">
           <label for="Address">Full Address:</label>
           <input
             type="text"
-            name="Address"
+            name="address"
             id="Address"
             placeholder="room-street-locality"
-            value=""
+            value="<%= savedAddresses && savedAddresses[0] ? savedAddresses[0].street : '' %>"
+            required
           />
         </div>
         <div class="input-line">
           <label for="City">City</label>
           <input
             type="text"
-            name="City"
+            name="city"
             id="City"
             placeholder="Cairo"
-            value=""
+            value="<%= savedAddresses && savedAddresses[0] ? savedAddresses[0].city : '' %>"
+            required
           />
         </div>
         <div class="input-container">
@@ -193,32 +206,95 @@
             <label for="State">State: </label>
             <input
               type="text"
-              name="State"
+              name="state"
               id="State"
               placeholder="California"
-              value=""
+              value="<%= savedAddresses && savedAddresses[0] ? savedAddresses[0].state : '' %>"
+              required
             />
           </div>
           <div class="input-line">
             <label for="Zipcode">Postal Code: </label>
             <input
               type="text"
-              name="Zipcode"
+              name="zipCode"
               id="Zipcode"
               placeholder="123 456"
-              value=""
+              value="<%= savedAddresses && savedAddresses[0] ? savedAddresses[0].postalCode : '' %>"
+              required
             />
           </div>
         </div>
-        <input
-          style="background-color: #050a30; border-width: 50"
-          type="button"
-          value="Complete purchase"
-          onclick="handleFormSubmission(event)"
-        />
+
+        <% if (isAuthenticated) { %>
+          <div class="input-line">
+            <label class="checkbox-label">
+              <input type="checkbox" name="saveAddress" value="true">
+              Save this address for future orders
+            </label>
+          </div>
+        <% } %>
+
+        <button type="submit" class="submit-btn">Continue to Review</button>
       </form>
     </div>
-    <script src="Checkout_scripting.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const addressInputs = document.querySelectorAll('input[name="addressType"]');
+        const formInputs = {
+          address: document.getElementById('Address'),
+          city: document.getElementById('City'),
+          state: document.getElementById('State'),
+          zipCode: document.getElementById('Zipcode')
+        };
+
+        // Parse saved addresses from the server
+        const savedAddresses = JSON.stringify(savedAddresses || []) ;
+
+        function updateFormFields(addressIndex) {
+          if (addressIndex === 'new') {
+            // Clear form fields for new address
+            Object.values(formInputs).forEach(input => {
+              if (input) input.value = '';
+            });
+          } else {
+            const address = savedAddresses[parseInt(addressIndex)];
+            if (address) {
+              formInputs.address.value = address.street || '';
+              formInputs.city.value = address.city || '';
+              formInputs.state.value = address.state || '';
+              formInputs.zipCode.value = address.postalCode || '';
+            }
+          }
+        }
+
+        addressInputs.forEach(input => {
+          input.addEventListener('change', (e) => {
+            updateFormFields(e.target.value);
+          });
+        });
+
+        // Handle form submission
+        const form = document.querySelector('.checkout-form');
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const formData = {
+            fullName: document.getElementById('name').value,
+            email: document.getElementById('Email').value,
+            address: document.getElementById('Address').value,
+            city: document.getElementById('City').value,
+            state: document.getElementById('State').value,
+            zipCode: document.getElementById('Zipcode').value,
+            saveAddress: document.querySelector('input[name="saveAddress"]')?.checked || false
+          };
+
+          // Submit the form
+          this.submit();
+        });
+      });
+    </script>
   </body>
   <div class="login-message-popup" id="login-message-popup">
     <h2>Login Successful</h2>

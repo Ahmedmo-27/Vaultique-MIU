@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/CSS/Checkout_styles.css" />
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico" />
+    <title>Vaultique | Order Confirmed</title>
+  </head>
+  <body>
+    <a href="/" class="logo" id="logo">Vaultique</a>
+
+    <div class="form-container success-container">
+      <div class="success-icon">✓</div>
+      <h2 class="form-title">Order Confirmed!</h2>
+      <p class="success-message">Thank you for your purchase. Your order has been successfully placed.</p>
+
+      <div class="order-details">
+        <h3>Order Details</h3>
+        <p><strong>Order Number:</strong> <%= order.orderNumber %></p>
+        <p><strong>Order Date:</strong> <%= new Date(order.createdAt).toLocaleDateString() %></p>
+        <p><strong>Total Amount:</strong> $<%= order.total.toFixed(2) %></p>
+      </div>
+
+      <div class="shipping-details">
+        <h3>Shipping Information</h3>
+        <p><strong>Name:</strong> <%= order.shipping.name %></p>
+        <p><strong>Address:</strong> <%= order.shipping.address %></p>
+        <p><strong>City:</strong> <%= order.shipping.city %></p>
+        <p><strong>State:</strong> <%= order.shipping.state %></p>
+        <p><strong>Postal Code:</strong> <%= order.shipping.zipCode %></p>
+      </div>
+
+      <div class="order-items">
+        <h3>Order Items</h3>
+        <% order.items.forEach(item => { %>
+          <div class="order-item">
+            <img src="<%= item.productId.image %>" alt="<%= item.productId.name %>" class="item-image">
+            <div class="item-details">
+              <h4><%= item.productId.name %></h4>
+              <p>Quantity: <%= item.quantity %></p>
+              <p>Price: $<%= item.price.toFixed(2) %></p>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+
+      <div class="action-buttons">
+        <a href="/" class="btn primary">Continue Shopping</a>
+        <a href="/user/orders" class="btn secondary">View Orders</a>
+      </div>
+    </div>
+
+    <style>
+      .success-container {
+        text-align: center;
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+      }
+
+      .success-icon {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 1rem;
+      }
+
+      .success-message {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-bottom: 2rem;
+      }
+
+      .order-details,
+      .shipping-details,
+      .order-items {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: left;
+      }
+
+      .order-details h3,
+      .shipping-details h3,
+      .order-items h3 {
+        margin-bottom: 1rem;
+        color: #333;
+      }
+
+      .order-details p,
+      .shipping-details p {
+        margin: 0.5rem 0;
+      }
+
+      .order-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .order-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        margin-right: 1rem;
+        border-radius: 4px;
+      }
+
+      .item-details h4 {
+        margin: 0 0 0.5rem 0;
+      }
+
+      .item-details p {
+        margin: 0.25rem 0;
+        color: #6c757d;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .btn.primary {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .btn.primary:hover {
+        background-color: #0056b3;
+      }
+
+      .btn.secondary {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .btn.secondary:hover {
+        background-color: #545b62;
+      }
+    </style>
+  </body>
+</html> 

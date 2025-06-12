@@ -7,22 +7,29 @@ const CartSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  items: [
-    {
-      productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true
-      },
-      name: String,
-      image: String,
-      price: Number,
-      quantity: {
-        type: Number,
-        default: 1
-      }
+  items: [{
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
+    image: {
+      type: String,
+      required: true
+    },
+    price: {
+      type: Number,
+      required: true
+    },
+    quantity: {
+      type: Number,
+      default: 1
     }
-  ],
+  }],
   shippingMethod: {
     type: String,
     enum: ['standard', 'fast'],
@@ -40,6 +47,25 @@ const CartSchema = new mongoose.Schema({
     type: Number,
     default: 0
   }
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Pre-save middleware to calculate totals
+CartSchema.pre('save', function(next) {
+  this.subtotal = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  this.total = this.subtotal + this.shippingCost;
+  next();
+});
+
+// Virtual for getting populated items
+CartSchema.virtual('populatedItems').get(function() {
+  return this.items.map(item => ({
+    ...item.toObject(),
+    product: item.product
+  }));
 });
 
 module.exports = mongoose.model('Cart', CartSchema);

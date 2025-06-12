@@ -218,28 +218,65 @@
         });
       });
 
-      // Add to cart functionality
+      // Add to Cart functionality
       const addToCartBtn = document.querySelector('.add-to-cart');
       if (addToCartBtn) {
         addToCartBtn.addEventListener('click', async function() {
-          const productId = this.getAttribute('data-product-id');
+          const productId = this.dataset.productId;
+          const button = this;
+          
+          // Show loading state
+          button.disabled = true;
+          button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+          
           try {
-            const response = await fetch('/api/cart/add', {
+            const response = await fetch('/cart/add', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ productId })
+              body: JSON.stringify({
+                productId: productId,
+                quantity: 1
+              })
             });
+            
             const data = await response.json();
+            
             if (data.success) {
-              alert('Product added to cart successfully!');
+              // Show success message
+              const successDiv = document.createElement('div');
+              successDiv.className = 'success-message';
+              successDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <p>Item added to cart successfully!</p>
+              `;
+              document.querySelector('.product-actions').insertBefore(successDiv, button);
+              setTimeout(() => successDiv.remove(), 3000);
+              
+              // Update cart count if element exists
+              const cartCount = document.getElementById('cart-items-count');
+              if (cartCount) {
+                cartCount.textContent = data.cart.items.length;
+              }
             } else {
-              alert('Failed to add product to cart');
+              throw new Error(data.message || 'Failed to add item to cart');
             }
           } catch (error) {
             console.error('Error adding to cart:', error);
-            alert('An error occurred while adding to cart');
+            // Show error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+              <i class="fas fa-exclamation-circle"></i>
+              <p>${error.message || 'Failed to add item to cart. Please try again.'}</p>
+            `;
+            document.querySelector('.product-actions').insertBefore(errorDiv, button);
+            setTimeout(() => errorDiv.remove(), 5000);
+          } finally {
+            // Reset button state
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-shopping-bag"></i><p>Add to Cart</p>';
           }
         });
       }
@@ -398,6 +435,98 @@
 
       .wishlist-btn.filled i {
         color: #ff4444;
+      }
+    }
+
+    /* Add to Cart Button Styles */
+    .add-to-cart {
+      background-color: #050a30;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      font-size: 1em;
+      font-weight: 500;
+    }
+
+    .add-to-cart:hover {
+      background-color: #0a1a60;
+      transform: translateY(-2px);
+    }
+
+    .add-to-cart i {
+      font-size: 1.2em;
+    }
+
+    .add-to-cart p {
+      margin: 0;
+    }
+
+    /* Button States */
+    .add-to-cart.loading {
+      background-color: #666;
+      cursor: wait;
+    }
+
+    .add-to-cart.success {
+      background-color: #28a745;
+    }
+
+    .add-to-cart.error {
+      background-color: #dc3545;
+    }
+
+    /* Notification Styles */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 4px;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      border-left: 4px solid #28a745;
+    }
+
+    .notification.error {
+      border-left: 4px solid #dc3545;
+    }
+
+    .notification i {
+      font-size: 1.2em;
+    }
+
+    .notification.success i {
+      color: #28a745;
+    }
+
+    .notification.error i {
+      color: #dc3545;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      .notification {
+        background: #2d2d2d;
+        color: white;
       }
     }
   </style>

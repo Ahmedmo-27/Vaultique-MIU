@@ -125,7 +125,7 @@ const UserSchema = new mongoose.Schema({
     },
     paymentType: {
       type: String,
-      enum: ['Credit Card', 'Debit Card', 'PayPal'],
+      enum: ['Credit Card', 'Debit Card', 'PayPal', 'credit', 'debit'],
       default: 'Credit Card',
     },
   },
@@ -141,7 +141,7 @@ const UserSchema = new mongoose.Schema({
       },
       status: {
         type: String,
-        enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+        enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled', 'Processing', 'Completed'],
         default: 'Pending',
       },
       total: {

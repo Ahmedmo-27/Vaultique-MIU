@@ -10,6 +10,7 @@ const session = require('express-session');
 const { optionalJWT, isAdmin } = require('./middleware/jwt');
 const config = require('./config/env');
 const { removeCookie } = require('./utils/cookieManager');
+const passport = require('passport');
 
 // Import route files
 const apiRouter = require('./routes/api');
@@ -21,6 +22,9 @@ const productRoutes = require('./routes/ProductsRoutes');
 const userRoutes = require('./routes/UsersRoutes');
 const collectionsRoutes = require('./routes/CollectionsRoutes');
 const brandsRoutes = require('./routes/BrandsRoutes');
+const cartRoutes = require('./routes/CartRoutes');
+const shippingRoutes = require('./routes/ShippingRoutes');
+const paymentRoutes = require('./routes/PaymentRoutes');
 const app = express();
 
 // Set EJS as the view engine
@@ -63,16 +67,18 @@ app.use(cookieParser());
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
 }));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // CORS Configuration
 app.use(
@@ -251,12 +257,9 @@ app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')))
 
 // Middleware to make user data available to all views
 app.use((req, res, next) => {
-  // Get user from session or JWT token
-  const user = req.session.user || (req.user ? req.user.toObject() : null);
-  
-  // Make user data available to all views
-  res.locals.user = user;
-  next();
+    res.locals.user = req.user;
+    res.locals.isAuthenticated = req.isAuthenticated();
+    next();
 });
 
 // Apply optional JWT middleware to all routes
@@ -268,20 +271,25 @@ app.get('/', (req, res) => res.redirect('/user/home'));
 // Public routes (no authentication required)
 app.use('/user', userController);
 app.use('/api', apiRouter);
-app.use('/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/', userRoutes);
 app.use('/collections', collectionsRoutes);
-app.use('/user/brands', brandsRoutes);
+app.use('/brands', brandsRoutes);
+app.use('/cart', cartRoutes);
+app.use('/api/shipping', shippingRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Protected routes (authentication required)
-app.use('/api/admin', isAdmin, adminRoutes);
+app.use('/admin', adminRoutes);
 app.use('/api/products', productRoutes);
 
 // Global logout route for client-side usage
 app.all('/logout', (req, res) => {
   try {
+    // Clear user data from request
+    req.user = null;
+    
     // Clear session
     if (req.session) {
       req.session.destroy((err) => {
@@ -292,8 +300,18 @@ app.all('/logout', (req, res) => {
     }
     
     // Clear all auth cookies
-    removeCookie(res, 'token');
-    removeCookie(res, 'refreshToken');
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
     res.clearCookie('connect.sid', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -301,15 +319,16 @@ app.all('/logout', (req, res) => {
       path: '/'
     });
     
-    // Send success response
+    // Clear any client-side storage
     if (req.xhr || req.headers.accept?.includes('application/json')) {
       res.json({
         success: true,
-        message: 'Logged out successfully'
+        message: 'Logged out successfully',
+        clearStorage: true
       });
     } else {
-      // Redirect to login page for regular requests
-      res.redirect('/user/LoginSignup');
+      // Redirect to home page
+      res.redirect('/users/home');
     }
   } catch (error) {
     console.error('Logout error:', error);
@@ -319,7 +338,7 @@ app.all('/logout', (req, res) => {
         message: 'An error occurred during logout'
       });
     } else {
-      res.redirect('/user/LoginSignup');
+      res.redirect('/users/home');
     }
   }
 });
@@ -339,8 +358,45 @@ app.delete('/admin/products/:id', isAdmin, adminController.deleteProduct);
 
 // Admin logout route
 app.get('/admin/logout', (req, res) => {
-  removeCookie(res, 'token');
-  res.redirect('/user/LoginSignup');
+  try {
+    // Clear user data from request
+    req.user = null;
+    
+    // Clear session
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Session destroy error:', err);
+        }
+      });
+    }
+    
+    // Clear all auth cookies
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    res.clearCookie('connect.sid', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    
+    // Redirect to home page
+    res.redirect('/users/home');
+  } catch (error) {
+    console.error('Admin logout error:', error);
+    res.redirect('/users/home');
+  }
 });
 
 // Increase request timeout
