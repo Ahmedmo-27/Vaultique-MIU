@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  brand: { type: String, ref: 'Brand', required: true },
+  brand: { 
+    type: String, 
+    ref: 'Brand', 
+    required: true 
+  },
   strapMaterial: { type: String, required: true },
   movement: { type: String, required: true },
   waterResistance: { type: String, required: true },
@@ -12,17 +16,14 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   stock: { type: Boolean, default: true },
   stockCount: { type: Number, default: 0 },
-  Vcollection: { type: String, required: true },
+  Vcollection: { type: String, ref: 'Collection', required: true },
   gender: { type: String, required: true },
 
   // Media fields
   image: { type: String, required: true },
   galleryImages: [String],
   video: { type: String },
-  model3D: { type: String },
 
-  // Product information
-  productPageUrl: { type: String },
   description: { type: String },
   specialFeatures: [
     {

@@ -45,34 +45,489 @@ document.addEventListener('DOMContentLoaded', function () {
     { code: 'nz', name: 'New Zealand', emoji: '🇳🇿', dialCode: '+64' },
   ];
 
-  // Populate country dropdown
+  // Phone number handling
+  const phoneInput = document.getElementById('phoneNumber');
   const countrySelect = document.getElementById('countrySelect');
-  countries.forEach((country) => {
+  const userData = JSON.parse(document.getElementById('userData').textContent);
+
+  console.log('User data from JSON:', userData);
+  console.log('Phone input element:', phoneInput);
+  console.log('Phone input value:', phoneInput?.value);
+  console.log('Phone input placeholder:', phoneInput?.placeholder);
+
+  // Populate country select dropdown
+  countries.forEach(country => {
     const option = document.createElement('option');
-    option.value = country.code;
-    option.setAttribute('data-dial-code', country.dialCode);
-    option.innerHTML = `${country.emoji} ${country.name} (${country.dialCode})`;
+    option.value = country.dialCode;
+    option.textContent = `${country.emoji} ${country.name} (${country.dialCode})`;
     countrySelect.appendChild(option);
   });
 
-  // Set default country to Egypt
-  countrySelect.value = 'eg';
+  // Function to detect country code from phone number
+  function detectCountryCode(phoneNumber) {
+    const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+    if (cleanNumber.startsWith('+')) {
+      const matchingCountry = countries.find(country => 
+        cleanNumber.startsWith(country.dialCode)
+      );
+      if (matchingCountry) {
+        return matchingCountry.dialCode;
+      }
+    }
+    return '+20'; // Default to Egypt
+  }
 
-  // Phone number validation
-  const phoneNumberInput = document.getElementById('phoneNumber');
-  phoneNumberInput.addEventListener('blur', function () {
-    if (this.value.trim() && !/^\d+$/.test(this.value)) {
-      alert('Please enter a valid phone number (digits only)');
+  // Function to format phone number
+  function formatPhoneNumber(number) {
+    // Remove all non-digit characters
+    const cleaned = number.replace(/\D/g, '');
+    
+    // Format the number with spaces
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `${match[1]} ${match[2]} ${match[3]}`;
+    }
+    return cleaned;
+  }
+
+  // Initialize phone number and country code
+  if (phoneInput && countrySelect) {
+    // Get the phone number from user data or input value
+    const phoneNumber = userData?.phone_number || phoneInput.value;
+    console.log('Phone number to use:', phoneNumber);
+    
+    // Set default country code if no phone number exists
+    if (!phoneNumber) {
+        countrySelect.value = '+20'; // Default to Egypt
+        phoneInput.placeholder = 'Enter your phone number';
+    } else {
+        // Detect country code from the phone number
+        const countryCode = detectCountryCode(phoneNumber);
+        console.log('Detected country code:', countryCode);
+        
+        if (countryCode) {
+            countrySelect.value = countryCode;
+            // Display the number without country code in the input
+            const numberWithoutCode = phoneNumber.replace(countryCode, '').trim();
+            console.log('Number without code:', numberWithoutCode);
+            phoneInput.value = numberWithoutCode;
+        }
+    }
+
+    // Initially lock the phone input
+    phoneInput.readOnly = true;
+    countrySelect.disabled = true;
+
+    // Create and add the change phone number button
+    const phoneInputContainer = phoneInput.parentElement;
+    const changePhoneBtn = document.createElement('button');
+    changePhoneBtn.className = 'change-phone-btn';
+    changePhoneBtn.innerHTML = '<i class="fas fa-edit"></i> Change Phone Number';
+    phoneInputContainer.appendChild(changePhoneBtn);
+
+    // Handle change phone number button click
+    changePhoneBtn.addEventListener('click', function() {
+        if (phoneInput.readOnly) {
+            // Unlock the input
+            phoneInput.readOnly = false;
+            countrySelect.disabled = false;
+            changePhoneBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            phoneInput.focus();
+        } else {
+            // Lock the input and save changes
+            const value = phoneInput.value.replace(/\s/g, '');
+            const fullNumber = countrySelect.value + value;
+            
+            // Save the changes
+            fetch('/api/update-phone', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phoneNumber: fullNumber })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Phone number updated successfully');
+                    phoneInput.readOnly = true;
+                    countrySelect.disabled = true;
+                    changePhoneBtn.innerHTML = '<i class="fas fa-edit"></i> Change Phone Number';
+                } else {
+                    throw new Error(data.message || 'Failed to update phone number');
+                }
+            })
+            .catch(error => {
+                showNotification(error.message, 'error');
+                // Revert to the original phone number on error
+                if (phoneNumber) {
+                    const countryCode = detectCountryCode(phoneNumber);
+                    const numberWithoutCode = phoneNumber.replace(countryCode, '').trim();
+                    phoneInput.value = numberWithoutCode;
+                    countrySelect.value = countryCode;
+                }
+            });
+        }
+    });
+
+    // Handle phone number input formatting
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 0) {
+            // Add spaces every 3 digits
+            value = value.match(/.{1,3}/g).join(' ');
+        }
+        e.target.value = value;
+    });
+  }
+
+  // Initialize modal elements
+  const quickViewModal = document.getElementById('quickViewModal');
+  const quickViewOverlay = document.getElementById('quickViewOverlay');
+  const closeQuickViewBtn = document.getElementById('closeQuickView');
+  const wishlistGrid = document.getElementById('wishlistGrid');
+  const loadingSpinner = document.querySelector('.wishlist-loading');
+  const wishlistData = JSON.parse(document.getElementById('wishlistData').textContent);
+
+  // Function to show modal
+  function showModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+  }
+
+  // Function to hide modal
+  function hideModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+  }
+
+  // Function to show notification
+  function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+  }
+
+  // Order Details Modal
+  document.querySelectorAll('.order-details').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const orderId = this.closest('.order-card').dataset.orderId;
+      const modal = document.getElementById('orderDetailsModal');
+      const content = modal.querySelector(`.order-details-content[data-order-id="${orderId}"]`);
+      
+      // Hide all content first
+      modal.querySelectorAll('.order-details-content').forEach(el => el.style.display = 'none');
+      
+      // Show the selected content
+      if (content) {
+        content.style.display = 'block';
+        showModal('orderDetailsModal');
+      }
+    });
+  });
+
+  // Close modal when clicking the close button or overlay
+  document.querySelectorAll('.close-modal, .cancel-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const modal = this.closest('.modal-overlay');
+      if (modal) {
+        hideModal(modal.id);
+      }
+    });
+  });
+
+  // Close modal when clicking outside
+  document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        hideModal(this.id);
+      }
+    });
+  });
+
+  // Close modal when pressing Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay').forEach(modal => {
+        if (modal.style.display === 'block') {
+          hideModal(modal.id);
+        }
+      });
     }
   });
 
-  // Language selection
-  const languageSelect = document.getElementById('languageSelect');
-  languageSelect.addEventListener('change', function () {
-    console.log(`Language changed to: ${this.value}`);
+  // Password Change Functionality
+  const changePasswordLink = document.getElementById('changePasswordLink');
+  changePasswordLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    showModal('passwordChangeModal');
   });
 
-  // Tab switching functionality
+  // Password validation
+  const newPassword = document.getElementById('newPassword');
+  const requirements = {
+    length: /.{8,}/,
+    uppercase: /[A-Z]/,
+    lowercase: /[a-z]/,
+    number: /[0-9]/,
+    special: /[!@#$%^&*(),.?":{}|<>]/
+  };
+
+  function validatePassword() {
+    const password = newPassword.value;
+    Object.keys(requirements).forEach(req => {
+        const element = document.getElementById(req);
+        if (requirements[req].test(password)) {
+            element.classList.add('valid');
+        } else {
+            element.classList.remove('valid');
+        }
+    });
+  }
+
+  newPassword.addEventListener('input', validatePassword);
+
+  // Toggle password visibility
+  document.querySelectorAll('.password-toggle').forEach(button => {
+    button.addEventListener('click', function() {
+        const input = document.getElementById(this.dataset.target);
+        const icon = this.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+  });
+
+  // Handle password change form submission
+  const passwordChangeForm = document.getElementById('passwordChangeForm');
+  passwordChangeForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+        showNotification('New passwords do not match', 'error');
+        return;
+    }
+
+    const isValid = Object.values(requirements).every(regex => regex.test(newPassword));
+    if (!isValid) {
+        showNotification('Password does not meet requirements', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch('/user/api/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                currentPassword,
+                newPassword
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification('Password updated successfully');
+            hideModal('passwordChangeModal');
+        } else {
+            showNotification(data.message || 'Failed to update password', 'error');
+        }
+    } catch (error) {
+        console.error('Error updating password:', error);
+        showNotification('Error updating password', 'error');
+    }
+  });
+
+  // Payment Method Modal
+  document.querySelector('.add-payment-method').addEventListener('click', function() {
+    showModal('paymentMethodModal');
+  });
+
+  // Handle payment method form submission
+  const paymentMethodForm = document.getElementById('paymentMethodForm');
+  paymentMethodForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const paymentData = Object.fromEntries(formData.entries());
+
+    if (!validatePaymentData(paymentData)) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/payment-methods', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(paymentData)
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            showNotification('Payment method added successfully');
+            hideModal('paymentMethodModal');
+            window.location.reload();
+        } else {
+            showNotification(data.message || 'Failed to add payment method', 'error');
+        }
+    } catch (error) {
+        console.error('Error adding payment method:', error);
+        showNotification('Error adding payment method', 'error');
+    }
+  });
+
+  // Address Modal
+  document.querySelector('.add-address-btn').addEventListener('click', function() {
+    showModal('addressModal');
+  });
+
+  // Handle address form submission
+  const addressForm = document.getElementById('addressForm');
+  if (addressForm) {
+    addressForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const addressData = Object.fromEntries(formData.entries());
+
+      try {
+          const response = await fetch('/api/addresses', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(addressData)
+          });
+
+          const data = await response.json();
+          if (data.success) {
+              showNotification('Address added successfully');
+              hideModal('addressModal');
+              window.location.reload();
+          } else {
+              showNotification(data.message || 'Failed to add address', 'error');
+          }
+      } catch (error) {
+          showNotification('Error adding address', 'error');
+      }
+    });
+  }
+
+  // Tracking Modal
+  const trackOrderButtons = document.querySelectorAll('.track-order');
+  if (trackOrderButtons.length > 0) {
+    trackOrderButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const orderId = this.closest('.order-card').dataset.orderId;
+            const modal = document.getElementById('trackingModal');
+            if (!modal) return;
+            
+            const content = modal.querySelector(`.tracking-content[data-order-id="${orderId}"]`);
+            if (!content) return;
+            
+            // Hide all content first
+            modal.querySelectorAll('.tracking-content').forEach(el => el.style.display = 'none');
+            
+            // Show the selected content
+            content.style.display = 'block';
+            showModal('trackingModal');
+        });
+    });
+  }
+
+  // Refund Details Modal
+  const viewDetailsButtons = document.querySelectorAll('.view-details');
+  if (viewDetailsButtons.length > 0) {
+    viewDetailsButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const refundId = this.closest('.refund-card').dataset.refundId;
+            const modal = document.getElementById('refundDetailsModal');
+            if (!modal) return;
+            
+            const content = modal.querySelector(`.refund-details-content[data-refund-id="${refundId}"]`);
+            if (!content) return;
+            
+            // Hide all content first
+            modal.querySelectorAll('.refund-details-content').forEach(el => el.style.display = 'none');
+            
+            // Show the selected content
+            content.style.display = 'block';
+            showModal('refundDetailsModal');
+        });
+    });
+  }
+
+  // Review Modal
+  const reviewButtons = document.querySelectorAll('.edit-review');
+  if (reviewButtons.length > 0) {
+    reviewButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const reviewId = this.closest('.review-card').dataset.reviewId;
+            const modal = document.getElementById('reviewModal');
+            if (!modal) return;
+            
+            // Hide all content first
+            modal.querySelectorAll('.review-content').forEach(el => el.style.display = 'none');
+            
+            // Show the selected content
+            const content = modal.querySelector(`.review-content[data-review-id="${reviewId}"]`);
+            if (content) {
+                content.style.display = 'block';
+                showModal('reviewModal');
+            }
+        });
+    });
+  }
+
+  // Confirmation Modal
+  function showConfirmation(message, onConfirm) {
+    const modal = document.getElementById('confirmationModal');
+    const messageElement = document.getElementById('confirmationMessage');
+    const confirmButton = modal.querySelector('.confirm-btn');
+    
+    messageElement.textContent = message;
+    
+    // Remove any existing click handlers
+    const newConfirmButton = confirmButton.cloneNode(true);
+    confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+    
+    // Add new click handler
+    newConfirmButton.addEventListener('click', () => {
+        onConfirm();
+        hideModal('confirmationModal');
+    });
+    
+    showModal('confirmationModal');
+  }
+
+  // Sidebar navigation
   sidebarItems.forEach((item) => {
     item.addEventListener('click', function () {
       // Remove active class from all sidebar items and tabs
@@ -92,7 +547,29 @@ document.addEventListener('DOMContentLoaded', function () {
       // Handle logout separately
       if (tabId === 'logout') {
         if (confirm('Are you sure you want to logout?')) {
-          window.location.href = '/logout';
+          // Clear any stored data
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          sessionStorage.clear();
+          
+          // Perform logout
+          fetch('/logout', {
+            method: 'POST',
+            credentials: 'include'
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              window.location.href = '/user/LoginSignup';
+            } else {
+              console.error('Logout failed:', data.message);
+              window.location.href = '/user/LoginSignup';
+            }
+          })
+          .catch(error => {
+            console.error('Logout error:', error);
+            window.location.href = '/user/LoginSignup';
+          });
         } else {
           // Revert to previous tab
           document.querySelector('.sidebar-item.active').click();
@@ -151,9 +628,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        closeModal(modal);
-      }
+      if (e.target === modal) closeModal(modal);
     });
 
     return modal;
@@ -164,94 +639,6 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(() => {
       modal.remove();
     }, 300);
-  }
-
-  // Password Change Handler
-  const changePasswordLink = document.getElementById('changePasswordLink');
-  if (changePasswordLink) {
-    changePasswordLink.addEventListener('click', function (e) {
-      e.preventDefault();
-
-      const modalContent = `
-                <form id="passwordForm">
-                    <div class="form-group">
-                        <label>Current Password</label>
-                        <div style="position:relative">
-                            <input type="password" id="currentPassword" required>
-                            <span class="password-toggle" id="toggleCurrentPassword">
-                                <i class="far fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>New Password</label>
-                        <div style="position:relative">
-                            <input type="password" id="newPassword" required>
-                            <span class="password-toggle" id="toggleNewPassword">
-                                <i class="far fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Confirm New Password</label>
-                        <div style="position:relative">
-                            <input type="password" id="confirmPassword" required>
-                            <span class="password-toggle" id="toggleConfirmPassword">
-                                <i class="far fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                </form>
-            `;
-
-      const modal = createModal('Change Password', modalContent, [
-        {
-          text: 'Cancel',
-          class: 'cancel-btn',
-          clickHandler: () => closeModal(modal),
-        },
-        {
-          text: 'Update Password',
-          clickHandler: async (e) => {
-            e.preventDefault();
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (newPassword !== confirmPassword) {
-              alert('New passwords do not match!');
-              return;
-            }
-
-            try {
-              const response = await fetch('/api/change-password', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  currentPassword,
-                  newPassword,
-                }),
-              });
-
-              const data = await response.json();
-              if (data.success) {
-                alert('Password changed successfully!');
-                closeModal(modal);
-              } else {
-                alert(data.message || 'Failed to change password');
-              }
-            } catch (error) {
-              alert('An error occurred while changing password');
-            }
-          },
-        },
-      ]);
-
-      // Password toggle functionality
-      setupPasswordToggles();
-    });
   }
 
   // Form Validation Functions
@@ -265,139 +652,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function validateCVV(cvv) {
     return /^\d{3,4}$/.test(cvv);
-  }
-
-  // Payment Method Handlers
-  const addPaymentMethodBtn = document.querySelector('.add-payment-method');
-  if (addPaymentMethodBtn) {
-    addPaymentMethodBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      showPaymentMethodModal();
-    });
-  }
-
-  // Edit Payment Method Handler
-  const editMethodBtns = document.querySelectorAll('.edit-method');
-  editMethodBtns.forEach((button) => {
-    button.addEventListener('click', function (e) {
-      e.preventDefault();
-      const paymentCard = this.closest('.payment-method-card');
-      const cardType = paymentCard.querySelector('.payment-method-type span').textContent;
-      const cardNumber = paymentCard.querySelector(
-        '.payment-method-details p:first-child'
-      ).textContent;
-      const expiryDate = paymentCard
-        .querySelector('.payment-method-details p:last-child')
-        .textContent.replace('Expires ', '');
-
-      showPaymentMethodModal({
-        isEdit: true,
-        cardType,
-        cardNumber,
-        expiryDate,
-      });
-    });
-  });
-
-  function showPaymentMethodModal(existingData = null) {
-    const modalContent = `
-            <form id="paymentMethodForm">
-                <div class="form-group">
-                    <label>Card Type</label>
-                    <select id="cardType" class="form-control" required>
-                        <option value="Credit Card" ${existingData?.cardType === 'Credit Card' ? 'selected' : ''}>Credit Card</option>
-                        <option value="Debit Card" ${existingData?.cardType === 'Debit Card' ? 'selected' : ''}>Debit Card</option>
-                        <option value="PayPal" ${existingData?.cardType === 'PayPal' ? 'selected' : ''}>PayPal</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Card Number</label>
-                    <input type="text" id="cardNumber" class="form-control" 
-                        placeholder="1234 5678 9012 3456" 
-                        value="${existingData?.cardNumber || ''}"
-                        ${existingData ? 'readonly' : 'required'}>
-                </div>
-                <div class="form-group">
-                    <label>Cardholder Name</label>
-                    <input type="text" id="cardHolder" class="form-control" 
-                        placeholder="John Doe" 
-                        value="${existingData?.cardHolder || ''}"
-                        required>
-                </div>
-                <div class="form-group" style="display: flex; gap: 15px;">
-                    <div style="flex: 1;">
-                        <label>Expiry Date</label>
-                        <input type="text" id="expiryDate" class="form-control" 
-                            placeholder="MM/YY" 
-                            value="${existingData?.expiryDate || ''}"
-                            required>
-                    </div>
-                    <div style="flex: 1;">
-                        <label>CVV</label>
-                        <input type="text" id="cvv" class="form-control" 
-                            placeholder="123" 
-                            ${existingData ? '' : 'required'}>
-                    </div>
-                </div>
-            </form>
-        `;
-
-    const modal = createModal(
-      existingData ? 'Edit Payment Method' : 'Add Payment Method',
-      modalContent,
-      [
-        {
-          text: 'Cancel',
-          class: 'cancel-btn',
-          clickHandler: () => closeModal(modal),
-        },
-        {
-          text: existingData ? 'Update Card' : 'Add Card',
-          clickHandler: async () => {
-            const form = document.getElementById('paymentMethodForm');
-            const formData = new FormData(form);
-            const paymentData = Object.fromEntries(formData.entries());
-
-            // Validate form data
-            if (!validatePaymentData(paymentData, existingData)) {
-              return;
-            }
-
-            try {
-              const response = await fetch('/api/payment-methods', {
-                method: existingData ? 'PUT' : 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(paymentData),
-              });
-
-              const data = await response.json();
-              if (data.success) {
-                alert(
-                  existingData
-                    ? 'Payment method updated successfully!'
-                    : 'Payment method added successfully!'
-                );
-                window.location.reload(); // Refresh to show updated payment method
-              } else {
-                alert(
-                  data.message || `Failed to ${existingData ? 'update' : 'add'} payment method`
-                );
-              }
-            } catch (error) {
-              alert(
-                `An error occurred while ${existingData ? 'updating' : 'adding'} payment method`
-              );
-            }
-            closeModal(modal);
-          },
-        },
-      ]
-    );
-
-    // Add input validation listeners
-    setupPaymentInputValidation();
   }
 
   function validatePaymentData(data, isEdit = false) {
@@ -498,31 +752,6 @@ document.addEventListener('DOMContentLoaded', function () {
       ]);
     });
   });
-
-  // Helper Functions
-  function setupPasswordToggles() {
-    const toggles = {
-      toggleCurrentPassword: 'currentPassword',
-      toggleNewPassword: 'newPassword',
-      toggleConfirmPassword: 'confirmPassword',
-    };
-
-    Object.entries(toggles).forEach(([toggleId, inputId]) => {
-      const toggle = document.getElementById(toggleId);
-      const input = document.getElementById(inputId);
-      const icon = toggle.querySelector('i');
-
-      toggle.addEventListener('click', function () {
-        if (input.type === 'password') {
-          input.type = 'text';
-          icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-          input.type = 'password';
-          icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
-      });
-    });
-  }
 
   // Address Modals
   // Edit Address
@@ -661,67 +890,8 @@ document.addEventListener('DOMContentLoaded', function () {
     button.addEventListener('click', function (e) {
       e.preventDefault();
 
-      const modalContent = `
-                <div class="order-details-container">
-                    <h4>Order #12345</h4>
-                    <p><strong>Status:</strong> <span class="status-shipped">Shipped</span></p>
-                    <p><strong>Order Date:</strong> March 15, 2023</p>
-                    <p><strong>Estimated Delivery:</strong> March 20, 2023</p>
-                    
-                    <h5 style="margin-top: 20px;">Order Summary</h5>
-                    <div class="order-summary">
-                        <div><strong>Subtotal:</strong></div>
-                        <div>$229.99</div>
-                        <div><strong>Shipping:</strong></div>
-                        <div>$19.99</div>
-                        <div><strong>Tax:</strong></div>
-                        <div>$0.00</div>
-                        <div><strong>Total:</strong></div>
-                        <div>$249.99</div>
-                    </div>
-                    
-                    <h5 style="margin-top: 20px;">Products</h5>
-                    <div class="order-product-detail">
-                        <img src="/Ahmed/watches/Audemars Piguet Royal Oak Offshore Diver.png" alt="watch" id="order-product-image">
-                        <div>
-                            <h5>Audemars Piguet Royal Oak Offshore</h5>
-                            <p>Qty: 1</p>
-                            <p>Price: $30000</p>
-                        </div>
-                    </div>
-                    
-                    <h5 style="margin-top: 20px;">Shipping Details</h5>
-                    <div class="shipping-details">
-                        <p><strong>Name:</strong> Ahmed Mostafa</p>
-                        <p><strong>Address:</strong> 123 Main Street, Cairo, Egypt</p>
-                        <p><strong>Shipping Method:</strong> Standard Shipping</p>
-                        <p><strong>Tracking Number:</strong> XYZ123456789</p>
-                    </div>
-                    
-                    <h5 style="margin-top: 20px;">Payment Details</h5>
-                    <div class="payment-details">
-                        <p><strong>Payment Method:</strong> <span class="payment-method"><i class="fab fa-cc-visa"></i> Visa ending in 4242</span></p>
-                        <p><strong>Payment Status:</strong> Paid</p>
-                    </div>
-                </div>
-            `;
-
-      const modal = createModal('Order Details', modalContent, [
-        {
-          text: 'Close',
-          class: 'cancel-btn',
-          clickHandler: () => closeModal(modal),
-        },
-        {
-          text: 'Track Order',
-          class: 'track-order',
-          clickHandler: () => {
-            // Open tracking modal
-            closeModal(modal);
-            showTrackingModal();
-          },
-        },
-      ]);
+      const orderId = this.closest('.order-card').dataset.orderId;
+      loadOrderDetails(orderId);
     });
   });
 
@@ -870,64 +1040,381 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.edit-review').forEach((button) => {
     button.addEventListener('click', function (e) {
       e.preventDefault();
-      const reviewCard = this.closest('.review-card');
-      const currentRating = reviewCard.querySelectorAll('.stars i.fa-star').length;
-      const currentTitle = reviewCard.querySelector('.review-content h6').textContent;
-      const currentReview = reviewCard.querySelector('.review-content p').textContent;
+      const reviewId = this.closest('.review-card').dataset.reviewId;
+      loadReviewDetails(reviewId);
+    });
+  });
+
+  // Delete Review Confirmation
+  document.querySelectorAll('.delete-review').forEach((button) => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
 
       const modalContent = `
-                <form id="reviewForm">
-                    <div class="form-group">
-                        <label>Your Rating</label>
-                        <div class="star-rating">
-                            <i class="fas fa-star ${currentRating >= 1 ? 'active' : ''}" data-rating="1"></i>
-                            <i class="fas fa-star ${currentRating >= 2 ? 'active' : ''}" data-rating="2"></i>
-                            <i class="fas fa-star ${currentRating >= 3 ? 'active' : ''}" data-rating="3"></i>
-                            <i class="fas fa-star ${currentRating >= 4 ? 'active' : ''}" data-rating="4"></i>
-                            <i class="fas fa-star ${currentRating >= 5 ? 'active' : ''}" data-rating="5"></i>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Review Title</label>
-                        <input type="text" id="reviewTitle" class="form-control" value="${currentTitle}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Your Review</label>
-                        <textarea id="reviewText" rows="5" class="form-control" required>${currentReview}</textarea>
-                    </div>
-                </form>
+                <p>Are you sure you want to delete this review? This action cannot be undone.</p>
             `;
 
-      const modal = createModal('Edit Review', modalContent, [
+      const modal = createModal('Delete Review', modalContent, [
         {
           text: 'Cancel',
           class: 'cancel-btn',
           clickHandler: () => closeModal(modal),
         },
         {
-          text: 'Update Review',
+          text: 'Delete',
+          class: 'cancel-request-btn',
           clickHandler: () => {
-            alert('Review updated successfully!');
+            alert('Review deleted successfully.');
             closeModal(modal);
           },
         },
       ]);
+    });
+  });
 
-      // Star rating functionality
-      modal.querySelectorAll('.star-rating i').forEach((star) => {
-        star.addEventListener('click', function () {
-          const rating = parseInt(this.getAttribute('data-rating'));
-          const stars = modal.querySelectorAll('.star-rating i');
+  // Remove Address Confirmation
+  document.querySelectorAll('.remove-address').forEach((button) => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
 
-          stars.forEach((s, index) => {
-            if (index < rating) {
-              s.classList.add('active');
-            } else {
-              s.classList.remove('active');
+      const modalContent = `
+                <p>Are you sure you want to remove this address? This action cannot be undone.</p>
+            `;
+
+      const modal = createModal('Remove Address', modalContent, [
+        {
+          text: 'Cancel',
+          class: 'cancel-btn',
+          clickHandler: () => closeModal(modal),
+        },
+        {
+          text: 'Remove',
+          class: 'cancel-request-btn',
+          clickHandler: () => {
+            alert('Address removed successfully.');
+            closeModal(modal);
+          },
+        },
+      ]);
+    });
+  });
+
+  // Cancel Refund Request Confirmation
+  const cancelRequestButtons = document.querySelectorAll('.cancel-request-btn');
+  if (cancelRequestButtons.length > 0) {
+    cancelRequestButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const refundContent = this.closest('.refund-details-content');
+            if (!refundContent) return;
+            
+            const refundId = refundContent.dataset.refundId;
+            if (!refundId) return;
+
+            try {
+                const response = await fetch('/user/refund/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ refundId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Refund request cancelled successfully');
+                    hideModal('refundDetailsModal');
+                    // Refresh the page to update the refund list
+                    window.location.reload();
+                } else {
+                    throw new Error(data.message || 'Failed to cancel refund request');
+                }
+            } catch (error) {
+                showNotification(error.message, 'error');
             }
-          });
         });
-      });
+    });
+  }
+
+  // Function to load order details
+  async function loadOrderDetails(orderId) {
+    try {
+        if (!orderId) {
+            throw new Error('Order ID is required');
+        }
+
+        console.log('Loading order details for ID:', orderId);
+
+        const response = await fetch(`/user/orders/${orderId}`);
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch order details');
+        }
+
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (!data.success) {
+            throw new Error(data.message || 'Failed to load order details');
+        }
+
+        const order = data.data;
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        // Get the modal
+        const modal = document.getElementById('orderDetailsModal');
+        if (!modal) {
+            throw new Error('Order details modal not found');
+        }
+
+        // Create the order details content
+        const content = document.createElement('div');
+        content.className = 'order-details-content';
+        content.setAttribute('data-order-id', orderId);
+        
+        // Create the content structure
+        content.innerHTML = `
+            <div class="order-info">
+                <h4>Order #${order.orderId}</h4>
+                <p><strong>Status:</strong> <span class="status-${order.status.toLowerCase()}">${order.status}</span></p>
+                <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+                <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery || 'Not available'}</p>
+            </div>
+            
+            <div class="order-summary">
+                <h5>Order Summary</h5>
+                <div class="summary-grid">
+                    <div><strong>Subtotal:</strong></div>
+                    <div>$${order.total.toFixed(2)}</div>
+                    <div><strong>Shipping:</strong></div>
+                    <div>$${order.shippingCost?.toFixed(2) || '0.00'}</div>
+                    <div><strong>Tax:</strong></div>
+                    <div>$${order.tax?.toFixed(2) || '0.00'}</div>
+                    <div><strong>Total:</strong></div>
+                    <div>$${order.total.toFixed(2)}</div>
+                </div>
+            </div>
+            
+            <div class="order-products">
+                <h5>Products</h5>
+                ${order.items?.map(item => `
+                    <div class="order-product-detail">
+                        <img src="${item.product?.image || '/Assets/Images/product-placeholder.jpg'}" alt="${item.product?.name || 'Product'}">
+                        <div>
+                            <h5>${item.product?.name || 'Unknown Product'}</h5>
+                            <p>Qty: ${item.quantity || 1}</p>
+                            <p>Price: $${item.price?.toFixed(2) || '0.00'}</p>
+                        </div>
+                    </div>
+                `).join('') || 'No products found'}
+            </div>
+            
+            <div class="shipping-details">
+                <h5>Shipping Details</h5>
+                <p><strong>Name:</strong> ${order.shipping?.name || 'N/A'}</p>
+                <p><strong>Address:</strong> ${order.shipping?.address || 'N/A'}</p>
+                <p><strong>City:</strong> ${order.shipping?.city || 'N/A'}</p>
+                <p><strong>State:</strong> ${order.shipping?.state || 'N/A'}</p>
+                <p><strong>ZIP Code:</strong> ${order.shipping?.zipCode || 'N/A'}</p>
+            </div>
+            
+            <div class="payment-details">
+                <h5>Payment Details</h5>
+                <p><strong>Payment Method:</strong> <span class="payment-method">
+                    <i class="fab fa-cc-${order.payment?.bankName?.toLowerCase() || 'credit-card'}"></i> 
+                    ${order.payment?.bankName || 'Credit Card'} ending in ${order.payment?.cardNumber || '****'}
+                </span></p>
+                <p><strong>Cardholder:</strong> ${order.payment?.name || 'N/A'}</p>
+                <p><strong>Expiry:</strong> ${order.payment?.expiry || 'N/A'}</p>
+            </div>
+        `;
+        
+        // Clear existing content and add new content
+        const modalBody = modal.querySelector('.modal-body');
+        if (modalBody) {
+            modalBody.innerHTML = '';
+            modalBody.appendChild(content);
+        }
+
+        // Show/hide track order button based on order status
+        const trackOrderBtn = modal.querySelector('.track-order-btn');
+        if (trackOrderBtn) {
+            trackOrderBtn.style.display = order.status === 'Shipped' ? 'block' : 'none';
+        }
+
+        // Show the modal
+        showModal('orderDetailsModal');
+
+    } catch (error) {
+        console.error('Error loading order details:', error);
+        showNotification(error.message || 'Failed to load order details', 'error');
+    }
+  }
+
+  // Function to load tracking information
+  async function loadTrackingInfo(orderId) {
+    try {
+      const response = await fetch(`/shipping/order/${orderId}?format=json`);
+      const data = await response.json();
+      
+      if (data.success) {
+        const shipping = data.data;
+        
+        const modalContent = `
+          <div class="tracking-container">
+            <h4>Order #${orderId} - Tracking Information</h4>
+            
+            <div class="tracking-progress">
+              <div class="tracking-step ${shipping.status === 'pending' ? 'active' : ''}">
+                <div class="step-icon"><i class="fas fa-box"></i></div>
+                <div class="step-label">Order Placed</div>
+                <div class="step-date">${new Date(shipping.createdAt).toLocaleDateString()}</div>
+              </div>
+              <div class="tracking-step ${shipping.status === 'processing' ? 'active' : ''}">
+                <div class="step-icon"><i class="fas fa-cog"></i></div>
+                <div class="step-label">Processing</div>
+                <div class="step-date">${shipping.status === 'processing' ? new Date().toLocaleDateString() : ''}</div>
+              </div>
+              <div class="tracking-step ${shipping.status === 'shipped' ? 'active' : ''}">
+                <div class="step-icon"><i class="fas fa-shipping-fast"></i></div>
+                <div class="step-label">Shipped</div>
+                <div class="step-date">${shipping.status === 'shipped' ? new Date().toLocaleDateString() : ''}</div>
+              </div>
+              <div class="tracking-step ${shipping.status === 'delivered' ? 'active' : ''}">
+                <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="step-label">Delivered</div>
+                <div class="step-date">${shipping.status === 'delivered' ? new Date().toLocaleDateString() : ''}</div>
+              </div>
+            </div>
+            
+            <div class="tracking-details">
+              <h4>Shipping Details</h4>
+              <div><strong>Carrier:</strong></div>
+              <div>${shipping.carrier || 'Standard Shipping'}</div>
+              <div><strong>Tracking Number:</strong></div>
+              <div>${shipping.trackingNumber || 'Not available'}</div>
+              <div><strong>Shipped From:</strong></div>
+              <div>${shipping.origin || 'Our Warehouse'}</div>
+              <div><strong>Destination:</strong></div>
+              <div>${shipping.address}, ${shipping.city}, ${shipping.state} ${shipping.zipCode}</div>
+              <div><strong>Last Update:</strong></div>
+              <div>${new Date(shipping.updatedAt).toLocaleDateString()}</div>
+              <div><strong>Status:</strong></div>
+              <div>${shipping.status}</div>
+            </div>
+          </div>
+        `;
+
+        const modal = createModal('Order Tracking', modalContent, [
+          {
+            text: 'Close',
+            class: 'cancel-btn',
+            clickHandler: () => closeModal(modal)
+          }
+        ]);
+      } else {
+        showNotification(data.message || 'Failed to load tracking information', 'error');
+      }
+    } catch (error) {
+      console.error('Error loading tracking information:', error);
+      showNotification('Error loading tracking information', 'error');
+    }
+  }
+
+  // Track Order button
+  document.querySelectorAll('.track-order').forEach((button) => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+      showTrackingModal();
+    });
+  });
+
+  // Refund Details Modal
+  document.querySelectorAll('.view-details').forEach((button) => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+      const isCompleted = this.closest('.refund-card').classList.contains('completed');
+
+      const modalContent = `
+                <div class="refund-details-container">
+                    <h4>Refund #R12345</h4>
+                    <p><strong>Status:</strong> <span class="${isCompleted ? 'status-completed' : 'status-pending'}">${isCompleted ? 'Completed' : 'Pending'}</span></p>
+                    <p><strong>Order:</strong> #12344 - Women's Elegant Watch</p>
+                    <p><strong>Request Date:</strong> March 18, 2023</p>
+                    ${isCompleted ? '<p><strong>Processed Date:</strong> March 20, 2023</p>' : ''}
+                    
+                    <h5 style="margin-top: 20px;">Refund Summary</h5>
+                    <div class="refund-summary">
+                        <div><strong>Product Amount:</strong></div>
+                        <div>$149.99</div>
+                        <div><strong>Shipping Fee:</strong></div>
+                        <div>$0.00</div>
+                        <div><strong>Tax:</strong></div>
+                        <div>$0.00</div>
+                        <div><strong>Total Refund:</strong></div>
+                        <div>$149.99</div>
+                    </div>
+                    
+                    <h5 style="margin-top: 20px;">Reason</h5>
+                    <p>Wrong item received</p>
+                    
+                    <h5 style="margin-top: 20px;">Additional Notes</h5>
+                    <div class="refund-note">
+                        <i class="fas fa-info-circle"></i>
+                        <p>${
+                          isCompleted
+                            ? 'Your refund has been processed and the amount has been credited back to your original payment method. Please allow 3-5 business days for the amount to reflect in your account.'
+                            : 'Your refund request is being processed. We will notify you once it has been completed.'
+                        }
+                        </p>
+                    </div>
+                    
+                    ${
+                      !isCompleted
+                        ? `
+                    <h5 style="margin-top: 20px;">Next Steps</h5>
+                    <p>Please ship the item back to us using the provided return label. Once we receive the item, we will process your refund.</p>
+                    `
+                        : ''
+                    }
+                </div>
+            `;
+
+      const buttons = [
+        {
+          text: 'Close',
+          class: 'cancel-btn',
+          clickHandler: () => closeModal(modal),
+        },
+      ];
+
+      if (!isCompleted) {
+        buttons.push({
+          text: 'Cancel Request',
+          class: 'cancel-request-btn',
+          clickHandler: () => {
+            if (confirm('Are you sure you want to cancel this refund request?')) {
+              alert('Refund request cancelled successfully.');
+              closeModal(modal);
+            }
+          },
+        });
+      }
+
+      const modal = createModal('Refund Details', modalContent, buttons);
+    });
+  });
+
+  // Review Modals
+  // Edit Review
+  document.querySelectorAll('.edit-review').forEach((button) => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+      const reviewId = this.closest('.review-card').dataset.reviewId;
+      loadReviewDetails(reviewId);
     });
   });
 
@@ -1009,6 +1496,258 @@ document.addEventListener('DOMContentLoaded', function () {
           },
         },
       ]);
+    });
+  });
+
+  // Function to load review details
+  async function loadReviewDetails(reviewId) {
+    try {
+      const response = await fetch(`/api/reviews/${reviewId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        const review = data.data;
+        const modal = document.getElementById('reviewModal');
+        
+        // Update modal content
+        document.getElementById('reviewTitle').value = review.title;
+        document.getElementById('reviewText').value = review.content;
+        
+        // Update star rating
+        const stars = modal.querySelectorAll('.star-rating i');
+        stars.forEach((star, index) => {
+          if (index < review.rating) {
+            star.classList.add('active');
+          } else {
+            star.classList.remove('active');
+          }
+        });
+        
+        // Update form submission handler
+        const form = modal.querySelector('form');
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          
+          const formData = new FormData(form);
+          const rating = modal.querySelectorAll('.star-rating i.active').length;
+          
+          try {
+            const updateResponse = await fetch(`/api/reviews/${reviewId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                rating,
+                title: formData.get('reviewTitle'),
+                content: formData.get('reviewText')
+              })
+            });
+            
+            const updateData = await updateResponse.json();
+            
+            if (updateData.success) {
+              showNotification('Review updated successfully');
+              modal.style.display = 'none';
+              window.location.reload(); // Refresh to update UI
+            } else {
+              showNotification(updateData.message || 'Failed to update review', 'error');
+            }
+          } catch (error) {
+            console.error('Error updating review:', error);
+            showNotification('Error updating review', 'error');
+          }
+        };
+        
+        // Update delete handler
+        const deleteButton = modal.querySelector('.delete-review');
+        if (deleteButton) {
+          deleteButton.onclick = async () => {
+            if (confirm('Are you sure you want to delete this review?')) {
+              try {
+                const deleteResponse = await fetch(`/api/reviews/${reviewId}`, {
+                  method: 'DELETE'
+                });
+                
+                const deleteData = await deleteResponse.json();
+                
+                if (deleteData.success) {
+                  showNotification('Review deleted successfully');
+                  modal.style.display = 'none';
+                  window.location.reload(); // Refresh to update UI
+                } else {
+                  showNotification(deleteData.message || 'Failed to delete review', 'error');
+                }
+              } catch (error) {
+                console.error('Error deleting review:', error);
+                showNotification('Error deleting review', 'error');
+              }
+            }
+          };
+        }
+        
+        // Show modal
+        modal.style.display = 'block';
+      } else {
+        showNotification(data.message || 'Failed to load review details', 'error');
+      }
+    } catch (error) {
+      console.error('Error loading review details:', error);
+      showNotification('Error loading review details', 'error');
+    }
+  }
+
+  // Form submission handlers
+  document.getElementById('passwordChangeForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+      currentPassword: formData.get('currentPassword'),
+      newPassword: formData.get('newPassword'),
+      confirmPassword: formData.get('confirmPassword')
+    };
+    
+    try {
+      const response = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        showNotification('Password updated successfully');
+        document.getElementById('passwordChangeModal').style.display = 'none';
+      } else {
+        showNotification(result.message || 'Failed to update password', 'error');
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      showNotification('Error updating password', 'error');
+    }
+  });
+
+  document.getElementById('paymentMethodForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+      cardType: formData.get('cardType'),
+      cardNumber: formData.get('cardNumber'),
+      cardHolder: formData.get('cardHolder'),
+      expiryDate: formData.get('expiryDate'),
+      cvv: formData.get('cvv')
+    };
+    
+    try {
+      const response = await fetch('/api/user/payment-methods', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        showNotification('Payment method added successfully');
+        document.getElementById('paymentMethodModal').style.display = 'none';
+        window.location.reload(); // Refresh to show new payment method
+      } else {
+        showNotification(result.message || 'Failed to add payment method', 'error');
+      }
+    } catch (error) {
+      console.error('Error adding payment method:', error);
+      showNotification('Error adding payment method', 'error');
+    }
+  });
+
+  document.getElementById('reviewForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+      rating: document.querySelectorAll('.star-rating i.active').length,
+      title: formData.get('reviewTitle'),
+      content: formData.get('reviewText')
+    };
+    
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        showNotification('Review updated successfully');
+        document.getElementById('reviewModal').style.display = 'none';
+        window.location.reload(); // Refresh to show updated review
+      } else {
+        showNotification(result.message || 'Failed to update review', 'error');
+      }
+    } catch (error) {
+      console.error('Error updating review:', error);
+      showNotification('Error updating review', 'error');
+    }
+  });
+
+  // Delete confirmation handlers
+  document.querySelectorAll('.delete-review, .remove-method, .cancel-request').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const modal = document.getElementById('deleteConfirmationModal');
+      const type = this.classList.contains('delete-review') ? 'review' :
+                  this.classList.contains('remove-method') ? 'payment method' :
+                  'refund request';
+      
+      document.getElementById('deleteConfirmationTitle').textContent = `Delete ${type}`;
+      document.getElementById('deleteConfirmationMessage').textContent = 
+        `Are you sure you want to delete this ${type}? This action cannot be undone.`;
+      
+      const confirmButton = document.getElementById('deleteConfirmationButton');
+      confirmButton.onclick = async () => {
+        try {
+          const endpoint = this.classList.contains('delete-review') ? '/api/reviews' :
+                          this.classList.contains('remove-method') ? '/api/user/payment-methods' :
+                          '/api/refunds';
+          
+          const response = await fetch(endpoint, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: this.dataset.id
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            showNotification(`${type} deleted successfully`);
+            modal.style.display = 'none';
+            window.location.reload(); // Refresh to update UI
+          } else {
+            showNotification(result.message || `Failed to delete ${type}`, 'error');
+          }
+        } catch (error) {
+          console.error(`Error deleting ${type}:`, error);
+          showNotification(`Error deleting ${type}`, 'error');
+        }
+      };
+      
+      modal.style.display = 'block';
     });
   });
 });

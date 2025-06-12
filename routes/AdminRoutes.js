@@ -1,27 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/Admin');
-const { isAdmin } = require('../middleware/jwt');
+const { authenticateJWT, isAdmin } = require('../middleware/jwt');
 const { upload, handleMulterError } = require('../middleware/upload');
 
-// Admin middleware
-const isAdminMiddleware = (req, res, next) => {
-    if (req.user && req.user.role === 'admin') {
-        next();
-    } else {
-        res.status(403).render('error', {
-            title: 'Access Denied',
-            message: 'You do not have permission to access this page',
-            error: { status: 403 }
-        });
-    }
-};
-
-// Apply admin middleware to all admin routes
-router.use(isAdminMiddleware);
+// Apply authentication and admin middleware to all admin routes
+router.use(authenticateJWT);
+router.use(isAdmin);
 
 // Admin dashboard
-router.get('/dashboard', adminController.renderDashboard);
+router.get('/dashboard', adminController.getDashboard);
 
 // User management routes
 router.get('/users', adminController.renderUsers);

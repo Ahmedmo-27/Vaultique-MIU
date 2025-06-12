@@ -86,30 +86,44 @@ document.addEventListener('DOMContentLoaded', () => {
   // Configuration state
   const config = {
     dial: 'black',
-    bracelet: 'oyster',
-    material: 'steel',
-    bezel: 'black',
-    basePrice: 10000,
+    strap: 'black',
+    case: 'steel',
+    bezel: 'black-ceramic',
+    basePrice: 5000,
     additionalCosts: {
-      bracelet: {
-        oyster: 0,
-        jubilee: 500,
-        leather: 800,
-        oysterflex: 1200,
+      strap: {
+        black: 0,
+        brown: 200,
+        silver: 300,
+        gold: 500,
+        navy: 250,
+        green: 250
       },
-      material: {
+      case: {
         steel: 0,
-        'yellow-gold': 12000,
-        'white-gold': 14000,
-        everose: 16000,
+        'yellow-gold': 2000,
+        'white-gold': 2000,
+        'rose-gold': 2000,
+        black: 1500,
+        titanium: 1000
+      },
+      dial: {
+        black: 0,
+        navy: 300,
+        green: 300,
+        silver: 300,
+        brown: 300,
+        gold: 500
       },
       bezel: {
-        black: 0,
-        blue: 500,
-        green: 800,
-        fluted: 2000,
-      },
-    },
+        'black-ceramic': 0,
+        'blue-ceramic': 500,
+        'green-ceramic': 500,
+        steel: 300,
+        gold: 1000,
+        'rose-gold': 1000
+      }
+    }
   };
 
   // Theme toggle
@@ -162,26 +176,31 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateConfiguration() {
     // Update summary text
     if (summaryDial) {
-      const selectedDial = document.querySelector('input[name="dial"]:checked');
+      const selectedDial = document.querySelector('#dial .color-option.active');
       if (selectedDial) {
-        summaryDial.textContent =
-          selectedDial.value.charAt(0).toUpperCase() + selectedDial.value.slice(1);
+        const dialValue = selectedDial.getAttribute('data-value');
+        summaryDial.textContent = dialValue.split('-').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
       }
     }
 
     if (summaryBracelet) {
-      const selectedBracelet = document.querySelector('input[name="bracelet"]:checked');
-      if (selectedBracelet) {
-        summaryBracelet.textContent =
-          selectedBracelet.value.charAt(0).toUpperCase() + selectedBracelet.value.slice(1);
+      const selectedStrap = document.querySelector('#strap .color-option.active');
+      if (selectedStrap) {
+        const strapValue = selectedStrap.getAttribute('data-value');
+        summaryBracelet.textContent = strapValue.split('-').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
       }
     }
 
     if (summaryMaterial) {
-      const selectedMaterial = document.querySelector('input[name="material"]:checked');
-      if (selectedMaterial) {
+      const selectedCase = document.querySelector('#case .color-option.active');
+      if (selectedCase) {
+        const caseValue = selectedCase.getAttribute('data-value');
         let materialText = '';
-        switch (selectedMaterial.value) {
+        switch (caseValue) {
           case 'steel':
             materialText = 'Oystersteel';
             break;
@@ -191,35 +210,40 @@ document.addEventListener('DOMContentLoaded', () => {
           case 'white-gold':
             materialText = 'White Gold';
             break;
-          case 'everose':
-            materialText = 'Everose Gold';
+          case 'rose-gold':
+            materialText = 'Rose Gold';
+            break;
+          case 'titanium':
+            materialText = 'Titanium';
             break;
           default:
-            materialText = selectedMaterial.value;
+            materialText = caseValue.split('-').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
         }
         summaryMaterial.textContent = materialText;
       }
     }
 
     if (summaryBezel) {
-      const selectedBezel = document.querySelector('input[name="bezel"]:checked');
+      const selectedBezel = document.querySelector('#bezel .color-option.active');
       if (selectedBezel) {
+        const bezelValue = selectedBezel.getAttribute('data-value');
         let bezelText = '';
-        switch (selectedBezel.value) {
-          case 'black':
+        switch (bezelValue) {
+          case 'black-ceramic':
             bezelText = 'Black Ceramic';
             break;
-          case 'blue':
+          case 'blue-ceramic':
             bezelText = 'Blue Ceramic';
             break;
-          case 'green':
+          case 'green-ceramic':
             bezelText = 'Green Ceramic';
             break;
-          case 'fluted':
-            bezelText = 'Fluted';
-            break;
           default:
-            bezelText = selectedBezel.value;
+            bezelText = bezelValue.split('-').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
         }
         summaryBezel.textContent = bezelText;
       }
@@ -227,16 +251,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Calculate total price
     if (summaryPrice) {
-      const selectedBracelet = document.querySelector('input[name="bracelet"]:checked');
-      const selectedMaterial = document.querySelector('input[name="material"]:checked');
-      const selectedBezel = document.querySelector('input[name="bezel"]:checked');
+      const selectedStrap = document.querySelector('#strap .color-option.active');
+      const selectedCase = document.querySelector('#case .color-option.active');
+      const selectedDial = document.querySelector('#dial .color-option.active');
+      const selectedBezel = document.querySelector('#bezel .color-option.active');
 
-      if (selectedBracelet && selectedMaterial && selectedBezel) {
+      if (selectedStrap && selectedCase && selectedDial && selectedBezel) {
+        const strapValue = selectedStrap.getAttribute('data-value');
+        const caseValue = selectedCase.getAttribute('data-value');
+        const dialValue = selectedDial.getAttribute('data-value');
+        const bezelValue = selectedBezel.getAttribute('data-value');
+
         const totalPrice =
           config.basePrice +
-          config.additionalCosts.bracelet[selectedBracelet.value] +
-          config.additionalCosts.material[selectedMaterial.value] +
-          config.additionalCosts.bezel[selectedBezel.value];
+          config.additionalCosts.strap[strapValue] +
+          config.additionalCosts.case[caseValue] +
+          config.additionalCosts.dial[dialValue] +
+          config.additionalCosts.bezel[bezelValue];
 
         // Update price display
         summaryPrice.textContent = `$${totalPrice.toLocaleString()}`;
@@ -247,31 +278,21 @@ document.addEventListener('DOMContentLoaded', () => {
     updateWatchMaterials();
   }
 
-  // Add event listeners to all option inputs
-  dialInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      config.dial = input.value;
-      updateConfiguration();
-    });
-  });
+  // Add event listeners to color options
+  document.querySelectorAll('.color-option').forEach(option => {
+    option.addEventListener('click', function() {
+      const tab = this.closest('.tab-content');
+      const category = tab.id;
+      const value = this.getAttribute('data-value');
 
-  braceletInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      config.bracelet = input.value;
-      updateConfiguration();
-    });
-  });
+      // Update config
+      config[category] = value;
 
-  materialInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      config.material = input.value;
-      updateConfiguration();
-    });
-  });
+      // Update active state
+      tab.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+      this.classList.add('active');
 
-  bezelInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      config.bezel = input.value;
+      // Update configuration
       updateConfiguration();
     });
   });

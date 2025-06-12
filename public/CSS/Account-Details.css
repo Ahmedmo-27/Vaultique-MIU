@@ -12,15 +12,14 @@ body
 }
 
 .account-container {
-    margin-top: 135px;
-    margin-bottom: 40px;
-    margin-left: 150px;
+    margin: 135px auto 40px;
     display: flex;
     max-width: 1200px;
     height:600px;
     background-color: #FFFFFF;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
 }
 
 .sidebar {
@@ -91,36 +90,72 @@ body
 /* Phone Input Styles */
 .phone-input-container {
     display: flex;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: hidden;
+    gap: 10px;
+    align-items: center;
 }
 
 .country-select {
-    width: 150px;
+    width: 120px;
     padding: 8px;
-    border: none;
-    border-right: 1px solid #ddd;
-    background-color: #f8f8f8;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 15px;
-    cursor: pointer;
-}
-
-.country-select option {
-    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
 }
 
 #phoneNumber {
     flex: 1;
     padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+#phoneNumber:read-only {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.change-phone-btn {
+    padding: 8px 16px;
+    background-color: #050a30;
+    color: white;
     border: none;
-    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.change-phone-btn:hover {
+    background-color: #0a1540;
+}
+
+.change-phone-btn i {
+    font-size: 14px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .country-select,
+    #phoneNumber {
+        background-color: #2d2d2d;
+        border-color: #444;
+        color: #fff;
+    }
+
+    #phoneNumber:read-only {
+        background-color: #1a1a1a;
+    }
+
+    .change-phone-btn {
+        background-color: #785D32;
+    }
+
+    .change-phone-btn:hover {
+        background-color: #8a6d42;
+    }
 }
 
 .country-flag {
@@ -228,9 +263,13 @@ body
 @media (max-width: 768px) {
     .account-container {
         flex-direction: column;
-        margin: 100px 20px 20px;
+        margin: 80px 5vw 20px 5vw;
+        min-height: 70vh;
+        max-height: 80vh;
+        height: auto;
+        overflow-y: auto;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
-    
     .sidebar {
         width: 100%;
         border-right: none;
@@ -238,27 +277,44 @@ body
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
+        overflow-x: auto;
+        padding: 10px 0;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
     }
-    
     .sidebar-item {
         width: 48%;
-        padding: 10px 0;
+        padding: 14px 0;
+        font-size: 1.1em;
+        text-align: center;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-
-    .phone-input-container {
-        flex-direction: column;
-    }
-
-    .country-select {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid #ddd;
+    .main-content {
+        padding: 18px 6px 18px 6px;
+        min-height: 60vh;
+        max-height: 65vh;
+        overflow-y: auto;
     }
 }
 
 @media (max-width: 480px) {
+    .account-container {
+        margin: 60px 2vw 10px 2vw;
+        min-height: 60vh;
+        max-height: 80vh;
+    }
     .sidebar-item {
         width: 100%;
+        font-size: 1em;
+        padding: 12px 0;
+    }
+    .main-content {
+        padding: 10px 2px 10px 2px;
+        min-height: 50vh;
+        max-height: 70vh;
     }
 }
 
@@ -823,73 +879,54 @@ body
 }
 /* Improved Modal Styles */
 .modal-overlay {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(3px);
 }
 
 .modal-overlay.show {
-    opacity: 1;
-    visibility: visible;
+    display: flex;
 }
 
 .modal-container {
-    background-color: white;
-    border-radius: 12px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 90%;
-    max-width: 500px;
+    max-width: 800px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    transform: translateY(30px);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.modal-overlay.show .modal-container {
-    transform: translateY(0);
+    position: relative;
 }
 
 .modal-header {
-    padding: 20px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f9f9f9;
-    border-radius: 12px 12px 0 0;
-    position: sticky;
-    top: 0;
-    z-index: 10;
 }
 
 .modal-header h3 {
     margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1C2E4A;
+    font-size: 1.5rem;
+    color: #333;
 }
 
 .close-modal {
+    background: none;
+    border: none;
     font-size: 1.5rem;
     cursor: pointer;
     color: #666;
-    transition: color 0.2s ease;
-    background: none;
-    border: none;
-    padding: 0;
-    line-height: 1;
+    padding: 0.5rem;
 }
 
 .close-modal:hover {
@@ -897,290 +934,275 @@ body
 }
 
 .modal-body {
-    padding: 25px;
+    padding: 1.5rem;
 }
 
 .modal-footer {
-    padding: 15px 20px;
-    border-top: 1px solid #f0f0f0;
+    padding: 1rem;
+    border-top: 1px solid #eee;
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    background-color: #f9f9f9;
-    border-radius: 0 0 12px 12px;
-    position: sticky;
-    bottom: 0;
+    gap: 1rem;
 }
 
 .modal-footer button {
-    padding: 10px 18px;
-    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    min-width: 100px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.modal-footer button i {
-    font-size: 0.9em;
 }
 
 .cancel-btn {
-    background-color: white;
+    background-color: #f5f5f5;
     border: 1px solid #ddd;
-    color: #555;
+    color: #333;
 }
 
 .cancel-btn:hover {
-    background-color: #f5f5f5;
-    border-color: #ccc;
+    background-color: #eee;
 }
 
-.confirm-btn {
-    background-color: #1C2E4A;
-    color: white;
-    border: 1px solid #1C2E4A;
-}
-
-.confirm-btn:hover {
-    background-color: #0d1f3d;
-    border-color: #0d1f3d;
-}
-
-.cancel-request-btn {
-    background-color: #dc3545;
-    color: white;
-    border: 1px solid #dc3545;
-}
-
-.cancel-request-btn:hover {
-    background-color: #c82333;
-    border-color: #c82333;
-}
-
-.track-order {
-    background-color: #17a2b8;
-    color: white;
-    border: 1px solid #17a2b8;
-}
-
-.track-order:hover {
-    background-color: #138496;
-    border-color: #138496;
-}
-
-/* Form Elements in Modals */
-.modal-body .form-group {
-    margin-bottom: 20px;
-}
-
-.modal-body label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555;
-    font-size: 0.9rem;
-}
-
-.modal-body input[type="text"],
-.modal-body input[type="password"],
-.modal-body input[type="email"],
-.modal-body input[type="tel"],
-.modal-body input[type="number"],
-.modal-body select,
-.modal-body textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    transition: border-color 0.2s ease;
-}
-
-.modal-body input[type="text"]:focus,
-.modal-body input[type="password"]:focus,
-.modal-body input[type="email"]:focus,
-.modal-body input[type="tel"]:focus,
-.modal-body input[type="number"]:focus,
-.modal-body select:focus,
-.modal-body textarea:focus {
-    outline: none;
-    border-color: #1C2E4A;
-    box-shadow: 0 0 0 3px rgba(28, 46, 74, 0.1);
-}
-
-.modal-body textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.modal-body .form-control {
-    width: 100%;
-}
-
-/* Checkbox and Radio Styles */
-.modal-body input[type="checkbox"],
-.modal-body input[type="radio"] {
-    margin-right: 8px;
-}
-
-/* Star Rating */
-.star-rating {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 15px;
-}
-
-.star-rating i {
-    font-size: 1.5rem;
-    color: #ddd;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.star-rating i.active {
-    color: #ffc107;
-}
-
-/* Password Toggle */
-.password-toggle {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #999;
-    background: none;
+.track-order-btn, .cancel-request-btn {
+    background-color: #007bff;
     border: none;
-    padding: 0 5px;
+    color: white;
 }
 
-.password-toggle:hover {
-    color: #666;
+.track-order-btn:hover, .cancel-request-btn:hover {
+    background-color: #0056b3;
 }
 
-/* Tracking Progress */
+/* Order Details Styles */
+.order-info {
+    margin-bottom: 1.5rem;
+}
+
+.order-info h4 {
+    margin: 0 0 1rem;
+    color: #333;
+}
+
+.status-placed, .status-processing, .status-shipped, .status-delivered {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.status-placed {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-processing {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.status-shipped {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.status-delivered {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.order-products {
+    margin: 1.5rem 0;
+}
+
+.order-product-detail {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.order-product-detail img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.shipping-details, .payment-details {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+/* Tracking Styles */
 .tracking-progress {
     display: flex;
     justify-content: space-between;
+    margin: 2rem 0;
     position: relative;
-    padding: 20px 0 40px;
-    margin: 20px 0;
 }
 
 .tracking-progress::before {
     content: '';
     position: absolute;
-    top: 30px;
-    left: 10%;
-    right: 10%;
-    height: 4px;
-    background-color: #eee;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #ddd;
     z-index: 1;
 }
 
 .tracking-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 25%;
     position: relative;
     z-index: 2;
+    text-align: center;
+    flex: 1;
 }
 
 .step-icon {
     width: 40px;
     height: 40px;
+    background-color: #fff;
+    border: 2px solid #ddd;
     border-radius: 50%;
-    background-color: #eee;
     display: flex;
-    justify-content: center;
     align-items: center;
-    margin-bottom: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.step-label {
-    font-weight: 500;
-    text-align: center;
-    margin-bottom: 5px;
-    font-size: 0.85rem;
-}
-
-.step-date {
-    font-size: 0.75rem;
-    color: #777;
-    text-align: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
 }
 
 .tracking-step.completed .step-icon {
-    background-color: #28a745;
+    background-color: #4caf50;
+    border-color: #4caf50;
     color: white;
 }
 
 .tracking-step.active .step-icon {
-    background-color: #1C2E4A;
+    background-color: #2196f3;
+    border-color: #2196f3;
     color: white;
-    transform: scale(1.1);
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
+.step-label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.step-date {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.tracking-details {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+/* Refund Details Styles */
+.refund-summary {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.refund-note {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+.refund-note i {
+    color: #1976d2;
+    font-size: 1.25rem;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
     .modal-container {
-        width: 95%;
+        background-color: #1a1a1a;
+        color: #fff;
     }
-    
+
     .modal-header {
-        padding: 15px;
+        border-bottom-color: #333;
     }
-    
-    .modal-body {
-        padding: 20px 15px;
+
+    .modal-header h3 {
+        color: #fff;
     }
-    
+
+    .close-modal {
+        color: #999;
+    }
+
+    .close-modal:hover {
+        color: #fff;
+    }
+
     .modal-footer {
-        padding: 12px 15px;
-        flex-direction: column;
-        gap: 8px;
+        border-top-color: #333;
     }
-    
-    .modal-footer button {
-        width: 100%;
+
+    .cancel-btn {
+        background-color: #333;
+        border-color: #444;
+        color: #fff;
     }
-    
-    .tracking-progress {
-        padding: 15px 0 30px;
+
+    .cancel-btn:hover {
+        background-color: #444;
     }
-    
-    .step-label {
-        font-size: 0.75rem;
+
+    .shipping-details, .payment-details, .tracking-details, .refund-summary {
+        background-color: #222;
+    }
+
+    .refund-note {
+        background-color: #1a237e;
+    }
+
+    .refund-note i {
+        color: #90caf9;
+    }
+
+    .status-placed {
+        background-color: #1a237e;
+        color: #90caf9;
+    }
+
+    .status-processing {
+        background-color: #e65100;
+        color: #ffcc80;
+    }
+
+    .status-shipped {
+        background-color: #1b5e20;
+        color: #a5d6a7;
+    }
+
+    .status-delivered {
+        background-color: #4a148c;
+        color: #ce93d8;
     }
 }
-
-/* Animation for Modal Content */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.modal-body > * {
-    animation: fadeInUp 0.3s ease forwards;
-}
-
-.modal-body > *:nth-child(1) { animation-delay: 0.1s; }
-.modal-body > *:nth-child(2) { animation-delay: 0.15s; }
-.modal-body > *:nth-child(3) { animation-delay: 0.2s; }
-.modal-body > *:nth-child(4) { animation-delay: 0.25s; }
-.modal-body > *:nth-child(5) { animation-delay: 0.3s; }

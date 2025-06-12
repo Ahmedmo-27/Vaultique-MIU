@@ -1,11 +1,11 @@
 // Input event listeners to update card display
-document.querySelector('.card-number-input').oninput = () => {
-  let cardNumber = document.querySelector('.card-number-input').value.replace(/\s+/g, ''); // Remove existing spaces
+document.getElementById('card-number').oninput = () => {
+  let cardNumber = document.getElementById('card-number').value.replace(/\s+/g, ''); // Remove existing spaces
   if (cardNumber.length > 19) {
     cardNumber = cardNumber.slice(0, 19); // Truncate to 16 characters if longer
   }
-  document.querySelector('.card-number-input').value = formatCardNumber(cardNumber);
-  document.querySelector('.card-number-box').innerText = formatCardNumber(cardNumber);
+  document.getElementById('card-number').value = formatCardNumber(cardNumber);
+  document.getElementById('display-card-number').innerText = formatCardNumber(cardNumber);
 
   // Display length message
   const cardLengthMessage = document.querySelector('.card-length-message');
@@ -17,31 +17,24 @@ document.querySelector('.card-number-input').oninput = () => {
   }
 };
 
-document.querySelector('.card-holder-input').oninput = () => {
-  document.querySelector('.card-holder-name').innerText =
-    document.querySelector('.card-holder-input').value;
+document.getElementById('name').oninput = () => {
+  document.getElementById('display-card-holder').innerText = document.getElementById('name').value;
 };
 
-document.querySelector('.month-input').oninput = () => {
-  document.querySelector('.exp-month').innerText = document.querySelector('.month-input').value;
+document.getElementById('expiry').oninput = () => {
+  document.getElementById('display-expiry').innerText = document.getElementById('expiry').value;
 };
 
-document.querySelector('.year-input').oninput = () => {
-  document.querySelector('.exp-year').innerText = document.querySelector('.year-input').value;
+document.getElementById('cvv').onmouseenter = () => {
+  document.getElementById('flip-card').classList.add('flipped');
 };
 
-document.querySelector('.cvv-input').onmouseenter = () => {
-  document.querySelector('.front').style.transform = 'perspective(1000px) rotateY(-180deg)';
-  document.querySelector('.back').style.transform = 'perspective(1000px) rotateY(0deg)';
+document.getElementById('cvv').onmouseleave = () => {
+  document.getElementById('flip-card').classList.remove('flipped');
 };
 
-document.querySelector('.cvv-input').onmouseleave = () => {
-  document.querySelector('.front').style.transform = 'perspective(1000px) rotateY(0deg)';
-  document.querySelector('.back').style.transform = 'perspective(1000px) rotateY(180deg)';
-};
-
-document.querySelector('.cvv-input').oninput = () => {
-  document.querySelector('.cvv-box').innerText = document.querySelector('.cvv-input').value;
+document.getElementById('cvv').oninput = () => {
+  document.getElementById('display-cvv').innerText = document.getElementById('cvv').value;
 };
 
 // Function to format card number with spaces every 4 digits
@@ -55,7 +48,7 @@ function formatCardNumber(cardNumber) {
 // Billing form validation
 function validateForm() {
   let isValid = true;
-  const inputs = document.querySelectorAll('.checkout-form input[type="text"]');
+  const inputs = document.querySelectorAll('.checkout-form input[required]');
 
   inputs.forEach((input) => {
     if (input.value.trim() === '') {
@@ -63,12 +56,22 @@ function validateForm() {
       addErrorStyles(input, 'This field is required');
     } else {
       removeErrorStyles(input);
-      // Additional check for email format validation
-      if (input.getAttribute('type') === 'text' && input.getAttribute('id') === 'Email') {
+      
+      // Email validation
+      if (input.getAttribute('type') === 'email') {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(input.value)) {
           isValid = false;
           addErrorStyles(input, 'Please enter a valid email address');
+        }
+      }
+      
+      // Zip code validation
+      if (input.getAttribute('name') === 'zipCode') {
+        const zipPattern = /^\d{5}(-\d{4})?$/;
+        if (!zipPattern.test(input.value.replace(/\s/g, ''))) {
+          isValid = false;
+          addErrorStyles(input, 'Please enter a valid zip code');
         }
       }
     }
@@ -90,32 +93,43 @@ function handleFormSubmission(event) {
     console.log('Form is valid. Proceeding to the next step...');
 
     const formData = {
-      shipping_address: {
-        address: document.getElementById('Address').value,
-        city: document.getElementById('City').value,
-        state: document.getElementById('State').value,
-        postal_code: document.getElementById('Zipcode').value,
-      },
+      fullName: document.getElementById('name').value,
+      email: document.getElementById('Email').value,
+      address: document.getElementById('Address').value,
+      city: document.getElementById('City').value,
+      state: document.getElementById('State').value,
+      zipCode: document.getElementById('Zipcode').value,
+      orderId: document.querySelector('input[name="orderId"]').value
     };
 
-    fetch('/user/Billing-Information', {
+    fetch('/api/shipping/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(formData),
-    }).then((response) => {
-      if (response.ok) {
-        console.log('Billing information saved successfully');
-        // Redirect to /prototype.html in the same tab
-        window.location.href = '/Checkout/final_checkout/prototype.html';
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        console.log('Shipping information saved successfully');
+        showPopup('Shipping information saved successfully!');
+        // Redirect to review page after 2 seconds
+        setTimeout(() => {
+          window.location.href = '/review';
+        }, 2000);
       } else {
-        console.error('Failed to save billing information');
-        showErrorPopup('Failed to save billing information');
+        console.error('Failed to save shipping information:', data.message);
+        showErrorPopup(data.message || 'Failed to save shipping information');
       }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showErrorPopup('An error occurred. Please try again.');
     });
   } else {
     console.log('Form is invalid');
+    showErrorPopup('Please fill in all required fields correctly');
   }
 }
 
@@ -123,95 +137,83 @@ form.addEventListener('submit', handleFormSubmission);
 
 // Payment form validation
 function validatePaymentForm() {
-  let isFormValid = true;
-  const paymentForm = document.querySelector('.payment-form');
-  const inputs = paymentForm.querySelectorAll('input, select');
+  const nameInput = document.getElementById('name');
+  const cardNumberInput = document.getElementById('card-number');
+  const bankNameInput = document.getElementById('bank-name');
+  const cvvInput = document.getElementById('cvv');
+  const expiryInput = document.getElementById('expiry');
 
-  inputs.forEach((input) => {
-    if (input.value.trim() === '') {
-      isFormValid = false;
-      addErrorStyles(input, 'This field is required');
-    } else {
-      removeErrorStyles(input);
-    }
+  if (!nameInput || !cardNumberInput || !bankNameInput || !cvvInput || !expiryInput) {
+    console.error('Required form elements not found');
+    return false;
+  }
 
-    if (input.classList.contains('card-number-input')) {
-      const cardNumber = input.value.trim();
-      if (!isValidCardNumber(cardNumber)) {
-        isFormValid = false;
-        addErrorStyles(input, 'Invalid card number. Must be 16 digits separated by spaces');
-      } else {
-        removeErrorStyles(input);
-      }
-    }
+  const name = nameInput.value.trim();
+  const cardNumber = cardNumberInput.value.replace(/\s/g, '');
+  const bankName = bankNameInput.value.trim();
+  const cvv = cvvInput.value.trim();
+  const expiry = expiryInput.value.trim();
 
-    if (input.classList.contains('cvv-input')) {
-      const cvv = input.value.trim();
-      if (!isValidCVV(cvv)) {
-        isFormValid = false;
-        addErrorStyles(input, 'Invalid CVV. Must be 3 digits');
-      } else {
-        removeErrorStyles(input);
-      }
-    }
+  if (!name || !cardNumber || !bankName || !cvv || !expiry) {
+    showErrorPopup('Please fill in all required fields');
+    return false;
+  }
 
-    if (input.classList.contains('card-holder-input')) {
-      const cardHolder = input.value.trim();
-      if (!isValidCardHolderName(cardHolder)) {
-        isFormValid = false;
-        addErrorStyles(input, 'Invalid name. Only alphabets allowed');
-      } else {
-        removeErrorStyles(input);
-      }
-    }
-  });
+  if (!/^\d{16}$/.test(cardNumber)) {
+    showErrorPopup('Please enter a valid 16-digit card number');
+    return false;
+  }
 
-  return isFormValid;
+  if (!/^\d{3,4}$/.test(cvv)) {
+    showErrorPopup('Please enter a valid CVV (3-4 digits)');
+    return false;
+  }
+
+  if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(expiry)) {
+    showErrorPopup('Please enter a valid expiry date (MM/YY)');
+    return false;
+  }
+
+  return true;
 }
 
-async function handlePaymentFormSubmission(event) {
-  event.preventDefault();
+async function handlePaymentSubmission(e) {
+  e.preventDefault();
+  
+  if (!validatePaymentForm()) {
+    return;
+  }
 
-  const isFormValid = validatePaymentForm();
-  if (isFormValid) {
-    const paymentData = {
-      cardNumber: paymentForm.querySelector('.card-number-input').value,
-      cardHolder: paymentForm.querySelector('.card-holder-input').value,
-      expMonth: paymentForm.querySelector('.month-input').value,
-      expYear: paymentForm.querySelector('.year-input').value,
-      cvv: paymentForm.querySelector('.cvv-input').value,
+  try {
+    const formData = {
+      name: document.getElementById('name')?.value || '',
+      card_number: document.getElementById('card-number')?.value.replace(/\s/g, '') || '',
+      bank_name: document.getElementById('bank-name')?.value || '',
+      expiry: document.getElementById('expiry')?.value || '',
+      cvv: document.getElementById('cvv')?.value || ''
     };
 
-    const orderData = {
-      billingData: paymentData, // Adjust to match your server's expected structure
-      shipping_address: {
-        address: document.getElementById('Address').value,
-        city: document.getElementById('City').value,
-        state: document.getElementById('State').value,
-        postal_code: document.getElementById('Zipcode').value,
+    const response = await fetch('/user/payment/process', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
       },
-    };
+      body: JSON.stringify(formData)
+    });
 
-    try {
-      const response = await fetch('/user/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      });
+    const data = await response.json();
 
-      if (response.ok) {
-        showPopup('Checkout successful. Thank you for your purchase!');
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // 2000 milliseconds (2 seconds) delay as an example
-        window.location.href = '/user/shopAll';
-      } else {
-        showErrorPopup('Checkout failed. Please try again later.');
-      }
-    } catch (error) {
-      console.error('Error during payment form submission:', error.message);
-      showErrorPopup('Error during payment form submission');
+    if (data.success) {
+      showPopup('Payment information saved successfully!');
+      setTimeout(() => {
+        window.location.href = data.redirect || '/user/shipping';
+      }, 2000);
+    } else {
+      showErrorPopup(data.message || 'Payment failed. Please try again.');
     }
+  } catch (error) {
+    console.error('Payment error:', error);
+    showErrorPopup('An error occurred. Please try again.');
   }
 }
 
@@ -235,58 +237,51 @@ function updateProgress(stepIndex) {
   });
 }
 
-// Example: Move to step 3 (Payment)
-updateProgress(2);
+// Initialize progress bar to show we're on the shipping step
+document.addEventListener('DOMContentLoaded', () => {
+  updateProgress(1); // Set to shipping step (index 1)
+});
 
 function showPopup(message) {
-  const popup = document.querySelector('.login-message-popup');
-  const popupMessage = popup.querySelector('h2');
-  popupMessage.textContent = message;
-
-  // Show the popup
-  popup.classList.add('show');
-
-  // Automatically hide popup after 3 seconds
-  setTimeout(() => {
-    popup.classList.remove('show');
-  }, 3000); // Adjust timing as needed
+  const popup = document.createElement('div');
+  popup.className = 'popup success';
+  popup.innerHTML = `
+    <div class="popup-content">
+      <h2>${message}</h2>
+    </div>
+  `;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 3000);
 }
 
 function showErrorPopup(message) {
-  const popup = document.getElementById('login-message-error-popup');
-  const popupMessage = popup.querySelector('h2');
-  popupMessage.textContent = message;
-
-  // Show the popup
-  popup.classList.add('show');
-
-  // Automatically hide popup after 3 seconds
-  setTimeout(() => {
-    popup.classList.remove('show');
-  }, 3000); // Adjust timing as needed
+  const popup = document.createElement('div');
+  popup.className = 'popup error';
+  popup.innerHTML = `
+    <div class="popup-content">
+      <h2>${message}</h2>
+    </div>
+  `;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 3000);
 }
 
 // Function to add error styles
 function addErrorStyles(input, message) {
   input.classList.add('invalid');
-  input.style.borderColor = 'red';
-  let errorMessage = input.parentNode.querySelector('.error-message');
-  if (!errorMessage) {
-    errorMessage = document.createElement('span');
-    errorMessage.classList.add('error-message');
-    errorMessage.style.color = 'red';
-    errorMessage.textContent = message;
-    input.parentNode.appendChild(errorMessage);
+  const errorElement = input.nextElementSibling;
+  if (errorElement && errorElement.classList.contains('error')) {
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
   }
 }
 
 // Function to remove error styles
 function removeErrorStyles(input) {
   input.classList.remove('invalid');
-  input.style.borderColor = ''; // Reset to default border color
-  const errorMessage = input.parentNode.querySelector('.error-message');
-  if (errorMessage) {
-    errorMessage.remove();
+  const errorElement = input.nextElementSibling;
+  if (errorElement && errorElement.classList.contains('error')) {
+    errorElement.style.display = 'none';
   }
 }
 
@@ -305,32 +300,21 @@ function isValidCardHolderName(name) {
   return /^[A-Za-z\s]+$/.test(name);
 }
 
-// Attach event listener to payment form submit button
-paymentForm.addEventListener('submit', handlePaymentFormSubmission);
-
 document.addEventListener('DOMContentLoaded', () => {
-  // Flip card functionality
-  const flipCard = document.getElementById('flip-card');
-  const flipBtn = document.getElementById('flip-card-btn');
-  let isFlipped = false;
+  // Get the payment form
+  const paymentForm = document.getElementById('payment-form');
+  if (!paymentForm) {
+    console.error('Payment form not found');
+    return;
+  }
 
-  flipBtn.addEventListener('click', () => {
-    isFlipped = !isFlipped;
-    if (isFlipped) {
-      flipCard.classList.add('flipped');
-      flipBtn.textContent = 'Hide Card Details';
-    } else {
-      flipCard.classList.remove('flipped');
-      flipBtn.textContent = 'View Card Details';
-    }
-  });
-
-  // Form input bindings to card display
+  // Get all required elements
   const nameInput = document.getElementById('name');
   const bankNameInput = document.getElementById('bank-name');
   const cardNumberInput = document.getElementById('card-number');
   const cvvInput = document.getElementById('cvv');
   const expiryInput = document.getElementById('expiry');
+  const completeBtn = document.getElementById('complete-purchase-btn');
 
   // Display elements
   const displayName = document.getElementById('display-card-holder');
@@ -339,219 +323,120 @@ document.addEventListener('DOMContentLoaded', () => {
   const displayCvv = document.getElementById('display-cvv');
   const displayExpiry = document.getElementById('display-expiry');
 
-  // Bind input events
-  nameInput.addEventListener('input', function () {
-    displayName.textContent = this.value || 'FULL NAME';
-  });
+  // Create popup container if it doesn't exist
+  let popupContainer = document.getElementById('popup-container');
+  if (!popupContainer) {
+    popupContainer = document.createElement('div');
+    popupContainer.id = 'popup-container';
+    document.body.appendChild(popupContainer);
+  }
 
-  bankNameInput.addEventListener('input', function () {
-    displayBankName.textContent = this.value || 'BANK NAME';
-  });
+  // Bind input events if elements exist
+  if (nameInput && displayName) {
+    nameInput.addEventListener('input', function() {
+      displayName.textContent = this.value || 'FULL NAME';
+    });
+  }
 
-  cardNumberInput.addEventListener('input', function () {
-    const value = this.value.replace(/\s/g, '');
-    let formatted = '';
-    for (let i = 0; i < value.length; i++) {
-      if (i > 0 && i % 4 === 0) formatted += ' ';
-      formatted += value[i];
-    }
-    displayNumber.textContent = formatted || '################';
-    this.value = formatted;
-  });
+  if (bankNameInput && displayBankName) {
+    bankNameInput.addEventListener('input', function() {
+      displayBankName.textContent = this.value || 'BANK NAME';
+    });
+  }
 
-  cvvInput.addEventListener('input', function () {
-    const cvv = this.value;
-    displayCvv.textContent = cvv ? `CVV: ${cvv.replace(/./g, '•')}` : 'CVV';
+  if (cardNumberInput && displayNumber) {
+    cardNumberInput.addEventListener('input', function() {
+      const value = this.value.replace(/\s/g, '');
+      let formatted = '';
+      for (let i = 0; i < value.length; i++) {
+        if (i > 0 && i % 4 === 0) formatted += ' ';
+        formatted += value[i];
+      }
+      displayNumber.textContent = formatted || '################';
+      this.value = formatted;
+    });
+  }
 
-    // CVV validation
-    const isValid = /^\d{3,4}$/.test(cvv);
-    document.getElementById('cvvError').style.display = cvv && !isValid ? 'block' : 'none';
-    this.classList.toggle('invalid', cvv && !isValid);
-    this.classList.toggle('valid', cvv && isValid);
-  });
+  if (cvvInput && displayCvv) {
+    cvvInput.addEventListener('input', function() {
+      const cvv = this.value;
+      displayCvv.textContent = cvv ? `CVV: ${cvv.replace(/./g, '•')}` : 'CVV';
 
-  expiryInput.addEventListener('input', function () {
-    let value = this.value.replace(/\D/g, '');
-    if (value.length > 2) {
-      value = value.substring(0, 2) + '/' + value.substring(2, 4);
-    }
-    displayExpiry.textContent = value ? `Expires: ${value}` : 'MM/YY';
-    this.value = value;
+      // CVV validation
+      const isValid = /^\d{3,4}$/.test(cvv);
+      const cvvError = document.getElementById('cvvError');
+      if (cvvError) {
+        cvvError.style.display = cvv && !isValid ? 'block' : 'none';
+      }
+      this.classList.toggle('invalid', cvv && !isValid);
+      this.classList.toggle('valid', cvv && isValid);
+    });
+  }
 
-    // Expiry validation
-    const isValid = /^\d{2}\/\d{2}$/.test(value);
-    document.getElementById('expiryError').style.display = value && !isValid ? 'block' : 'none';
-    this.classList.toggle('invalid', value && !isValid);
-    this.classList.toggle('valid', value && isValid);
-  });
+  if (expiryInput && displayExpiry) {
+    expiryInput.addEventListener('input', function() {
+      let value = this.value.replace(/\D/g, '');
+      if (value.length > 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+      }
+      displayExpiry.textContent = value ? `Expires: ${value}` : 'MM/YY';
+      this.value = value;
+
+      // Expiry validation
+      const isValid = /^\d{2}\/\d{2}$/.test(value);
+      const expiryError = document.getElementById('expiryError');
+      if (expiryError) {
+        expiryError.style.display = value && !isValid ? 'block' : 'none';
+      }
+      this.classList.toggle('invalid', value && !isValid);
+      this.classList.toggle('valid', value && isValid);
+    });
+  }
 
   // Add event listener to the Complete Purchase button
-  const completeBtn = document.getElementById('complete-purchase-btn');
   if (completeBtn) {
     completeBtn.addEventListener('click', handlePaymentSubmission);
   }
 
-  // Initialize progress bar
-  updateProgress(0);
+  // Add form submission handler
+  paymentForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!validatePaymentForm()) {
+      showErrorPopup('Please fill in all required fields correctly');
+      return;
+    }
+
+    try {
+      const formData = {
+        name: nameInput?.value || '',
+        card_number: cardNumberInput?.value.replace(/\s/g, '') || '',
+        bank_name: bankNameInput?.value || '',
+        expiry: expiryInput?.value || '',
+        cvv: cvvInput?.value || ''
+      };
+
+      const response = await fetch('/user/payment/process', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showPopup('Payment information saved successfully!');
+        setTimeout(() => {
+          window.location.href = data.redirect || '/user/shipping';
+        }, 2000);
+      } else {
+        showErrorPopup(data.message || 'Payment failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      showErrorPopup('An error occurred. Please try again.');
+    }
+  });
 });
-
-// Function to validate the payment form
-function validatePaymentForm() {
-  let isValid = true;
-  const requiredFields = ['name', 'card-number', 'bank-name', 'cvv', 'expiry'];
-
-  requiredFields.forEach((fieldId) => {
-    const field = document.getElementById(fieldId);
-    if (!field || !field.value.trim()) {
-      isValid = false;
-      addErrorStyles(field, 'This field is required');
-    } else {
-      removeErrorStyles(field);
-    }
-  });
-
-  // Additional validation for card number
-  const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
-  if (cardNumber && !/^\d{16}$/.test(cardNumber)) {
-    isValid = false;
-    addErrorStyles(document.getElementById('card-number'), 'Card number must be 16 digits');
-  }
-
-  // Additional validation for CVV
-  const cvv = document.getElementById('cvv').value;
-  if (cvv && !/^\d{3,4}$/.test(cvv)) {
-    isValid = false;
-    addErrorStyles(document.getElementById('cvv'), 'CVV must be 3 or 4 digits');
-  }
-
-  // Additional validation for expiry date
-  const expiry = document.getElementById('expiry').value;
-  if (expiry && !/^\d{2}\/\d{2}$/.test(expiry)) {
-    isValid = false;
-    addErrorStyles(document.getElementById('expiry'), 'Expiry must be in MM/YY format');
-  }
-
-  return isValid;
-}
-
-// Function to handle payment form submission
-function handlePaymentSubmission(event) {
-  event.preventDefault();
-
-  if (validatePaymentForm()) {
-    // Update progress bar to show shipping step
-    updateProgress(1);
-
-    // Show success message
-    showPopup('Payment information saved successfully');
-
-    // Store payment data in sessionStorage if needed
-    const paymentData = {
-      name: document.getElementById('name').value,
-      cardNumber: document.getElementById('card-number').value,
-      bankName: document.getElementById('bank-name').value,
-      cvv: document.getElementById('cvv').value,
-      expiry: document.getElementById('expiry').value,
-    };
-
-    // You can store this data if needed
-    // sessionStorage.setItem("paymentData", JSON.stringify(paymentData));
-
-    // Redirect to prototype.html (billing address page) after a short delay
-    setTimeout(() => {
-      window.location.href = '/Checkout/final_checkout/prototype.html';
-    }, 1000);
-  } else {
-    showErrorPopup('Please fill in all required fields correctly');
-  }
-}
-
-// Function to update progress bar
-function updateProgress(stepIndex) {
-  const progress = document.querySelector('.progress');
-  const steps = document.querySelectorAll('.step');
-
-  // Update progress bar width
-  progress.style.width = `${(stepIndex / (steps.length - 1)) * 100}%`;
-
-  steps.forEach((step, index) => {
-    if (index < stepIndex) {
-      step.classList.add('completed');
-      step.classList.remove('active');
-    } else if (index === stepIndex) {
-      step.classList.add('active');
-      step.classList.remove('completed');
-    } else {
-      step.classList.remove('active', 'completed');
-    }
-  });
-}
-
-// Function to show success popup
-function showPopup(message) {
-  const popup = document.getElementById('login-message-popup');
-  if (popup) {
-    const popupMessage = popup.querySelector('h2');
-    popupMessage.textContent = message;
-    popup.classList.add('show');
-    setTimeout(() => {
-      popup.classList.remove('show');
-    }, 3000);
-  }
-}
-
-// Function to show error popup
-function showErrorPopup(message) {
-  const popup = document.getElementById('login-message-error-popup');
-  if (popup) {
-    const popupMessage = popup.querySelector('h2');
-    popupMessage.textContent = message;
-    popup.classList.add('show');
-    setTimeout(() => {
-      popup.classList.remove('show');
-    }, 3000);
-  }
-}
-
-// Function to add error styles
-function addErrorStyles(input, message) {
-  if (!input) return;
-
-  input.classList.add('invalid');
-  input.style.borderColor = 'red';
-
-  // Find or create error message element
-  let errorElement = input.parentNode.querySelector('.error-message');
-  if (!errorElement) {
-    errorElement = document.createElement('p');
-    errorElement.classList.add('error-message');
-    errorElement.style.color = 'red';
-    errorElement.style.fontSize = '12px';
-    errorElement.style.marginTop = '5px';
-    input.parentNode.appendChild(errorElement);
-  }
-
-  errorElement.textContent = message;
-  errorElement.style.display = 'block';
-}
-
-// Function to remove error styles
-function removeErrorStyles(input) {
-  if (!input) return;
-
-  input.classList.remove('invalid');
-  input.style.borderColor = '';
-
-  const errorElement = input.parentNode.querySelector('.error-message');
-  if (errorElement) {
-    errorElement.style.display = 'none';
-  }
-}
-
-// Function to format card number with spaces
-function formatCardNumber(cardNumber) {
-  return cardNumber
-    .replace(/\s+/g, '')
-    .replace(/(\d{4})/g, '$1 ')
-    .trim();
-}

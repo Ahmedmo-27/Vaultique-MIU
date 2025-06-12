@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const registerLink = document.getElementById("register-link");
   const loginLink = document.getElementById("login-link");
   const forgotPasswordLink = document.getElementById("forgot-password");
-  const adminLoginLink = document.getElementById("admin-login-link");
   const forgotPasswordContainer = document.getElementById("forgot-password-container");
   const closeForgotPasswordButton = document.getElementById("close-forgot-password");
   const loginForm = document.getElementById("login-form-id");
@@ -75,20 +74,26 @@ document.addEventListener("DOMContentLoaded", function () {
       
       // Validate step 1 fields
       const username = document.getElementById("username").value;
+      const Name = document.getElementById("Name").value;
       const email = document.getElementById("email-signup").value;
       const password = document.getElementById("password-signup").value;
-      const phone = document.getElementById("phone").value;
-      const dob = document.getElementById("dob").value;
-      const language = document.getElementById("language").value;
+      const language = document.getElementById("language-signup").value;
       
-      if (!username || !email || !password || !phone || !dob || !language) {
+      if (!username || !Name || !email || !password || !language) {
           alert("Please fill all required fields");
           return;
       }
       
       // Validate password strength
-      if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
-          alert("Password must be at least 8 characters with 1 capital letter and 1 number");
+      const passwordErrors = [];
+      if (password.length < 8) passwordErrors.push("Password must be at least 8 characters long");
+      if (!/[A-Z]/.test(password)) passwordErrors.push("Password must contain at least one uppercase letter");
+      if (!/[a-z]/.test(password)) passwordErrors.push("Password must contain at least one lowercase letter");
+      if (!/[0-9]/.test(password)) passwordErrors.push("Password must contain at least one number");
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) passwordErrors.push("Password must contain at least one special character");
+      
+      if (passwordErrors.length > 0) {
+          alert("Password requirements:\n" + passwordErrors.join("\n"));
           return;
       }
       
@@ -121,50 +126,64 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Form submission validation
-  signupForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const username = document.getElementById("username").value;
-    const email = document.getElementById("email-signup").value;
-    const password = document.getElementById("password-signup").value;
-    const phone = document.getElementById("phone").value;
-    const dob = document.getElementById("dob").value;
-    const language = document.getElementById("language").value;
-    const creditCard = document.getElementById("credit-card").value;
-    
-    try {
-      const response = await fetch('http://localhost:3000/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          username, 
-          email, 
-          password,
-          phone,
-          dob,
-          language,
-          creditCard,
-          role: 'User',
-          access: 'Standard',
-          dateAdded: new Date().toLocaleDateString(),
-          lastLogin: 'Never'
-        })
-      });
+  const completeSignupBtn = document.getElementById("complete-signup");
+  if (completeSignupBtn) {
+    completeSignupBtn.addEventListener("click", async function(e) {
+      e.preventDefault();
+      console.log("Complete signup button clicked");
       
-      const data = await response.json();
+      // Get form data
+      const username = document.getElementById("username").value;
+      const Name = document.getElementById("Name").value;
+      const email = document.getElementById("email-signup").value;
+      const password = document.getElementById("password-signup").value;
+      const phone = document.getElementById("phone").value || null;
+      const dob = document.getElementById("dob").value || null;
+      const language = document.getElementById("language-signup").value;
       
-      if (response.ok) {
-        alert(data.message);
-        flipContainer.classList.remove("flipped"); // Switch to login form after successful signup
-      } else {
-        alert(data.message || "Error creating account");
+      console.log("Form data:", { username, Name, email, phone, dob, language });
+      
+      try {
+        const response = await fetch('http://localhost:3001/api/auth/signup', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ 
+            Name: Name,
+            username: username,
+            email: email.toLowerCase(),
+            password,
+            phone_number: phone,
+            DOB: dob,
+            language,
+            role: 'user',
+            status: 'active'
+          })
+        });
+        
+        console.log("Response status:", response.status);
+        const data = await response.json();
+        console.log("Response data:", data);
+        
+        if (response.ok) {
+          window.showNotification('success', data.message || "Signup successful! Redirecting to home page...");
+          // Redirect to home page after successful signup
+          setTimeout(() => {
+            window.location.href = '/user/home';
+          }, 1500);
+        } else {
+          window.showNotification('error', data.message || "Error creating account");
+        }
+      } catch (error) {
+        console.error('Signup error:', error);
+        window.showNotification('error', "Error creating account. Please make sure the server is running at http://localhost:3001");
       }
-    } catch (error) {
-      console.error('Signup error:', error);
-      alert("Error creating account. Please make sure the server is running at http://localhost:3000");
-    }
-  });
+    });
+  } else {
+    console.error("Complete signup button not found");
+  }
 
   // Login form submission
   loginForm.addEventListener("submit", async function(e) {
@@ -174,36 +193,70 @@ document.addEventListener("DOMContentLoaded", function () {
     const password = document.getElementById("password").value;
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      console.log('Login attempt details:', { email, hasPassword: !!password });
+      
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      
-      const data = await response.json();
-      
+
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // Handle non-JSON responses (like rate limit messages)
+        const text = await response.text();
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          data = {
+            success: false,
+            message: text
+          };
+        }
+      }
+
       if (response.ok) {
-        alert("Login successful!");
-        // Redirect based on whether it's an admin login
-        if (data.isAdmin) {
-          window.location.href = "Admin Dashboard/AdminHubHomePage.html";
+        if (data.success) {
+          // Show success message
+          showNotification('success', 'Login successful!');
+          
+          // Redirect based on user role
+          if (data.user.role === 'admin') {
+            window.location.href = '/admin/dashboard';
+          } else {
+            window.location.href = '/user/home';
+          }
         } else {
-          // Redirect regular users to their dashboard
-          window.location.href = "User/dashboard.html";
+          showNotification('error', data.message || 'Login failed');
         }
       } else {
-        alert(data.message || "Invalid credentials");
+        // Handle different error status codes
+        switch (response.status) {
+          case 429:
+            showNotification('error', 'Too many login attempts. Please try again later.');
+            break;
+          case 423:
+            showNotification('error', 'Account is temporarily locked. Please try again later.');
+            break;
+          default:
+            showNotification('error', data.message || 'Login failed');
+        }
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert("Error logging in. Please try again.");
+      showNotification('error', 'An error occurred during login');
     }
   });
 
   // Social login buttons (placeholder functionality)
-  document.querySelectorAll(".google-login, .facebook-login").forEach(btn => {
+  document.querySelectorAll(".btn-google, .btn-facebook").forEach(btn => {
       btn.addEventListener("click", function() {
-          alert(`${this.textContent.trim()} login would be implemented here`);
+          window.showNotification('info', `${this.textContent.trim()} login would be implemented here`);
       });
   });
 
@@ -220,11 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {
   loginLink.addEventListener("click", function (event) {
       event.preventDefault();
       flipContainer.classList.remove("flipped");
-  });
-
-  adminLoginLink.addEventListener("click", function (event) {
-    event.preventDefault();
-    // This is now handled by the main login form
   });
 
   forgotPasswordLink.addEventListener("click", function (event) {

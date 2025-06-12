@@ -1,8 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Slider.js loaded');
 
-  // Wait longer for slides to be created by Collection-Page.js
-  setTimeout(initializeSlider, 1000);
+  // Initialize slider immediately and retry if needed
+  initializeSlider();
+  
+  // Retry initialization after a short delay if needed
+  setTimeout(() => {
+    const slides = document.querySelectorAll('.slide');
+    if (slides.length === 0) {
+      console.log('Retrying slider initialization...');
+      initializeSlider();
+    }
+  }, 500);
 
   function initializeSlider() {
     // Initialize variables
@@ -20,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (totalSlides === 0) {
       console.warn('No slides found, slider initialization aborted');
-      // Hide the slider container if no slides
       if (sliderContainer) {
         sliderContainer.style.display = 'none';
       }
@@ -50,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set initial slide as active
     if (slides.length > 0) {
       slides[0].classList.add('active');
+      slides[0].setAttribute('aria-hidden', 'false');
+      slides[0].setAttribute('tabindex', '0');
+      
       if (dots.length > 0) {
         dots[0].classList.add('active');
         dots[0].setAttribute('aria-current', 'true');
@@ -183,11 +194,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Auto-advance slides every 5 seconds
-    slideInterval = setInterval(() => {
-      if (!document.hidden && nextButton) {
-        nextButton.click();
-      }
-    }, 5000);
+    function startAutoAdvance() {
+      slideInterval = setInterval(() => {
+        if (!document.hidden && nextButton) {
+          nextButton.click();
+        }
+      }, 5000);
+    }
+
+    // Start auto-advance
+    startAutoAdvance();
 
     // Pause auto-advance when user interacts with slider
     if (sliderContainer) {
@@ -196,12 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       sliderContainer.addEventListener('mouseleave', () => {
-        clearInterval(slideInterval);
-        slideInterval = setInterval(() => {
-          if (!document.hidden && nextButton) {
-            nextButton.click();
-          }
-        }, 5000);
+        startAutoAdvance();
       });
     }
 

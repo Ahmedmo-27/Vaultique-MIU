@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Product = require('../models/Products');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const products = [
   {
@@ -13,6 +14,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Black',
     stock: false,
+    stockCount: 0,
     Vcollection: 'Sports & Adventure',
     gender: 'Unisex',
     price: 52000,
@@ -41,7 +43,32 @@ const products = [
         specValue: 'Black',
       },
     ],
-    productPageUrl: '/Product.html?id=126610LN',
+    specialFeatures: [
+      {
+        featureName: 'UNIDIRECTIONAL BEZEL',
+        featureDesc: 'Rotating bezel with 60-minute scale for precise dive time tracking',
+      },
+      {
+        featureName: 'LUMINOUS DISPLAY',
+        featureDesc: 'Chromalight luminescent material for optimal visibility in dark conditions',
+      },
+      {
+        featureName: 'OYSTER CASE',
+        featureDesc: 'Monobloc middle case with screw-down case back and winding crown',
+      },
+      {
+        featureName: 'PERPETUAL MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '300m water resistance with Triplock triple waterproofness system',
+      },
+      {
+        featureName: 'OYSTER BRACELET',
+        featureDesc: 'Robust and comfortable bracelet with Oysterlock safety clasp',
+      },
+    ],
   },
   {
     id: '116613lb',
@@ -53,6 +80,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Blue',
     stock: true,
+    stockCount: 5,
     Vcollection: 'Sports & Adventure',
     gender: 'Unisex',
     price: 20000,
@@ -76,8 +104,7 @@ const products = [
     specialFeatures: [
       {
         featureName: 'CERACHROM BEZEL INSERT',
-        featureDesc:
-          'Scratch-resistant blue ceramic bezel with gold-coated numerals for enduring clarity',
+        featureDesc: 'Scratch-resistant blue ceramic bezel with gold-coated numerals for enduring clarity',
       },
       {
         featureName: 'TWO-TONE OYSTERSTEEL & GOLD',
@@ -133,6 +160,7 @@ const products = [
     caseMaterial: 'Platinum',
     dialColor: 'Blue',
     stock: true,
+    stockCount: 3,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 38300,
@@ -161,6 +189,32 @@ const products = [
         specValue: 'Blue',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'CHRONOGRAPH FUNCTION',
+        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
+      },
+      {
+        featureName: 'TACHYMETRIC SCALE',
+        featureDesc: 'Bezel scale for calculating speed based on time measurement',
+      },
+      {
+        featureName: 'OYSTER CASE',
+        featureDesc: 'Monobloc middle case with screw-down case back and winding crown',
+      },
+      {
+        featureName: 'PERPETUAL MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for everyday wear',
+      },
+      {
+        featureName: 'OYSTER BRACELET',
+        featureDesc: 'Robust and comfortable bracelet with Oysterlock safety clasp',
+      },
+    ],
   },
   {
     id: '52508RBR',
@@ -172,6 +226,7 @@ const products = [
     caseMaterial: 'White Gold',
     dialColor: 'White',
     stock: true,
+    stockCount: 2,
     Vcollection: 'Classic & Dress',
     gender: 'Male',
     price: 52400,
@@ -237,6 +292,7 @@ const products = [
     caseMaterial: 'Rose Gold',
     dialColor: 'Green',
     stock: true,
+    stockCount: 4,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 52000,
@@ -313,6 +369,7 @@ const products = [
     caseMaterial: 'White Gold',
     dialColor: 'Blue',
     stock: true,
+    stockCount: 6,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 40600,
@@ -352,6 +409,7 @@ const products = [
     caseMaterial: 'White Gold',
     dialColor: 'Else',
     stock: true,
+    stockCount: 8,
     Vcollection: 'Casual & Everyday',
     gender: 'Female',
     price: 13650,
@@ -391,6 +449,7 @@ const products = [
     caseMaterial: 'Rose Gold',
     dialColor: 'Green',
     stock: true,
+    stockCount: 3,
     Vcollection: 'Classic & Dress',
     gender: 'Male',
     price: 8150,
@@ -419,6 +478,32 @@ const products = [
         specValue: 'Green',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'CHRONOGRAPH FUNCTION',
+        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
+      },
+      {
+        featureName: 'TACHYMETRIC SCALE',
+        featureDesc: 'Bezel scale for calculating speed based on time measurement',
+      },
+      {
+        featureName: 'MANUAL WINDING',
+        featureDesc: 'Traditional hand-wound movement with exceptional precision',
+      },
+      {
+        featureName: 'LUMINOUS HANDS',
+        featureDesc: 'Super-LumiNova coating for optimal visibility in dark conditions',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '50m water resistance for everyday wear',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+    ],
   },
   {
     id: '31030425001002',
@@ -430,6 +515,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Black',
     stock: true,
+    stockCount: 5,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 8150,
@@ -458,6 +544,32 @@ const products = [
         specValue: 'Black',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'CHRONOGRAPH FUNCTION',
+        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
+      },
+      {
+        featureName: 'TACHYMETRIC SCALE',
+        featureDesc: 'Bezel scale for calculating speed based on time measurement',
+      },
+      {
+        featureName: 'MANUAL WINDING',
+        featureDesc: 'Traditional hand-wound movement with exceptional precision',
+      },
+      {
+        featureName: 'LUMINOUS HANDS',
+        featureDesc: 'Super-LumiNova coating for optimal visibility in dark conditions',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '50m water resistance for everyday wear',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
+      },
+    ],
   },
   {
     id: '43513402103001',
@@ -469,6 +581,7 @@ const products = [
     caseMaterial: 'Rose Gold',
     dialColor: 'Black',
     stock: true,
+    stockCount: 4,
     Vcollection: 'Classic & Dress',
     gender: 'Male',
     price: 5500,
@@ -497,6 +610,32 @@ const products = [
         specValue: 'Black',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'ROMAN NUMERALS',
+        featureDesc: 'Classic Roman numeral hour markers for timeless elegance',
+      },
+      {
+        featureName: 'SMALL SECONDS',
+        featureDesc: "Sub-dial at 6 o'clock for precise seconds indication",
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '50m water resistance for everyday wear',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+    ],
   },
   {
     id: '22012412103001',
@@ -508,6 +647,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Blue',
     stock: true,
+    stockCount: 7,
     Vcollection: 'Sports & Adventure',
     gender: 'Male',
     price: 7050,
@@ -536,6 +676,32 @@ const products = [
         specValue: 'Blue',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'TEAK PATTERN DIAL',
+        featureDesc: 'Inspired by luxury yacht decks, offering unique texture and depth',
+      },
+      {
+        featureName: 'ANTI-MAGNETIC',
+        featureDesc: 'Movement resistant to magnetic fields up to 15,000 gauss',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '150m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+    ],
   },
   {
     id: '13120392102001',
@@ -547,6 +713,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'White',
     stock: true,
+    stockCount: 6,
     Vcollection: 'Casual & Everyday',
     gender: 'Female',
     price: 7150,
@@ -575,6 +742,32 @@ const products = [
         specValue: 'White',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'GRIFFES DESIGN',
+        featureDesc: "Iconic claws at 3 and 9 o'clock positions for distinctive style",
+      },
+      {
+        featureName: 'DIAMOND BEZEL',
+        featureDesc: 'Precious stone-set bezel adding luxury and sparkle',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for everyday wear',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+    ],
   },
   {
     id: 'T1166171604700',
@@ -586,6 +779,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Silver',
     stock: true,
+    stockCount: 10,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 415,
@@ -614,6 +808,32 @@ const products = [
         specValue: 'Silver',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'CHRONOGRAPH FUNCTION',
+        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
+      },
+      {
+        featureName: 'TACHYMETRIC SCALE',
+        featureDesc: 'Bezel scale for calculating speed based on time measurement',
+      },
+      {
+        featureName: 'QUARTZ MOVEMENT',
+        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+    ],
   },
   {
     id: 'T1014101603100',
@@ -625,6 +845,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Grey',
     stock: true,
+    stockCount: 12,
     Vcollection: 'Classic & Dress',
     gender: 'Male',
     price: 415,
@@ -653,6 +874,32 @@ const products = [
         specValue: 'Grey',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'SLIM PROFILE',
+        featureDesc: 'Ultra-thin case design for comfortable everyday wear',
+      },
+      {
+        featureName: 'QUARTZ MOVEMENT',
+        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'APPLIED HOUR MARKERS',
+        featureDesc: 'Elegant applied markers for enhanced readability and style',
+      },
+    ],
   },
   {
     id: 'T1374271104100',
@@ -664,6 +911,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'White',
     stock: true,
+    stockCount: 8,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 2150,
@@ -692,6 +940,32 @@ const products = [
         specValue: 'White',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'CHRONOGRAPH FUNCTION',
+        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'INTEGRATED BRACELET',
+        featureDesc: 'Seamlessly integrated bracelet design inspired by 1970s aesthetics',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+    ],
   },
   {
     id: 'T1374071104100',
@@ -703,6 +977,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Blue',
     stock: true,
+    stockCount: 9,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 1100,
@@ -731,6 +1006,32 @@ const products = [
         specValue: 'Blue',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'WAFFLE DIAL',
+        featureDesc: 'Distinctive textured dial pattern inspired by 1970s design',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with 80-hour power reserve',
+      },
+      {
+        featureName: 'INTEGRATED BRACELET',
+        featureDesc: 'Seamlessly integrated bracelet design for modern aesthetics',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+    ],
   },
   {
     id: 'T1096101107700',
@@ -742,6 +1043,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Green',
     stock: true,
+    stockCount: 15,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 255,
@@ -770,6 +1072,32 @@ const products = [
         specValue: 'Green',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'MINIMALIST DESIGN',
+        featureDesc: 'Clean, uncluttered dial for timeless elegance',
+      },
+      {
+        featureName: 'QUARTZ MOVEMENT',
+        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '30m water resistance for everyday wear',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'BATON HOUR MARKERS',
+        featureDesc: 'Slim, elegant hour markers for enhanced readability',
+      },
+    ],
   },
   {
     id: 'WSSA0018',
@@ -781,6 +1109,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'White',
     stock: true,
+    stockCount: 4,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 8600,
@@ -809,6 +1138,32 @@ const products = [
         specValue: 'White',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'SCREW MOTIF',
+        featureDesc: 'Iconic exposed screws on the bezel for distinctive design',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'QUICK SWITCH SYSTEM',
+        featureDesc: 'Easy strap interchangeability for versatile styling',
+      },
+    ],
   },
   {
     id: 'WHSA0026',
@@ -820,6 +1175,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Else',
     stock: true,
+    stockCount: 2,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 32000,
@@ -848,6 +1204,32 @@ const products = [
         specValue: 'Skeleton',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'SKELETON DIAL',
+        featureDesc: 'Transparent dial showcasing the intricate movement',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'QUICK SWITCH SYSTEM',
+        featureDesc: 'Easy strap interchangeability for versatile styling',
+      },
+    ],
   },
   {
     id: 'WSTA0041',
@@ -859,6 +1241,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Black',
     stock: true,
+    stockCount: 5,
     Vcollection: 'Classic & Dress',
     gender: 'Male',
     price: 3350,
@@ -887,6 +1270,32 @@ const products = [
         specValue: 'Black',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'ROMAN NUMERALS',
+        featureDesc: 'Classic Roman numeral hour markers for timeless elegance',
+      },
+      {
+        featureName: 'MANUAL MOVEMENT',
+        featureDesc: 'Traditional hand-wound movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '30m water resistance for everyday wear',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'BLUE SWORD HANDS',
+        featureDesc: 'Signature Cartier blue sword-shaped hands for distinctive style',
+      },
+    ],
   },
   {
     id: 'WSPN0007',
@@ -898,6 +1307,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'White',
     stock: true,
+    stockCount: 6,
     Vcollection: 'Classic & Dress',
     gender: 'Female',
     price: 4850,
@@ -926,6 +1336,32 @@ const products = [
         specValue: 'White',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'ROMAN NUMERALS',
+        featureDesc: 'Classic Roman numeral hour markers for timeless elegance',
+      },
+      {
+        featureName: 'MANUAL MOVEMENT',
+        featureDesc: 'Traditional hand-wound movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '30m water resistance for everyday wear',
+      },
+      {
+        featureName: 'METAL BRACELET',
+        featureDesc: 'Flexible link bracelet for comfort and style',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'BLUE SWORD HANDS',
+        featureDesc: 'Signature Cartier blue sword-shaped hands for distinctive style',
+      },
+    ],
   },
   {
     id: 'WGTA0010',
@@ -937,6 +1373,7 @@ const products = [
     caseMaterial: 'Silver',
     dialColor: 'White',
     stock: true,
+    stockCount: 3,
     Vcollection: 'Classic & Dress',
     gender: 'Male',
     price: 13550,
@@ -965,6 +1402,32 @@ const products = [
         specValue: 'White',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'ROMAN NUMERALS',
+        featureDesc: 'Classic Roman numeral hour markers for timeless elegance',
+      },
+      {
+        featureName: 'MANUAL MOVEMENT',
+        featureDesc: 'Traditional hand-wound movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '30m water resistance for everyday wear',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'BLUE SWORD HANDS',
+        featureDesc: 'Signature Cartier blue sword-shaped hands for distinctive style',
+      },
+    ],
   },
   {
     id: '15407ST.OO.1220ST.01',
@@ -976,6 +1439,7 @@ const products = [
     caseMaterial: 'Ceramic',
     dialColor: 'Else',
     stock: true,
+    stockCount: 1,
     Vcollection: 'Luxury & Heritage',
     gender: 'Male',
     price: 221000,
@@ -1004,6 +1468,32 @@ const products = [
         specValue: 'Openworked',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'OPENWORKED DIAL',
+        featureDesc: 'Skeletonized design revealing the intricate movement',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '50m water resistance for everyday wear',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'CACTUS JACK COLLABORATION',
+        featureDesc: 'Limited edition design featuring unique streetwear influence',
+      },
+    ],
   },
   {
     id: '26530ST.OO.1220ST.01',
@@ -1015,6 +1505,7 @@ const products = [
     caseMaterial: 'White Gold',
     dialColor: 'Red',
     stock: true,
+    stockCount: 2,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 201000,
@@ -1043,6 +1534,32 @@ const products = [
         specValue: 'Red',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'FLYING TOURBILLON',
+        featureDesc: 'Complex tourbillon mechanism visible through the dial',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '50m water resistance for everyday wear',
+      },
+      {
+        featureName: 'WHITE GOLD BRACELET',
+        featureDesc: 'Prestigious white gold bracelet with deployant clasp',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'TAPISSERIE DIAL',
+        featureDesc: 'Iconic textured dial pattern for distinctive Royal Oak style',
+      },
+    ],
   },
   {
     id: '15710ST.OO.A052CA.01',
@@ -1054,6 +1571,7 @@ const products = [
     caseMaterial: 'Stainless Steel',
     dialColor: 'Green',
     stock: true,
+    stockCount: 3,
     Vcollection: 'Sports & Adventure',
     gender: 'Male',
     price: 36200,
@@ -1066,6 +1584,8 @@ const products = [
       '/Assets/Images/Watches/back_view.png',
     ],
     video: '/Assets/Images/Watches/Audemars Piguet Royal Oak Offshore Diver.mp4',
+    description:
+      "The Audemars Piguet Royal Oak Offshore Diver is a modern interpretation of the classic Royal Oak design. Its green dial and stainless steel case combine the robustness of a diver's watch with the elegance of a Royal Oak timepiece. The unique collaboration with Cactus Jack adds a contemporary streetwear influence to this high-performance sports watch.",
     specialFeatures: [
       {
         featureName: 'MÉGA TAPISSERIE DIAL',
@@ -1125,6 +1645,7 @@ const products = [
     caseMaterial: 'Rose Gold',
     dialColor: 'Blue',
     stock: true,
+    stockCount: 4,
     Vcollection: 'Casual & Everyday',
     gender: 'Female',
     price: 50500,
@@ -1153,6 +1674,32 @@ const products = [
         specValue: 'Blue',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'MÉGA TAPISSERIE DIAL',
+        featureDesc: 'Bold and textured dial design offering depth and enhanced legibility',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '100m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'RUBBER STRAP',
+        featureDesc: 'Comfortable and versatile strap for active wear',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'ROSE GOLD CASE',
+        featureDesc: 'Prestigious 18k rose gold case for luxury appeal',
+      },
+    ],
   },
   {
     id: '15500OR.OO.D002CR.01',
@@ -1164,6 +1711,7 @@ const products = [
     caseMaterial: 'Rose Gold',
     dialColor: 'Green',
     stock: true,
+    stockCount: 2,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 82800,
@@ -1192,6 +1740,32 @@ const products = [
         specValue: 'Green',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'PETITE TAPISSERIE DIAL',
+        featureDesc: 'Iconic textured dial pattern for distinctive Royal Oak style',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '50m water resistance for everyday wear',
+      },
+      {
+        featureName: 'ROSE GOLD BRACELET',
+        featureDesc: 'Prestigious rose gold bracelet with deployant clasp',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'OCTAGONAL BEZEL',
+        featureDesc: 'Signature eight-sided bezel with exposed screws',
+      },
+    ],
   },
   {
     id: '3738R-001',
@@ -1203,6 +1777,7 @@ const products = [
     caseMaterial: 'Rose Gold',
     dialColor: 'Black',
     stock: true,
+    stockCount: 1,
     Vcollection: 'Classic & Dress',
     gender: 'Male',
     price: 85000,
@@ -1231,6 +1806,32 @@ const products = [
         specValue: 'Black',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'GOLDEN RATIO',
+        featureDesc: 'Case shape based on the perfect golden ratio for aesthetic harmony',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '30m water resistance for everyday wear',
+      },
+      {
+        featureName: 'ROSE GOLD BRACELET',
+        featureDesc: 'Prestigious rose gold bracelet with deployant clasp',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'MINIMALIST DIAL',
+        featureDesc: 'Clean, uncluttered dial design for timeless elegance',
+      },
+    ],
   },
   {
     id: '5711/1P-001',
@@ -1242,6 +1843,7 @@ const products = [
     caseMaterial: 'White Gold',
     dialColor: 'Blue',
     stock: true,
+    stockCount: 2,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 35000,
@@ -1270,6 +1872,32 @@ const products = [
         specValue: 'Blue',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'HORIZONTAL EMBOSSING',
+        featureDesc: 'Distinctive horizontal lines on dial inspired by ship portholes',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '120m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'WHITE GOLD BRACELET',
+        featureDesc: 'Prestigious white gold bracelet with deployant clasp',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'OCTAGONAL BEZEL',
+        featureDesc: 'Rounded octagonal bezel for distinctive Nautilus style',
+      },
+    ],
   },
   {
     id: '5167R-001',
@@ -1281,6 +1909,7 @@ const products = [
     caseMaterial: 'Rose Gold',
     dialColor: 'Brown',
     stock: true,
+    stockCount: 3,
     Vcollection: 'Casual & Everyday',
     gender: 'Male',
     price: 62000,
@@ -1309,6 +1938,32 @@ const products = [
         specValue: 'Brown',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'CHECKERBOARD DIAL',
+        featureDesc: 'Distinctive embossed pattern for modern aesthetics',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '120m water resistance for swimming and water sports',
+      },
+      {
+        featureName: 'RUBBER STRAP',
+        featureDesc: 'Comfortable and versatile strap for active wear',
+      },
+      {
+        featureName: 'SAPPHIRE CRYSTAL',
+        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
+      },
+      {
+        featureName: 'ROSE GOLD CASE',
+        featureDesc: 'Prestigious 18k rose gold case for luxury appeal',
+      },
+    ],
   },
   {
     id: '5208T-010',
@@ -1320,6 +1975,7 @@ const products = [
     caseMaterial: 'Titanium',
     dialColor: 'Black',
     stock: true,
+    stockCount: 1,
     Vcollection: 'Luxury & Heritage',
     gender: 'Male',
     price: 200000,
@@ -1348,6 +2004,32 @@ const products = [
         specValue: 'Black',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'PERPETUAL CALENDAR',
+        featureDesc: 'Complex calendar mechanism accounting for months and leap years',
+      },
+      {
+        featureName: 'MINUTE REPEATER',
+        featureDesc: 'Acoustic time indication through mechanical chimes',
+      },
+      {
+        featureName: 'CHRONOGRAPH',
+        featureDesc: 'Precise timing function with start, stop, and reset capabilities',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '30m water resistance for everyday wear',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+      {
+        featureName: 'TITANIUM CASE',
+        featureDesc: 'Lightweight and durable titanium case for exceptional comfort',
+      },
+    ],
   },
   {
     id: '5236P-001',
@@ -1359,6 +2041,7 @@ const products = [
     caseMaterial: 'White Gold',
     dialColor: 'Blue',
     stock: true,
+    stockCount: 1,
     Vcollection: 'Luxury & Heritage',
     gender: 'Male',
     price: 200000,
@@ -1387,32 +2070,65 @@ const products = [
         specValue: 'Blue',
       },
     ],
+    specialFeatures: [
+      {
+        featureName: 'IN-LINE DISPLAY',
+        featureDesc: 'Unique calendar information layout in a single line',
+      },
+      {
+        featureName: 'PERPETUAL CALENDAR',
+        featureDesc: 'Complex calendar mechanism accounting for months and leap years',
+      },
+      {
+        featureName: 'AUTOMATIC MOVEMENT',
+        featureDesc: 'Self-winding mechanical movement with exceptional precision',
+      },
+      {
+        featureName: 'WATER RESISTANCE',
+        featureDesc: '30m water resistance for everyday wear',
+      },
+      {
+        featureName: 'LEATHER STRAP',
+        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
+      },
+      {
+        featureName: 'WHITE GOLD CASE',
+        featureDesc: 'Prestigious white gold case for luxury appeal',
+      },
+    ],
   },
 ];
 
 async function seedDatabase() {
   try {
+    // Check if MongoDB URI is defined
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not defined');
+    }
+
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log(' Connected to MongoDB');
+    console.log('Connected to MongoDB');
 
     // Clear existing data
     await Product.deleteMany({});
-    console.log(' Existing products deleted');
+    console.log('Existing products deleted');
 
     // Insert new products
     await Product.insertMany(products);
-    console.log(' Products seeded successfully');
+    console.log('Products seeded successfully');
 
     // Exit process
     process.exit(0);
   } catch (err) {
-    console.error(' Seeding error:', err);
+    console.error('Seeding error:', err);
     process.exit(1);
   }
 }
 
+// Make sure dotenv is configured before seeding
+require('dotenv').config();
 seedDatabase();

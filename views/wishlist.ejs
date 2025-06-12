@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/images/Logo.png" />
+    <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link rel="stylesheet" href="/CSS/nav-bar.css" />
+    <link rel="stylesheet" href="/CSS/Products.css" />
+    <link rel="stylesheet" href="/CSS/footer.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="/Javascript/Light-Mode.js"></script>
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Javascript/nav-bar.js"></script>
+    <title>My Wishlist</title>
+  </head>
+
+  <body>
+    <%- include('partials/loading-screen') %>
+    <%- include('partials/navigation') %>
+
+    <main class="wishlist-container" data-wishlist="<%= encodeURIComponent(JSON.stringify(wishlistItems || [])) %>">
+      <div class="wishlist-header">
+        <h1>My Wishlist</h1>
+        <p>Your favorite products</p>
+      </div>
+      <% if (!wishlistItems || wishlistItems.length === 0) { %>
+        <div class="empty-wishlist">
+          <i class="far fa-heart"></i>
+          <h2>Your wishlist is empty</h2>
+          <p>Start adding products to your wishlist by clicking the heart icon on any product.</p>
+          <a href="/products" class="browse-products-btn">Browse Products</a>
+        </div>
+      <% } else { %>
+        <div class="product-grid" id="productGrid">
+          <% wishlistItems.forEach(product => { %>
+            <div class="product-card" data-product-id="<%= product._id %>">
+              <div class="product-image-container">
+                <div class="wishlist-icon remove-item" data-product-id="<%= product._id %>">
+                  <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                  </svg>
+                </div>
+                <a href="/user/product?id=<%= product._id %>">
+                  <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                </a>
+                <div class="hover-buttons">
+                  <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
+                  <button class="compare" data-product-id="<%= product._id %>">Compare</button>
+                </div>
+              </div>
+              <div class="product-details">
+                <a href="/user/product?id=<%= product._id %>">
+                  <h4><%= product.name %></h4>
+                </a>
+                <div class="product-meta">
+                  <p class="price">$ <%= (product.price || 0).toLocaleString() %></p>
+                </div>
+                <div class="product-status">
+                  <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
+                    <p class="stock in-stock">In Stock</p>
+                  <% } else { %>
+                    <p class="stock out-of-stock">Out of Stock</p>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <% if (locals.pagination && locals.pagination.totalPages > 1) { %>
+            <button id="prevPage" <%= locals.pagination.currentPage <= 1 ? 'disabled' : '' %>>Previous</button>
+            <span id="pageInfo">Page <%= locals.pagination.currentPage %> of <%= locals.pagination.totalPages %></span>
+            <button id="nextPage" <%= locals.pagination.currentPage >= locals.pagination.totalPages ? 'disabled' : '' %>>Next</button>
+        <% } %>
+      </div>
+
+
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <%- include('partials/notification', { 
+        type: locals.type || 'info',
+        message: locals.message || '',
+        show: locals.show || false 
+    }) %>
+
+    <!-- Quick View Modal -->
+    <div id="quickViewModal" class="quick-view-modal">
+      <button class="close-btn" id="closeQuickView">✖</button>
+      <div class="quick-view-content">
+        <section class="product-gallery">
+          <div class="all_image">
+            <div class="main-image">
+              <img id="quickViewMainImage" alt="Product Image">
+            </div>
+            <div class="thumbnail-container" id="thumbnailContainer">
+            </div>
+          </div>
+        </section>
+        
+        <div class="product-info">
+          <div class="product-header">
+            <h1 id="quickViewProductName"></h1>
+            <div class="product-meta">
+              <div class="price-qv" id="quickViewPrice"></div>
+              <div class="rating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span>(4.5/5)</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="product-actions">
+            <button class="wishlist-btn" id="quickViewWishlistBtn">
+              <i class="far fa-heart"></i>
+            </button>
+            <button class="add-to-cart" id="quickViewAddToCart">
+              <i class="fas fa-shopping-bag"></i> Add to Cart
+            </button>
+            <button class="find-store">
+              <i class="fas fa-map-marker-alt"></i> View 3D Model
+            </button>
+          </div>
+          
+          <div class="product-description">
+            <p id="quickViewDescription"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="quickViewOverlay" class="quick-view-overlay"></div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize modal elements
+        const quickViewModal = document.getElementById('quickViewModal');
+        const quickViewOverlay = document.getElementById('quickViewOverlay');
+        const closeQuickViewBtn = document.getElementById('closeQuickView');
+        const wishlistContainer = document.querySelector('.wishlist-container');
+        const wishlistData = JSON.parse(decodeURIComponent(wishlistContainer.dataset.wishlist || '[]'));
+
+        // Function to show notification
+        function showNotification(message, type = 'success') {
+          const notification = document.createElement('div');
+          notification.className = `notification ${type}`;
+          notification.textContent = message;
+          document.body.appendChild(notification);
+          
+          setTimeout(() => {
+            notification.remove();
+          }, 3000);
+        }
+
+        // Handle remove from wishlist
+        document.querySelectorAll('.remove-item').forEach(button => {
+          button.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            const productCard = this.closest('.product-card');
+
+            try {
+              const response = await fetch('/user/wishlist/toggle', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productId })
+              });
+
+              const data = await response.json();
+
+              if (data.success) {
+                productCard.remove();
+                showNotification('Product removed from wishlist');
+                
+                // If no items left, show empty state
+                if (document.querySelectorAll('.product-card').length === 0) {
+                  document.querySelector('.product-grid').innerHTML = `
+                    <div class="empty-wishlist">
+                      <i class="far fa-heart"></i>
+                      <h2>Your wishlist is empty</h2>
+                      <p>Start adding products to your wishlist by clicking the heart icon on any product.</p>
+                      <a href="/products" class="browse-products-btn">Browse Products</a>
+                    </div>
+                  `;
+                }
+              } else {
+                throw new Error(data.message || 'Failed to remove from wishlist');
+              }
+            } catch (error) {
+              showNotification(error.message, 'error');
+            }
+          });
+        });
+
+        // Pagination elements
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const pageInfo = document.getElementById('pageInfo');
+
+        // Handle pagination
+        if (prevPageBtn && nextPageBtn) {
+          prevPageBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+              const currentPage = parseInt(pageInfo.textContent.match(/Page (\d+)/)[1]);
+              window.location.href = `/user/wishlist?page=${currentPage - 1}`;
+            }
+          });
+
+          nextPageBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+              const currentPage = parseInt(pageInfo.textContent.match(/Page (\d+)/)[1]);
+              window.location.href = `/user/wishlist?page=${currentPage + 1}`;
+            }
+          });
+        }
+
+        if (!quickViewModal || !quickViewOverlay) {
+          console.error('Quick view modal elements not found');
+          return;
+        }
+
+        // Function to show the quick view modal
+        function showQuickView(product) {
+          // Populate modal content
+          document.getElementById('quickViewMainImage').src = product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`;
+          document.getElementById('quickViewMainImage').alt = product.name;
+          document.getElementById('quickViewProductName').textContent = product.name;
+          document.getElementById('quickViewPrice').textContent = `$${product.price.toLocaleString()}`;
+          document.getElementById('quickViewDescription').textContent = product.description || 'No description available';
+          document.getElementById('quickViewWishlistBtn').dataset.productId = product._id;
+          document.getElementById('quickViewAddToCart').dataset.productId = product._id;
+
+          // Show modal and overlay
+          quickViewModal.style.display = 'block';
+          quickViewOverlay.style.display = 'block';
+          document.body.style.overflow = 'hidden';
+        }
+
+        // Function to hide the quick view modal
+        function hideQuickView() {
+          quickViewModal.style.display = 'none';
+          quickViewOverlay.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+
+        // Add click event listeners to all quick view buttons
+        document.querySelectorAll('.quick-view').forEach(button => {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const productId = this.dataset.productId;
+            const product = wishlistData.find(item => item._id === productId);
+            
+            if (product) {
+              showQuickView(product);
+            }
+          });
+        });
+
+        // Close modal when clicking the close button or overlay
+        closeQuickViewBtn.addEventListener('click', hideQuickView);
+        quickViewOverlay.addEventListener('click', hideQuickView);
+
+        // Close modal when pressing Escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && quickViewModal.style.display === 'block') {
+            hideQuickView();
+          }
+        });
+      });
+    </script>
+  </body>
+</html> 

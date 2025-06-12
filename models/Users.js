@@ -125,7 +125,7 @@ const UserSchema = new mongoose.Schema({
     },
     paymentType: {
       type: String,
-      enum: ['Credit Card', 'Debit Card', 'PayPal'],
+      enum: ['Credit Card', 'Debit Card', 'PayPal', 'credit', 'debit'],
       default: 'Credit Card',
     },
   },
@@ -141,7 +141,7 @@ const UserSchema = new mongoose.Schema({
       },
       status: {
         type: String,
-        enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+        enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled', 'Processing', 'Completed'],
         default: 'Pending',
       },
       total: {
@@ -245,31 +245,45 @@ const UserSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['active', 'inactive', 'suspended'],
-    default: 'active',
+    default: 'inactive',
     required: true,
     select: true,
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+  verificationToken: String,
+  verificationTokenExpire: Date,
   failedLoginAttempts: {
     type: Number,
     default: 0,
+    select: true,
   },
   lastFailedLogin: {
     type: Date,
+    select: true,
   },
   lastLogin: {
     type: Date,
+    select: true,
   },
   loginHistory: [
     {
       timestamp: {
         type: Date,
-        default: Date.now,
+        default: Date.now
       },
       ip: String,
-      userAgent: String,
-      success: Boolean,
+      userAgent: String
     },
   ],
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
+}, {
+  timestamps: true,
+  versionKey: false // Disable versioning to prevent version conflicts
 });
 
 // Add index for email and username for faster queries
@@ -309,7 +323,7 @@ UserSchema.methods.isAccountLocked = function () {
   return (
     this.failedLoginAttempts >= 5 &&
     this.lastFailedLogin &&
-    new Date() - this.lastFailedLogin < 30 * 60 * 1000
+    new Date() - new Date(this.lastFailedLogin) < 30 * 60 * 1000
   ); // 30 minutes
 };
 
@@ -356,6 +370,77 @@ UserSchema.methods.activateAccount = async function () {
 UserSchema.methods.deactivateAccount = async function () {
   this.status = 'inactive';
   await this.save();
+};
+
+// Method to compare password
+UserSchema.methods.comparePassword = async function (candidatePassword) {
+  try {
+    return await bcryptjs.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw new Error('Password comparison failed');
+  }
+};
+
+// Method to reset failed login attempts
+UserSchema.methods.resetFailedLoginAttempts = async function () {
+  this.failedLoginAttempts = 0;
+  this.lastFailedLogin = null;
+  await this.save();
+};
+
+// Method to increment failed login attempts
+UserSchema.methods.incrementFailedLoginAttempts = async function () {
+  this.failedLoginAttempts += 1;
+  this.lastFailedLogin = new Date();
+  await this.save();
+};
+
+// Method to add login history
+UserSchema.methods.addLoginHistory = async function (ip, userAgent) {
+  this.loginHistory.push({
+    timestamp: new Date(),
+    ip,
+    userAgent,
+  });
+  // Keep only last 10 login attempts
+  if (this.loginHistory.length > 10) {
+    this.loginHistory = this.loginHistory.slice(-10);
+  }
+  await this.save();
+};
+
+// Method to update login history
+UserSchema.methods.updateLoginHistory = async function(ip, userAgent) {
+  try {
+    // Initialize loginHistory if it doesn't exist
+    if (!this.loginHistory) {
+      this.loginHistory = [];
+    }
+
+    // Add new login entry
+    this.loginHistory.push({
+      timestamp: new Date(),
+      ip,
+      userAgent
+    });
+
+    // Keep only last 10 entries
+    if (this.loginHistory.length > 10) {
+      this.loginHistory = this.loginHistory.slice(-10);
+    }
+
+    // Update last login
+    this.lastLogin = new Date();
+
+    // Reset failed login attempts
+    this.failedLoginAttempts = 0;
+    this.lastFailedLogin = null;
+
+    await this.save();
+  } catch (error) {
+    console.error('Error updating login history:', error);
+    throw error;
+  }
 };
 
 module.exports = mongoose.model('User', UserSchema);

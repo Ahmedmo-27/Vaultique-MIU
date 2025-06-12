@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const User = require('../models/Users');
-require('dotenv').config();
+const path = require('path');
+const bcryptjs = require('bcryptjs');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const Users = [
   {
@@ -28,6 +30,8 @@ const Users = [
       paymentType: 'Credit Card',
     },
     role: 'admin',
+    isEmailVerified: true,
+    status: 'active'
   },
   {
     id: new mongoose.Types.ObjectId().toString(),
@@ -54,6 +58,8 @@ const Users = [
       paymentType: 'Debit Card',
     },
     role: 'user',
+    isEmailVerified: true,
+    status: 'active'
   },
   {
     id: new mongoose.Types.ObjectId().toString(),
@@ -80,6 +86,8 @@ const Users = [
       paymentType: 'Credit Card',
     },
     role: 'user',
+    isEmailVerified: true,
+    status: 'active'
   },
   {
     id: new mongoose.Types.ObjectId().toString(),
@@ -106,6 +114,8 @@ const Users = [
       paymentType: 'Credit Card',
     },
     role: 'user',
+    isEmailVerified: true,
+    status: 'active'
   },
 ];
 
@@ -119,8 +129,14 @@ async function seedDatabase() {
     await User.deleteMany({});
     console.log('Existing users deleted');
 
-    // Insert new users
-    await User.insertMany(Users);
+    // Hash passwords before inserting
+    const hashedUsers = await Promise.all(Users.map(async (user) => {
+      const hashedPassword = await bcryptjs.hash(user.password, 10);
+      return { ...user, password: hashedPassword };
+    }));
+
+    // Insert new users with hashed passwords
+    await User.insertMany(hashedUsers);
     console.log('Users seeded successfully');
 
     // Close the connection before exiting

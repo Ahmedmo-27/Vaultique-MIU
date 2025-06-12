@@ -3,6 +3,8 @@ const Collection = require('../models/Collections');
 const router = express.Router();
 const Product = require('../models/Products');
 const Brand = require('../models/Brands');
+const mongoose = require('mongoose');
+const User = require('../models/Users');
 
 // Collection name normalization mappings
 const COLLECTION_MAPPINGS = {
@@ -82,37 +84,159 @@ router.get('/', async (req, res) => {
 // Get collection by slug
 router.get('/:slug', async (req, res) => {
   try {
+    // Get all brands first
+    const brands = await Brand.find().sort('name');
+    
     const collection = await Collection.findOne({ slug: req.params.slug });
     if (!collection) {
-      return res.status(404).render('404');
+      return res.status(404).render('error', { message: 'Collection not found' });
     }
 
-    const products = await Product.find({ collection: collection._id })
-      .skip(req.pagination.skip)
-      .limit(req.pagination.limit);
+    // Build filter object from query parameters
+    const filters = {
+      brand: req.query.brand || 'All',
+      gender: req.query.gender || 'All',
+      strapMaterial: req.query.strapMaterial || 'All',
+      movement: req.query.movement || 'All',
+      waterResistance: req.query.waterResistance || 'All',
+      caseMaterial: req.query.caseMaterial || 'All',
+      dialColor: req.query.dialColor || 'All',
+      inStock: req.query.inStock === 'true',
+      minPrice: req.query.minPrice || '',
+      maxPrice: req.query.maxPrice || '',
+      sort: req.query.sort || 'default'
+    };
 
-    const totalProducts = await Product.countDocuments({ collection: collection._id });
-    const totalPages = Math.ceil(totalProducts / req.pagination.limit);
+    // Build query object
+    const query = { Vcollection: collection._id };
 
-    // Get all brands and collections for navigation
-    const brands = await Brand.find();
-    const collections = await Collection.find();
+    // Add filters to query
+    if (filters.brand !== 'All') {
+      const brand = await Brand.findOne({ 
+        name: { $regex: new RegExp(`^${filters.brand}$`, 'i') }
+      });
+      if (brand) {
+        query.brand = brand._id;
+      }
+    }
+    if (filters.gender !== 'All') query.gender = filters.gender;
+    if (filters.strapMaterial !== 'All') query.strapMaterial = filters.strapMaterial;
+    if (filters.movement !== 'All') query.movement = filters.movement;
+    if (filters.waterResistance !== 'All') query.waterResistance = filters.waterResistance;
+    if (filters.caseMaterial !== 'All') query.caseMaterial = filters.caseMaterial;
+    if (filters.dialColor !== 'All') {
+      query.dialColor = { $in: filters.dialColor.split(',') };
+    }
+    if (filters.inStock) {
+      query.$or = [{ stock: true }, { stockCount: { $gt: 0 } }];
+    }
+    if (filters.minPrice || filters.maxPrice) {
+      query.price = {};
+      if (filters.minPrice) query.price.$gte = parseInt(filters.minPrice);
+      if (filters.maxPrice) query.price.$lte = parseInt(filters.maxPrice);
+    }
+
+    // Get total products count for pagination
+    const totalProducts = await Product.countDocuments(query);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const totalPages = Math.ceil(totalProducts / limit);
+    const skip = (page - 1) * limit;
+
+    // Sort options
+    let sort = {};
+    switch (filters.sort) {
+      case 'price-asc':
+        sort = { price: 1 };
+        break;
+      case 'price-desc':
+        sort = { price: -1 };
+        break;
+      case 'new':
+        sort = { createdAt: -1 };
+        break;
+      case 'popularity':
+        sort = { popularityScore: -1 };
+        break;
+      default:
+        sort = { createdAt: -1 }; // newest first
+    }
+
+    // Get products with pagination and sorting
+    const products = await Product.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .populate('brand', 'name logo')
+      .lean();
+
+    // Get all collections for filter
+    const collections = await Collection.find().sort('name');
+
+    // Add wishlist status to products if user is logged in
+    let productsWithWishlist = products;
+    if (req.user) {
+      try {
+        const user = await User.findById(req.user._id).select('wishlist');
+        if (user && user.wishlist) {
+          const wishlistItems = user.wishlist.map(item => item.product && item.product.toString());
+          productsWithWishlist = products.map(product => ({
+            ...product,
+            inWishlist: wishlistItems.includes(product._id.toString())
+          }));
+        }
+      } catch (error) {
+        console.error('Error checking wishlist for products:', error);
+        productsWithWishlist = products.map(product => ({
+          ...product,
+          inWishlist: false
+        }));
+      }
+    } else {
+      productsWithWishlist = products.map(product => ({
+        ...product,
+        inWishlist: false
+      }));
+    }
+
+    // If it's an API request or format=json, return JSON
+    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.json({
+        success: true,
+        data: {
+          collection,
+          products: productsWithWishlist,
+          pagination: {
+            currentPage: page,
+            totalPages,
+            totalProducts,
+            itemsPerPage: limit
+          },
+          filters,
+          sort: filters.sort
+        }
+      });
+    }
 
     res.render('Collection-Page', {
-      collectionName: collection.name,
-      collectionDescription: collection.description,
+      title: `${collection.name} Collection`,
       collection,
-      products,
-      currentPage: req.pagination.page,
-      totalPages,
+      products: productsWithWishlist,
       brands,
       collections,
+      filters,
+      sort: filters.sort,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalProducts,
+        itemsPerPage: limit
+      },
+      user: req.user || null
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    console.error('Error in collection route:', error);
+    res.status(500).render('error', { message: 'Error loading collection' });
   }
 });
 

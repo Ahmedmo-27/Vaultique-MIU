@@ -52,15 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let targetElement, targetPosition;
 
     if (targetIndex === -1) {
-      // Scroll to main section
       targetElement = mainSection;
       targetPosition = 0;
     } else {
-      // Scroll to content section
       targetElement = contentSections[targetIndex];
       targetPosition = Math.max(0, targetElement.offsetTop - headerHeight);
 
-      // Adjust for video preservation
       const video = targetElement.querySelector('video');
       if (video) {
         const videoBottom = targetElement.offsetTop + video.offsetHeight;
@@ -71,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startPosition = window.pageYOffset;
     const distance = targetPosition - startPosition;
-    const duration = 1000;
+    const duration = 1500; // Increased duration for smoother scrolling
     let startTime = null;
 
     function animate(currentTime) {
@@ -102,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetPosition = document.body.scrollHeight - window.innerHeight;
     const startPosition = window.scrollY;
     const distance = targetPosition - startPosition;
-    const duration = 1000;
+    const duration = 1500; // Increased duration for smoother scrolling
     let startTime = null;
 
     function animate(currentTime) {
@@ -118,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         isScrolling = false;
         updateScrollIndicator();
-        // Stop auto-scroll when reaching footer
         clearTimeout(autoScrollTimeout);
       }
     }
@@ -225,10 +221,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Helper Functions -----------------------------------------------------
 
   function ease(t) {
-    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    // Improved easing function for smoother scrolling
+    return t < 0.5
+      ? 4 * t * t * t
+      : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
 
   function updateScrollIndicator() {
+    if (!scrollIndicator) return;
+    
     const atFooter =
       window.scrollY + window.innerHeight >= document.body.scrollHeight - FOOTER_OFFSET;
     scrollIndicator.classList.toggle('hidden', atFooter || currentSectionIndex === -1);
@@ -246,24 +247,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setupIntersectionObserver() {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            if (entry.target === mainSection) {
-              currentSectionIndex = -1;
-            } else {
-              currentSectionIndex = contentSections.indexOf(entry.target);
-            }
-            updateScrollIndicator();
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
 
-    if (mainSection) observer.observe(mainSection);
-    contentSections.forEach((section) => observer.observe(section));
+    contentSections.forEach((section) => {
+      observer.observe(section);
+    });
+  }
+
+  function handleHeaderVisibility() {
+    if (!header) return;
+    
+    const scrollPosition = window.scrollY;
+    const headerHeight = getHeaderHeight();
+    
+    if (scrollPosition > headerHeight) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
   }
 
   function initializeScroll() {
@@ -298,6 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('menu-open');
       });
     }
+
+    // Add scroll event listener for header visibility
+    window.addEventListener('scroll', handleHeaderVisibility);
   }
 
   // Start the page -------------------------------------------------------

@@ -14,7 +14,15 @@ router.use('/collections', collectionsRouter);
 router.use('/users', usersRouter);
 
 // Use the entire products router - it has the routes defined internally
-router.use('/products', productsRouter);
+// Only handle requests that explicitly want JSON
+router.use('/products', (req, res, next) => {
+  // Only handle requests at /api/products
+  if (req.originalUrl.startsWith('/api/products')) {
+    productsRouter(req, res, next);
+  } else {
+    next();
+  }
+});
 
 // Health check endpoint
 router.get('/health', (req, res) => {
