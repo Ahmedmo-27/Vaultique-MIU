@@ -9,7 +9,7 @@ router.use(authenticateJWT);
 router.use(isAdmin);
 
 // Admin dashboard
-router.get('/dashboard', adminController.getDashboard);
+router.get('/dashboard', adminController.renderDashboard);
 
 // User management routes
 router.get('/users', adminController.renderUsers);

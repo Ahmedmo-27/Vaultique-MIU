@@ -95,10 +95,17 @@ exports.renderDashboard = async (req, res) => {
       { $group: { _id: null, total: { $sum: "$total" } } },
     ]);
 
-    const recentOrders = await Order.find()
+    const recentOrdersRaw = await Order.find()
       .sort({ createdAt: -1 })
       .limit(5)
       .populate("userId", "Name email");
+
+    // Map recentOrders to the format expected by the EJS template
+    const recentOrders = recentOrdersRaw.map(order => ({
+      userName: order.userId?.Name || order.shipping?.name || 'Unknown',
+      dateOrder: order.createdAt,
+      status: order.status || 'Unknown',
+    }));
 
     const todos = await Todo.find().sort({ createdAt: -1 }).limit(5);
 
