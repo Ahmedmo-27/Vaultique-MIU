@@ -106,11 +106,11 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://ajax.googleapis.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://fonts.cdnfonts.com", "https://db.onlinewebfonts.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://ajax.googleapis.com", "https://kit.fontawesome.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://fonts.cdnfonts.com", "https://db.onlinewebfonts.com","https://cdn.jsdelivr.net","https://unpkg.com","https://kit.fontawesome.com","https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "blob:", "https:"],
-        connectSrc: ["'self'", "blob:", "https:"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://fonts.cdnfonts.com", "https://db.onlinewebfonts.com", "https://cdnjs.cloudflare.com"],
+        connectSrc: ["'self'", "blob:", "https:", "https://kit.fontawesome.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://fonts.cdnfonts.com", "https://db.onlinewebfonts.com", "https://cdnjs.cloudflare.com","https://cdn.jsdelivr.net","https://unpkg.com","https://kit.fontawesome.com" , "https://fonts.googleapis.com"],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
         frameSrc: ["'self'"],
@@ -126,7 +126,6 @@ app.use(
     crossOriginOpenerPolicy: false,
   })
 );
-
 // Static File Serving Configuration
 const publicPath = path.join(__dirname, 'public');
 
