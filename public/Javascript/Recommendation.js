@@ -185,6 +185,7 @@ skipBtn.addEventListener('click', () => {
     } else {
         showResults();
     }
+
 });
 
 renderQuestion();
