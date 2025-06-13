@@ -263,6 +263,17 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("Complete signup button not found");
   }
 
+  // Prevent default form submissions
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    handleLogin(e);
+  });
+
+  signupForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    handleSignup(e);
+  });
+
   // Login form submission
   loginForm.addEventListener("submit", async function(e) {
     e.preventDefault();

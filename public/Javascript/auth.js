@@ -25,7 +25,8 @@ const validateLoginData = (email, password) => {
   return errors;
 };
 
-const handleLogin = async (event) => {
+// Make handlers available globally
+window.handleLogin = async (event) => {
   event.preventDefault();
 
   const email = document.getElementById('email')?.value?.trim();
@@ -129,7 +130,7 @@ const handleLogin = async (event) => {
   }
 };
 
-const handleSignup = async (event) => {
+window.handleSignup = async (event) => {
   event.preventDefault();
 
   // Get all form data
