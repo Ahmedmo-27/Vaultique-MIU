@@ -1,48 +1,90 @@
-// Input event listeners to update card display
-document.getElementById('card-number').oninput = () => {
-  let cardNumber = document.getElementById('card-number').value.replace(/\s+/g, ''); // Remove existing spaces
-  if (cardNumber.length > 19) {
-    cardNumber = cardNumber.slice(0, 19); // Truncate to 16 characters if longer
-  }
-  document.getElementById('card-number').value = formatCardNumber(cardNumber);
-  document.getElementById('display-card-number').innerText = formatCardNumber(cardNumber);
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Input event listeners to update card display
+    const cardNumberInput = document.getElementById('card-number');
+    const nameInput = document.getElementById('name');
+    const expiryInput = document.getElementById('expiry');
+    const cvvInput = document.getElementById('cvv');
 
-  // Display length message
-  const cardLengthMessage = document.querySelector('.card-length-message');
-  if (cardNumber.length === 19) {
-    cardLengthMessage.textContent = ''; // Clear message if 16 characters
-  } else {
-    cardLengthMessage.textContent = 'Must be 16 characters';
-    cardLengthMessage.style.color = 'red';
-  }
-};
+    if (cardNumberInput) {
+        cardNumberInput.oninput = () => {
+            let cardNumber = cardNumberInput.value.replace(/\s+/g, ''); // Remove existing spaces
+            if (cardNumber.length > 19) {
+                cardNumber = cardNumber.slice(0, 19); // Truncate to 16 characters if longer
+            }
+            cardNumberInput.value = formatCardNumber(cardNumber);
+            const displayCardNumber = document.getElementById('display-card-number');
+            if (displayCardNumber) {
+                displayCardNumber.innerText = formatCardNumber(cardNumber);
+            }
 
-document.getElementById('name').oninput = () => {
-  document.getElementById('display-card-holder').innerText = document.getElementById('name').value;
-};
+            // Display length message
+            const cardLengthMessage = document.querySelector('.card-length-message');
+            if (cardLengthMessage) {
+                if (cardNumber.length === 19) {
+                    cardLengthMessage.textContent = ''; // Clear message if 16 characters
+                } else {
+                    cardLengthMessage.textContent = 'Must be 16 characters';
+                    cardLengthMessage.style.color = 'red';
+                }
+            }
+        };
+    }
 
-document.getElementById('expiry').oninput = () => {
-  document.getElementById('display-expiry').innerText = document.getElementById('expiry').value;
-};
+    if (nameInput) {
+        nameInput.oninput = () => {
+            const displayCardHolder = document.getElementById('display-card-holder');
+            if (displayCardHolder) {
+                displayCardHolder.innerText = nameInput.value;
+            }
+        };
+    }
 
-document.getElementById('cvv').onmouseenter = () => {
-  document.getElementById('flip-card').classList.add('flipped');
-};
+    if (expiryInput) {
+        expiryInput.oninput = () => {
+            const displayExpiry = document.getElementById('display-expiry');
+            if (displayExpiry) {
+                displayExpiry.innerText = expiryInput.value;
+            }
+        };
+    }
 
-document.getElementById('cvv').onmouseleave = () => {
-  document.getElementById('flip-card').classList.remove('flipped');
-};
+    if (cvvInput) {
+        cvvInput.onmouseenter = () => {
+            const flipCard = document.getElementById('flip-card');
+            if (flipCard) {
+                flipCard.classList.add('flipped');
+            }
+        };
 
-document.getElementById('cvv').oninput = () => {
-  document.getElementById('display-cvv').innerText = document.getElementById('cvv').value;
-};
+        cvvInput.onmouseleave = () => {
+            const flipCard = document.getElementById('flip-card');
+            if (flipCard) {
+                flipCard.classList.remove('flipped');
+            }
+        };
+
+        cvvInput.oninput = () => {
+            const displayCvv = document.getElementById('display-cvv');
+            if (displayCvv) {
+                displayCvv.innerText = cvvInput.value;
+            }
+        };
+    }
+
+    // Rest of your existing code...
+    const form = document.querySelector('.checkout-form');
+    if (form) {
+        form.addEventListener('submit', handleFormSubmission);
+    }
+});
 
 // Function to format card number with spaces every 4 digits
 function formatCardNumber(cardNumber) {
-  return cardNumber
-    .replace(/\s+/g, '')
-    .replace(/(\d{4})/g, '$1 ')
-    .trim();
+    return cardNumber
+        .replace(/\s+/g, '')
+        .replace(/(\d{4})/g, '$1 ')
+        .trim();
 }
 
 // Billing form validation
@@ -132,8 +174,6 @@ function handleFormSubmission(event) {
     showErrorPopup('Please fill in all required fields correctly');
   }
 }
-
-form.addEventListener('submit', handleFormSubmission);
 
 // Form validation
 function validatePaymentForm() {

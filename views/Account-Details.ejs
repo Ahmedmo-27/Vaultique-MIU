@@ -141,11 +141,20 @@
                                 <div class="order-products">
                                     <% if (order.items && order.items.length > 0) { %>
                                         <% order.items.forEach(item => { %>
-                                            <div class="order-product">
-                                                <img src="<%=item.product.image%>" alt="<%=item.product.name%>">
-                                                <div class="product-info">
-                                                    <h5><%= item.product && item.product.name ? item.product.name : 'Unknown Product' %></h5>
-                                                    <p>Qty: <%= item.quantity || 1 %></p>
+                                            <div class="order-product-detail">
+                                                <img src="${item.productDetails.image}" alt="${item.productDetails.name}">
+                                                <div>
+                                                    <h5>${item.productDetails.name}</h5>
+                                                    <p>Brand: ${item.productDetails.brand}</p>
+                                                    <p>Movement: ${item.productDetails.movement}</p>
+                                                    <p>Case Material: ${item.productDetails.caseMaterial}</p>
+                                                    <p>Strap Material: ${item.productDetails.strapMaterial}</p>
+                                                    <p>Water Resistance: ${item.productDetails.waterResistance}</p>
+                                                    <p>Dial Color: ${item.productDetails.dialColor}</p>
+                                                    <p>Gender: ${item.productDetails.gender}</p>
+                                                    <p>Collection: ${item.productDetails.Vcollection}</p>
+                                                    <p>Qty: ${item.quantity}</p>
+                                                    <p>Price: $${item.price.toFixed(2)}</p>
                                                 </div>
                                             </div>
                                         <% }); %>
@@ -580,11 +589,19 @@
                                 <h5>Products</h5>
                                 ${order.items.map(item => `
                                     <div class="order-product-detail">
-                                        <img src="${item.product && item.product.image ? item.product.image : '/Assets/Images/product-placeholder.jpg'}" alt="${item.product && item.product.name ? item.product.name : 'Product'}">
+                                        <img src="${item.productDetails.image}" alt="${item.productDetails.name}">
                                         <div>
-                                            <h5>${item.product && item.product.name ? item.product.name : 'Unknown Product'}</h5>
-                                            <p>Qty: ${item.quantity || 1}</p>
-                                            <p>Price: $${item.price?.toFixed(2) || '0.00'}</p>
+                                            <h5>${item.productDetails.name}</h5>
+                                            <p>Brand: ${item.productDetails.brand}</p>
+                                            <p>Movement: ${item.productDetails.movement}</p>
+                                            <p>Case Material: ${item.productDetails.caseMaterial}</p>
+                                            <p>Strap Material: ${item.productDetails.strapMaterial}</p>
+                                            <p>Water Resistance: ${item.productDetails.waterResistance}</p>
+                                            <p>Dial Color: ${item.productDetails.dialColor}</p>
+                                            <p>Gender: ${item.productDetails.gender}</p>
+                                            <p>Collection: ${item.productDetails.Vcollection}</p>
+                                            <p>Qty: ${item.quantity}</p>
+                                            <p>Price: $${item.price.toFixed(2)}</p>
                                         </div>
                                     </div>
                                 `).join('')}

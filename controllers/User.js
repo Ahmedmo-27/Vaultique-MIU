@@ -1628,10 +1628,26 @@ router.post('/shipping/process', async (req, res) => {
         const order = new Order({
             userId: req.user ? req.user._id : null,
             orderNumber,
-            items: cartItems.map(item => ({
-                productId: item.product,
-                quantity: item.quantity,
-                price: item.price
+            items: await Promise.all(cartItems.map(async item => {
+                const product = await Product.findById(item.product);
+                return {
+                    productId: item.product,
+                    productDetails: {
+                        name: product.name,
+                        image: product.image,
+                        brand: product.brand,
+                        price: product.price,
+                        strapMaterial: product.strapMaterial,
+                        movement: product.movement,
+                        waterResistance: product.waterResistance,
+                        caseMaterial: product.caseMaterial,
+                        dialColor: product.dialColor,
+                        gender: product.gender,
+                        Vcollection: product.Vcollection
+                    },
+                    quantity: item.quantity,
+                    price: item.price
+                };
             })),
             subtotal: req.session.cart.subtotal,
             shippingCost: req.session.cart.shippingCost,
@@ -1653,8 +1669,26 @@ router.post('/shipping/process', async (req, res) => {
             status: 'pending'
         });
 
+        // Save the order
         await order.save();
-        console.log('Order created successfully:', order._id);
+
+        // Add order to user's orders array if authenticated
+        if (req.user && req.user._id) {
+            const user = await User.findById(req.user._id);
+            if (user) {
+                user.orders.push({
+                    orderId: order._id.toString(),
+                    orderDate: order.createdAt,
+                    status: 'Pending',
+                    total: order.total,
+                    items: order.items.map(item => ({
+                        product: item.productId,
+                        quantity: item.quantity
+                    }))
+                });
+                await user.save();
+            }
+        }
 
         // Store order info in session
         req.session.orderInfo = {
@@ -1815,6 +1849,41 @@ router.get('/order-success', async (req, res) => {
             message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred while loading the order success page'
         });
     }
+});
+
+// Redirect /user/product?id=... to /user/products/:id
+router.get('/product', (req, res) => {
+  const id = req.query.id;
+  if (!id) return res.redirect('/user/products');
+  res.redirect(`/user/products/${id}`);
+});
+
+// Product detail page
+router.get('/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate('brand');
+    if (!product) {
+      return res.status(404).render('error', {
+        title: 'Product Not Found',
+        message: 'The requested product does not exist.',
+        type: 'error',
+        show: true
+      });
+    }
+    res.render('Product Page', {
+      title: product.name,
+      product: product,
+      user: req.user || null
+    });
+  } catch (error) {
+    console.error('Error loading product detail:', error);
+    res.status(500).render('error', {
+      title: 'Error',
+      message: 'Failed to load product details. Please try again later.',
+      type: 'error',
+      show: true
+    });
+  }
 });
 
 module.exports = router;
