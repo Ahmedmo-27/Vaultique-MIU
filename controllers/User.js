@@ -1886,15 +1886,4 @@ router.get('/products/:id', async (req, res) => {
   }
 });
 
-
-// FAQ page route
-router.get('/faq', (req, res) => {
-    res.render('FAQ', {
-        title: 'FAQ',
-        user: req.user
-    });
-});
-// Add the authenticated routes
-router.use(authenticatedRoutes);
-
 module.exports = router;

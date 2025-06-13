@@ -97,7 +97,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cookieParser());
-app.use(express.static('public'));
 
 // Initialize session middleware with error handling
 app.use((req, res, next) => {
@@ -631,22 +630,5 @@ app.listen(PORT, () => {
 
 console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
 
-
-// Generate QR Code with customization data
-app.post('/generate-qr', async (req, res) => {
-  try {
-    const { strap, case: watchCase, dial, bezel } = req.body;
-    
-    // Create URL with customization parameters
-    const arUrl = `https://${req.get('host')}/ar-viewer.html?strap=${strap}&case=${watchCase}&dial=${dial}&bezel=${bezel}`;
-    
-    // Generate QR code
-    const qrImage = await qr.toDataURL(arUrl);
-    
-    res.json({ qrImage, arUrl });
-  } catch (err) {
-    res.status(500).send('Error generating QR');
-  }
-});
 
 module.exports = app;
