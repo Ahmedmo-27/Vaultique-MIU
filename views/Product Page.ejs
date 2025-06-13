@@ -257,7 +257,7 @@
               // Update cart count if element exists
               const cartCount = document.getElementById('cart-items-count');
               if (cartCount) {
-                cartCount.textContent = data.cart.items.length;
+                cartCount.textContent = data.cart.items.reduce((total, item) => total + (item.quantity || 1), 0);
               }
             } else {
               throw new Error(data.message || 'Failed to add item to cart');

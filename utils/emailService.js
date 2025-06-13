@@ -157,7 +157,7 @@ const sendPasswordResetEmail = async (user, resetToken) => {
 
 // Send verification email
 const sendVerificationEmail = async (user, verificationToken) => {
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+  const verificationLink = `https://vaultique.up.railway.app/auth/verify-email/${verificationToken}`;
   const template = accountVerificationTemplate(user.Name, verificationLink);
   const mailOptions = {
     from: process.env.EMAIL_USER,

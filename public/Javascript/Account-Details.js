@@ -219,22 +219,111 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 3000);
   }
 
-  // Order Details Modal
+  // Order Details button click handler
   document.querySelectorAll('.order-details').forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.preventDefault();
-      const orderId = this.closest('.order-card').dataset.orderId;
-      const modal = document.getElementById('orderDetailsModal');
-      const content = modal.querySelector(`.order-details-content[data-order-id="${orderId}"]`);
-      
-      // Hide all content first
-      modal.querySelectorAll('.order-details-content').forEach(el => el.style.display = 'none');
-      
-      // Show the selected content
-      if (content) {
-        content.style.display = 'block';
-        showModal('orderDetailsModal');
-      }
+    button.addEventListener('click', async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const orderCard = this.closest('.order-card');
+        if (!orderCard) {
+            console.error('Order card not found');
+            return;
+        }
+        
+        const orderId = orderCard.dataset.orderId;
+        if (!orderId) {
+            console.error('Order ID not found in data attributes');
+            showNotification('Order ID is missing', 'error');
+            return;
+        }
+        
+        console.log('Order details button clicked for order:', orderId);
+        
+        try {
+            const response = await fetch(`/user/orders/${orderId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch order details');
+            }
+            
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to load order details');
+            }
+
+            const order = data.data;
+            if (!order) {
+                throw new Error('Order not found');
+            }
+
+            // Create order details content
+            const content = `
+                <div class="order-info">
+                    <h4>Order #${order.orderNumber || order._id}</h4>
+                    <p><strong>Status:</strong> <span class="status-${order.status.toLowerCase()}">${order.status}</span></p>
+                    <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+                    <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery || 'Not available'}</p>
+                </div>
+                
+                <div class="order-summary">
+                    <h5>Order Summary</h5>
+                    <div class="summary-grid">
+                        <div><strong>Subtotal:</strong></div>
+                        <div>$${order.total.toFixed(2)}</div>
+                        <div><strong>Shipping:</strong></div>
+                        <div>$${order.shippingCost?.toFixed(2) || '0.00'}</div>
+                        <div><strong>Tax:</strong></div>
+                        <div>$${order.tax?.toFixed(2) || '0.00'}</div>
+                        <div><strong>Total:</strong></div>
+                        <div>$${order.total.toFixed(2)}</div>
+                    </div>
+                </div>
+                
+                <div class="order-products">
+                    <h5>Products</h5>
+                    ${order.items && order.items.length > 0 ? order.items.map(item => `
+                        <div class="order-product-detail">
+                            <img src="${item.productId && item.productId.image ? (item.productId.image.startsWith('/') ? item.productId.image : `/Assets/Images/Watches/${item.productId.image}`) : '/Assets/Images/product-placeholder.jpg'}" alt="${item.productId && item.productId.name ? item.productId.name : 'Product'}">
+                            <div>
+                                <h5>${item.productId && item.productId.name ? item.productId.name : 'Unknown Product'}</h5>
+                                <p>Qty: ${item.quantity || 1}</p>
+                                <p>Price: $${item.price?.toFixed(2) || '0.00'}</p>
+                            </div>
+                        </div>
+                    `).join('') : '<p>No products found</p>'}
+                </div>
+                
+                <div class="shipping-details">
+                    <h5>Shipping Details</h5>
+                    <p><strong>Name:</strong> ${order.shipping?.name || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${order.shipping?.address || 'N/A'}</p>
+                    <p><strong>City:</strong> ${order.shipping?.city || 'N/A'}</p>
+                    <p><strong>State:</strong> ${order.shipping?.state || 'N/A'}</p>
+                    <p><strong>ZIP Code:</strong> ${order.shipping?.zipCode || 'N/A'}</p>
+                </div>
+                
+                <div class="payment-details">
+                    <h5>Payment Details</h5>
+                    <p><strong>Payment Method:</strong> <span class="payment-method">
+                        <i class="fab fa-cc-${order.payment?.bankName?.toLowerCase() || 'credit-card'}"></i> 
+                        ${order.payment?.bankName || 'Credit Card'} ending in ${order.payment?.cardNumber || '****'}
+                    </span></p>
+                    <p><strong>Cardholder:</strong> ${order.payment?.name || 'N/A'}</p>
+                    <p><strong>Expiry:</strong> ${order.payment?.expiry || 'N/A'}</p>
+                </div>
+            `;
+
+            // Update modal content and show it
+            const modalBody = document.querySelector('#orderDetailsModal .modal-body');
+            if (modalBody) {
+                modalBody.innerHTML = content;
+                showModal('orderDetailsModal');
+            } else {
+                console.error('Modal body not found');
+            }
+        } catch (error) {
+            console.error('Error loading order details:', error);
+            showNotification(error.message || 'Failed to load order details', 'error');
+        }
     });
   });
 
@@ -885,16 +974,6 @@ document.addEventListener('DOMContentLoaded', function () {
     ]);
   });
 
-  // Order Details Modal
-  document.querySelectorAll('.order-details').forEach((button) => {
-    button.addEventListener('click', function (e) {
-      e.preventDefault();
-
-      const orderId = this.closest('.order-card').dataset.orderId;
-      loadOrderDetails(orderId);
-    });
-  });
-
   // Tracking Modal
   function showTrackingModal() {
     const modalContent = `
@@ -1178,9 +1257,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create the content structure
         content.innerHTML = `
             <div class="order-info">
-                <h4>Order #${order.orderId}</h4>
+                <h4>Order #${order._id}</h4>
                 <p><strong>Status:</strong> <span class="status-${order.status.toLowerCase()}">${order.status}</span></p>
-                <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+                <p><strong>Order Date:</strong> ${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
                 <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery || 'Not available'}</p>
             </div>
             
@@ -1188,13 +1267,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h5>Order Summary</h5>
                 <div class="summary-grid">
                     <div><strong>Subtotal:</strong></div>
-                    <div>$${order.total.toFixed(2)}</div>
+                    <div>$${order.total?.toFixed(2) || '0.00'}</div>
                     <div><strong>Shipping:</strong></div>
                     <div>$${order.shippingCost?.toFixed(2) || '0.00'}</div>
                     <div><strong>Tax:</strong></div>
                     <div>$${order.tax?.toFixed(2) || '0.00'}</div>
                     <div><strong>Total:</strong></div>
-                    <div>$${order.total.toFixed(2)}</div>
+                    <div>$${order.total?.toFixed(2) || '0.00'}</div>
                 </div>
             </div>
             
@@ -1202,9 +1281,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h5>Products</h5>
                 ${order.items?.map(item => `
                     <div class="order-product-detail">
-                        <img src="${item.product?.image || '/Assets/Images/product-placeholder.jpg'}" alt="${item.product?.name || 'Product'}">
+                        <img src="${item.productId && item.productId.image ? (item.productId.image.startsWith('/') ? item.productId.image : `/Assets/Images/Watches/${item.productId.image}`) : '/Assets/Images/product-placeholder.jpg'}" alt="${item.productId && item.productId.name ? item.productId.name : 'Product'}">
                         <div>
-                            <h5>${item.product?.name || 'Unknown Product'}</h5>
+                            <h5>${item.productId && item.productId.name ? item.productId.name : 'Unknown Product'}</h5>
                             <p>Qty: ${item.quantity || 1}</p>
                             <p>Price: $${item.price?.toFixed(2) || '0.00'}</p>
                         </div>

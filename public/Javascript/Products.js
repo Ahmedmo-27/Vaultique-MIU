@@ -587,34 +587,167 @@ function closeModal(modal) {
   }, 300);
 }
 
-function addToCartFromQuickView(productId) {
-  console.log(`Adding product ${productId} to cart`);
-  // cart addition logic here
-  toggleQuickView(); // Close the modal
-}
-
-// Add to cart function
-async function addToCart(productId) {
+async function addToCartFromQuickView(productId) {
   try {
-    const response = await fetch('/user/cart/add', {
+    const response = await fetch('/cart/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ productId }),
+      body: JSON.stringify({ 
+        productId,
+        quantity: 1 
+      }),
     });
 
     const data = await response.json();
 
     if (data.success) {
       showNotification('success', 'Product added to cart successfully');
+      // Update cart count if element exists
+      const cartCount = document.getElementById('cart-items-count');
+      if (cartCount) {
+        cartCount.textContent = data.cart.items.reduce((total, item) => total + (item.quantity || 1), 0);
+      }
+      toggleQuickView(); // Close the modal
     } else {
       showNotification('error', data.message || 'Failed to add product to cart');
     }
   } catch (error) {
+    console.error('Error adding to cart:', error);
     showNotification('error', 'Failed to add product to cart');
   }
 }
+
+// Function to add item to cart
+async function addToCart(productId, quantity = 1) {
+    try {
+        console.log('Adding to cart:', { productId, quantity });
+        
+        if (!productId) {
+            throw new Error('Product ID is required');
+        }
+
+        const response = await fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId, quantity })
+        });
+
+        console.log('Cart response status:', response.status);
+        const data = await response.json();
+        console.log('Cart response data:', data);
+
+        if (!response.ok) {
+            let errorMessage = data.message || 'Failed to add to cart';
+            
+            // Handle specific error cases
+            switch (data.code) {
+                case 'MISSING_PRODUCT_ID':
+                    errorMessage = 'Please select a product to add to cart';
+                    break;
+                case 'INVALID_QUANTITY':
+                    errorMessage = 'Quantity must be at least 1';
+                    break;
+                case 'PRODUCT_NOT_FOUND':
+                    errorMessage = 'This product is no longer available';
+                    break;
+                case 'OUT_OF_STOCK':
+                    errorMessage = 'This product is currently out of stock';
+                    break;
+                case 'INSUFFICIENT_STOCK':
+                    errorMessage = `Only ${data.availableStock} items available in stock`;
+                    break;
+                case 'SERVER_ERROR':
+                    console.error('Server error details:', data.details);
+                    errorMessage = 'An unexpected error occurred. Please try again.';
+                    break;
+            }
+            
+            throw new Error(errorMessage);
+        }
+
+        if (data.success) {
+            // Update cart count if element exists
+            const cartCountElement = document.querySelector('.cart-count');
+            if (cartCountElement) {
+                const totalItems = data.cart.items.reduce((sum, item) => sum + item.quantity, 0);
+                cartCountElement.textContent = totalItems;
+            }
+
+            showMessage('Item added to cart successfully', 'success');
+        } else {
+            throw new Error(data.message || 'Failed to add to cart');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showMessage(error.message, 'error');
+    }
+}
+
+// Function to show messages
+function showMessage(message, type = 'info') {
+    const messageContainer = document.querySelector('.message-container') || createMessageContainer();
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${type}`;
+    messageElement.textContent = message;
+    
+    messageContainer.appendChild(messageElement);
+    
+    // Remove message after 3 seconds
+    setTimeout(() => {
+        messageElement.remove();
+        if (messageContainer.children.length === 0) {
+            messageContainer.remove();
+        }
+    }, 3000);
+}
+
+// Function to create message container
+function createMessageContainer() {
+    const container = document.createElement('div');
+    container.className = 'message-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+// Add event listeners when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Add to cart button click handler
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const productId = button.dataset.productId;
+            if (!productId) {
+                showMessage('Invalid product ID', 'error');
+                return;
+            }
+            await addToCart(productId);
+        });
+    });
+
+    // Quick view add to cart button click handler
+    const quickViewAddToCartButton = document.getElementById('quickViewAddToCart');
+    if (quickViewAddToCartButton) {
+        quickViewAddToCartButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const productId = quickViewAddToCartButton.dataset.productId;
+            if (!productId) {
+                showMessage('Invalid product ID', 'error');
+                return;
+            }
+            await addToCart(productId);
+            // Close quick view modal if it exists
+            const quickViewModal = document.querySelector('.quick-view-modal');
+            if (quickViewModal) {
+                quickViewModal.style.display = 'none';
+            }
+        });
+    }
+});
 
 // Remove from cart function
 async function removeFromCart(productId) {

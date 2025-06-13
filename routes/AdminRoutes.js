@@ -60,7 +60,7 @@ router.get('/logout', (req, res) => {
   });
   
   // Redirect to login page or home
-  res.redirect('/LoginSignup');
+  res.redirect('/user/home');
 });
 
 module.exports = router;

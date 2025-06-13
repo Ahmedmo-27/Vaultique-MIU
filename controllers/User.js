@@ -693,102 +693,495 @@ router.get('/logout', (req, res) => {
 const authenticatedRoutes = express.Router();
 authenticatedRoutes.use(authenticateJWT);
 
+// GET /cart - View cart
 router.get('/cart', async (req, res) => {
   try {
-    let cartData = {
-      cartItems: [],
-      subtotal: 0,
-      shippingCost: 20,
-      total: 20,
-      shippingMethod: 'standard'
-    };
-
+    let cart;
+    
     if (req.user) {
-      try {
-        const user = await User.findById(req.user._id);
-        if (user) {
-          const cart = await Cart.findOne({ userId: user._id })
-            .populate({
-              path: 'items.product',
-              model: 'Product',
-              select: '_id name price image'
-            });
-          
-          if (cart && cart.items) {
-            cartData = {
-              cartItems: cart.items
-                .filter(item => item.product) // Filter out items with null products
-                .map(item => ({
-                  productId: item.product._id,
-                  name: item.name || item.product.name,
-                  price: item.price || item.product.price,
-                  quantity: item.quantity,
-                  image: item.image || item.product.image
-                })),
-              subtotal: cart.subtotal || 0,
-              shippingCost: cart.shippingCost || 20,
-              total: cart.total || 20,
-              shippingMethod: cart.shippingMethod || 'standard'
-            };
-          }
-        }
-      } catch (error) {
-        console.error('Error syncing with database cart:', error);
+      // Get cart from database for authenticated users
+      cart = await Cart.findOne({ userId: req.user._id })
+        .populate({
+          path: 'items.product',
+          model: 'Product',
+          select: '_id name price image stock stockCount'
+        });
+
+      // If no cart exists, create a new one
+      if (!cart) {
+        cart = new Cart({ userId: req.user._id });
+        await cart.save();
       }
     } else {
-      // For non-authenticated users, use session cart
-      if (req.session.cart) {
-        cartData = {
-          cartItems: (req.session.cart.items || [])
-            .filter(item => item && item.productId), // Filter out invalid items
-          subtotal: req.session.cart.subtotal || 0,
-          shippingCost: req.session.cart.shippingCost || 20,
-          total: req.session.cart.total || 20,
-          shippingMethod: req.session.cart.shippingMethod || 'standard'
-        };
-      }
+      // Get cart from session for guest users
+      cart = req.session.cart || {
+        items: [],
+        subtotal: 0,
+        shippingCost: 20,
+        total: 20,
+        shippingMethod: 'standard'
+      };
     }
 
-    res.render('cart', cartData);
+    // Ensure cart has all required fields and correct structure
+    const normalizedCart = {
+      items: (cart.items || []).map(item => ({
+        product: item.product?._id || item.product || item.productId,
+        productId: item.productId || (item.product ? item.product._id : null),
+        name: item.name,
+        image: item.image,
+        price: item.price || 0,
+        quantity: item.quantity || 1
+      })),
+      subtotal: cart.subtotal || 0,
+      shippingCost: cart.shippingCost || 20,
+      total: cart.total || 20,
+      shippingMethod: cart.shippingMethod || 'standard'
+    };
+
+    // Calculate totals if they're not set
+    if (normalizedCart.subtotal === 0) {
+      normalizedCart.subtotal = normalizedCart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      normalizedCart.total = normalizedCart.subtotal + normalizedCart.shippingCost;
+    }
+
+    // Save the normalized cart back to session for guest users
+    if (!req.user) {
+      req.session.cart = normalizedCart;
+    }
+
+    res.render('cart', {
+      title: 'Shopping Cart',
+      cart: normalizedCart,
+      user: req.user || null
+    });
   } catch (error) {
     console.error('Error loading cart:', error);
-    res.render('cart', {
-      error: 'Failed to load cart. Please try again.',
-      cartItems: [],
-      subtotal: 0,
-      shippingCost: 20,
-      total: 20,
-      shippingMethod: 'standard'
+    renderNotification(res, 'error', 'Failed to load cart. Please try again later.');
+  }
+});
+
+// POST /cart/add - Add item to cart
+router.post('/cart/add', async (req, res) => {
+  try {
+    const { productId, quantity = 1 } = req.body;
+    
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product ID is required'
+      });
+    }
+
+    // Validate product exists and has sufficient stock
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    if (!product.stock || product.stockCount < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: 'Insufficient stock'
+      });
+    }
+
+    if (req.user) {
+      // Handle authenticated user
+      let cart = await Cart.findOne({ userId: req.user._id });
+      
+      if (!cart) {
+        cart = new Cart({ userId: req.user._id });
+      }
+
+      await cart.addItem(productId, quantity);
+      
+      res.json({
+        success: true,
+        message: 'Product added to cart',
+        cart: {
+          items: cart.items,
+          subtotal: cart.subtotal,
+          shippingCost: cart.shippingCost,
+          total: cart.total,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    } else {
+      // Handle guest user
+      let cart = req.session.cart || {
+        items: [],
+        subtotal: 0,
+        shippingCost: 20,
+        total: 20,
+        shippingMethod: 'standard'
+      };
+
+      const existingItem = cart.items.find(item => 
+        (item.product && item.product.toString() === productId) || 
+        (item.productId && item.productId.toString() === productId)
+      );
+      
+      if (existingItem) {
+        const newQuantity = existingItem.quantity + quantity;
+        if (newQuantity > product.stockCount) {
+          return res.status(400).json({
+            success: false,
+            message: 'Insufficient stock for requested quantity'
+          });
+        }
+        existingItem.quantity = newQuantity;
+      } else {
+        cart.items.push({
+          product: productId,
+          productId: productId,
+          name: product.name,
+          image: product.image,
+          price: product.price,
+          quantity
+        });
+      }
+
+      // Recalculate totals
+      cart.subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      cart.total = cart.subtotal + cart.shippingCost;
+
+      req.session.cart = cart;
+      
+      res.json({
+        success: true,
+        message: 'Product added to cart',
+        cart: {
+          items: cart.items,
+          subtotal: cart.subtotal,
+          shippingCost: cart.shippingCost,
+          total: cart.total,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to add product to cart'
     });
   }
 });
 
-// Cart routes require auth
-authenticatedRoutes.get('/cart', async (req, res) => {
+// POST /cart/update-quantity - Update item quantity
+router.post('/cart/update-quantity', async (req, res) => {
   try {
-    // cart retrieval logic here
-    renderNotification(res, 'success', 'Cart retrieved successfully');
-    res.render('cart')
+    const { productId, quantity } = req.body;
+    
+    if (!productId || !quantity) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product ID and quantity are required'
+      });
+    }
+
+    // Validate product exists and has sufficient stock
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    if (!product.stock || product.stockCount < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: 'Insufficient stock'
+      });
+    }
+
+    if (req.user) {
+      // Handle authenticated user
+      const cart = await Cart.findOne({ userId: req.user._id });
+      
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cart not found'
+        });
+      }
+
+      await cart.updateQuantity(productId, quantity);
+      
+      res.json({
+        success: true,
+        message: 'Cart updated',
+        cart: {
+          items: cart.items,
+          subtotal: cart.subtotal,
+          shippingCost: cart.shippingCost,
+          total: cart.total,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    } else {
+      // Handle guest user
+      const cart = req.session.cart;
+      
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cart not found'
+        });
+      }
+
+      const item = cart.items.find(item => 
+        (item.product && item.product.toString() === productId) || 
+        (item.productId && item.productId.toString() === productId)
+      );
+      
+      if (!item) {
+        return res.status(404).json({
+          success: false,
+          message: 'Item not found in cart'
+        });
+      }
+
+      item.quantity = quantity;
+      
+      // Recalculate totals
+      cart.subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      cart.total = cart.subtotal + cart.shippingCost;
+
+      req.session.cart = cart;
+      
+      res.json({
+        success: true,
+        message: 'Cart updated',
+        cart: {
+          items: cart.items,
+          subtotal: cart.subtotal,
+          shippingCost: cart.shippingCost,
+          total: cart.total,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    }
   } catch (error) {
-    renderNotification(res, 'error', 'Failed to retrieve cart');
+    console.error('Error updating cart:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update cart'
+    });
   }
 });
 
-authenticatedRoutes.post('/cart/add', async (req, res) => {
+// POST /cart/remove - Remove item from cart
+router.post('/cart/remove', async (req, res) => {
   try {
-    // cart addition logic here
-    renderNotification(res, 'success', 'Product added to cart successfully');
+    const { productId } = req.body;
+    
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product ID is required'
+      });
+    }
+
+    if (req.user) {
+      // Handle authenticated user
+      const cart = await Cart.findOne({ userId: req.user._id });
+      
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cart not found'
+        });
+      }
+
+      await cart.removeItem(productId);
+      
+      res.json({
+        success: true,
+        message: 'Item removed from cart',
+        cart: {
+          items: cart.items,
+          subtotal: cart.subtotal,
+          shippingCost: cart.shippingCost,
+          total: cart.total,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    } else {
+      // Handle guest user
+      const cart = req.session.cart;
+      
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cart not found'
+        });
+      }
+
+      cart.items = cart.items.filter(item => 
+        (item.product && item.product.toString() !== productId) && 
+        (item.productId && item.productId.toString() !== productId)
+      );
+      
+      // Recalculate totals
+      cart.subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      cart.total = cart.subtotal + cart.shippingCost;
+
+      req.session.cart = cart;
+      
+      res.json({
+        success: true,
+        message: 'Item removed from cart',
+        cart: {
+          items: cart.items,
+          subtotal: cart.subtotal,
+          shippingCost: cart.shippingCost,
+          total: cart.total,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    }
   } catch (error) {
-    renderNotification(res, 'error', 'Failed to add product to cart');
+    console.error('Error removing from cart:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to remove item from cart'
+    });
   }
 });
 
-authenticatedRoutes.post('/cart/remove', async (req, res) => {
+// POST /cart/clear - Clear cart
+router.post('/cart/clear', async (req, res) => {
   try {
-    // cart removal logic here
-    renderNotification(res, 'success', 'Product removed from cart successfully');
+    if (req.user) {
+      // Handle authenticated user
+      const cart = await Cart.findOne({ userId: req.user._id });
+      
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cart not found'
+        });
+      }
+
+      await cart.clear();
+      
+      res.json({
+        success: true,
+        message: 'Cart cleared',
+        cart: {
+          items: [],
+          subtotal: 0,
+          shippingCost: cart.shippingCost,
+          total: cart.shippingCost,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    } else {
+      // Handle guest user
+      req.session.cart = {
+        items: [],
+        subtotal: 0,
+        shippingCost: 20,
+        total: 20,
+        shippingMethod: 'standard'
+      };
+      
+      res.json({
+        success: true,
+        message: 'Cart cleared',
+        cart: req.session.cart
+      });
+    }
   } catch (error) {
-    renderNotification(res, 'error', 'Failed to remove product from cart');
+    console.error('Error clearing cart:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to clear cart'
+    });
+  }
+});
+
+// POST /cart/update-shipping - Update shipping method
+router.post('/cart/update-shipping', async (req, res) => {
+  try {
+    const { shippingMethod } = req.body;
+    
+    if (!shippingMethod || !['standard', 'fast'].includes(shippingMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid shipping method is required'
+      });
+    }
+
+    if (req.user) {
+      // Handle authenticated user
+      const cart = await Cart.findOne({ userId: req.user._id });
+      
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cart not found'
+        });
+      }
+
+      cart.shippingMethod = shippingMethod;
+      cart.shippingCost = shippingMethod === 'fast' ? 40 : 20;
+      cart.total = cart.subtotal + cart.shippingCost;
+      
+      await cart.save();
+      
+      res.json({
+        success: true,
+        message: 'Shipping method updated',
+        cart: {
+          items: cart.items,
+          subtotal: cart.subtotal,
+          shippingCost: cart.shippingCost,
+          total: cart.total,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    } else {
+      // Handle guest user
+      const cart = req.session.cart;
+      
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cart not found'
+        });
+      }
+
+      cart.shippingMethod = shippingMethod;
+      cart.shippingCost = shippingMethod === 'fast' ? 40 : 20;
+      cart.total = cart.subtotal + cart.shippingCost;
+
+      req.session.cart = cart;
+      
+      res.json({
+        success: true,
+        message: 'Shipping method updated',
+        cart: {
+          items: cart.items,
+          subtotal: cart.subtotal,
+          shippingCost: cart.shippingCost,
+          total: cart.total,
+          shippingMethod: cart.shippingMethod
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error updating shipping method:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update shipping method'
+    });
   }
 });
 
@@ -929,15 +1322,19 @@ router.get('/account-details', authenticateJWT, async (req, res) => {
           total: orderData.total,
           shippingCost: orderData.shippingCost,
           tax: orderData.tax,
-          items: orderData.items.map(item => ({
-            product: {
-              _id: item.productId._id,
-              name: item.productId.name,
-              image: item.productId.image,
-              price: item.price
-            },
-            quantity: item.quantity
-          })),
+          items: orderData.items.map(item => {
+            // Skip items with null productId
+            if (!item.productId) return null;
+            return {
+              product: {
+                _id: item.productId._id,
+                name: item.productId.name,
+                image: item.productId.image,
+                price: item.price
+              },
+              quantity: item.quantity
+            };
+          }).filter(Boolean), // Remove any null items
           shipping: orderData.shipping,
           payment: orderData.payment
         };
@@ -1288,7 +1685,7 @@ router.get('/payment', async (req, res) => {
 
         // If no items in cart, redirect to cart page
         if (!cart.items || cart.items.length === 0) {
-            return res.redirect('/cart');
+            return res.redirect('/user/cart');
         }
 
         // If user is authenticated, get their payment info
@@ -1474,6 +1871,24 @@ router.post('/payment/process', async (req, res) => {
 
         await order.save();
 
+        // If user is authenticated, add order to their orders array
+        if (req.user) {
+            await User.findByIdAndUpdate(req.user._id, {
+                $push: {
+                    orders: {
+                        orderId: order._id.toString(),
+                        orderDate: new Date(),
+                        status: 'Pending',
+                        total: order.total,
+                        items: order.items.map(item => ({
+                            product: item.productId,
+                            quantity: item.quantity
+                        }))
+                    }
+                }
+            });
+        }
+
         // Clear cart after successful payment
         if (req.user) {
             await Cart.findOneAndDelete({ userId: req.user._id });
@@ -1546,17 +1961,26 @@ function isValidExpiryDate(expiry) {
 
 // Check payment status - accessible to both authenticated and non-authenticated users
 router.get('/payment/check', (req, res) => {
+    console.log('Payment check - Cart state:', {
+        hasCart: !!req.session.cart,
+        cartItems: req.session.cart?.items,
+        itemsLength: req.session.cart?.items?.length
+    });
+
     // If user has already processed payment, redirect to shipping
     if (req.session.orderInfo?.paymentProcessed) {
+        console.log('Redirecting to shipping - payment already processed');
         return res.redirect('/user/shipping');
     }
     
     // If no cart items, redirect to cart
     if (!req.session.cart?.items?.length) {
-        return res.redirect('/cart');
+        console.log('Redirecting to cart - no items in cart');
+        return res.redirect('/user/cart');
     }
 
     // Otherwise, proceed to payment
+    console.log('Proceeding to payment page');
     res.redirect('/user/payment');
 });
 
@@ -1572,7 +1996,7 @@ router.get("/shipping", async (req, res) => {
             });
 
         if (!order) {
-            return res.redirect('/cart');
+            return res.redirect('/user/cart');
         }
 
         // Get user's saved addresses
@@ -1608,7 +2032,7 @@ router.get("/review", async (req, res) => {
             });
 
         if (!order) {
-            return res.redirect('/cart');
+            return res.redirect('/user/cart');
         }
 
         // Calculate order summary
@@ -1638,13 +2062,16 @@ router.get("/review", async (req, res) => {
 // Add order confirmation route handler
 router.post('/order-confirmation', async (req, res) => {
   try {
-    // Get the latest order for the user
-    const order = await Order.findOne({ userId: req.user._id })
-      .sort({ createdAt: -1 })
-      .populate('items.productId');
+    // Get order ID from session
+    const orderId = req.session.orderInfo?.orderId;
+    if (!orderId) {
+      return res.redirect('/user/cart');
+    }
 
+    // Get the order
+    const order = await Order.findById(orderId).populate('items.productId');
     if (!order) {
-      return res.redirect('/cart');
+      return res.redirect('/user/cart');
     }
 
     // Get user information
@@ -1672,24 +2099,18 @@ router.post('/order-confirmation', async (req, res) => {
     order.status = 'processing';
     await order.save();
 
-    // Update user's order history
+    // Update user's order history with the correct order ID
     await User.findByIdAndUpdate(req.user._id, {
-      $push: {
-        orders: {
-          orderId: order._id.toString(),
-          orderDate: new Date(),
-          status: 'Processing',
-          total: order.total,
-          items: order.items.map(item => ({
-            product: item.productId,
-            quantity: item.quantity
-          }))
-        }
+      $set: {
+        'orders.$[elem].status': 'Processing'
       }
+    }, {
+      arrayFilters: [{ 'elem.orderId': orderId.toString() }]
     });
 
-    // Clear the cart
+    // Clear the cart and session order info
     req.session.cart = null;
+    req.session.orderInfo = null;
 
     res.redirect('/user/order-success');
   } catch (error) {
@@ -1714,7 +2135,7 @@ router.get("/order-success", async (req, res) => {
             });
 
         if (!order) {
-            return res.redirect('/cart');
+            return res.redirect('/user/cart');
         }
 
         res.render('order-success', {

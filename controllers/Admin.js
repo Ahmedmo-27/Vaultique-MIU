@@ -1355,28 +1355,44 @@ exports.getUserOrders = async (req, res) => {
 };
 
 exports.getProductById = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id).populate('brand', 'name');
-        
-        if (!product) {
-            return res.status(404).json({
-                success: false,
-                message: 'Product not found'
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: product
-        });
-    } catch (error) {
-        console.error('Error fetching product:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching product',
-            error: error.message
-        });
+  try {
+    const product = await Product.findById(req.params.id).populate('brand', 'name');
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
     }
+
+    // If it's an API request or format=json, return JSON
+    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.status(200).json({
+        success: true,
+        data: product
+      });
+    }
+
+    // Otherwise render the view
+    res.render('ViewProduct', {
+      title: product.name,
+      product: product
+    });
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.status(500).json({
+        success: false,
+        message: "Error fetching product",
+        error: error.message,
+      });
+    }
+    res.status(500).render('error', {
+      title: 'Error',
+      type: 'error',
+      message: 'Error loading product details',
+      error: error.message
+    });
+  }
 };
 
 exports.renderProductView = async (req, res) => {
