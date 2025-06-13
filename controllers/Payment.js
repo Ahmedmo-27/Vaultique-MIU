@@ -23,6 +23,13 @@ exports.processPayment = [
   validatePaymentMiddleware,
   async (req, res, next) => {
     try {
+      console.log('Processing payment request:', {
+        hasUser: !!req.user,
+        hasSession: !!req.session,
+        hasCart: !!req.session?.cart,
+        cartItems: req.session?.cart?.items?.length
+      });
+
       const {
         name,
         card_number,
@@ -31,49 +38,58 @@ exports.processPayment = [
         cvv
       } = req.body;
 
-      // Create order number
-      const orderNumber = generateOrderNumber();
-
-      // Encrypt sensitive data
-      const encryptedCardNumber = encryptData(card_number.replace(/\s/g, '').slice(-4));
-      const encryptedExpiry = encryptData(expiry);
-
-      // Create new order
-      const order = new Order({
-        userId: req.user ? req.user._id : null,
-        orderNumber,
-        paymentInfo: {
-          name,
-          cardNumber: encryptedCardNumber,
-          bankName: bank_name,
-          expiry: encryptedExpiry
-        },
-        status: 'payment_processed'
-      });
-
-      await order.save();
-
-      // If user is logged in, save encrypted payment info for future use
-      if (req.user) {
-        await User.findByIdAndUpdate(req.user._id, {
-          $set: {
-            'paymentInfo.name': name,
-            'paymentInfo.cardNumber': encryptedCardNumber,
-            'paymentInfo.bankName': bank_name,
-            'paymentInfo.expiry': encryptedExpiry
-          }
+      // Check if cart exists and has items
+      if (!req.session.cart?.items?.length) {
+        return res.status(400).json({
+          success: false,
+          message: 'Cart is empty'
         });
       }
 
-      res.status(200).json({
+      // Store payment info in session
+      req.session.paymentInfo = {
+        name,
+        cardNumber: card_number.replace(/\s/g, '').slice(-4), // Only store last 4 digits
+        bankName: bank_name,
+        expiry,
+        paymentType: 'credit'
+      };
+
+      // If user is logged in, save payment info to their account
+      if (req.user) {
+        await User.findByIdAndUpdate(req.user._id, {
+          $set: {
+            'Payment.cardHolder': name,
+            'Payment.cardNumber': card_number.replace(/\s/g, '').slice(-4),
+            'Payment.bankName': bank_name,
+            'Payment.expiryDate': expiry,
+            'Payment.paymentType': 'credit',
+            'Payment.lastUsed': new Date()
+          }
+        });
+        console.log('Payment info saved for user:', req.user._id);
+      }
+
+      // Save session
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) {
+            console.error('Error saving session:', err);
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
+
+      console.log('Payment processed successfully');
+      res.json({
         success: true,
         message: 'Payment processed successfully',
-        data: {
-          orderId: order._id,
-          orderNumber
-        }
+        redirect: '/user/shipping'
       });
     } catch (error) {
+      console.error('Error processing payment:', error);
       next(new AppError('Error processing payment', 500));
     }
   }

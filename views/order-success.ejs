@@ -6,92 +6,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/CSS/Checkout_styles.css" />
     <link rel="icon" type="image/x-icon" href="/images/logo.ico" />
-    <title>Vaultique | Order Confirmed</title>
+    <title>Vaultique | Order Success</title>
   </head>
   <body>
     <a href="/" class="logo" id="logo">Vaultique</a>
+    <br />
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="step completed">
+          <span class="circle">&#10003;</span>
+          <span class="label">Payment</span>
+        </div>
+        <div class="step completed">
+          <span class="circle">&#10003;</span>
+          <span class="label">Shipping</span>
+        </div>
+        <div class="step completed">
+          <span class="circle">&#10003;</span>
+          <span class="label">Review Order</span>
+        </div>
+      </div>
+    </div>
 
-    <div class="form-container success-container">
-      <div class="success-icon">✓</div>
-      <h2 class="form-title">Order Confirmed!</h2>
-      <p class="success-message">Thank you for your purchase. Your order has been successfully placed.</p>
+    <div class="form-container">
+      <div class="success-message">
+        <i class="fa-solid fa-circle-check"></i>
+        <h2>Order Confirmed!</h2>
+        <p>Thank you for your purchase. Your order has been successfully placed.</p>
+        <p class="order-number">Order #<%= order._id %></p>
+      </div>
 
       <div class="order-details">
         <h3>Order Details</h3>
-        <p><strong>Order Number:</strong> <%= order.orderNumber %></p>
-        <p><strong>Order Date:</strong> <%= new Date(order.createdAt).toLocaleDateString() %></p>
-        <p><strong>Total Amount:</strong> $<%= order.total.toFixed(2) %></p>
-      </div>
-
-      <div class="shipping-details">
-        <h3>Shipping Information</h3>
-        <p><strong>Name:</strong> <%= order.shipping.name %></p>
-        <p><strong>Address:</strong> <%= order.shipping.address %></p>
-        <p><strong>City:</strong> <%= order.shipping.city %></p>
-        <p><strong>State:</strong> <%= order.shipping.state %></p>
-        <p><strong>Postal Code:</strong> <%= order.shipping.zipCode %></p>
-      </div>
-
-      <div class="order-items">
-        <h3>Order Items</h3>
-        <% order.items.forEach(item => { %>
-          <div class="order-item">
-            <img src="<%= item.productId.image %>" alt="<%= item.productId.name %>" class="item-image">
-            <div class="item-details">
-              <h4><%= item.productId.name %></h4>
-              <p>Quantity: <%= item.quantity %></p>
-              <p>Price: $<%= item.price.toFixed(2) %></p>
+        
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <h4>Order Summary</h4>
+          <div class="order-items">
+            <% order.items.forEach(item => { %>
+              <div class="order-item">
+                <img src="<%= item.productId.image %>" alt="<%= item.productId.name %>" class="item-image">
+                <div class="item-details">
+                  <h5><%= item.productId.name %></h5>
+                  <p>Quantity: <%= item.quantity %></p>
+                  <p>Price: $<%= item.price.toFixed(2) %></p>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+          <div class="order-totals">
+            <div class="total-line">
+              <span>Subtotal:</span>
+              <span>$<%= order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2) %></span>
+            </div>
+            <div class="total-line">
+              <span>Shipping:</span>
+              <span>$10.00</span>
+            </div>
+            <div class="total-line grand-total">
+              <span>Total:</span>
+              <span>$<%= (order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 10).toFixed(2) %></span>
             </div>
           </div>
-        <% }); %>
-      </div>
+        </div>
 
-      <div class="action-buttons">
-        <a href="/" class="btn primary">Continue Shopping</a>
-        <a href="/user/orders" class="btn secondary">View Orders</a>
+        <!-- Shipping Information -->
+        <div class="shipping-info">
+          <h4>Shipping Information</h4>
+          <p><strong>Name:</strong> <%= order.shipping.name %></p>
+          <p><strong>Email:</strong> <%= order.shipping.email %></p>
+          <p><strong>Address:</strong> <%= order.shipping.address %></p>
+          <p><strong>City:</strong> <%= order.shipping.city %></p>
+          <p><strong>State:</strong> <%= order.shipping.state %></p>
+          <p><strong>Postal Code:</strong> <%= order.shipping.zipCode %></p>
+        </div>
+
+        <!-- Payment Information -->
+        <div class="payment-info">
+          <h4>Payment Information</h4>
+          <p><strong>Card Holder:</strong> <%= order.payment.name %></p>
+          <p><strong>Card Number:</strong> **** **** **** <%= order.payment.cardNumber %></p>
+          <p><strong>Bank:</strong> <%= order.payment.bankName %></p>
+          <p><strong>Expiry Date:</strong> <%= order.payment.expiry %></p>
+        </div>
+
+        <div class="action-buttons">
+          <a href="/" class="btn primary">Continue Shopping</a>
+          <% if (user) { %>
+            <a href="/user/orders" class="btn secondary">View Orders</a>
+          <% } %>
+        </div>
       </div>
     </div>
 
     <style>
-      .success-container {
+      .success-message {
         text-align: center;
-        max-width: 800px;
-        margin: 2rem auto;
         padding: 2rem;
+        margin-bottom: 2rem;
       }
 
-      .success-icon {
+      .success-message i {
         font-size: 4rem;
         color: #28a745;
         margin-bottom: 1rem;
       }
 
-      .success-message {
+      .success-message h2 {
+        color: #28a745;
+        margin-bottom: 1rem;
+      }
+
+      .order-number {
         font-size: 1.2rem;
         color: #6c757d;
-        margin-bottom: 2rem;
+        margin-top: 1rem;
       }
 
-      .order-details,
-      .shipping-details,
-      .order-items {
+      .order-details {
         background-color: #f8f9fa;
         border-radius: 8px;
-        padding: 1.5rem;
+        padding: 2rem;
+      }
+
+      .order-details h3 {
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .order-summary,
+      .shipping-info,
+      .payment-info {
         margin-bottom: 2rem;
-        text-align: left;
+        padding: 1rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
 
-      .order-details h3,
-      .shipping-details h3,
-      .order-items h3 {
-        margin-bottom: 1rem;
-        color: #333;
-      }
-
-      .order-details p,
-      .shipping-details p {
-        margin: 0.5rem 0;
+      .order-items {
+        margin: 1rem 0;
       }
 
       .order-item {
@@ -99,10 +156,6 @@
         align-items: center;
         padding: 1rem;
         border-bottom: 1px solid #dee2e6;
-      }
-
-      .order-item:last-child {
-        border-bottom: none;
       }
 
       .item-image {
@@ -113,7 +166,7 @@
         border-radius: 4px;
       }
 
-      .item-details h4 {
+      .item-details h5 {
         margin: 0 0 0.5rem 0;
       }
 
@@ -122,10 +175,30 @@
         color: #6c757d;
       }
 
+      .order-totals {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid #dee2e6;
+      }
+
+      .total-line {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.5rem 0;
+      }
+
+      .grand-total {
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dee2e6;
+      }
+
       .action-buttons {
         display: flex;
-        gap: 1rem;
         justify-content: center;
+        gap: 1rem;
         margin-top: 2rem;
       }
 
@@ -134,7 +207,7 @@
         border-radius: 4px;
         text-decoration: none;
         font-weight: 500;
-        transition: all 0.2s;
+        transition: all 0.3s ease;
       }
 
       .btn.primary {

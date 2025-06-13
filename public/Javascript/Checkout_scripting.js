@@ -135,7 +135,7 @@ function handleFormSubmission(event) {
 
 form.addEventListener('submit', handleFormSubmission);
 
-// Payment form validation
+// Form validation
 function validatePaymentForm() {
   const nameInput = document.getElementById('name');
   const cardNumberInput = document.getElementById('card-number');
@@ -177,6 +177,7 @@ function validatePaymentForm() {
   return true;
 }
 
+// Form submission handler
 async function handlePaymentSubmission(e) {
   e.preventDefault();
   
@@ -184,21 +185,32 @@ async function handlePaymentSubmission(e) {
     return;
   }
 
+  const nameInput = document.getElementById('name');
+  const cardNumberInput = document.getElementById('card-number');
+  const bankNameInput = document.getElementById('bank-name');
+  const cvvInput = document.getElementById('cvv');
+  const expiryInput = document.getElementById('expiry');
+  const submitButton = document.querySelector('button[type="submit"]');
+
   try {
-    const formData = {
-      name: document.getElementById('name')?.value || '',
-      card_number: document.getElementById('card-number')?.value.replace(/\s/g, '') || '',
-      bank_name: document.getElementById('bank-name')?.value || '',
-      expiry: document.getElementById('expiry')?.value || '',
-      cvv: document.getElementById('cvv')?.value || ''
-    };
+    // Show loading state
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Processing...';
+    }
 
     const response = await fetch('/user/payment/process', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify({
+        name: nameInput.value.trim(),
+        card_number: cardNumberInput.value.replace(/\s/g, ''),
+        bank_name: bankNameInput.value.trim(),
+        expiry: expiryInput.value.trim(),
+        cvv: cvvInput.value.trim()
+      })
     });
 
     const data = await response.json();
@@ -214,6 +226,12 @@ async function handlePaymentSubmission(e) {
   } catch (error) {
     console.error('Payment error:', error);
     showErrorPopup('An error occurred. Please try again.');
+  } finally {
+    // Reset button state
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Complete Purchase';
+    }
   }
 }
 
@@ -242,14 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
   updateProgress(1); // Set to shipping step (index 1)
 });
 
+// Helper functions for popups
 function showPopup(message) {
   const popup = document.createElement('div');
   popup.className = 'popup success';
-  popup.innerHTML = `
-    <div class="popup-content">
-      <h2>${message}</h2>
-    </div>
-  `;
+  popup.textContent = message;
   document.body.appendChild(popup);
   setTimeout(() => popup.remove(), 3000);
 }
@@ -257,11 +272,7 @@ function showPopup(message) {
 function showErrorPopup(message) {
   const popup = document.createElement('div');
   popup.className = 'popup error';
-  popup.innerHTML = `
-    <div class="popup-content">
-      <h2>${message}</h2>
-    </div>
-  `;
+  popup.textContent = message;
   document.body.appendChild(popup);
   setTimeout(() => popup.remove(), 3000);
 }
@@ -300,143 +311,38 @@ function isValidCardHolderName(name) {
   return /^[A-Za-z\s]+$/.test(name);
 }
 
+// Initialize form handlers when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Get the payment form
   const paymentForm = document.getElementById('payment-form');
-  if (!paymentForm) {
-    console.error('Payment form not found');
-    return;
+  if (paymentForm) {
+    paymentForm.addEventListener('submit', handlePaymentSubmission);
   }
 
-  // Get all required elements
-  const nameInput = document.getElementById('name');
-  const bankNameInput = document.getElementById('bank-name');
+  // Input formatting
   const cardNumberInput = document.getElementById('card-number');
-  const cvvInput = document.getElementById('cvv');
-  const expiryInput = document.getElementById('expiry');
-  const completeBtn = document.getElementById('complete-purchase-btn');
-
-  // Display elements
-  const displayName = document.getElementById('display-card-holder');
-  const displayBankName = document.getElementById('display-bank-name');
-  const displayNumber = document.getElementById('display-card-number');
-  const displayCvv = document.getElementById('display-cvv');
-  const displayExpiry = document.getElementById('display-expiry');
-
-  // Create popup container if it doesn't exist
-  let popupContainer = document.getElementById('popup-container');
-  if (!popupContainer) {
-    popupContainer = document.createElement('div');
-    popupContainer.id = 'popup-container';
-    document.body.appendChild(popupContainer);
-  }
-
-  // Bind input events if elements exist
-  if (nameInput && displayName) {
-    nameInput.addEventListener('input', function() {
-      displayName.textContent = this.value || 'FULL NAME';
-    });
-  }
-
-  if (bankNameInput && displayBankName) {
-    bankNameInput.addEventListener('input', function() {
-      displayBankName.textContent = this.value || 'BANK NAME';
-    });
-  }
-
-  if (cardNumberInput && displayNumber) {
+  if (cardNumberInput) {
     cardNumberInput.addEventListener('input', function() {
-      const value = this.value.replace(/\s/g, '');
-      let formatted = '';
-      for (let i = 0; i < value.length; i++) {
-        if (i > 0 && i % 4 === 0) formatted += ' ';
-        formatted += value[i];
-      }
-      displayNumber.textContent = formatted || '################';
-      this.value = formatted;
+      let value = this.value.replace(/\D/g, '');
+      value = value.replace(/(\d{4})/g, '$1 ').trim();
+      this.value = value;
     });
   }
 
-  if (cvvInput && displayCvv) {
-    cvvInput.addEventListener('input', function() {
-      const cvv = this.value;
-      displayCvv.textContent = cvv ? `CVV: ${cvv.replace(/./g, '•')}` : 'CVV';
-
-      // CVV validation
-      const isValid = /^\d{3,4}$/.test(cvv);
-      const cvvError = document.getElementById('cvvError');
-      if (cvvError) {
-        cvvError.style.display = cvv && !isValid ? 'block' : 'none';
-      }
-      this.classList.toggle('invalid', cvv && !isValid);
-      this.classList.toggle('valid', cvv && isValid);
-    });
-  }
-
-  if (expiryInput && displayExpiry) {
+  const expiryInput = document.getElementById('expiry');
+  if (expiryInput) {
     expiryInput.addEventListener('input', function() {
       let value = this.value.replace(/\D/g, '');
-      if (value.length > 2) {
-        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+      if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2, 4);
       }
-      displayExpiry.textContent = value ? `Expires: ${value}` : 'MM/YY';
       this.value = value;
-
-      // Expiry validation
-      const isValid = /^\d{2}\/\d{2}$/.test(value);
-      const expiryError = document.getElementById('expiryError');
-      if (expiryError) {
-        expiryError.style.display = value && !isValid ? 'block' : 'none';
-      }
-      this.classList.toggle('invalid', value && !isValid);
-      this.classList.toggle('valid', value && isValid);
     });
   }
 
-  // Add event listener to the Complete Purchase button
-  if (completeBtn) {
-    completeBtn.addEventListener('click', handlePaymentSubmission);
+  const cvvInput = document.getElementById('cvv');
+  if (cvvInput) {
+    cvvInput.addEventListener('input', function() {
+      this.value = this.value.replace(/\D/g, '').slice(0, 4);
+    });
   }
-
-  // Add form submission handler
-  paymentForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    if (!validatePaymentForm()) {
-      showErrorPopup('Please fill in all required fields correctly');
-      return;
-    }
-
-    try {
-      const formData = {
-        name: nameInput?.value || '',
-        card_number: cardNumberInput?.value.replace(/\s/g, '') || '',
-        bank_name: bankNameInput?.value || '',
-        expiry: expiryInput?.value || '',
-        cvv: cvvInput?.value || ''
-      };
-
-      const response = await fetch('/user/payment/process', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        showPopup('Payment information saved successfully!');
-        setTimeout(() => {
-          window.location.href = data.redirect || '/user/shipping';
-        }, 2000);
-      } else {
-        showErrorPopup(data.message || 'Payment failed. Please try again.');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      showErrorPopup('An error occurred. Please try again.');
-    }
-  });
 });

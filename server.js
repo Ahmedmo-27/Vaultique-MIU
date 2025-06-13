@@ -16,6 +16,7 @@ const { sessionMiddleware, sessionCleanup, sessionSecurity } = require('./config
 const { errorHandler } = require('./utils/securityUtils');
 const rateLimit = require('express-rate-limit');
 const User = require('./models/Users');
+const MongoStore = require('connect-mongo');
 
 // Import route files
 const apiRouter = require('./routes/api');
@@ -56,9 +57,30 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       family: 4,
+      dbName: 'test' // Explicitly set database name
     });
     console.log(`Connected to MongoDB at ${config.mongodbUri}`);
     console.log('MongoDB connection state:', mongoose.connection.readyState); // Debug log
+
+    // Test session store connection
+    const sessionStore = MongoStore.create({
+      mongoUrl: config.mongodbUri,
+      dbName: 'test',
+      collectionName: 'sessions',
+      ttl: 7 * 24 * 60 * 60, // 7 days
+      autoRemove: 'native',
+      touchAfter: 24 * 3600 // 24 hours
+    });
+
+    // Test session store
+    sessionStore.on('connected', () => {
+      console.log('Session store connected successfully');
+    });
+
+    sessionStore.on('error', (error) => {
+      console.error('Session store error:', error);
+    });
+
   } catch (err) {
     console.error('MongoDB connection error:', err);
     console.error('Please make sure MongoDB is running and .env file is properly configured');
@@ -75,8 +97,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cookieParser());
 
-// Initialize session middleware
-app.use(sessionMiddleware);
+// Initialize session middleware with error handling
+app.use((req, res, next) => {
+  sessionMiddleware(req, res, (err) => {
+    if (err) {
+      console.error('Session middleware error:', err);
+      return next(err);
+    }
+    next();
+  });
+});
+
+// Add session debugging middleware
+app.use((req, res, next) => {
+  console.log('Session state:', {
+    hasSession: !!req.session,
+    sessionID: req.sessionID,
+    hasCart: !!req.session?.cart,
+    cartItems: req.session?.cart?.items?.length
+  });
+  next();
+});
+
 app.use(sessionCleanup);
 app.use(sessionSecurity);
 

@@ -66,7 +66,7 @@ async function updateQuantity(productId, newQuantity) {
             throw new Error('Quantity must be at least 1');
         }
 
-        const response = await fetch('/cart/update-quantity', {
+        const response = await fetch('/user/cart/update-quantity', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -116,21 +116,13 @@ async function updateQuantity(productId, newQuantity) {
         if (data.success) {
             // Update cart UI with new data
             updateCartUI(data.cart);
-            
-            // Update cart count if element exists
-            const cartCountElement = document.querySelector('.cart-count');
-            if (cartCountElement) {
-                const totalItems = data.cart.items.reduce((sum, item) => sum + item.quantity, 0);
-                cartCountElement.textContent = totalItems;
-            }
-
-            showMessage('Cart updated successfully', 'success');
+            showSuccess('Cart updated successfully');
         } else {
             throw new Error(data.message || 'Failed to update cart');
         }
     } catch (error) {
         console.error('Error updating quantity:', error);
-        showMessage(error.message, 'error');
+        showError(error.message);
     }
 }
 
@@ -163,7 +155,7 @@ function createMessageContainer() {
 // Function to remove item
 async function removeItem(productId) {
     try {
-        const response = await fetch('/cart/remove', {
+        const response = await fetch('/user/cart/remove', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -203,7 +195,7 @@ async function removeItem(productId) {
 // Function to update shipping method
 async function updateShipping(method) {
     try {
-        const response = await fetch('/cart/update-shipping', {
+        const response = await fetch('/user/cart/update-shipping', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -243,7 +235,7 @@ async function updateShipping(method) {
 // Function to clear cart
 async function clearCart() {
     try {
-        const response = await fetch('/cart/clear', {
+        const response = await fetch('/user/cart/clear', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -370,17 +362,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.cart-item').forEach(item => {
         const increaseBtn = item.querySelector('.increase');
         const decreaseBtn = item.querySelector('.decrease');
-        const productId = item.dataset.id;
+        const productId = item.dataset.productId;
 
         if (increaseBtn) {
             increaseBtn.addEventListener('click', () => {
-                updateQuantity(productId, 1);
+                const currentQuantity = parseInt(item.querySelector('.quantity-display').textContent);
+                updateQuantity(productId, currentQuantity + 1);
             });
         }
 
         if (decreaseBtn) {
             decreaseBtn.addEventListener('click', () => {
-                updateQuantity(productId, -1);
+                const currentQuantity = parseInt(item.querySelector('.quantity-display').textContent);
+                if (currentQuantity > 1) {
+                    updateQuantity(productId, currentQuantity - 1);
+                }
             });
         }
     });

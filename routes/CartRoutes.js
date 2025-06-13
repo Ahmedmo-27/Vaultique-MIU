@@ -95,14 +95,20 @@ const calculateTotals = (cart) => {
 
 // Helper function to sync cart with database
 const syncCartWithDB = async (req, cart) => {
-    if (req.session.user) {
+    if (req.user) {
         try {
-            let userCart = await Cart.findOne({ user: req.session.user._id });
+            let userCart = await Cart.findOne({ userId: req.user._id });
             
             if (!userCart) {
                 userCart = new Cart({
-                    user: req.session.user._id,
-                    items: cart.items,
+                    userId: req.user._id,
+                    items: cart.items.map(item => ({
+                        product: item.product,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        image: item.image
+                    })),
                     shippingMethod: cart.shippingMethod,
                     subtotal: cart.subtotal,
                     shippingCost: cart.shippingCost,
@@ -110,7 +116,13 @@ const syncCartWithDB = async (req, cart) => {
                     lastUpdated: new Date()
                 });
             } else {
-                userCart.items = cart.items;
+                userCart.items = cart.items.map(item => ({
+                    product: item.product,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image: item.image
+                }));
                 userCart.shippingMethod = cart.shippingMethod;
                 userCart.subtotal = cart.subtotal;
                 userCart.shippingCost = cart.shippingCost;
@@ -129,36 +141,86 @@ const syncCartWithDB = async (req, cart) => {
 // GET /cart - View cart
 router.get('/', async (req, res) => {
     try {
-        // Always get the latest cart from session
-        const cart = req.session.cart || {
-            items: [],
-            shippingMethod: 'standard',
-            subtotal: 0,
-            shippingCost: 20,
-            total: 20,
-            lastUpdated: new Date()
-        };
+        // Get cart from session or initialize new one
+        let cart = req.session.cart;
+        if (!cart) {
+            cart = {
+                items: [],
+                shippingMethod: 'standard',
+                subtotal: 0,
+                shippingCost: 20,
+                total: 20,
+                lastUpdated: new Date()
+            };
+        }
 
-        // Recalculate totals in case anything changed
-        calculateTotals(cart);
+        // Ensure items array exists and has correct structure
+        if (!Array.isArray(cart.items)) {
+            cart.items = [];
+        }
 
-        // Save back to session to ensure it's up to date
-        req.session.cart = cart;
-
-        // If user is authenticated, sync with database
-        if (req.session.user) {
+        // If user is authenticated, try to get cart from database
+        if (req.user) {
             try {
-                await syncCartWithDB(req);
+                const userCart = await Cart.findOne({ userId: req.user._id });
+                if (userCart) {
+                    // Merge database cart with session cart
+                    cart = {
+                        ...cart,
+                        items: userCart.items.map(item => ({
+                            product: item.product.toString(),
+                            productId: item.product.toString(),
+                            name: item.name,
+                            price: item.price,
+                            quantity: item.quantity,
+                            image: item.image
+                        })),
+                        shippingMethod: userCart.shippingMethod,
+                        subtotal: userCart.subtotal,
+                        shippingCost: userCart.shippingCost,
+                        total: userCart.total,
+                        lastUpdated: userCart.lastUpdated
+                    };
+                }
             } catch (syncError) {
-                console.error('Error syncing cart with DB:', syncError);
-                // Continue with session cart even if sync fails
+                console.error('Error fetching cart from DB:', syncError);
+                // Continue with session cart if DB fetch fails
             }
         }
 
+        // Ensure all items have both product and productId fields
+        cart.items = cart.items.map(item => ({
+            ...item,
+            product: item.product || item.productId,
+            productId: item.productId || item.product,
+            price: Number(item.price),
+            quantity: Number(item.quantity)
+        }));
+
+        // Recalculate totals
+        calculateTotals(cart);
+
+        // Save back to session with explicit save
+        req.session.cart = cart;
+        await new Promise((resolve, reject) => {
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Error saving session:', err);
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+
+        // Log cart data for debugging
+        console.log('Cart data being sent to template:', JSON.stringify(cart, null, 2));
+
+        // Render cart view with explicit error handling
         res.render('cart', {
             cart,
-            isEmpty: cart.items.length === 0,
-            errors: []
+            isEmpty: !cart.items || cart.items.length === 0,
+            error: null
         });
     } catch (error) {
         console.error('Error viewing cart:', error);
@@ -182,15 +244,23 @@ router.post('/add', async (req, res) => {
             });
         }
 
-        // Get or initialize cart
-        const cart = req.session.cart || {
-            items: [],
-            shippingMethod: 'standard',
-            subtotal: 0,
-            shippingCost: 20,
-            total: 20,
-            lastUpdated: new Date()
-        };
+        // Get or initialize cart from session
+        let cart = req.session.cart;
+        if (!cart) {
+            cart = {
+                items: [],
+                shippingMethod: 'standard',
+                subtotal: 0,
+                shippingCost: 20,
+                total: 20,
+                lastUpdated: new Date()
+            };
+        }
+
+        // Ensure items array exists
+        if (!Array.isArray(cart.items)) {
+            cart.items = [];
+        }
 
         // Find product
         const product = await Product.findById(productId);
@@ -214,7 +284,8 @@ router.post('/add', async (req, res) => {
 
         // Check if item already exists in cart
         const existingItemIndex = cart.items.findIndex(item => 
-            (item.product === productId) || (item.productId === productId)
+            (item.product && item.product.toString() === productId) || 
+            (item.productId && item.productId.toString() === productId)
         );
 
         if (existingItemIndex > -1) {
@@ -236,6 +307,7 @@ router.post('/add', async (req, res) => {
             // Add new item
             cart.items.push({
                 product: productId,
+                productId: productId,
                 name: product.name,
                 price: product.price,
                 quantity: quantity,
@@ -249,13 +321,56 @@ router.post('/add', async (req, res) => {
         // Update last modified timestamp
         cart.lastUpdated = new Date();
 
-        // Save to session
+        // Save to session with explicit save
         req.session.cart = cart;
+        await new Promise((resolve, reject) => {
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Error saving session:', err);
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
 
-        // Sync with database if user is authenticated
-        if (req.session.user) {
+        // If user is logged in, sync with database
+        if (req.user) {
             try {
-                await syncCartWithDB(req);
+                let userCart = await Cart.findOne({ userId: req.user._id });
+                
+                if (!userCart) {
+                    userCart = new Cart({
+                        userId: req.user._id,
+                        items: cart.items.map(item => ({
+                            product: item.product,
+                            name: item.name,
+                            price: item.price,
+                            quantity: item.quantity,
+                            image: item.image
+                        })),
+                        shippingMethod: cart.shippingMethod,
+                        subtotal: cart.subtotal,
+                        shippingCost: cart.shippingCost,
+                        total: cart.total,
+                        lastUpdated: new Date()
+                    });
+                } else {
+                    userCart.items = cart.items.map(item => ({
+                        product: item.product,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        image: item.image
+                    }));
+                    userCart.shippingMethod = cart.shippingMethod;
+                    userCart.subtotal = cart.subtotal;
+                    userCart.shippingCost = cart.shippingCost;
+                    userCart.total = cart.total;
+                    userCart.lastUpdated = new Date();
+                }
+                
+                await userCart.save();
             } catch (syncError) {
                 console.error('Error syncing cart with DB:', syncError);
                 // Continue with session cart even if sync fails
