@@ -48,6 +48,18 @@ router.delete('/products/:id', adminController.deleteProduct);
 // Analytics routes
 router.get('/analytics', adminController.renderAnalytics);
 
+// Manage Store dashboard
+router.get('/managestore', adminController.renderManageStore);
+
+// Collection Management Routes
+router.get('/collections', adminController.renderCollections);
+router.get('/collections/create', (req, res) => res.render('CreateCollection', { title: 'Create Collection' }));
+router.post('/collections', adminController.createCollection);
+router.get('/collections/:id', adminController.getCollection);
+router.get('/collections/:id/edit', adminController.renderEditCollection);
+router.post('/collections/:id', adminController.updateCollection);
+router.delete('/collections/:id', adminController.deleteCollection);
+
 // Admin logout route
 router.get('/logout', (req, res) => {
   // Clear JWT token cookie

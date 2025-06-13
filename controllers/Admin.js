@@ -806,68 +806,208 @@ exports.getAllCollections = async (req, res) => {
   }
 };
 
-exports.createCollection = async (req, res) => {
+exports.renderCollections = async (req, res) => {
   try {
-    const collection = await Collection.create(req.body);
-    res.status(201).json({
-      success: true,
-      data: collection,
+    // Handle pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalCollections = await Collection.countDocuments();
+    const totalPages = Math.ceil(totalCollections / limit);
+
+    // Get paginated collections with populated featured items
+    const collections = await Collection.find()
+      .populate('featuredItems', 'name images')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.render('ManageCollections', {
+      title: 'Manage Collections',
+      collections,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1
+      },
+      user: req.user,
+      error: null
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    console.error('Error in renderCollections:', error);
+    res.status(500).render('ManageCollections', {
+      title: 'Manage Collections',
+      collections: [],
+      pagination: {
+        currentPage: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false
+      },
+      user: req.user,
+      error: error.message || 'Error loading collections. Please try again later.'
+    });
+  }
+};
+
+exports.createCollection = async (req, res) => {
+  try {
+    const {
+      name,
+      slug,
+      logo,
+      coverImage,
+      heroVideo,
+      header,
+      description,
+      featuredItems
+    } = req.body;
+
+    const collection = new Collection({
+      name,
+      slug,
+      logo,
+      coverImage,
+      heroVideo,
+      header,
+      description,
+      featuredItems: featuredItems ? JSON.parse(featuredItems) : []
+    });
+
+    await collection.save();
+    res.redirect('/admin/collections');
+  } catch (error) {
+    console.error('Error in createCollection:', error);
+    res.status(500).render("error", {
+      title: "Error",
       message: "Error creating collection",
-      error: error.message,
+      error: error.message
     });
   }
 };
 
 exports.updateCollection = async (req, res) => {
   try {
-    const collection = await Collection.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const { id } = req.params;
+    const {
+      name,
+      slug,
+      logo,
+      coverImage,
+      heroVideo,
+      header,
+      description,
+      featuredItems
+    } = req.body;
 
+    const collection = await Collection.findById(id);
     if (!collection) {
-      return res.status(404).json({
-        success: false,
-        message: "Collection not found",
+      return res.status(404).render("error", {
+        title: "Error",
+        message: "Collection not found"
       });
     }
 
-    res.status(200).json({
-      success: true,
-      data: collection,
-    });
+    collection.name = name;
+    collection.slug = slug;
+    collection.logo = logo;
+    collection.coverImage = coverImage;
+    collection.heroVideo = heroVideo;
+    collection.header = header;
+    collection.description = description;
+    if (featuredItems) {
+      collection.featuredItems = JSON.parse(featuredItems);
+    }
+
+    await collection.save();
+    res.redirect('/admin/collections');
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    console.error('Error in updateCollection:', error);
+    res.status(500).render("error", {
+      title: "Error",
       message: "Error updating collection",
-      error: error.message,
+      error: error.message
     });
   }
 };
 
 exports.deleteCollection = async (req, res) => {
   try {
-    const collection = await Collection.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+    const collection = await Collection.findById(id);
+    
     if (!collection) {
       return res.status(404).json({
         success: false,
-        message: "Collection not found",
+        message: "Collection not found"
       });
     }
-    res.status(200).json({
-      success: true,
-      message: "Collection deleted successfully",
-    });
+
+    await collection.remove();
+    res.json({ success: true });
   } catch (error) {
+    console.error('Error in deleteCollection:', error);
     res.status(500).json({
       success: false,
       message: "Error deleting collection",
-      error: error.message,
+      error: error.message
+    });
+  }
+};
+
+exports.getCollection = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const collection = await Collection.findById(id);
+    
+    if (!collection) {
+      return res.status(404).render("error", {
+        title: "Error",
+        message: "Collection not found"
+      });
+    }
+
+    res.render("ViewCollection", {
+      title: collection.name,
+      collection
+    });
+  } catch (error) {
+    console.error('Error in getCollection:', error);
+    res.status(500).render("error", {
+      title: "Error",
+      message: "Error loading collection",
+      error: error.message
+    });
+  }
+};
+
+exports.renderEditCollection = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const collection = await Collection.findById(id);
+    
+    if (!collection) {
+      return res.status(404).render("error", {
+        title: "Error",
+        message: "Collection not found"
+      });
+    }
+
+    res.render("EditCollection", {
+      title: "Edit Collection",
+      collection
+    });
+  } catch (error) {
+    console.error('Error in renderEditCollection:', error);
+    res.status(500).render("error", {
+      title: "Error",
+      message: "Error loading collection",
+      error: error.message
     });
   }
 };
@@ -960,12 +1100,15 @@ exports.getSalesAnalytics = async (req, res) => {
     const salesData = await Order.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
           totalSales: { $sum: "$total" },
-          orderCount: { $sum: 1 },
-        },
+          orderCount: { $sum: 1 }
+        }
       },
-      { $sort: { _id: 1 } },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
     ]);
 
     res.status(200).json({
@@ -1090,7 +1233,7 @@ exports.renderUsers = async (req, res) => {
 
       // If viewing user orders
       if (req.query.view === "orders") {
-        userOrders = await Order.find({ user: req.params.id })
+        userOrders = await Order.find({ userId: req.params.id })
           .sort({ date: -1 })
           .populate("items.product", "name price");
       }
@@ -1210,118 +1353,153 @@ exports.renderCreateProduct = async (req, res) => {
 
 exports.renderAnalytics = async (req, res) => {
   try {
-    const activeUsers = await User.countDocuments({
-      lastLogin: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-    });
+    // Get active users count
+    const activeUsers = await User.countDocuments({ status: "active" });
     const totalUsers = await User.countDocuments();
     const totalSessions = await Session.countDocuments();
 
-    const userGrowth = await User.aggregate([
+    // Calculate session growth
+    const sessionGrowthData = await Session.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-          count: { $sum: 1 },
-        },
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
+          count: { $sum: 1 }
+        }
       },
-      { $sort: { _id: -1 } },
-      { $limit: 2 },
+      {
+        $sort: {
+          "_id.year": -1,
+          "_id.month": -1
+        }
+      },
+      {
+        $limit: 2
+      }
     ]);
 
-    const sessionGrowth = await Session.aggregate([
+    let sessionGrowth = 0;
+    if (sessionGrowthData.length >= 2) {
+      const currentMonth = sessionGrowthData[0].count;
+      const lastMonth = sessionGrowthData[1].count;
+      sessionGrowth = lastMonth === 0 ? 100 : ((currentMonth - lastMonth) / lastMonth) * 100;
+    }
+
+    // Get sales data for the last 6 months
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const salesData = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: sixMonthsAgo }
+        }
+      },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-          count: { $sum: 1 },
-        },
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
+          totalSales: { $sum: "$total" },
+          orderCount: { $sum: 1 }
+        }
       },
-      { $sort: { _id: -1 } },
-      { $limit: 2 },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1
+        }
+      }
     ]);
 
-    // Calculate bounce rate for current and previous month
-    const bounceRates = await Session.aggregate([
+    // Format data for chart
+    const months = [];
+    const sales = [];
+    const orders = [];
+    let totalSales = 0;
+    let totalOrders = 0;
+
+    salesData.forEach(data => {
+      const monthName = new Date(data._id.year, data._id.month - 1).toLocaleString('default', { month: 'short' });
+      months.push(monthName);
+      sales.push(data.totalSales);
+      orders.push(data.orderCount);
+      totalSales += data.totalSales;
+      totalOrders += data.orderCount;
+    });
+
+    // Calculate average order value
+    const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
+
+    // Calculate user growth
+    const userGrowthData = await User.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-          total: { $sum: 1 },
-          bounced: { $sum: { $cond: [{ $eq: ["$duration", 0] }, 1, 0] } },
-        },
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
+          count: { $sum: 1 }
+        }
       },
-      { $sort: { _id: -1 } },
-      { $limit: 2 },
-    ]);
-
-    const currentBounceRate = bounceRates[0]
-      ? (bounceRates[0].bounced / bounceRates[0].total) * 100
-      : 0;
-    const previousBounceRate = bounceRates[1]
-      ? (bounceRates[1].bounced / bounceRates[1].total) * 100
-      : 0;
-    const bounceRateChange = previousBounceRate - currentBounceRate;
-
-    // Calculate session duration for current and previous month
-    const sessionDurations = await Session.aggregate([
       {
-        $group: {
-          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-          avgDuration: { $avg: "$duration" },
-        },
+        $sort: {
+          "_id.year": -1,
+          "_id.month": -1
+        }
       },
-      { $sort: { _id: -1 } },
-      { $limit: 2 },
+      {
+        $limit: 2
+      }
     ]);
 
-    const currentDuration = sessionDurations[0]
-      ? sessionDurations[0].avgDuration
-      : 0;
-    const previousDuration = sessionDurations[1]
-      ? sessionDurations[1].avgDuration
-      : 0;
-    const sessionDurationChange = previousDuration
-      ? ((currentDuration - previousDuration) / previousDuration) * 100
-      : 0;
-
-    const brandStats = await Order.aggregate([
-      { $unwind: "$items" },
-      { $group: { _id: "$items.brand", sales: { $sum: "$items.price" } } },
-      { $sort: { sales: -1 } },
-      { $limit: 5 },
-    ]);
-
-    const collectionStats = await Order.aggregate([
-      { $unwind: '$items' },
-      { $group: { _id: '$items.collection', sales: { $sum: '$items.price' } } },
-      { $sort: { sales: -1 } },
-      { $limit: 5 },
-    ]);
+    let userGrowth = 0;
+    if (userGrowthData.length >= 2) {
+      const currentMonth = userGrowthData[0].count;
+      const lastMonth = userGrowthData[1].count;
+      userGrowth = lastMonth === 0 ? 100 : ((currentMonth - lastMonth) / lastMonth) * 100;
+    }
 
     res.render('analytics', {
       title: 'Analytics Dashboard',
       activeUsers,
       totalUsers,
       totalSessions,
-      userGrowth:
-        userGrowth.length > 1
-          ? ((userGrowth[0].count - userGrowth[1].count) / userGrowth[1].count) * 100
-          : 0,
-      sessionGrowth:
-        sessionGrowth.length > 1
-          ? ((sessionGrowth[0].count - sessionGrowth[1].count) / sessionGrowth[1].count) * 100
-          : 0,
-      bounceRate: currentBounceRate,
-      bounceRateChange,
-      sessionDuration: currentDuration ? Math.round(currentDuration / 60) + ' min' : '0 min',
-      sessionDurationChange,
-      brandStats,
-      collectionStats,
+      sessionGrowth,
+      totalSales,
+      totalOrders,
+      averageOrderValue,
+      userGrowth,
+      salesChartData: {
+        labels: months,
+        sales: sales,
+        orders: orders
+      },
       user: req.user,
+      error: null
     });
   } catch (error) {
-    res.status(500).render('error', {
-      title: 'Error',
-      type: 'error',
-      message: 'Error loading analytics',
-      error: error.message,
+    console.error('Error in renderAnalytics:', error);
+    res.status(500).render('analytics', {
+      title: 'Analytics Dashboard',
+      activeUsers: 0,
+      totalUsers: 0,
+      totalSessions: 0,
+      sessionGrowth: 0,
+      totalSales: 0,
+      totalOrders: 0,
+      averageOrderValue: 0,
+      userGrowth: 0,
+      salesChartData: {
+        labels: [],
+        sales: [],
+        orders: []
+      },
+      user: req.user,
+      error: error.message || 'Error loading analytics. Please try again later.'
     });
   }
 };
@@ -1336,8 +1514,8 @@ exports.getUserOrders = async (req, res) => {
       });
     }
 
-    const orders = await Order.find({ user: req.params.id })
-      .populate('items.product')
+    const orders = await Order.find({ userId: req.params.id })
+      .populate('items.productId')
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -1447,4 +1625,46 @@ exports.renderProductEdit = async (req, res) => {
             message: 'Error loading product details'
         });
     }
+};
+
+// Render Manage Store Dashboard
+exports.renderManageStore = (req, res) => {
+  res.render('managestore', {
+    title: 'Manage Store',
+    user: req.user
+  });
+};
+
+// Collection Management
+exports.listCollections = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const collections = await Collection.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('featuredItems', 'name images');
+
+    const total = await Collection.countDocuments();
+
+    res.render('ManageCollections', {
+      title: 'Manage Collections',
+      collections,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      total,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Error listing collections:', error);
+    res.status(500).render('error', {
+      title: 'Error',
+      type: 'error',
+      message: 'Error loading collections',
+      error: error.message
+    });
+  }
 };

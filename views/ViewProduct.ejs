@@ -105,8 +105,8 @@
                                     <tr>
                                         <th>Stock Status:</th>
                                         <td>
-                                            <% if (product.stock) { %>
-                                                <span class="badge bg-success">In Stock</span>
+                                            <% if (product.stockCount > 0) { %>
+                                                <span class="badge bg-success">In Stock (<%= product.stockCount %>)</span>
                                             <% } else { %>
                                                 <span class="badge bg-danger">Out of Stock</span>
                                             <% } %>
