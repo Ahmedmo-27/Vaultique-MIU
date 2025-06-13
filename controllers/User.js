@@ -1886,4 +1886,17 @@ router.get('/products/:id', async (req, res) => {
   }
 });
 
+// FAQ page route
+router.get('/faq', async (req, res) => {
+  try {
+    res.render('FAQ', {
+      title: 'Vaultique | FAQ',
+      user: req.user || null
+    });
+  } catch (error) {
+    console.error('Error loading FAQ page:', error);
+    renderNotification(res, 'error', 'Failed to load FAQ page. Please try again later.');
+  }
+});
+
 module.exports = router;
