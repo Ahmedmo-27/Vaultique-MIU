@@ -64,16 +64,21 @@ function validateForm() {
 
 // Show notification
 function showNotification(type, message) {
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-
-  document.body.appendChild(notification);
-
-  // Remove notification after 3 seconds
-  setTimeout(() => {
-    notification.remove();
-  }, 3000);
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+    notification.role = 'alert';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    const container = document.querySelector('.container-fluid');
+    container.insertBefore(notification, container.firstChild);
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
 }
 
 // Initialize form
@@ -125,22 +130,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Video Preview
+  // Video preview handling
   const videoInput = document.getElementById('video');
   const videoPreview = document.getElementById('videoPreview');
-  const videoPlaceholder = videoInput.parentElement.querySelector('.upload-placeholder');
 
-  videoInput.addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (file) {
-      videoPreview.src = URL.createObjectURL(file);
-      videoPreview.classList.remove('hidden');
-      videoPlaceholder.style.display = 'none';
-    } else {
-      videoPreview.classList.add('hidden');
-      videoPlaceholder.style.display = 'flex';
-    }
-  });
+  if (videoInput && videoPreview) {
+    videoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Create a URL for the video file
+            const videoURL = URL.createObjectURL(file);
+            
+            // Set the video source
+            videoPreview.src = videoURL;
+            videoPreview.classList.remove('hidden');
+            
+            // Load the video
+            videoPreview.load();
+            
+            // Show the video controls
+            videoPreview.controls = true;
+        }
+    });
+  }
 
   // 3D Model Upload
   const modelInput = document.getElementById('model3D');
@@ -162,73 +174,45 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
     // Form submission
-    document.getElementById('productForm').addEventListener('submit', async (e) => {
+    const productForm = document.getElementById('productForm');
+    if (!productForm) return;
+
+    productForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Validate form before submission
-        if (!validateForm()) {
-            return;
-        }
-        
-        const formData = new FormData(e.target);
-        
-        // Log form data for debugging
-        console.log('Form data being sent:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
-        }
-        
         try {
-            const response = await fetch('/api/admin/products/create', {
+            const formData = new FormData(this);
+            
+            // Log form data for debugging
+            console.log('Form data being sent:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ':', value);
+            }
+
+            const response = await fetch('/admin/products/create', {
                 method: 'POST',
-                body: formData,
-                credentials: 'include'
+                body: formData
             });
 
             if (!response.ok) {
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-                } else {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create product');
             }
 
             const data = await response.json();
-            console.log('Server response:', data);
-
+            
             if (data.success) {
                 showNotification('success', 'Product created successfully!');
-                e.target.reset();
-                // Reset all previews
-                resetPreviews();
+                // Redirect to products page after short delay
+                setTimeout(() => {
+                    window.location.href = '/admin/products';
+                }, 1500);
             } else {
-                // Handle validation errors
-                if (data.errors && Array.isArray(data.errors)) {
-                    // Clear all previous error messages
-                    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-                    
-                    // Display each validation error
-                    data.errors.forEach(error => {
-                        const errorElement = document.getElementById(`${error.field}Error`);
-                        if (errorElement) {
-                            errorElement.textContent = error.message;
-                            // Scroll to the first error
-                            if (error === data.errors[0]) {
-                                errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
-                        }
-                    });
-                    showNotification('error', 'Please fix the validation errors');
-                } else {
-                    showNotification('error', data.message || 'Failed to create product');
-                }
-                console.error('Server error:', data.error);
+                throw new Error(data.message || 'Failed to create product');
             }
         } catch (error) {
             console.error('Error creating product:', error);
-            showNotification('error', error.message || 'Failed to create product. Please try again.');
+            showNotification('error', error.message || 'Error creating product. Please try again.');
         }
     });
 });

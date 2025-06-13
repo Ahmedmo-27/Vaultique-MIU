@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Products - Admin Dashboard</title>
+    <title>Manage Collections - Admin Dashboard</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Bootstrap -->
@@ -15,13 +15,25 @@
     <script src="/Javascript/nav-bar.js"></script>
     <style>
         body {
-            padding-top: 100px; /* Increased padding to prevent overlap */
+            padding-top: 100px;
         }
         .container-fluid {
             margin-top: 20px;
         }
         .d-flex.justify-content-between {
-            margin-bottom: 30px; /* Add more space below the header section */
+            margin-bottom: 30px;
+        }
+        .collection-thumbnail {
+            width: 100px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .featured-items {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
@@ -32,10 +44,10 @@
         <div class="row">
             <main class="col-md-12 ms-sm-auto px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Manage Products</h1>
+                    <h1 class="h2">Manage Collections</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <a href="/admin/products/create" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add New Product
+                        <a href="/admin/collections/create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add New Collection
                         </a>
                     </div>
                 </div>
@@ -50,47 +62,41 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Image</th>
+                                <th>Cover Image</th>
                                 <th>Name</th>
-                                <th>Brand</th>
-                                <th>Price</th>
-                                <th>Collection</th>
-                                <th>Stock</th>
+                                <th>Slug</th>
+                                <th>Header</th>
+                                <th>Featured Items</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% if (products && products.length > 0) { %>
-                                <% products.forEach(product => { %>
+                            <% if (collections && collections.length > 0) { %>
+                                <% collections.forEach(collection => { %>
                                     <tr>
                                         <td>
-                                            <% if (product.image) { %>
-                                                <img src="<%= product.image %>" alt="<%= product.name %>" class="product-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <% if (collection.coverImage) { %>
+                                                <img src="<%= collection.coverImage %>" alt="<%= collection.name %>" class="collection-thumbnail">
                                             <% } else { %>
                                                 <div class="no-image">No Image</div>
                                             <% } %>
                                         </td>
-                                        <td><%= product.name %></td>
-                                        <td><%= product.brand ? product.brand.name : 'N/A' %></td>
-                                        <td>$<%= product.price.toFixed(2) %></td>
-                                        <td><%= product.Vcollection %></td>
-                                        <td>
-                                            <% if (product.stockCount > 0) { %>
-                                                <span class="badge bg-success">In Stock (<%= product.stockCount %>)</span>
-                                            <% } else { %>
-                                                <span class="badge bg-danger">Out of Stock</span>
-                                            <% } %>
+                                        <td><%= collection.name %></td>
+                                        <td><%= collection.slug %></td>
+                                        <td><%= collection.header %></td>
+                                        <td class="featured-items">
+                                            <%= collection.featuredItems ? collection.featuredItems.map(item => item.name).join(', ') : 'None' %>
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="/admin/products/<%= product._id %>" class="btn btn-info btn-sm" title="View">
+                                                <a href="/admin/collections/<%= collection._id %>" class="btn btn-info btn-sm" title="View">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="/admin/products/<%= product._id %>/edit" class="btn btn-warning btn-sm" title="Edit">
+                                                <a href="/admin/collections/<%= collection._id %>/edit" class="btn btn-warning btn-sm" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-danger btn-sm" 
-                                                        onclick="confirmDelete('<%= product._id %>')" title="Delete">
+                                                        onclick="confirmDelete('<%= collection._id %>')" title="Delete">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
@@ -99,14 +105,14 @@
                                 <% }); %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="7" class="text-center">No products found</td>
+                                    <td colspan="6" class="text-center">No collections found</td>
                                 </tr>
                             <% } %>
                         </tbody>
                     </table>
                 </div>
 
-                <% if (pagination) { %>
+                <% if (pagination.totalPages > 1) { %>
                     <nav aria-label="Page navigation" class="mt-4">
                         <ul class="pagination justify-content-center">
                             <% if (pagination.hasPrevPage) { %>
@@ -142,7 +148,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this product? This action cannot be undone.
+                    Are you sure you want to delete this collection? This action cannot be undone.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -154,13 +160,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function confirmDelete(productId) {
+        function confirmDelete(collectionId) {
             const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
             const confirmBtn = document.getElementById('confirmDeleteBtn');
             
             confirmBtn.onclick = async function() {
                 try {
-                    const response = await fetch(`/admin/products/${productId}`, {
+                    const response = await fetch(`/admin/collections/${collectionId}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -169,7 +175,6 @@
                         credentials: 'include'
                     });
 
-                    // First check if the response is JSON
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
                         throw new Error('Server did not return JSON');
@@ -180,14 +185,14 @@
                     if (data.success) {
                         window.location.reload();
                     } else {
-                        alert('Error deleting product: ' + (data.message || 'Unknown error'));
+                        alert('Error deleting collection: ' + (data.message || 'Unknown error'));
                     }
                 } catch (error) {
                     console.error('Error:', error);
                     if (error.message === 'Server did not return JSON') {
                         alert('Server error: Invalid response format');
                     } else {
-                        alert('Error deleting product. Please try again.');
+                        alert('Error deleting collection. Please try again.');
                     }
                 } finally {
                     modal.hide();
