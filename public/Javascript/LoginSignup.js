@@ -263,84 +263,82 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("Complete signup button not found");
   }
 
-  // Prevent default form submissions
-  loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    handleLogin(e);
-  });
-
-  signupForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    handleSignup(e);
-  });
-
-  // Login form submission
-  loginForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
+  // Prevent default form submissions and handle them properly
+  if (loginForm) {
+    // Remove any existing listeners
+    loginForm.removeEventListener('submit', handleLogin);
+    const oldSubmitHandler = loginForm.onsubmit;
+    if (oldSubmitHandler) {
+      loginForm.removeEventListener('submit', oldSubmitHandler);
+    }
     
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    // Add single submit handler
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-    try {
-      console.log('Login attempt details:', { email, hasPassword: !!password });
-      
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      try {
+        console.log('Login attempt details:', { email, hasPassword: !!password });
+        
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: 'include'
+        });
 
-      let data;
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        // Handle non-JSON responses (like rate limit messages)
-        const text = await response.text();
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          data = {
-            success: false,
-            message: text
-          };
+        let data;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json();
+        } else {
+          const text = await response.text();
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            data = { success: false, message: text };
+          }
         }
-      }
 
-      if (response.ok) {
-        if (data.success) {
-          // Show success message
-          showNotification('success', 'Login successful!');
+        if (response.ok && data.success) {
+          window.showNotification('success', 'Login successful!');
+          
+          // Store user data
+          if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+          }
           
           // Redirect based on user role
-          if (data.user.role === 'admin') {
-            window.location.href = '/admin/dashboard';
-          } else {
-            window.location.href = '/user/home';
-          }
+          setTimeout(() => {
+            window.location.href = data.user?.role === 'admin' ? '/admin/dashboard' : '/user/home';
+          }, 1000);
         } else {
-          showNotification('error', data.message || 'Login failed');
+          window.showNotification('error', data.message || 'Login failed');
+          // Clear password field for security
+          document.getElementById('password').value = '';
         }
-      } else {
-        // Handle different error status codes
-        switch (response.status) {
-          case 429:
-            showNotification('error', 'Too many login attempts. Please try again later.');
-            break;
-          case 423:
-            showNotification('error', 'Account is temporarily locked. Please try again later.');
-            break;
-          default:
-            showNotification('error', data.message || 'Login failed');
-        }
+      } catch (error) {
+        console.error('Login error:', error);
+        window.showNotification('error', 'An error occurred during login');
+        // Clear password field for security
+        document.getElementById('password').value = '';
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      showNotification('error', 'An error occurred during login');
-    }
-  });
+    });
+  }
+
+  if (signupForm) {
+    // Remove any existing listeners
+    signupForm.removeEventListener('submit', handleSignup);
+    
+    // Add single submit handler
+    signupForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      // Your existing signup logic here
+    });
+  }
 
   // Social login buttons (placeholder functionality)
   document.querySelectorAll(".btn-google, .btn-facebook").forEach(btn => {

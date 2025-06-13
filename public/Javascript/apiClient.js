@@ -43,10 +43,15 @@ const apiRequest = async (url, options = {}) => {
     if (response.status === 401) {
       // Clear the invalid token
       localStorage.removeItem('authToken');
-
-      // Redirect to login page if needed
-      if (!url.includes('/api/auth/login') && !url.includes('/api/auth/signup')) {
-        window.location.href = '/LoginSignup';
+      
+      // Get current path
+      const currentPath = window.location.pathname;
+      
+      // Only redirect if we're not already on auth-related pages
+      if (!currentPath.includes('/LoginSignup') && 
+          !currentPath.includes('/api/auth/login') && 
+          !currentPath.includes('/api/auth/signup')) {
+        window.location.href = '/user/LoginSignup';
         return null;
       }
     }

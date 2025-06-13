@@ -195,6 +195,14 @@ window.handleSignup = async (event) => {
 const checkAuthState = () => {
   const token = localStorage.getItem('authToken');
   const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const currentPath = window.location.pathname;
+  
+  // Don't check token if we're on auth-related pages
+  if (currentPath.includes('/LoginSignup') || 
+      currentPath.includes('/api/auth/login') || 
+      currentPath.includes('/api/auth/signup')) {
+    return;
+  }
   
   if (token && user) {
     // Verify token is still valid
@@ -223,9 +231,18 @@ const checkAuthState = () => {
 // Refresh token function
 const refreshToken = () => {
   const refreshToken = localStorage.getItem('refreshToken');
+  const currentPath = window.location.pathname;
+  
+  // Don't redirect if we're already on auth-related pages
+  if (currentPath.includes('/LoginSignup') || 
+      currentPath.includes('/api/auth/login') || 
+      currentPath.includes('/api/auth/signup')) {
+    return;
+  }
+  
   if (!refreshToken) {
-    // No refresh token, redirect to login
-    window.location.href = '/user/LoginSignup';
+    // No refresh token, clear auth data and redirect to login
+    clearAuthData();
     return;
   }
 
@@ -244,14 +261,25 @@ const refreshToken = () => {
       localStorage.setItem('authToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
     } else {
-      // Refresh failed, redirect to login
-      window.location.href = '/user/LoginSignup';
+      // Refresh failed, clear auth data and redirect to login
+      clearAuthData();
     }
   })
   .catch(() => {
-    // Refresh failed, redirect to login
-    window.location.href = '/user/LoginSignup';
+    // Refresh failed, clear auth data and redirect to login
+    clearAuthData();
   });
+};
+
+// Helper function to clear auth data and redirect
+const clearAuthData = () => {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
+  localStorage.removeItem('refreshToken');
+  const currentPath = window.location.pathname;
+  if (!currentPath.includes('/LoginSignup')) {
+    window.location.href = '/user/LoginSignup';
+  }
 };
 
 // Check auth state periodically
