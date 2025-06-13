@@ -142,7 +142,7 @@ passport.use(new LocalStrategy(
       }
 
       // Check if account is locked
-      if (user.isAccountLocked()) {
+      if (user.accountLockedUntil && user.accountLockedUntil > Date.now()) {
         return done(null, false, { message: 'Account is temporarily locked due to too many failed attempts. Please try again later.' });
       }
 
