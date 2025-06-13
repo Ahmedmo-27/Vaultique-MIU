@@ -227,7 +227,7 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
     await user.save();
 
     // Send welcome email with verification link
-    await sendVerificationEmail(user.email, verificationToken);
+    await sendVerificationEmail(user, verificationToken);
 
     // Send welcome SMS if phone number provided
     if (phone_number) {
@@ -468,6 +468,14 @@ router.get('/verify-email/:token', async (req, res) => {
     user.emailVerificationToken = undefined;
     user.emailVerificationExpires = undefined;
     await user.save();
+
+    // Send welcome email after successful verification
+    try {
+      await sendWelcomeEmail(user);
+    } catch (emailError) {
+      console.error('Error sending welcome email:', emailError);
+      // Continue with verification even if welcome email fails
+    }
 
     res.render('email-verification-success');
   } catch (error) {

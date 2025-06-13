@@ -34,9 +34,14 @@ const transporter = nodemailer.createTransport({
   },
   secure: true,
   tls: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: true,
     minVersion: 'TLSv1.2'
-  }
+  },
+  pool: true,
+  maxConnections: 5,
+  maxMessages: 100,
+  rateDelta: 1000,
+  rateLimit: 5
 });
 
 // Verify transporter configuration
@@ -65,24 +70,29 @@ transporter.verify(function(error, success) {
 
 // Process email queue
 const processQueue = async () => {
-  while (emailQueue.length > 0) {
-    const emailJob = emailQueue[0];
-    try {
-      await transporter.sendMail(emailJob.mailOptions);
-      console.log('Queued email sent successfully to:', emailJob.mailOptions.to);
-      emailQueue.shift(); // Remove the processed email
-    } catch (error) {
-      console.error('Error sending queued email:', error);
-      emailJob.retries++;
-      
-      if (emailJob.retries >= MAX_RETRIES) {
-        console.error('Max retries reached for email to:', emailJob.mailOptions.to);
-        emailQueue.shift(); // Remove the failed email after max retries
-      } else {
-        // Move to end of queue for retry
-        emailQueue.push(emailQueue.shift());
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      }
+  if (emailQueue.length === 0) return;
+
+  const emailJob = emailQueue[0];
+  try {
+    // Validate email options before sending
+    if (!emailJob.mailOptions.from || !emailJob.mailOptions.to || !emailJob.mailOptions.subject) {
+      throw new Error('Invalid email options in queue');
+    }
+
+    await transporter.sendMail(emailJob.mailOptions);
+    console.log('Queued email sent successfully to:', emailJob.mailOptions.to);
+    emailQueue.shift(); // Remove the processed email
+  } catch (error) {
+    console.error('Error sending queued email:', error);
+    emailJob.retries++;
+    
+    if (emailJob.retries >= MAX_RETRIES) {
+      console.error('Max retries reached for email to:', emailJob.mailOptions.to);
+      emailQueue.shift(); // Remove the failed email after max retries
+    } else {
+      // Move to end of queue for retry
+      emailQueue.push(emailQueue.shift());
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
     }
   }
 };
@@ -239,7 +249,12 @@ const testEmailConfig = async (testEmail) => {
 };
 
 // Start processing the email queue periodically
-setInterval(processQueue, 60000); // Check queue every minute
+setInterval(processQueue, 60000);
+
+// Start queue processing immediately
+processQueue().catch(error => {
+  console.error('Error in initial queue processing:', error);
+});
 
 module.exports = {
   sendWelcomeEmail,
