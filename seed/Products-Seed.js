@@ -2097,6 +2097,878 @@ const products = [
       },
     ],
   },
+
+  {
+    id: '405.034',
+    name: 'A. Lange & Söhne Datograph 405.034 UpDown Lumen Platinum Black Dial',
+    brand: 'ALS_1',
+    strapMaterial: '',
+    movement: 'Manual Winding',
+    waterResistance: '50m',
+    caseMaterial: 'Platinum',
+    dialColor: 'Black',
+    stock:'true' ,
+    stockCount: '3' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$228,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+{
+    id: '405.831',
+    name: 'A. Lange & Söhne Datograph Flyback 405.831 Rose Gold Baguette Bezel Black Dial Limited Edition',
+    brand: 'ALS_1',
+    strapMaterial: 'Alligator Strap',
+    movement: 'Manual Winding',
+    waterResistance: '30m',
+    caseMaterial: 'Rose Gold',
+    dialColor: 'Black',
+    stock:'true' ,
+    stockCount: '5' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$180,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+{
+    id: '145.029',
+    name: 'A. Lange & Söhne Zeitwerk 145.029 Striking Time White Gold Black Dial',
+    brand: 'ALS_1',
+    strapMaterial: 'Leather Strap',
+    movement: 'Manual Winding',
+    waterResistance: '30m',
+    caseMaterial: 'White Gold',
+    dialColor: 'Black',
+    stock:'true' ,
+    stockCount: '3' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$120,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+
+{
+    id: 'RM 035',
+    name: 'Richard Mille RM 035 Americas 2 Rose Gold Toro Skeleton Limited Edition (2018)',
+    brand: 'RMI_1',
+    strapMaterial: 'Rubber Strap',
+    movement: 'Manual Winding',
+    waterResistance: '100m',
+    caseMaterial: 'Rose Gold',
+    dialColor: 'Skeleton',
+    stock:'true' ,
+    stockCount: '5' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$495,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+{
+    id: 'RM 011',
+    name: 'Richard-Mille-RM-011-White-Ghost',
+    brand: 'RMI_1',
+    strapMaterial: 'Rubber Strap',
+    movement: 'Automatic',
+    waterResistance: '100m',
+    caseMaterial: 'Ceramic',
+    dialColor: 'Skeleton',
+    stock:'true' ,
+    stockCount: '3' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$380,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+{
+    id: 'RM 028',
+    name: 'Richard Mille RM 028 Rose Gold',
+    brand: 'RMI_1',
+    strapMaterial: 'Rubber Strap',
+    movement: 'Automatic',
+    waterResistance: '100m',
+    caseMaterial: 'Rose Gold',
+    dialColor: 'Transparent',
+    stock:'true' ,
+    stockCount: '3' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$380,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+{
+    id: 'AT150.40.AC.SD.A',
+    name: 'Jacob & Co. Astronomia AT150.40.AC.SD.A Gravitational Triple Axis Automatic Tourbillon Piece Unique (2018)',
+    brand: 'JAC_1',
+    strapMaterial: 'Alligator Strap',
+    movement: 'Automatic & Manual Winding',
+    waterResistance: '50m',
+    caseMaterial: 'Rose Gold',
+    dialColor: 'Orbital',
+    stock:'true' ,
+    stockCount: '4' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$360,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+{
+    id: 'BGOP45BGLDCHQR-101837',
+    name: 'BVLGARI Octo Retrogradi Chronograph BGOP45BGLDCHQR-101837',
+    brand: 'JAC_1',
+    strapMaterial: 'Alligator Strap',
+    movement: 'Automatic',
+    waterResistance: '50m',
+    caseMaterial: 'Rose Gold',
+    dialColor: 'Black',
+    stock:'true' ,
+    stockCount: '3' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$560,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+{
+    id: '26284RO.OO.D002CR.01',
+    name: 'Audemars Piguet Royal Oak Offshore 26284RO.OO.D002CR.01 Rubens Barrichello lll Chronograph',
+    brand: 'JAC_1',
+    strapMaterial: 'Alligator Strap',
+    movement: 'Automatic',
+    waterResistance: '30m',
+    caseMaterial: 'Rose Gold',
+    dialColor: 'Red',
+    stock:'true' ,
+    stockCount: '5' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$420,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+{
+    id: '15416CE.OO.1225CE.02',
+    name: 'Audemars Piguet Royal Oak 15416CE.OO.1225CE.02 Double Balance Wheel Black Ceramic Openworked Dial Limited Edition',
+    brand: 'JAC_1',
+    strapMaterial: 'Ceramic',
+    movement: 'Automatic',
+    waterResistance: '30m',
+    caseMaterial: 'Ceramic',
+    dialColor: 'Openworked',
+    stock:'true' ,
+    stockCount: '5' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$385,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+  {
+    id: '5100T/000R-B623',
+    name: 'Vacheron Constantin Traditionnelle Tourbillon Chronograph 5100T/000R-B623 Rose Gold',
+    brand: 'VAC_1',
+    strapMaterial: 'Alligator Strap',
+    movement: 'Automatic',
+    waterResistance: '50m',
+    caseMaterial: 'Rose Gold',
+    dialColor: 'Silver',
+    stock:'true' ,
+    stockCount: '5' ,
+    Vcollection: '',
+    gender: 'FEMALE',
+    price: '$195,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+  {
+    id: '16520',
+    name: 'Vacheron Constantin Traditionnelle Tourbillon Chronograph 5100T/000R-B623 Rose Gold',
+    brand: 'VAC_1',
+    strapMaterial: 'Stainless Steel',
+    movement: 'Automatic',
+    waterResistance: '50m',
+    caseMaterial: 'Stainless Steel',
+    dialColor: 'Black "Patrizzi"',
+    stock:'true' ,
+    stockCount: '3' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$49,000.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
+
+  {
+    id: '4200H/222J-B935',
+    name: 'Vacheron Constantin Historiques 222 4200H/222J-B935 Yellow Gold Champagne Dial',
+    brand: 'VAC_1',
+    strapMaterial: 'Yellow Gold',
+    movement: 'Automatic',
+    waterResistance: '30m',
+    caseMaterial: 'Yellow Gold',
+    dialColor: 'Champagne Dial',
+    stock:'true' ,
+    stockCount: '5' ,
+    Vcollection: '',
+    gender: 'Male',
+    price: '$78,900.00',
+    image: '',
+    description:
+      "",
+    specifications: [
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+      {
+        specName: '',
+        specValue: '',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+      {
+        featureName: '',
+        featureDesc: '',
+      },
+    ],
+  },
 ];
 
 async function seedDatabase() {

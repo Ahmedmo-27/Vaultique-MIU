@@ -5,23 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title><%= title || 'Discover Your Watch Personality' %></title>
 
-  <!-- Static CSS -->
-  <link rel="stylesheet" href="/CSS/Recommendation.css" />
 
-  <!-- Fonts and Animation -->
+  <link rel="stylesheet" href="/CSS/Recommendation.css" />  
+
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>    
-  <!-- Progress Bar -->
+
   <div class="progress-container">
     <div class="progress-bar" id="progressBar"></div>
   </div>
 
+<div id="loading-screen" class="loading-screen">
+  <div class="loader"></div>
+ 
+</div>
+
   
-  <!-- Quiz Container -->
+  
   <main class="quiz-container animate__animated animate__fadeIn">
     <div class="quiz-header">
       <h1 class="question" id="question">What's your approach to wearing watches?</h1>
@@ -37,7 +41,7 @@
     <div id="quizResults"></div>
   </main>
 
-  <!-- Static JS -->
   <script src="/Javascript/Recommendation.js"></script>
+  
 </body>
 </html>
