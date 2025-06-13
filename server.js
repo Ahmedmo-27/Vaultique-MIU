@@ -236,7 +236,6 @@ app.use(
         formAction: ["'self'", "https://*.stripe.com"],
         baseUri: ["'self'"],
         manifestSrc: ["'self'"],
-        prefetchSrc: ["'self'"],
         upgradeInsecureRequests: []
       },
     },
@@ -558,6 +557,23 @@ app.use((req, res, next) => {
     res.status(408).send('Request has timed out.');
   });
   next();
+});
+
+// Custom 404 and admin privilege error handler
+app.use((req, res, next) => {
+  // Check if this is an admin privilege error
+  if (req.path.startsWith('/admin') && (!req.user || req.user.role !== 'admin')) {
+    return res.status(404).render('404', {
+      title: 'Access Denied',
+      message: 'You do not have the required privileges to access this page. Please contact an administrator if you believe this is an error.'
+    });
+  }
+  
+  // Handle 404 errors
+  res.status(404).render('404', {
+    title: 'Page Not Found',
+    message: 'The page you are looking for does not exist or has been moved.'
+  });
 });
 
 // Error handling middleware (should be last)

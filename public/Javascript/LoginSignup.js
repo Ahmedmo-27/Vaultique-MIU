@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
           
           // Redirect to login page after a short delay
           setTimeout(() => {
-            window.location.href = '/login.html';
+            window.location.href = '/user/LoginSignup';
           }, 2000);
         } else {
           showNotification(data.message || 'Signup failed. Please try again.', 'error');

@@ -10,14 +10,14 @@ const sessionConfig = {
     mongoUrl: config.mongodbUri,
     dbName: 'vaultique',
     collectionName: 'sessions',
-    ttl: 24 * 60 * 60, // 1 day
+    ttl: 7 * 24 * 60 * 60, // 7 days
     autoRemove: 'native',
     touchAfter: 24 * 3600 // 24 hours
   }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     sameSite: 'strict'
   },
   name: 'sessionId' // Change default connect.sid
@@ -32,21 +32,27 @@ const sessionCleanup = (req, res, next) => {
     // Update last activity timestamp
     req.session.lastActivity = Date.now();
     
-    // Check for session timeout (30 minutes)
-    const timeout = 30 * 60 * 1000; // 30 minutes
+    // Check for session timeout (24 hours)
+    const timeout = 24 * 60 * 60 * 1000; // 24 hours
     if (req.session.lastActivity && (Date.now() - req.session.lastActivity > timeout)) {
-      req.session.destroy((err) => {
+      // Instead of destroying the session, refresh it
+      req.session.regenerate((err) => {
         if (err) {
-          console.error('Error destroying session:', err);
+          console.error('Error regenerating session:', err);
+          req.session.destroy();
+          return res.status(401).json({
+            success: false,
+            message: 'Session expired. Please login again.'
+          });
         }
+        next();
       });
-      return res.status(401).json({
-        success: false,
-        message: 'Session expired. Please login again.'
-      });
+    } else {
+      next();
     }
+  } else {
+    next();
   }
-  next();
 };
 
 // Session security middleware

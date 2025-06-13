@@ -190,6 +190,75 @@ const handleSignup = async (event) => {
   }
 };
 
+// Check authentication state
+const checkAuthState = () => {
+  const token = localStorage.getItem('authToken');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  
+  if (token && user) {
+    // Verify token is still valid
+    fetch('/api/auth/verify-token', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.valid) {
+        // Token is invalid, try to refresh
+        refreshToken();
+      }
+    })
+    .catch(() => {
+      // If verification fails, try to refresh token
+      refreshToken();
+    });
+  }
+};
+
+// Refresh token function
+const refreshToken = () => {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) {
+    // No refresh token, redirect to login
+    window.location.href = '/user/LoginSignup';
+    return;
+  }
+
+  fetch('/api/auth/refresh-token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ refreshToken }),
+    credentials: 'include'
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update tokens
+      localStorage.setItem('authToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+    } else {
+      // Refresh failed, redirect to login
+      window.location.href = '/user/LoginSignup';
+    }
+  })
+  .catch(() => {
+    // Refresh failed, redirect to login
+    window.location.href = '/user/LoginSignup';
+  });
+};
+
+// Check auth state periodically
+setInterval(checkAuthState, 5 * 60 * 1000); // Check every 5 minutes
+
+// Initial check
+checkAuthState();
+
 // Add event listeners when the document is loaded
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form-id');
