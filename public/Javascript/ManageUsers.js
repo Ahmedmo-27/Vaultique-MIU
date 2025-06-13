@@ -70,7 +70,7 @@ async function deleteUser(userId) {
 
   try {
     console.log('Deleting user:', userId);
-    const response = await fetch(`/api/admin/users/${userId}`, {
+    const response = await fetch(`/admin/users/${userId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -192,30 +192,34 @@ async function saveUser(userData) {
     const response = await fetch('/admin/users/add', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(userData),
+      body: JSON.stringify(userData)
     });
 
     console.log('Save response status:', response.status);
     const data = await response.json();
     console.log('Save response data:', data);
 
-    if (response.ok) {
-      // Add the new user to the local array
-      users.push(data.data);
-      // Update the table with the new user
-      updateUsersTable(users);
-      showNotification('success', 'User saved successfully!');
-      document.getElementById('addUserModal').classList.add('hidden');
-      // Then fetch fresh data from server
-      await fetchUsers();
-    } else {
+    if (!response.ok) {
       showNotification('error', data.message || 'Failed to save user');
+      return null;
     }
+
+    // Add the new user to the local array
+    users.push(data.data);
+    // Update the table with the new user
+    updateUsersTable(users);
+    showNotification('success', 'User saved successfully!');
+    document.getElementById('addUserModal').classList.add('hidden');
+    // Then fetch fresh data from server
+    await fetchUsers();
+    
+    return data;
   } catch (error) {
     console.error('Error saving user:', error);
-    showNotification('error', 'Error saving user: ' + error.message);
+    showNotification('error', error.message || 'Error saving user');
+    return null;
   }
 }
 
@@ -224,7 +228,7 @@ renderUsers(users);
 async function viewUserDetails(userId) {
   try {
     console.log('Fetching user details for:', userId);
-    const response = await fetch(`/api/admin/users/${userId}`);
+    const response = await fetch(`/admin/users/${userId}`);
     const data = await response.json();
     console.log('User details response:', data);
 
@@ -269,7 +273,7 @@ async function viewUserDetails(userId) {
               <p><strong>Card Holder:</strong> ${user.Payment.cardHolder || '-'}</p>
               <p><strong>Payment Type:</strong> ${user.Payment.paymentType || '-'}</p>
               <p><strong>Expiry Date:</strong> ${user.Payment.expiryDate || '-'}</p>
-              <p><strong>Card Number:</strong> **** **** **** ${user.Payment.cardNumber.slice(-4) || '-'}</p>
+              <p><strong>Card Number:</strong> **** **** **** ${user.Payment.cardNumber ? user.Payment.cardNumber.slice(-4) : '-'}</p>
             </div>
           `
               : ''
@@ -279,66 +283,55 @@ async function viewUserDetails(userId) {
 
       modal.classList.remove('hidden');
     } else {
-      showNotification('error', data.message || 'Failed to load user details');
+      showNotification('error', data.message || 'Failed to fetch user details');
     }
   } catch (error) {
     console.error('Error fetching user details:', error);
-    showNotification('error', 'Failed to load user details');
+    showNotification('error', 'Error fetching user details: ' + error.message);
   }
 }
 
 async function viewUserOrders(userId) {
   try {
     console.log('Fetching orders for user:', userId);
-    const response = await fetch(`/api/admin/users/${userId}/orders`);
+    const response = await fetch(`/admin/users/${userId}/orders`);
     const data = await response.json();
     console.log('Orders response:', data);
 
     if (data.success) {
+      const orders = data.data;
       const modal = document.getElementById('ordersModal');
       const modalBody = modal.querySelector('.modal-body');
 
-      if (data.data && data.data.length > 0) {
+      if (orders && orders.length > 0) {
         modalBody.innerHTML = `
           <ul class="orders-list">
-            ${data.data
-              .map(
-                (order) => `
+            ${orders.map(order => `
               <li>
                 <div class="order-info">
                   <span class="order-id">Order #${order._id}</span>
-                  <span class="order-date">${new Date(order.date).toLocaleDateString()}</span>
+                  <span class="order-date">${new Date(order.createdAt).toLocaleDateString()}</span>
                 </div>
                 <div class="order-details">
                   <span class="order-total">$${order.total.toFixed(2)}</span>
                   <span class="order-status ${order.status.toLowerCase()}">${order.status}</span>
                 </div>
-                ${
-                  order.items && order.items.length > 0
-                    ? `
+                ${order.items && order.items.length > 0 ? `
                   <div class="order-items">
                     <h4>Items:</h4>
                     <ul>
-                      ${order.items
-                        .map(
-                          (item) => `
+                      ${order.items.map(item => `
                         <li>
                           ${item.product ? item.product.name : 'Unknown Product'} - 
                           Quantity: ${item.quantity}, 
                           Price: $${item.price.toFixed(2)}
                         </li>
-                      `
-                        )
-                        .join('')}
+                      `).join('')}
                     </ul>
                   </div>
-                `
-                    : ''
-                }
+                ` : ''}
               </li>
-            `
-              )
-              .join('')}
+            `).join('')}
           </ul>
         `;
       } else {
@@ -347,68 +340,54 @@ async function viewUserOrders(userId) {
 
       modal.classList.remove('hidden');
     } else {
-      showNotification('error', data.message || 'Failed to load user orders');
+      showNotification('error', data.message || 'Failed to fetch orders');
     }
   } catch (error) {
     console.error('Error fetching user orders:', error);
-    showNotification('error', 'Failed to load user orders');
+    showNotification('error', 'Error fetching user orders: ' + error.message);
   }
 }
 
 async function editUser(userId) {
   try {
-    console.log('Fetching user details for edit:', userId);
-    const response = await fetch(`/api/admin/users/${userId}`);
-    const result = await response.json();
-    console.log('User details response:', result);
+    console.log('Fetching user for edit:', userId);
+    const response = await fetch(`/admin/users/${userId}`);
+    const data = await response.json();
+    console.log('Edit user response:', data);
 
-    if (!result.success) {
-      throw new Error(result.message || 'Failed to fetch user details');
-    }
+    if (data.success) {
+      const user = data.data;
+      const modal = document.getElementById('addUserModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const form = document.getElementById('userForm');
 
-    const user = result.data;
-    if (!user) {
-      throw new Error('No user data received');
-    }
-
-    // Get the modal and form elements
-    const modal = document.getElementById('addUserModal');
-    const form = document.getElementById('userForm');
-    
-    if (!modal || !form) {
-      throw new Error('Modal or form elements not found');
-    }
-
-    // Set modal title
-    const modalTitle = modal.querySelector('.modal-title');
-    if (modalTitle) {
+      // Set modal title
       modalTitle.textContent = 'Edit User';
-    }
 
-    // Populate form fields
-    form.querySelector('[name="Name"]').value = user.Name || '';
-    form.querySelector('[name="username"]').value = user.username || '';
-    form.querySelector('[name="email"]').value = user.email || '';
-    form.querySelector('[name="phone_number"]').value = user.phone_number || '';
-    form.querySelector('[name="DOB"]').value = user.DOB ? new Date(user.DOB).toISOString().split('T')[0] : '';
-    form.querySelector('[name="language"]').value = user.language || 'English';
-    form.querySelector('[name="role"]').value = user.role || 'user';
+      // Fill form with user data
+      form.Name.value = user.Name || '';
+      form.username.value = user.username || '';
+      form.email.value = user.email || '';
+      form.phone_number.value = user.phone_number || '';
+      form.DOB.value = user.DOB ? new Date(user.DOB).toISOString().split('T')[0] : '';
+      form.language.value = user.language || 'English';
+      form.role.value = user.role || 'user';
 
-    // Handle address fields
-    if (user.Address) {
-      form.querySelector('[name="Address[street]"]').value = user.Address.street || '';
-      form.querySelector('[name="Address[city]"]').value = user.Address.city || '';
-      form.querySelector('[name="Address[state]"]').value = user.Address.state || '';
-      form.querySelector('[name="Address[postalCode]"]').value = user.Address.postalCode || '';
-      form.querySelector('[name="Address[country]"]').value = user.Address.country || '';
-    }
+      // Fill address fields if they exist
+      if (user.Address) {
+        form['Address[city]'].value = user.Address.city || '';
+        form['Address[street]'].value = user.Address.street || '';
+        form['Address[addressType]'].value = user.Address.addressType || '';
+        form['Address[state]'].value = user.Address.state || '';
+        form['Address[country]'].value = user.Address.country || '';
+        form['Address[postalCode]'].value = user.Address.postalCode || '';
+      }
 
-    // Show the modal
-    modal.classList.remove('hidden');
+      // Show modal
+      modal.classList.remove('hidden');
 
-    // Update save button to handle update instead of create
-    const saveButton = document.getElementById('saveUserBtn');
-    if (saveButton) {
+      // Update save button to handle edit
+      const saveButton = document.getElementById('saveUserBtn');
       saveButton.onclick = async () => {
         const formData = new FormData(form);
         const userData = {
@@ -422,65 +401,63 @@ async function editUser(userId) {
           Address: {
             city: formData.get('Address[city]'),
             street: formData.get('Address[street]'),
+            addressType: formData.get('Address[addressType]'),
             state: formData.get('Address[state]'),
             country: formData.get('Address[country]'),
             postalCode: formData.get('Address[postalCode]'),
           },
         };
 
-        // Only include password if it's not empty
-        const password = formData.get('password');
-        if (password) {
-          userData.password = password;
-        }
-
-        // Remove any Payment-related fields
-        delete userData.Payment;
-
         await updateUser(userId, userData);
       };
+    } else {
+      showNotification('error', data.message || 'Failed to fetch user details');
     }
-
   } catch (error) {
     console.error('Error in editUser:', error);
-    showNotification('Error loading user details: ' + error.message, 'error');
+    showNotification('error', 'Error fetching user details: ' + error.message);
   }
 }
 
 async function updateUser(userId, userData) {
-  try {
-    console.log('Updating user:', userId, userData);
-    const response = await fetch(`/api/admin/users/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
-    });
+    try {
+        console.log('Updating user:', userId, userData);
+        const response = await fetch(`/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
 
-    console.log('Update response status:', response.status);
-    const data = await response.json();
-    console.log('Update response data:', data);
+        console.log('Update response status:', response.status);
+        const data = await response.json();
+        console.log('Update response data:', data);
 
-    if (data.success) {
-      // Update the user in the local array
-      const index = users.findIndex(user => user._id === userId);
-      if (index !== -1) {
-        users[index] = { ...users[index], ...data.data };
-      }
-      // Update the table with the modified user
-      updateUsersTable(users);
-      showNotification('success', 'User updated successfully!');
-      document.getElementById('addUserModal').classList.add('hidden');
-      // Then fetch fresh data from server
-      await fetchUsers();
-    } else {
-      showNotification('error', data.message || 'Failed to update user');
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to update user');
+        }
+
+        // Update the user in the local array
+        const index = users.findIndex(user => user._id === userId);
+        if (index !== -1) {
+            users[index] = { ...users[index], ...userData };
+        }
+        
+        // Update the table with the modified user
+        updateUsersTable(users);
+        showNotification('success', 'User updated successfully');
+        document.getElementById('addUserModal').classList.add('hidden');
+        
+        // Then fetch fresh data from server
+        await fetchUsers();
+        
+        return data;
+    } catch (error) {
+        console.error('Error updating user:', error);
+        showNotification('error', error.message || 'Error updating user');
+        throw error;
     }
-  } catch (error) {
-    console.error('Error updating user:', error);
-    showNotification('error', 'Error updating user: ' + error.message);
-  }
 }
 
 document.getElementById('closeDetailsBtn').onclick = () => {
@@ -544,29 +521,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize save user button
     if (saveUserBtn) {
-        saveUserBtn.addEventListener('click', async () => {
-            if (!userForm) return;
-            
-            const formData = new FormData(userForm);
-            const userData = {
-                Name: formData.get('Name'),
-                username: formData.get('username'),
-                email: formData.get('email'),
-                password: formData.get('password'),
-                phone_number: formData.get('phone_number'),
-                DOB: formData.get('DOB'),
-                language: formData.get('language'),
-                role: formData.get('role'),
-                Address: {
-                    city: formData.get('Address[city]'),
-                    street: formData.get('Address[street]'),
-                    state: formData.get('Address[state]'),
-                    country: formData.get('Address[country]'),
-                    postalCode: formData.get('Address[postalCode]')
+        saveUserBtn.onclick = async function() {
+            try {
+                const formData = {
+                    Name: document.getElementById('name').value,
+                    username: document.getElementById('username').value,
+                    email: document.getElementById('email').value,
+                    phone_number: document.getElementById('phone').value,
+                    DOB: document.getElementById('dob').value,
+                    language: document.getElementById('language').value,
+                    role: document.getElementById('role').value,
+                    Address: {
+                        street: document.getElementById('street').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        postalCode: document.getElementById('postalCode').value,
+                        country: document.getElementById('country').value
+                    }
+                };
+
+                if (editingUserId) {
+                    await updateUser(editingUserId, formData);
+                } else {
+                    const response = await saveUser(formData);
+                    if (response && response.success) {
+                        // Clear the form
+                        document.getElementById('name').value = '';
+                        document.getElementById('username').value = '';
+                        document.getElementById('email').value = '';
+                        document.getElementById('phone').value = '';
+                        document.getElementById('dob').value = '';
+                        document.getElementById('language').value = '';
+                        document.getElementById('role').value = '';
+                        document.getElementById('street').value = '';
+                        document.getElementById('city').value = '';
+                        document.getElementById('state').value = '';
+                        document.getElementById('postalCode').value = '';
+                        document.getElementById('country').value = '';
+                    }
                 }
-            };
-            await saveUser(userData);
-        });
+            } catch (error) {
+                console.error('Error saving/updating user:', error);
+                showNotification('error', error.message || 'Error saving/updating user');
+            }
+        };
     }
 
     // Initialize close details button
@@ -589,5 +587,28 @@ document.addEventListener('DOMContentLoaded', () => {
         updateUsersTable(users);
     } else if (!window.location.search.includes('view=') && !window.location.search.includes('edit=')) {
         fetchUsers();
+    }
+});
+
+// Initialize search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const userRows = document.querySelectorAll('.user-row');
+            
+            userRows.forEach(row => {
+                const name = row.querySelector('.user-name').textContent.toLowerCase();
+                const email = row.querySelector('.user-email').textContent.toLowerCase();
+                const username = row.querySelector('.user-username').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || email.includes(searchTerm) || username.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     }
 });

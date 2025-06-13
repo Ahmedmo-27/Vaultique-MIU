@@ -4,109 +4,200 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analytics Dashboard</title>
+  <title><%= title %></title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/CSS/analytics.css">
   <link rel="stylesheet" href="/CSS/nav-bar.css">
+  <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
   <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
   <script src="/Javascript/nav-bar.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="/Javascript/analytics.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .metric-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .metric-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .metric-label {
+      color: #666;
+      font-size: 14px;
+    }
+    .trend-up {
+      color: #28a745;
+    }
+    .trend-down {
+      color: #dc3545;
+    }
+    .chart-container {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    body {
+      background-color: #f8f9fa;
+    }
+  </style>
 </head>
 <body>
 
     <%- include('partials/Admin-navigation') %>
 
-    <div class="container">
-      <div class="card dark">
-        <h2>Active Users</h2>
-        <p class="large"><%= activeUsers || 0 %></p>
-      </div>
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-md-12 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Analytics Dashboard</h1>
+                </div>
 
-      <div class="card">
-        <h3>Sales Overview</h3>
-        <canvas id="trafficChart" width="400" height="200"></canvas>
-      </div>
+                <% if (error) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                <% } %>
 
-      <div class="card stats-box">
-        <p>Users</p>
-        <h3><%= totalUsers || 0 %></h3>
-        <p class="<%= userGrowth >= 0 ? 'positive' : 'negative' %>">
-          <%= userGrowth >= 0 ? '+' : '' %><%= userGrowth || 0 %>%
-        </p>
-      </div>
+                <!-- User Stats -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Active Users</h5>
+                                <p class="card-text"><%= activeUsers %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Users</h5>
+                                <p class="card-text"><%= totalUsers %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Sessions</h5>
+                                <p class="card-text"><%= totalSessions %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="card stats-box">
-        <p>Sessions</p>
-        <h3><%= totalSessions || 0 %></h3>
-        <p class="<%= sessionGrowth >= 0 ? 'positive' : 'negative' %>">
-          <%= sessionGrowth >= 0 ? '+' : '' %><%= sessionGrowth || 0 %>%
-        </p>
-      </div>
+                <!-- Sales Stats -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Sales</h5>
+                                <p class="card-text">$<%= totalSales.toFixed(2) %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Average Order Value</h5>
+                                <p class="card-text">$<%= averageOrderValue.toFixed(2) %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Orders</h5>
+                                <p class="card-text"><%= totalOrders %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="card stats-box">
-        <p>Bounce Rate</p>
-        <h3><%= bounceRate || 0 %>%</h3>
-        <p class="<%= bounceRateChange <= 0 ? 'positive' : 'negative' %>">
-          <%= bounceRateChange >= 0 ? '+' : '' %><%= bounceRateChange || 0 %>%
-        </p>
-      </div>
-
-      <div class="card stats">
-        <p>Session Duration</p>
-        <h3><%= sessionDuration || '0:00' %></h3>
-        <p class="<%= sessionDurationChange >= 0 ? 'positive' : 'negative' %>">
-          <%= sessionDurationChange >= 0 ? '+' : '' %><%= sessionDurationChange || 0 %>%
-        </p>
-      </div>
-
-      <div class="card alert">
-        <span class="alert-icon">🔔</span>
-        <div>
-          <strong>No alerts set</strong>
-          <p>Get notified when your data drastically changes</p>
+                <!-- Sales Chart -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Sales and Orders Over Time</h5>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </main>
         </div>
-      </div>
-
-      <div class="card" id="brandStats">
-        <h3>Most Selling Brands</h3>
-        <% if (brandStats && brandStats.length > 0) { %>
-          <ul class="stats-list">
-            <% brandStats.forEach(brand => { %>
-              <li>
-                <span class="brand-name"><%= brand.name %></span>
-                <span class="brand-sales">$<%= brand.sales.toFixed(2) %></span>
-              </li>
-            <% }); %>
-          </ul>
-        <% } else { %>
-          <p>No brand statistics available</p>
-        <% } %>
-      </div>
-
-      <div class="card" id="collectionStats">
-        <h3>Most Selling Collections</h3>
-        <% if (collectionStats && collectionStats.length > 0) { %>
-          <ul class="stats-list">
-            <% collectionStats.forEach(collection => { %>
-              <li>
-                <span class="collection-name"><%= collection.name %></span>
-                <span class="collection-sales">$<%= collection.sales.toFixed(2) %></span>
-              </li>
-            <% }); %>
-          </ul>
-        <% } else { %>
-          <p>No collection statistics available</p>
-        <% } %>
-      </div>
-
-      <div class="card highlight">
-        <h2>Vaultique</h2>
-      </div>
-
     </div>
 
     <%- include('partials/notification') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: JSON.stringify(salesChartData.labels),
+                    datasets: [{
+                        label: 'Sales ($)',
+                        data: JSON.stringify(salesChartData.sales),
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Number of Orders',
+                        data: JSON.stringify(salesChartData.orders),
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    stacked: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Sales and Orders Over Time'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Sales ($)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Number of Orders'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

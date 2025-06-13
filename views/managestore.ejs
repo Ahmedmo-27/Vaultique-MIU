@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Store - Admin Dashboard</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
+    <!-- Custom JavaScript -->
+    <script src="/Javascript/nav-bar.js"></script>
+    <style>
+        body {
+            padding-top: 100px;
+            font-family: Arial, sans-serif;
+        }
+        .container-fluid {
+            margin-top: 20px;
+        }
+        .store-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .store-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .store-card .card-body {
+            padding: 25px;
+        }
+        .store-card h3 {
+            color: #785D32;
+            margin-bottom: 15px;
+        }
+        .store-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .store-card .btn {
+            background-color: #785D32;
+            border-color: #785D32;
+            color: white;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        .store-card .btn:hover {
+            background-color: #5d4321;
+            border-color: #5d4321;
+            transform: translateY(-2px);
+        }
+        .store-icon {
+            font-size: 2.5rem;
+            color: #785D32;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/Admin-navigation') %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-md-12 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Manage Store</h1>
+                </div>
+
+                <div class="row">
+                    <!-- Products Management Card -->
+                    <div class="col-md-4">
+                        <div class="store-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-box store-icon"></i>
+                                <h3>Products</h3>
+                                <p>Manage your product catalog, add new products, update existing ones, and track inventory.</p>
+                                <a href="/admin/products" class="btn btn-primary">Manage Products</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collections Management Card -->
+                    <div class="col-md-4">
+                        <div class="store-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-layer-group store-icon"></i>
+                                <h3>Collections</h3>
+                                <p>Organize your products into collections, create seasonal catalogs, and manage product groupings.</p>
+                                <a href="/admin/collections" class="btn btn-primary">Manage Collections</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brands Management Card -->
+                    <div class="col-md-4">
+                        <div class="store-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-trademark store-icon"></i>
+                                <h3>Brands</h3>
+                                <p>Manage brand information, add new brands, and organize products by manufacturer.</p>
+                                <a href="/admin/brands" class="btn btn-primary">Manage Brands</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

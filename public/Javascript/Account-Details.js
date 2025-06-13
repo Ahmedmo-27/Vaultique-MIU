@@ -1829,4 +1829,87 @@ document.addEventListener('DOMContentLoaded', function () {
       modal.style.display = 'block';
     });
   });
+
+  // Refund request handling
+  document.querySelectorAll('.request-refund').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const orderId = this.dataset.orderId;
+      if (!orderId) {
+        showNotification('Order ID is missing', 'error');
+        return;
+      }
+
+      // Set the order ID in the hidden input
+      document.getElementById('refundOrderId').value = orderId;
+      
+      // Show the refund request modal
+      showModal('refundRequestModal');
+    });
+  });
+
+  // Handle refund reason selection
+  document.getElementById('refundReason').addEventListener('change', function() {
+    const otherReasonGroup = document.getElementById('otherReasonGroup');
+    if (this.value === 'Other') {
+      otherReasonGroup.style.display = 'block';
+    } else {
+      otherReasonGroup.style.display = 'none';
+    }
+  });
+
+  // Handle refund request submission
+  document.querySelector('.submit-refund-btn').addEventListener('click', async function() {
+    const form = document.getElementById('refundRequestForm');
+    const orderId = document.getElementById('refundOrderId').value;
+    const reason = document.getElementById('refundReason').value;
+    const otherReason = document.getElementById('otherReason').value;
+    const details = document.getElementById('refundDetails').value;
+
+    if (!reason) {
+      showNotification('Please select a reason for the refund', 'error');
+      return;
+    }
+
+    if (reason === 'Other' && !otherReason) {
+      showNotification('Please specify the reason for refund', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/refunds/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId,
+          reason: reason === 'Other' ? otherReason : reason,
+          details
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        showNotification('Refund request submitted successfully');
+        hideModal('refundRequestModal');
+        // Refresh the page to show the updated refund status
+        window.location.reload();
+      } else {
+        throw new Error(data.message || 'Failed to submit refund request');
+      }
+    } catch (error) {
+      showNotification(error.message, 'error');
+    }
+  });
+
+  // Close refund request modal
+  document.querySelector('#refundRequestModal .close-modal').addEventListener('click', function() {
+    hideModal('refundRequestModal');
+  });
+
+  document.querySelector('#refundRequestModal .cancel-btn').addEventListener('click', function() {
+    hideModal('refundRequestModal');
+  });
 });
