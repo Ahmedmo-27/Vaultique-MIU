@@ -23,22 +23,27 @@
             <% } %>
 
             <div class="cart-items">
-                <% if (cartItems && cartItems.length > 0) { %>
-                    <% cartItems.forEach(item => { %>
-                        <div class="cart-item" data-id="<%= item.productId %>">
+                <% if (cart && cart.items && cart.items.length > 0) { %>
+                    <% cart.items.forEach(item => { %>
+                        <div class="cart-item" data-product-id="<%= item.product || item.productId %>">
                             <img src="<%= item.image %>" alt="<%= item.name %>">
-                            <p class="product-name"><%= item.name %></p>
-                            <p class="item-price">$<%= item.price.toFixed(2) %></p>
+                            <div class="item-details">
+                                <h3 class="product-name"><%= item.name %></h3>
+                                <p class="item-price">$<%= (item.price || 0).toFixed(2) %></p>
+                            </div>
                             <div class="quantity-controls">
-                                <button class="decrease" onclick="updateQuantity('<%= item.productId %>', -1)">
+                                <button class="decrease" data-product-id="<%= item.product || item.productId %>" data-action="decrease">
                                     <i class="fas fa-minus"></i>
                                 </button>
-                                <p class="quantity-display"><%= item.quantity %></p>
-                                <button class="increase" onclick="updateQuantity('<%= item.productId %>', 1)">
+                                <span class="quantity-display"><%= item.quantity %></span>
+                                <button class="increase" data-product-id="<%= item.product || item.productId %>" data-action="increase">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
-                            <button class="remove-item" onclick="removeItem('<%= item.productId %>')">
+                            <div class="item-total">
+                                $<%= ((item.price || 0) * item.quantity).toFixed(2) %>
+                            </div>
+                            <button class="remove-item" onclick="removeItem('<%= item.product || item.productId %>')">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -52,39 +57,46 @@
                 <% } %>
             </div>
 
-            <div class="cart-items-summary">
-                <p>Items in Cart: <strong id="cart-items-count"><%= cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0 %></strong></p>
-            </div>
+            <% if (cart && cart.items && cart.items.length > 0) { %>
+                <div class="cart-summary">
+                    <div class="summary-section">
+                        <h3>Cart Summary</h3>
+                        <div class="summary-item">
+                            <span>Items (<%= cart.items.reduce(function(sum, item) { return sum + item.quantity; }, 0) %>)</span>
+                            <span>$<%= cart.subtotal.toFixed(2) %></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Shipping</span>
+                            <select id="shipping" class="shipping-method">
+                                <option value="standard" <%= cart.shippingMethod === 'standard' ? 'selected' : '' %>>Standard ($20)</option>
+                                <option value="fast" <%= cart.shippingMethod === 'fast' ? 'selected' : '' %>>Fast ($40)</option>
+                            </select>
+                            <span>$<%= cart.shippingCost.toFixed(2) %></span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>Total</span>
+                            <span>$<%= cart.total.toFixed(2) %></span>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="shipping-options">
-                <label for="shipping">Select Shipping Method:</label>
-                <select id="shipping" onchange="updateShipping(this.value)">
-                    <option value="standard" <%= shippingMethod === 'standard' ? 'selected' : '' %>>Normal Delivery (4-8 days) - $20</option>
-                    <option value="fast" <%= shippingMethod === 'fast' ? 'selected' : '' %>>Fast Delivery (24 hours) - $50</option>
-                </select>
-            </div>
-
-            <div class="price-summary">
-                <p class="subtotal">Subtotal: $<%= subtotal ? subtotal.toFixed(2) : '0.00' %></p>
-                <p class="shipping">Shipping: <span id="shipping-cost">$<%= shippingCost ? shippingCost.toFixed(2) : '20.00' %></span></p>
-                <div class="total-price">Total: $<%= total ? total.toFixed(2) : '0.00' %></div>
-            </div>
-
-            <div class="cart-actions">
-                <% if (cartItems && cartItems.length > 0) { %>
+                <div class="cart-actions">
                     <button class="btn clear-cart" onclick="clearCart()">
                         <i class="fas fa-trash"></i> Clear Cart
                     </button>
                     <a href="/user/payment" class="btn checkout-btn">
                         <i class="fas fa-lock"></i> Proceed to Checkout
                     </a>
-                <% } %>
-                <a href="/products" class="btn continue-shopping-btn">
-                    <i class="fas fa-arrow-left"></i> Continue Shopping
-                </a>
-            </div>
+                    <a href="/products" class="btn continue-shopping-btn">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </a>
+                </div>
+            <% } %>
         </div>
     </div>
+
+    <!-- Message container for notifications -->
+    <div id="message-container"></div>
 
     <script src="/Javascript/cart (2).js"></script>
 </body>

@@ -926,3 +926,35 @@ model-viewer {
     }
 }
 
+/* Customization Panel - Horizontal Layout */
+.customization-panel {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin-bottom: 20px;
+    z-index: 1000;
+    position: static;
+    right: auto;
+    top: auto;
+    transform: none;
+}
+
+.customization-section {
+    margin: 0 20px 0 0;
+    min-width: 120px;
+}
+
+.price-display, .add-to-cart {
+    align-self: flex-end;
+    margin-left: 20px;
+}
+
+.hidden {
+    display: none !important;
+}

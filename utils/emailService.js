@@ -34,9 +34,14 @@ const transporter = nodemailer.createTransport({
   },
   secure: true,
   tls: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: false, // Allow self-signed certificates
     minVersion: 'TLSv1.2'
-  }
+  },
+  pool: true,
+  maxConnections: 5,
+  maxMessages: 100,
+  rateDelta: 1000,
+  rateLimit: 5
 });
 
 // Verify transporter configuration
@@ -51,11 +56,15 @@ transporter.verify(function(error, success) {
       console.error('   EMAIL_PASSWORD=your-16-digit-app-password');
       console.error('3. Check if your Gmail account has 2FA enabled');
       console.error('4. Generate a new App Password from Google Account settings');
-    } else {
+      console.error('5. If using Gmail, make sure "Less secure app access" is enabled or use an App Password');
+    } else if (error.code === 'EAUTH') {
       console.error('Authentication failed. Please check:');
       console.error('1. Your Gmail address is correct');
       console.error('2. You are using an App Password (not your regular Gmail password)');
       console.error('3. 2-Step Verification is enabled on your Google Account');
+      console.error('4. The App Password is correctly copied without any extra spaces');
+    } else {
+      console.error('Unexpected error:', error.message);
     }
     process.exit(1);
   } else {
@@ -65,24 +74,29 @@ transporter.verify(function(error, success) {
 
 // Process email queue
 const processQueue = async () => {
-  while (emailQueue.length > 0) {
-    const emailJob = emailQueue[0];
-    try {
-      await transporter.sendMail(emailJob.mailOptions);
-      console.log('Queued email sent successfully to:', emailJob.mailOptions.to);
-      emailQueue.shift(); // Remove the processed email
-    } catch (error) {
-      console.error('Error sending queued email:', error);
-      emailJob.retries++;
-      
-      if (emailJob.retries >= MAX_RETRIES) {
-        console.error('Max retries reached for email to:', emailJob.mailOptions.to);
-        emailQueue.shift(); // Remove the failed email after max retries
-      } else {
-        // Move to end of queue for retry
-        emailQueue.push(emailQueue.shift());
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      }
+  if (emailQueue.length === 0) return;
+
+  const emailJob = emailQueue[0];
+  try {
+    // Validate email options before sending
+    if (!emailJob.mailOptions.from || !emailJob.mailOptions.to || !emailJob.mailOptions.subject) {
+      throw new Error('Invalid email options in queue');
+    }
+
+    await transporter.sendMail(emailJob.mailOptions);
+    console.log('Queued email sent successfully to:', emailJob.mailOptions.to);
+    emailQueue.shift(); // Remove the processed email
+  } catch (error) {
+    console.error('Error sending queued email:', error);
+    emailJob.retries++;
+    
+    if (emailJob.retries >= MAX_RETRIES) {
+      console.error('Max retries reached for email to:', emailJob.mailOptions.to);
+      emailQueue.shift(); // Remove the failed email after max retries
+    } else {
+      // Move to end of queue for retry
+      emailQueue.push(emailQueue.shift());
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
     }
   }
 };
@@ -157,7 +171,7 @@ const sendPasswordResetEmail = async (user, resetToken) => {
 
 // Send verification email
 const sendVerificationEmail = async (user, verificationToken) => {
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+  const verificationLink = `https://vaultique.up.railway.app/api/auth/verify-email/${verificationToken}`;
   const template = accountVerificationTemplate(user.Name, verificationLink);
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -239,7 +253,12 @@ const testEmailConfig = async (testEmail) => {
 };
 
 // Start processing the email queue periodically
-setInterval(processQueue, 60000); // Check queue every minute
+setInterval(processQueue, 60000);
+
+// Start queue processing immediately
+processQueue().catch(error => {
+  console.error('Error in initial queue processing:', error);
+});
 
 module.exports = {
   sendWelcomeEmail,

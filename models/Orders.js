@@ -17,6 +17,19 @@ const orderSchema = new mongoose.Schema({
       ref: 'Product',
       required: true
     },
+    productDetails: {
+      name: { type: String, required: true },
+      image: { type: String, required: true },
+      brand: { type: String, required: true },
+      price: { type: Number, required: true },
+      strapMaterial: { type: String },
+      movement: { type: String },
+      waterResistance: { type: String },
+      caseMaterial: { type: String },
+      dialColor: { type: String },
+      gender: { type: String },
+      Vcollection: { type: String }
+    },
     quantity: {
       type: Number,
       required: true,

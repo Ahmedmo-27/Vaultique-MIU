@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/Javascript/Checkout_scripting.js" />
+    <script src="/Javascript/Checkout_scripting.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/CSS/Checkout_styles.css" />
-    <link rel="icon" type="image /x-icon" href="/images/logo.ico" />
+    <link rel="icon" type="image/x-icon" href="/images/logo.ico" />
 
     <title>Vaultique | Secure Checkout</title>
   </head>
@@ -35,108 +35,8 @@
       </div>
     </div>
 
-    <div class="container hidden">
-      <div class="card-container">
-        <div class="front">
-          <div class="image">
-            <img src="../images/Checkout/chip.png" alt="" />
-            <img src="../images/Checkout/visa.png" alt="" />
-          </div>
-          <div class="card-number-box">################</div>
-          <div class="flexbox">
-            <div class="box">
-              <span>CARD HOLDER</span>
-              <div class="card-holder-name">FULL NAME</div>
-            </div>
-            <div class="box">
-              <span>EXPIRES</span>
-              <div class="expiration">
-                <span class="exp-month">MM</span>
-                <span class="exp-year">YY</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="back">
-          <div class="stripe"></div>
-          <div class="box">
-            <span>cvv</span>
-            <div class="cvv-box"></div>
-            <img src="../images/Checkout/visa.png" alt="" />
-          </div>
-        </div>
-      </div>
-
-      <form action="" class="payment-form">
-        <div class="inputBox">
-          <span>CARD NUMBER</span>
-          <input type="text" maxlength="19" class="card-number-input" />
-          <p class="card-length-message"></p>
-        </div>
-        <div class="inputBox">
-          <span>CARD HOLDER</span>
-          <input type="text" class="card-holder-input" />
-          <p class="error-message"></p>
-        </div>
-        <div class="flexbox">
-          <div class="inputBox">
-            <span>EXPIRATION MM</span>
-            <select name="" id="" class="month-input">
-              <option value="month" select disabled>month</option>
-              <option value="01">01</option>
-              <option value="02">02</option>
-              <option value="03">03</option>
-              <option value="04">04</option>
-              <option value="05">05</option>
-              <option value="06">06</option>
-              <option value="07">07</option>
-              <option value="08">08</option>
-              <option value="09">09</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-            </select>
-          </div>
-          <div class="inputBox">
-            <span>EXPIRATION YY</span>
-            <select name="" id="" class="year-input">
-              <option value="month" select disabled>year</option>
-              <option value="01">2021</option>
-              <option value="2022">2022</option>
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-              <option value="2027">2027</option>
-              <option value="2028">2028</option>
-              <option value="2029">2029</option>
-              <option value="2030">2030</option>
-            </select>
-          </div>
-          <div class="inputBox">
-            <span>cvv</span>
-            <input type="text" maxlength="4" class="cvv-input" />
-            <p class="error-message"></p>
-          </div>
-        </div>
-        <input
-          type="submit"
-          value="PAY EGP 0"
-          class="submit-btn"
-          id="final-checkout-btn"
-          onclick="handlePaymentFormSubmission()"
-        />
-        <input
-          value="Back"
-          class="submit-btn"
-          onclick="window.history.back()"
-        />
-      </form>
-    </div>
-
     <div class="form-container">
-      <h2 class="form-title">BILLING ADDRESS</h2>
+      <h2 class="form-title">SHIPPING ADDRESS</h2>
 
       <% if (savedAddresses && savedAddresses.length > 0) { %>
         <div class="saved-addresses">
@@ -156,7 +56,7 @@
         </div>
       <% } %>
 
-      <form action="/user/shipping/submit" class="checkout-form" method="post">
+      <form action="/user/shipping/process" class="checkout-form" method="post">
         <div class="input-line">
           <label for="name">FULL NAME</label>
           <input
@@ -235,8 +135,17 @@
           </div>
         <% } %>
 
-        <button type="submit" class="submit-btn">Continue to Review</button>
+        <button type="submit" class="submit-btn">Complete Order</button>
       </form>
+    </div>
+
+    <div class="login-message-popup" id="login-message-popup">
+      <h2>Login Successful</h2>
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="login-message-popup" id="login-message-error-popup">
+      <h2></h2>
+      <i class="fa-solid fa-circle-xmark" style="color: #d60000"></i>
     </div>
 
     <script>
@@ -250,7 +159,7 @@
         };
 
         // Parse saved addresses from the server
-        const savedAddresses = JSON.stringify(savedAddresses || []) ;
+        const savedAddresses = JSON.parse('<%- JSON.stringify(savedAddresses || []) %>');
 
         function updateFormFields(addressIndex) {
           if (addressIndex === 'new') {
@@ -277,7 +186,7 @@
 
         // Handle form submission
         const form = document.querySelector('.checkout-form');
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
           e.preventDefault();
           
           const formData = {
@@ -290,18 +199,51 @@
             saveAddress: document.querySelector('input[name="saveAddress"]')?.checked || false
           };
 
-          // Submit the form
-          this.submit();
+          try {
+            const response = await fetch('/user/shipping/process', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              // Show success message
+              const successPopup = document.getElementById('login-message-popup');
+              successPopup.querySelector('h2').textContent = 'Order Created Successfully!';
+              successPopup.style.display = 'flex';
+              
+              // Redirect after 2 seconds
+              setTimeout(() => {
+                window.location.href = data.redirect;
+              }, 2000);
+            } else {
+              // Show error message
+              const errorPopup = document.getElementById('login-message-error-popup');
+              errorPopup.querySelector('h2').textContent = data.message || 'An error occurred';
+              errorPopup.style.display = 'flex';
+              
+              // Hide error message after 3 seconds
+              setTimeout(() => {
+                errorPopup.style.display = 'none';
+              }, 3000);
+            }
+          } catch (error) {
+            console.error('Error submitting form:', error);
+            const errorPopup = document.getElementById('login-message-error-popup');
+            errorPopup.querySelector('h2').textContent = 'An error occurred. Please try again.';
+            errorPopup.style.display = 'flex';
+            
+            // Hide error message after 3 seconds
+            setTimeout(() => {
+              errorPopup.style.display = 'none';
+            }, 3000);
+          }
         });
       });
     </script>
   </body>
-  <div class="login-message-popup" id="login-message-popup">
-    <h2>Login Successful</h2>
-    <i class="fa-solid fa-circle-check"></i>
-  </div>
-  <div class="login-message-popup" id="login-message-error-popup">
-    <h2></h2>
-    <i class="fa-solid fa-circle-xmark" style="color: #d60000"></i>
-  </div>
 </html>

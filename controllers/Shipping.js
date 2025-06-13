@@ -23,12 +23,27 @@ exports.createShipping = async (req, res) => {
       });
     }
 
-    // Check if order exists
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+
+    // Check if order exists and is in a valid state
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({
         success: false,
         message: 'Order not found'
+      });
+    }
+
+    if (order.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot create shipping for order in ${order.status} status`
       });
     }
 
@@ -42,27 +57,32 @@ exports.createShipping = async (req, res) => {
       city,
       state,
       zipCode,
-      trackingNumber: generateTrackingNumber()
+      trackingNumber: generateTrackingNumber(),
+      status: 'pending'
     });
 
     await shipping.save();
 
-    // Update order with shipping information
+    // Update order with shipping information and status
     order.shippingId = shipping._id;
     order.status = 'processing';
+    order.updatedAt = Date.now();
     await order.save();
 
     res.status(201).json({
       success: true,
       message: 'Shipping information saved successfully',
-      data: shipping
+      data: {
+        shipping,
+        orderStatus: order.status
+      }
     });
   } catch (error) {
     console.error('Error creating shipping:', error);
     res.status(500).json({
       success: false,
       message: 'Error creating shipping information',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
@@ -98,36 +118,59 @@ exports.getShippingByOrderId = async (req, res) => {
 exports.updateShippingStatus = async (req, res) => {
   try {
     const { shippingId } = req.params;
-    const { status, trackingNumber } = req.body;
+    const { status } = req.body;
+
+    if (!status || !['pending', 'processing', 'shipped', 'delivered'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid shipping status'
+      });
+    }
 
     const shipping = await Shipping.findById(shippingId);
     if (!shipping) {
       return res.status(404).json({
         success: false,
-        message: 'Shipping information not found'
+        message: 'Shipping record not found'
       });
     }
 
-    if (status) {
-      shipping.status = status;
-    }
-    if (trackingNumber) {
-      shipping.trackingNumber = trackingNumber;
-    }
-
+    // Update shipping status
+    shipping.status = status;
+    shipping.updatedAt = Date.now();
     await shipping.save();
 
-    res.status(200).json({
+    // Update order status based on shipping status
+    const order = await Order.findById(shipping.orderId);
+    if (order) {
+      switch (status) {
+        case 'shipped':
+          order.status = 'shipped';
+          break;
+        case 'delivered':
+          order.status = 'delivered';
+          break;
+        default:
+          order.status = 'processing';
+      }
+      order.updatedAt = Date.now();
+      await order.save();
+    }
+
+    res.json({
       success: true,
       message: 'Shipping status updated successfully',
-      data: shipping
+      data: {
+        shipping,
+        orderStatus: order?.status
+      }
     });
   } catch (error) {
     console.error('Error updating shipping status:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating shipping status',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };

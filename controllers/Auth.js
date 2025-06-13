@@ -11,6 +11,7 @@ const { generateTokens } = require('../middleware/jwt');
 const { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail, sendOrderConfirmationEmail } = require('../utils/emailService');
 const { sendWelcomeSMS } = require('../utils/smsService');
 const { setSessionCookie, removeCookie } = require('../utils/cookieManager');
+const passport = require('passport');
 // Authentication security is handled by JWT middleware
 
 // Rate limiting for login attempts
@@ -108,106 +109,72 @@ const signupValidation = [
     .withMessage('Please enter a valid date of birth')
 ];
 
-// Login route
-router.post('/login', loginLimiter, loginValidation, async (req, res) => {
-  try {
-    // Check for validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: errors.array()
+// Login route using Passport
+router.post('/login', loginLimiter, loginValidation, (req, res, next) => {
+  passport.authenticate('local', async (err, user, info) => {
+    try {
+      if (err) {
+        return next(err);
+      }
+
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: info.message || 'Invalid email or password'
+        });
+      }
+
+      // Check if user is active
+      if (user.status !== 'active') {
+        return res.status(401).json({
+          success: false,
+          message: 'Your account is not active. Please verify your email or contact support.'
+        });
+      }
+
+      // Check if email is verified
+      if (!user.isEmailVerified) {
+        return res.status(401).json({
+          success: false,
+          message: 'Please verify your email before logging in.'
+        });
+      }
+
+      // Update login history and reset failed attempts
+      await user.updateLoginHistory(req.ip, req.headers['user-agent']);
+
+      // Generate tokens
+      const { accessToken, refreshToken } = generateTokens(user);
+
+      // Set session data
+      req.session.user = {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      };
+      req.session.isAuthenticated = true;
+
+      // Set tokens in HTTP-only cookies
+      setSessionCookie(res, 'token', accessToken);
+      setSessionCookie(res, 'refreshToken', refreshToken);
+
+      // Create safe user response object
+      const userResponse = {
+        _id: user._id,
+        Name: user.Name,
+        email: user.email,
+        role: user.role
+      };
+
+      res.json({
+        success: true,
+        message: 'Login successful',
+        user: userResponse
       });
+    } catch (error) {
+      next(error);
     }
-
-    const { email, password } = req.body;
-
-    // Find user by email with all necessary fields
-    const user = await User.findOne({ email: email.toLowerCase() })
-      .select('+password +failedLoginAttempts +lastFailedLogin +status +role +isEmailVerified')
-      .exec();
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password'
-      });
-    }
-
-    // Check if account is locked
-    if (user.isAccountLocked()) {
-      return res.status(423).json({
-        success: false,
-        message: 'Account is temporarily locked due to too many failed attempts. Please try again later.'
-      });
-    }
-
-    // Verify password
-    const isValidPassword = await user.comparePassword(password);
-    if (!isValidPassword) {
-      await user.incrementFailedLoginAttempts();
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password'
-      });
-    }
-
-    // Check if user is active
-    if (user.status !== 'active') {
-      return res.status(401).json({
-        success: false,
-        message: 'Your account is not active. Please verify your email or contact support.'
-      });
-    }
-
-    // Check if email is verified
-    if (!user.isEmailVerified) {
-      return res.status(401).json({
-        success: false,
-        message: 'Please verify your email before logging in.'
-      });
-    }
-
-    // Update login history and reset failed attempts
-    await user.updateLoginHistory(req.ip, req.headers['user-agent']);
-
-    // Generate tokens
-    const { accessToken, refreshToken } = generateTokens(user);
-
-    // Set session data
-    req.session.user = {
-      id: user._id,
-      email: user.email,
-      role: user.role
-    };
-    req.session.isAuthenticated = true;
-
-    // Set tokens in HTTP-only cookies
-    setSessionCookie(res, 'token', accessToken);
-    setSessionCookie(res, 'refreshToken', refreshToken);
-
-    // Create safe user response object
-    const userResponse = {
-      _id: user._id,
-      Name: user.Name,
-      email: user.email,
-      role: user.role
-    };
-
-    res.json({
-      success: true,
-      message: 'Login successful',
-      user: userResponse
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred during login',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
+  })(req, res, next);
 });
 
 // Signup route
@@ -260,7 +227,7 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
     await user.save();
 
     // Send welcome email with verification link
-    await sendVerificationEmail(user.email, verificationToken);
+    await sendVerificationEmail(user, verificationToken);
 
     // Send welcome SMS if phone number provided
     if (phone_number) {
@@ -491,9 +458,8 @@ router.get('/verify-email/:token', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid or expired verification token'
+      return res.render('email-verification-error', {
+        message: 'The verification link is invalid or has expired.'
       });
     }
 
@@ -503,16 +469,19 @@ router.get('/verify-email/:token', async (req, res) => {
     user.emailVerificationExpires = undefined;
     await user.save();
 
-    res.json({
-      success: true,
-      message: 'Email verified successfully. You can now log in.'
-    });
+    // Send welcome email after successful verification
+    try {
+      await sendWelcomeEmail(user);
+    } catch (emailError) {
+      console.error('Error sending welcome email:', emailError);
+      // Continue with verification even if welcome email fails
+    }
+
+    res.render('email-verification-success');
   } catch (error) {
     console.error('Email verification error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred during email verification',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    res.render('email-verification-error', {
+      message: 'An error occurred during email verification. Please try again later or contact support.'
     });
   }
 });

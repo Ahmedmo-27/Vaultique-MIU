@@ -34,67 +34,168 @@
     <div class="form-container">
       <h2 class="form-title">Review Your Order</h2>
 
-      <!-- Order Summary -->
-      <div class="order-summary">
-        <h3>Order Summary</h3>
-        <div class="order-items">
-          <% order.items.forEach(item => { %>
-            <div class="order-item">
-              <img src="<%= item.productId.image %>" alt="<%= item.productId.name %>" class="item-image">
-              <div class="item-details">
-                <h4><%= item.productId.name %></h4>
-                <p>Quantity: <%= item.quantity %></p>
-                <p>Price: $<%= item.price.toFixed(2) %></p>
+      <% if (typeof order === 'undefined' || !order) { %>
+        <div class="error-message">
+          <h3>No Order Information Found</h3>
+          <p>Please complete the shipping process first.</p>
+          <a href="/user/shipping" class="back-link">← Back to Shipping</a>
+        </div>
+      <% } else { %>
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <h3>Order Summary</h3>
+          <div class="order-items">
+            <% order.items.forEach(item => { %>
+              <div class="order-item">
+                <img src="<%= item.productId.image %>" alt="<%= item.productId.name %>" class="item-image">
+                <div class="item-details">
+                  <h4><%= item.productId.name %></h4>
+                  <p>Quantity: <%= item.quantity %></p>
+                  <p>Price: $<%= item.price.toFixed(2) %></p>
+                </div>
               </div>
+            <% }); %>
+          </div>
+          <div class="order-totals">
+            <div class="total-line">
+              <span>Subtotal:</span>
+              <span>$<%= orderSummary.subtotal.toFixed(2) %></span>
             </div>
-          <% }); %>
-        </div>
-        <div class="order-totals">
-          <div class="total-line">
-            <span>Subtotal:</span>
-            <span>$<%= orderSummary.subtotal.toFixed(2) %></span>
-          </div>
-          <div class="total-line">
-            <span>Shipping:</span>
-            <span>$<%= orderSummary.shippingCost.toFixed(2) %></span>
-          </div>
-          <div class="total-line grand-total">
-            <span>Total:</span>
-            <span>$<%= orderSummary.total.toFixed(2) %></span>
+            <div class="total-line">
+              <span>Shipping:</span>
+              <span>$<%= orderSummary.shippingCost.toFixed(2) %></span>
+            </div>
+            <div class="total-line grand-total">
+              <span>Total:</span>
+              <span>$<%= orderSummary.total.toFixed(2) %></span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Shipping Information -->
-      <div class="shipping-info">
-        <h3>Shipping Information</h3>
-        <p><strong>Name:</strong> <%= order.shipping.name %></p>
-        <p><strong>Email:</strong> <%= order.shipping.email %></p>
-        <p><strong>Address:</strong> <%= order.shipping.address %></p>
-        <p><strong>City:</strong> <%= order.shipping.city %></p>
-        <p><strong>State:</strong> <%= order.shipping.state %></p>
-        <p><strong>Postal Code:</strong> <%= order.shipping.zipCode %></p>
-      </div>
+        <!-- Shipping Information -->
+        <div class="shipping-info">
+          <h3>Shipping Information</h3>
+          <p><strong>Name:</strong> <%= order.shipping.name %></p>
+          <p><strong>Email:</strong> <%= order.shipping.email %></p>
+          <p><strong>Address:</strong> <%= order.shipping.address %></p>
+          <p><strong>City:</strong> <%= order.shipping.city %></p>
+          <p><strong>State:</strong> <%= order.shipping.state %></p>
+          <p><strong>Postal Code:</strong> <%= order.shipping.zipCode %></p>
+        </div>
 
-      <!-- Payment Information -->
-      <div class="payment-info">
-        <h3>Payment Information</h3>
-        <p><strong>Card Holder:</strong> <%= order.payment.name %></p>
-        <p><strong>Card Number:</strong> **** **** **** <%= order.payment.cardNumber %></p>
-        <p><strong>Bank:</strong> <%= order.payment.bankName %></p>
-        <p><strong>Expiry Date:</strong> <%= order.payment.expiry %></p>
-      </div>
+        <!-- Payment Information -->
+        <div class="payment-info">
+          <h3>Payment Information</h3>
+          <p><strong>Card Holder:</strong> <%= order.payment.name %></p>
+          <p><strong>Card Number:</strong> **** **** **** <%= order.payment.cardNumber %></p>
+          <p><strong>Bank:</strong> <%= order.payment.bankName %></p>
+          <p><strong>Expiry Date:</strong> <%= order.payment.expiry %></p>
+        </div>
 
-      <!-- Order Confirmation -->
-      <div class="order-confirmation">
-        <form action="/user/order-confirmation" method="post">
-          <button type="submit" class="submit-btn">Place Order</button>
-        </form>
-        <a href="/user/shipping" class="back-link">← Back to Shipping</a>
-      </div>
+        <!-- Order Confirmation -->
+        <div class="order-confirmation">
+          <form id="order-confirmation-form">
+            <button type="submit" class="submit-btn">Place Order</button>
+          </form>
+          <a href="/user/shipping" class="back-link">← Back to Shipping</a>
+        </div>
+      <% } %>
     </div>
 
+    <div class="login-message-popup" id="login-message-popup">
+      <h2>Order Confirmed!</h2>
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div class="login-message-popup" id="login-message-error-popup">
+      <h2></h2>
+      <i class="fa-solid fa-circle-xmark" style="color: #d60000"></i>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('order-confirmation-form');
+        if (!form) return; // Exit if form doesn't exist (no order data)
+        
+        form.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          // Disable submit button to prevent double submission
+          const submitBtn = form.querySelector('button[type="submit"]');
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Processing...';
+          
+          try {
+            const response = await fetch('/user/order-confirmation', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              // Show success message
+              const successPopup = document.getElementById('login-message-popup');
+              successPopup.style.display = 'flex';
+              
+              // Redirect after 2 seconds
+              setTimeout(() => {
+                window.location.href = data.redirect;
+              }, 2000);
+            } else {
+              // Show error message
+              const errorPopup = document.getElementById('login-message-error-popup');
+              errorPopup.querySelector('h2').textContent = data.message || 'An error occurred';
+              errorPopup.style.display = 'flex';
+              
+              // Re-enable submit button
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Place Order';
+              
+              // Hide error message after 3 seconds
+              setTimeout(() => {
+                errorPopup.style.display = 'none';
+              }, 3000);
+            }
+          } catch (error) {
+            console.error('Error confirming order:', error);
+            const errorPopup = document.getElementById('login-message-error-popup');
+            errorPopup.querySelector('h2').textContent = 'An error occurred. Please try again.';
+            errorPopup.style.display = 'flex';
+            
+            // Re-enable submit button
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Place Order';
+            
+            // Hide error message after 3 seconds
+            setTimeout(() => {
+              errorPopup.style.display = 'none';
+            }, 3000);
+          }
+        });
+      });
+    </script>
+
     <style>
+      .error-message {
+        text-align: center;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin: 2rem 0;
+      }
+
+      .error-message h3 {
+        color: #dc3545;
+        margin-bottom: 1rem;
+      }
+
+      .error-message p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+      }
+
       .order-summary {
         margin-bottom: 2rem;
         padding: 1rem;
@@ -177,6 +278,11 @@
 
       .back-link:hover {
         color: #495057;
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
       }
     </style>
   </body>

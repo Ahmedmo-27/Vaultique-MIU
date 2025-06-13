@@ -16,21 +16,27 @@
     <script src="/Javascript/Loading Screen.js"></script>
     <script src="/Javascript/Light-Mode.js"></script>
     <style>
-        .customization-panel {
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+      .customization-panel {
             background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
+            padding: 16px 20px;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            z-index: 1000;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 18px;
+            width: 100%;
+            align-items: flex-end;
+            margin-bottom: 24px;
+            position: static;
+            max-width: 100%;
+            overflow-x: visible;
         }
 
         .customization-section {
-            margin-bottom: 20px;
+            margin-bottom: 0;
+            margin-right: 10px;
+            min-width: 90px;
         }
 
         .customization-section h3 {
@@ -107,7 +113,7 @@
                             <select id="model-selector" class="model-selector">
                                 <% if (typeof brands !== 'undefined' && brands.length > 0) { %>
                                     <% brands.forEach(brand => { %>
-                                        <option value="/Assets/3D Models/<%= encodeURIComponent(brand.Model3d.split('/').pop()) %>" <%= brand.name === 'Omega' ? 'selected' : '' %>>
+                                        <option value="/Assets/3D Models/<%= encodeURIComponent(brand.Model3d.split('/').pop()) %>" <%= brand.name === 'Rolex' ? 'selected' : '' %>>
                                             <%= brand.name %>
                                         </option>
                                     <% }); %>
@@ -120,15 +126,15 @@
                         <div class="watch-specs-horizontal">
                             <div class="spec-item">
                                 <i class="fas fa-clock" aria-hidden="true"></i>
-                                <span><%= locals.watch?.specs?.movement || '3235 Calibre' %></span>
+                                <span>3235 Calibre</span>
                             </div>
                             <div class="spec-item">
                                 <i class="fas fa-tint" aria-hidden="true"></i>
-                                <span><%= locals.watch?.specs?.waterResistance || '300m Water Resistant' %></span>
+                                <span>300m Water Resistant</span>
                             </div>
                             <div class="spec-item">
                                 <i class="fas fa-battery-full" aria-hidden="true"></i>
-                                <span><%= locals.watch?.specs?.powerReserve || '70h Power Reserve' %></span>
+                                <span>70h Power Reserve</span>
                             </div>
                         </div>
 
@@ -168,14 +174,63 @@
                                 <button id="fullscreen" class="btn btn-secondary">
                                     <i class="fas fa-expand"></i> Fullscreen
                                 </button>
+                                <button id="virtual-try-on" class="btn btn-secondary">
+                                    <i class="fas fa-vr-cardboard"></i> Virtual Try-On
+                                </button>
+                                
                             </div>
                             <div class="viewer-tips">
                                 <p><i class="fas fa-info-circle"></i> Click and drag to rotate • Scroll to zoom • Right-click to pan</p>
                             </div>
                         </section>
 
+                        
+                    </div>
+
+                    <!-- Right Column - Watch Details and Summary -->
+                    <div>
+                        <div class="watch-details">
+                            <h2 id="details-heading">Daytona</h2>
+                            <p>
+                                <%= locals.watch?.description || 'The Cosmograph Daytona is designed for those with a passion for driving and speed. Introduced in 1963, this iconic chronograph allows drivers to measure elapsed time and read average speeds on its signature tachymetric bezel.' %>
+                            </p>
+                        </div>
+
+                        <!-- Configuration Summary -->
+                        <aside class="config-summary" aria-labelledby="summary-heading">
+                            <h3 id="summary-heading">Your Configuration</h3>
+                            <div class="summary-details" aria-live="polite">
+                                <div class="summary-row">
+                                    <span class="summary-label">Model</span>
+                                    <span class="summary-value">Daytona</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Strap</span>
+                                    <span id="summary-strap" class="summary-value">Black</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Case</span>
+                                    <span id="summary-case" class="summary-value">Silver</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Dial</span>
+                                    <span id="summary-dial" class="summary-value">Black</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Bezel</span>
+                                    <span id="summary-bezel" class="summary-value">Black</span>
+                                </div>
+                                <div class="summary-row summary-total">
+                                    <span class="summary-label">Total Price</span>
+                                    <span id="summary-price" class="summary-value price" aria-live="polite">
+                                        $<%= (locals.watch?.basePrice || 8500).toLocaleString() %>
+                                    </span>
+                                </div>
+                            </div>
+                        </aside>
+
                         <!-- Color Customization Panel -->
-                        <div class="customization-panel">
+                        <div class="customization-panel hidden">
                             <div class="customization-section">
                                 <h3>Strap Color</h3>
                                 <div class="color-options">
@@ -232,51 +287,8 @@
 
                             <button class="add-to-cart">Add to Cart</button>
                         </div>
-                    </div>
 
-                    <!-- Right Column - Watch Details and Summary -->
-                    <div>
-                        <div class="watch-details">
-                            <h2 id="details-heading"><%= locals.watch?.name || 'Submariner' %></h2>
-                            <p>
-                                <%= locals.watch?.description || 'The Submariner is robust and functional design has made it an iconic timepiece. The 41 mm Oystersteel case, distinctive dial with large luminescent hour markers, and unidirectional rotatable bezel with Cerachrom insert make the Submariner immediately recognizable.' %>
-                            </p>
-                        </div>
-
-                        <!-- Configuration Summary -->
-                        <aside class="config-summary" aria-labelledby="summary-heading">
-                            <h3 id="summary-heading">Your Configuration</h3>
-                            <div class="summary-details" aria-live="polite">
-                                <div class="summary-row">
-                                    <span class="summary-label">Model</span>
-                                    <span class="summary-value"><%= locals.watch?.name || 'Submariner' %></span>
-                                </div>
-                                <div class="summary-row">
-                                    <span class="summary-label">Strap</span>
-                                    <span id="summary-strap" class="summary-value">Black</span>
-                                </div>
-                                <div class="summary-row">
-                                    <span class="summary-label">Case</span>
-                                    <span id="summary-case" class="summary-value">Silver</span>
-                                </div>
-                                <div class="summary-row">
-                                    <span class="summary-label">Dial</span>
-                                    <span id="summary-dial" class="summary-value">Black</span>
-                                </div>
-                                <div class="summary-row">
-                                    <span class="summary-label">Bezel</span>
-                                    <span id="summary-bezel" class="summary-value">Black</span>
-                                </div>
-                                <div class="summary-row summary-total">
-                                    <span class="summary-label">Total Price</span>
-                                    <span id="summary-price" class="summary-value price" aria-live="polite">
-                                        $<%= (locals.watch?.basePrice || 8500).toLocaleString() %>
-                                    </span>
-                                </div>
-                            </div>
-                        </aside>
-
-                        <!-- Trust Indicators -->
+                        <!-- Trust Indicators 
                         <div class="trust-container">
                             <section class="trust-indicators" aria-labelledby="trust-heading">
                                 <h3 id="trust-heading">Trust Information</h3>
@@ -304,7 +316,7 @@
                                     </div>
                                 </div>
                             </section>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
@@ -331,7 +343,7 @@
                     dial: ['Brushed Aluminum 2.001'],
                     clasp: ['Brushed Aluminum 2']
                 },
-                'Rolex Submariner': {
+                'Rolex Daytona': {
                     strap: ['Bracelet', 'Bracelet_Links'],
                     case: ['Case', 'Case_Metal'],
                     bezel: ['Bezel', 'Bezel_Insert'],
@@ -504,8 +516,254 @@
                 document.getElementById('total-price').textContent = totalPrice.toLocaleString();
                 document.getElementById('summary-price').textContent = `$${totalPrice.toLocaleString()}`;
             }
+
+            const customizationPanel = document.querySelector('.customization-panel');
+            // Listen for loading screen to finish
+            const loadingScreen = document.querySelector('.loading-screen');
+            if (loadingScreen) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'style' && loadingScreen.style.display === 'none') {
+                            customizationPanel.classList.remove('hidden');
+                        }
+                    });
+                });
+                observer.observe(loadingScreen, { attributes: true });
+            } else {
+                // Fallback: show panel if loading screen not found
+                customizationPanel.classList.remove('hidden');
+            }
+        
         });
     </script>
+
+   <!-- Add this modal structure at the bottom of your body, just before the closing </body> tag -->
+<div id="qrModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3 class="modal-title">Scan to Try On</h3>
+        
+       <div id="qr-code-container" class="qr-code">
+            <!-- QR code will be generated here -->
+             <img id="customImage" src="../Assets/Images/QR-Rolex.png" alt="QR-Rolex">
+           
+        </div>
+        
+        <p class="modal-text">Scan this QR code with your smartphone camera to launch the virtual try-on experience.</p>
+        
+        
+        
+        <p>Open your camera app, point it at the QR code, and follow the link to try our watches virtually!</p>
+    </div>
+</div>
+
+<style>
+    /* Add these styles to your existing CSS */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .modal.active {
+        display: flex;
+        opacity: 1;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
+        padding: 40px 30px;
+        text-align: center;
+        position: relative;
+        transform: scale(0.9);
+        transition: transform 0.4s ease;
+    }
+    
+    .modal.active .modal-content {
+        transform: scale(1);
+    }
+    
+    .close-modal {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 28px;
+        color: #7f8c8d;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    
+    .close-modal:hover {
+        color: #e74c3c;
+    }
+    
+    .modal-title {
+        font-size: 24px;
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+    
+    .qr-code {
+        width: 300px;
+        height: 300px;
+        margin: 20px auto;
+        background: #f8f9fa;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .qr-code::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: 
+            linear-gradient(45deg, transparent 48%, #2c3e50 48%, #2c3e50 52%, transparent 52%),
+            linear-gradient(-45deg, transparent 48%, #2c3e50 48%, #2c3e50 52%, transparent 52%);
+        background-size: 20px 20px;
+        opacity: 0.1;
+    }
+    
+    .qr-center {
+        width: 50px;
+        height: 50px;
+        background: #2c3e50;
+        border-radius: 10px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .qr-center::before {
+        content: "";
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background: white;
+        border-radius: 5px;
+        top: 10px;
+        left: 10px;
+    }
+    
+    .modal-text {
+        color: #7f8c8d;
+        line-height: 1.6;
+        margin: 20px 0;
+    }
+    
+    .steps {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 25px 0;
+    }
+    
+    .step {
+        background: #f1f8ff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        color: #4b6cb7;
+        font-size: 18px;
+    }
+</style>
+
+<script>
+    // Add this JavaScript to your existing script section
+    document.addEventListener('DOMContentLoaded', function() {
+        const tryOnBtn = document.getElementById('virtual-try-on');
+        const modal = document.getElementById('qrModal');
+        const closeBtn = document.querySelector('.close-modal');
+        
+        // Open modal when try-on button is clicked
+        if (tryOnBtn) {
+            tryOnBtn.addEventListener('click', function() {
+                modal.classList.add('active');
+            });
+        }
+        
+        // Close modal when close button is clicked
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+            });
+        }
+        
+        // Close modal when clicking outside of modal content
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        
+
+        // QR Code mapping
+            const qrImages = {
+                'rolex': '/Assets/Images/QR-Rolex.png',
+                'omega': '/Assets/Images/QR-Omega.png',
+                'patek': '/Assets/Images/QR-Patek.png',
+                'cartier': '/Assets/Images/QR-Cartier.png'
+            };
+            
+            // Current watch model
+            let currentModel = 'rolex';
+            
+            // Handle model selection change
+            modelSelect.addEventListener('change', function() {
+                const selectedModel = this.value;
+                currentModel = selectedModel;
+                
+                // Update watch details
+                const modelInfo = modelData[selectedModel];
+                document.querySelector('.watch-details h2').textContent = modelInfo.name;
+                document.querySelector('.watch-details p').textContent = modelInfo.description;
+                document.querySelector('#summary-price').textContent = '$' + modelInfo.price.toLocaleString();
+                document.querySelector('#total-price').textContent = modelInfo.price.toLocaleString();
+                
+                // Update QR code based on model
+                qrImage.src = qrImages[selectedModel];
+            });
+    });
+
+      const watchData = 
+          {
+                "Rolex": {
+                name: "Daytona",
+                description: "The Cosmograph Daytona is the ultimate tool for high-performance timing. Born to satisfy the demands of professional racing drivers, it remains the benchmark for those who appreciate the fusion of high technology with traditional craftsmanship.",
+                movement: "4130 Calibre",
+                waterResistance: "100m Water Resistant",
+                powerReserve: "72h Power Reserve"
+                },
+                "Omega": {
+                    name: "Omega Sea Master",
+                    description: "The Omega Sea Master combines elegance with professional diving capabilities.",
+                    movement: "8800 Calibre",
+                    waterResistance: "300m Water Resistant",
+                    powerReserve: "55h Power Reserve"
+                }
+                };
+
+</script>
 </body>
 
 </html> 

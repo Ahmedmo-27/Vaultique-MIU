@@ -55,204 +55,302 @@ function showSuccess(message) {
     setTimeout(() => successDiv.remove(), 3000);
 }
 
-// Update quantity with server sync
-async function updateQuantity(productId, change) {
-    const item = document.querySelector(`.cart-item[data-id="${productId}"]`);
-    const quantityDisplay = item.querySelector('.quantity-display');
-    const currentQuantity = parseInt(quantityDisplay.textContent);
-    
-    // Prevent negative quantities
-    if (currentQuantity + change < 1) return;
-    
-    setLoading(true, item);
-    
+// Function to update item quantity
+async function updateQuantity(productId, newQuantity) {
     try {
-        const response = await fetch('/cart/update-quantity', {
+        if (!productId || !newQuantity) {
+            throw new Error('Product ID and quantity are required');
+        }
+
+        if (newQuantity < 1) {
+            throw new Error('Quantity must be at least 1');
+        }
+
+        const response = await fetch('/user/cart/update-quantity', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 
-                productId,
-                quantity: currentQuantity + change
-            })
+            body: JSON.stringify({ productId, quantity: newQuantity })
         });
-        
+
         const data = await response.json();
+
+        if (!response.ok) {
+            let errorMessage = data.message || 'Failed to update quantity';
+            
+            // Handle specific error cases
+            switch (data.code) {
+                case 'INVALID_CART_STATE':
+                    errorMessage = `Cart error: ${data.details.join(', ')}`;
+                    if (data.isEmpty) {
+                        showMessage('Your cart is empty. Please add items to your cart first.', 'error');
+                        return;
+                    }
+                    break;
+                case 'ITEM_NOT_FOUND':
+                    errorMessage = data.message;
+                    if (data.isEmpty) {
+                        showMessage('Your cart is empty. Please add items to your cart first.', 'error');
+                        return;
+                    }
+                    break;
+                case 'INSUFFICIENT_STOCK':
+                    errorMessage = `Only ${data.availableStock} items available in stock`;
+                    break;
+                case 'OUT_OF_STOCK':
+                    errorMessage = 'This product is currently out of stock';
+                    break;
+                case 'PRODUCT_NOT_FOUND':
+                    errorMessage = 'This product is no longer available';
+                    break;
+                case 'SERVER_ERROR':
+                    console.error('Server error details:', data.details);
+                    errorMessage = 'An unexpected error occurred. Please try again.';
+                    break;
+            }
+            
+            throw new Error(errorMessage);
+        }
+
         if (data.success) {
+            // Update cart UI with new data
             updateCartUI(data.cart);
-            showSuccess('Quantity updated successfully');
+            showSuccess('Cart updated successfully');
         } else {
-            showError(data.message || 'Failed to update quantity');
+            throw new Error(data.message || 'Failed to update cart');
         }
     } catch (error) {
         console.error('Error updating quantity:', error);
-        showError('Failed to update quantity. Please try again.');
-        // Revert quantity display
-        quantityDisplay.textContent = currentQuantity;
-    } finally {
-        setLoading(false, item);
+        showError(error.message);
     }
 }
 
-// Remove item with server sync
+// Function to show messages
+function showMessage(message, type = 'info') {
+    const messageContainer = document.querySelector('.message-container') || createMessageContainer();
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${type}`;
+    messageElement.textContent = message;
+    
+    messageContainer.appendChild(messageElement);
+    
+    // Remove message after 3 seconds
+    setTimeout(() => {
+        messageElement.remove();
+        if (messageContainer.children.length === 0) {
+            messageContainer.remove();
+        }
+    }, 3000);
+}
+
+// Function to create message container
+function createMessageContainer() {
+    const container = document.createElement('div');
+    container.className = 'message-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+// Function to remove item
 async function removeItem(productId) {
-    if (!confirm('Are you sure you want to remove this item?')) return;
-    
-    const item = document.querySelector(`.cart-item[data-id="${productId}"]`);
-    setLoading(true, item);
-    
     try {
-        const response = await fetch('/cart/remove', {
+        const response = await fetch('/user/cart/remove', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ productId })
         });
-        
+
         const data = await response.json();
-        if (data.success) {
-            updateCartUI(data.cart);
-            showSuccess('Item removed successfully');
-        } else {
-            showError(data.message || 'Failed to remove item');
+        
+        if (!response.ok) {
+            let errorMessage = data.message || 'An error occurred while removing item';
+            
+            // Handle specific error cases
+            switch (data.code) {
+                case 'MISSING_PRODUCT_ID':
+                    errorMessage = 'Please provide a product ID to remove.';
+                    break;
+                case 'ITEM_NOT_FOUND':
+                    errorMessage = 'The item you are trying to remove is not in your cart.';
+                    break;
+                case 'SERVER_ERROR':
+                    errorMessage = 'An unexpected error occurred. Please try again later.';
+                    break;
+            }
+            
+            throw new Error(errorMessage);
         }
+
+        updateCartUI(data.cart);
+        showSuccess(data.message);
     } catch (error) {
         console.error('Error removing item:', error);
         showError('Failed to remove item. Please try again.');
-    } finally {
-        setLoading(false, item);
     }
 }
 
-// Update shipping method with server sync
+// Function to update shipping method
 async function updateShipping(method) {
-    setLoading(true, shippingDropdown);
-    
     try {
-        const response = await fetch('/cart/update-shipping', {
+        const response = await fetch('/user/cart/update-shipping', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ shippingMethod: method })
         });
-        
+
         const data = await response.json();
-        if (data.success) {
-            updateCartUI(data.cart);
-            showSuccess('Shipping method updated successfully');
-        } else {
-            showError(data.message || 'Failed to update shipping method');
+        
+        if (!response.ok) {
+            let errorMessage = data.message || 'An error occurred while updating shipping';
+            
+            // Handle specific error cases
+            switch (data.code) {
+                case 'MISSING_SHIPPING_METHOD':
+                    errorMessage = 'Please select a shipping method.';
+                    break;
+                case 'INVALID_SHIPPING_METHOD':
+                    errorMessage = 'Please select either standard or fast shipping.';
+                    break;
+                case 'SERVER_ERROR':
+                    errorMessage = 'An unexpected error occurred. Please try again later.';
+                    break;
+            }
+            
+            throw new Error(errorMessage);
         }
+
+        updateCartUI(data.cart);
+        showSuccess(data.message);
     } catch (error) {
         console.error('Error updating shipping:', error);
         showError('Failed to update shipping method. Please try again.');
-        // Revert shipping dropdown
-        shippingDropdown.value = shippingDropdown.dataset.previousValue;
-    } finally {
-        setLoading(false, shippingDropdown);
     }
 }
 
-// Clear cart with server sync
+// Function to clear cart
 async function clearCart() {
-    if (!confirm('Are you sure you want to clear your cart?')) return;
-    
-    const clearButton = document.querySelector('.clear-cart');
-    setLoading(true, clearButton);
-    
     try {
-        const response = await fetch('/cart/clear', {
+        const response = await fetch('/user/cart/clear', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         const data = await response.json();
-        if (data.success) {
-            updateCartUI({ items: [], subtotal: 0, shippingCost: 20, total: 20 });
-            showSuccess('Cart cleared successfully');
-        } else {
-            showError(data.message || 'Failed to clear cart');
+        
+        if (!response.ok) {
+            let errorMessage = data.message || 'An error occurred while clearing cart';
+            
+            // Handle specific error cases
+            switch (data.code) {
+                case 'CART_ALREADY_EMPTY':
+                    errorMessage = 'Your cart is already empty.';
+                    break;
+                case 'SERVER_ERROR':
+                    errorMessage = 'An unexpected error occurred. Please try again later.';
+                    break;
+            }
+            
+            throw new Error(errorMessage);
         }
+
+        updateCartUI(data.cart);
+        showSuccess(data.message);
     } catch (error) {
         console.error('Error clearing cart:', error);
         showError('Failed to clear cart. Please try again.');
-    } finally {
-        setLoading(false, clearButton);
     }
 }
 
-// Update cart UI with server data
-function updateCartUI(cartData) {
+// Function to update cart UI
+function updateCartUI(cart) {
+    const cartItemsContainer = document.querySelector('.cart-items');
+    const cartSummary = document.querySelector('.cart-summary');
+    const checkoutButton = document.querySelector('.checkout-btn');
+    
+    if (!cartItemsContainer || !cartSummary) return;
+
     // Update cart items
-    if (!cartData.items || cartData.items.length === 0) {
-        cartItemsContainer.innerHTML = `
-            <div class="empty-cart">
-                <i class="fas fa-shopping-cart"></i>
-                <p>Your cart is empty. Add items to your cart to see them here.</p>
-                <a href="/products" class="continue-shopping">Continue Shopping</a>
-            </div>
-        `;
-        document.querySelector('.cart-actions').innerHTML = `
-            <a href="/products" class="btn continue-shopping-btn">
-                <i class="fas fa-arrow-left"></i> Continue Shopping
-            </a>
-        `;
-    } else {
-        cartItemsContainer.innerHTML = cartData.items.map(item => `
-            <div class="cart-item" data-id="${item.productId}">
-                <img src="${item.image}" alt="${item.name}">
-                <p class="product-name">${item.name}</p>
-                <p class="item-price">$${item.price.toFixed(2)}</p>
-                <div class="quantity-controls">
-                    <button class="decrease" onclick="updateQuantity('${item.productId}', -1)">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <p class="quantity-display">${item.quantity}</p>
-                    <button class="increase" onclick="updateQuantity('${item.productId}', 1)">
-                        <i class="fas fa-plus"></i>
-                    </button>
+    if (cart.items && cart.items.length > 0) {
+        cartItemsContainer.innerHTML = cart.items.map(item => `
+            <div class="cart-item" data-product-id="${item.product || item.productId}">
+                <div class="item-details">
+                    <h3>${item.name}</h3>
+                    <p>Price: $${item.price.toFixed(2)}</p>
                 </div>
-                <button class="remove-item" onclick="removeItem('${item.productId}')">
-                    <i class="fas fa-times"></i>
-                </button>
+                <div class="item-quantity">
+                    <button class="quantity-btn minus" onclick="updateQuantity('${item.product || item.productId}', ${item.quantity - 1})">-</button>
+                    <span class="quantity">${item.quantity}</span>
+                    <button class="quantity-btn plus" onclick="updateQuantity('${item.product || item.productId}', ${item.quantity + 1})">+</button>
+                </div>
+                <div class="item-total">
+                    $${(item.price * item.quantity).toFixed(2)}
+                </div>
+                <button class="remove-item" onclick="removeItem('${item.product || item.productId}')">×</button>
             </div>
         `).join('');
 
-        document.querySelector('.cart-actions').innerHTML = `
-            <button class="btn clear-cart" onclick="clearCart()">
-                <i class="fas fa-trash"></i> Clear Cart
-            </button>
-            <a href="/checkout" class="btn checkout-btn">
-                <i class="fas fa-lock"></i> Proceed to Checkout
-            </a>
-            <a href="/products" class="btn continue-shopping-btn">
-                <i class="fas fa-arrow-left"></i> Continue Shopping
-            </a>
-        `;
+        // Enable checkout button if it exists
+        if (checkoutButton) {
+            checkoutButton.removeAttribute('disabled');
+            checkoutButton.classList.remove('disabled');
+        }
+    } else {
+        cartItemsContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+        
+        // Disable checkout button if it exists
+        if (checkoutButton) {
+            checkoutButton.setAttribute('disabled', 'disabled');
+            checkoutButton.classList.add('disabled');
+        }
     }
 
-    // Update totals
-    const totalItems = cartData.items.reduce((total, item) => total + item.quantity, 0);
-    itemsInCartDisplay.textContent = totalItems;
-    subtotalElement.textContent = `Subtotal: $${cartData.subtotal.toFixed(2)}`;
-    shippingCostElement.textContent = `$${cartData.shippingCost.toFixed(2)}`;
-    totalPriceElement.textContent = `Total: $${cartData.total.toFixed(2)}`;
+    // Update cart summary
+    cartSummary.innerHTML = `
+        <div class="summary-section">
+            <h3>Cart Summary</h3>
+            <div class="summary-item">
+                <span>Items (${cart.items.reduce((sum, item) => sum + item.quantity, 0)})</span>
+                <span>$${cart.subtotal.toFixed(2)}</span>
+            </div>
+            <div class="summary-item">
+                <span>Shipping</span>
+                <span>$${cart.shippingCost.toFixed(2)}</span>
+            </div>
+            <div class="summary-item total">
+                <span>Total</span>
+                <span>$${cart.total.toFixed(2)}</span>
+            </div>
+        </div>
+    `;
 
     // Update shipping dropdown
     if (shippingDropdown) {
-        shippingDropdown.value = cartData.shippingMethod || 'standard';
+        shippingDropdown.value = cart.shippingMethod || 'standard';
         shippingDropdown.dataset.previousValue = shippingDropdown.value;
     }
+}
+
+// Function to handle checkout
+function handleCheckout() {
+    const cart = document.querySelector('.cart-items');
+    if (!cart || cart.querySelector('.empty-cart')) {
+        showMessage('Your cart is empty. Please add items before proceeding to checkout.', 'error');
+        return;
+    }
+    window.location.href = '/user/payment';
 }
 
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Shipping method change
+    const shippingDropdown = document.getElementById('shipping');
     if (shippingDropdown) {
         shippingDropdown.dataset.previousValue = shippingDropdown.value;
         shippingDropdown.addEventListener('change', (e) => {
@@ -264,17 +362,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.cart-item').forEach(item => {
         const increaseBtn = item.querySelector('.increase');
         const decreaseBtn = item.querySelector('.decrease');
-        const productId = item.dataset.id;
+        const productId = item.dataset.productId;
 
         if (increaseBtn) {
             increaseBtn.addEventListener('click', () => {
-                updateQuantity(productId, 1);
+                const currentQuantity = parseInt(item.querySelector('.quantity-display').textContent);
+                updateQuantity(productId, currentQuantity + 1);
             });
         }
 
         if (decreaseBtn) {
             decreaseBtn.addEventListener('click', () => {
-                updateQuantity(productId, -1);
+                const currentQuantity = parseInt(item.querySelector('.quantity-display').textContent);
+                if (currentQuantity > 1) {
+                    updateQuantity(productId, currentQuantity - 1);
+                }
             });
         }
     });
@@ -322,4 +424,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     `;
     document.head.appendChild(style);
+
+    // Add event listener for checkout button
+    const checkoutButton = document.querySelector('.checkout-btn');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleCheckout();
+        });
+    }
 });

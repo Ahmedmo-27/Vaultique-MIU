@@ -11,6 +11,12 @@ const { optionalJWT, isAdmin } = require('./middleware/jwt');
 const config = require('./config/env');
 const { removeCookie } = require('./utils/cookieManager');
 const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const { sessionMiddleware, sessionCleanup, sessionSecurity } = require('./config/session');
+const { errorHandler } = require('./utils/securityUtils');
+const rateLimit = require('express-rate-limit');
+const User = require('./models/Users');
+const MongoStore = require('connect-mongo');
 
 // Import route files
 const apiRouter = require('./routes/api');
@@ -28,6 +34,7 @@ const paymentRoutes = require('./routes/PaymentRoutes');
 const configuratorRoutes = require('./routes/ConfiguratorRoutes');
 const configuratorController = require('./controllers/Configurator');
 const app = express();
+const qr = require('qrcode');
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
@@ -51,9 +58,30 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       family: 4,
+      dbName: 'test' // Explicitly set database name
     });
     console.log(`Connected to MongoDB at ${config.mongodbUri}`);
     console.log('MongoDB connection state:', mongoose.connection.readyState); // Debug log
+
+    // Test session store connection
+    const sessionStore = MongoStore.create({
+      mongoUrl: config.mongodbUri,
+      dbName: 'test',
+      collectionName: 'sessions',
+      ttl: 7 * 24 * 60 * 60, // 7 days
+      autoRemove: 'native',
+      touchAfter: 24 * 3600 // 24 hours
+    });
+
+    // Test session store
+    sessionStore.on('connected', () => {
+      console.log('Session store connected successfully');
+    });
+
+    sessionStore.on('error', (error) => {
+      console.error('Session store error:', error);
+    });
+
   } catch (err) {
     console.error('MongoDB connection error:', err);
     console.error('Please make sure MongoDB is running and .env file is properly configured');
@@ -61,26 +89,111 @@ const connectDB = async () => {
   }
 };
 
+// Connect to MongoDB
+connectDB();
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cookieParser());
+app.use(express.static('public'));
 
-// Session configuration
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+// Initialize session middleware with error handling
+app.use((req, res, next) => {
+  sessionMiddleware(req, res, (err) => {
+    if (err) {
+      console.error('Session middleware error:', err);
+      return next(err);
     }
-}));
+    next();
+  });
+});
 
-// Passport middleware
+// Add session debugging middleware
+app.use((req, res, next) => {
+  console.log('Session state:', {
+    hasSession: !!req.session,
+    sessionID: req.sessionID,
+    hasCart: !!req.session?.cart,
+    cartItems: req.session?.cart?.items?.length
+  });
+  next();
+});
+
+app.use(sessionCleanup);
+app.use(sessionSecurity);
+
+// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Configure Passport
+passport.use(new LocalStrategy(
+  { usernameField: 'email' },
+  async (email, password, done) => {
+    try {
+      const user = await User.findOne({ email: email.toLowerCase() })
+        .select('+password +failedLoginAttempts +lastFailedLogin +accountLockedUntil +status +role +isEmailVerified')
+        .exec();
+
+      if (!user) {
+        return done(null, false, { message: 'Incorrect email.' });
+      }
+
+      // Check if account is locked
+      if (user.isAccountLocked()) {
+        return done(null, false, { message: 'Account is temporarily locked due to too many failed attempts. Please try again later.' });
+      }
+
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        await user.incrementFailedLoginAttempts();
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  }
+));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
+
+// Global rate limiter
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === 'development' ? 1000 : 100, // More lenient in development
+  message: JSON.stringify({
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes'
+  }),
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting for static files, development environment, and cart operations
+    return process.env.NODE_ENV === 'development' || 
+           req.path.startsWith('/CSS/') || 
+           req.path.startsWith('/Javascript/') || 
+           req.path.startsWith('/Assets/') ||
+           req.path.startsWith('/cart/'); // Skip rate limiting for cart operations
+  }
+});
+
+// Apply global rate limiter to all routes
+app.use(globalLimiter);
 
 // CORS Configuration
 app.use(
@@ -106,18 +219,67 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://ajax.googleapis.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://fonts.cdnfonts.com", "https://db.onlinewebfonts.com"],
-        imgSrc: ["'self'", "data:", "blob:", "https:"],
-        connectSrc: ["'self'", "blob:", "https:"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://fonts.cdnfonts.com", "https://db.onlinewebfonts.com", "https://cdnjs.cloudflare.com"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'", // Required for some third-party integrations
+          "'unsafe-eval'", // Required for some JavaScript frameworks
+          "https://cdn.jsdelivr.net",
+          "https://unpkg.com",
+          "https://ajax.googleapis.com",
+          "https://kit.fontawesome.com",
+          "https://cdnjs.cloudflare.com"
+        ],
+        scriptSrcAttr: ["'unsafe-inline'"], // Required for some UI components
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'", // Required for dynamic styles
+          "https://fonts.googleapis.com",
+          "https://cdnjs.cloudflare.com",
+          "https://fonts.cdnfonts.com",
+          "https://db.onlinewebfonts.com",
+          "https://cdn.jsdelivr.net",
+          "https://unpkg.com",
+          "https://kit.fontawesome.com"
+        ],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://*.cloudinary.com",
+          "https://*.amazonaws.com",
+          "https://*.railway.app",
+          "https://*.stripe.com"
+        ],
+        connectSrc: [
+          "'self'",
+          "blob:",
+          "https://api.stripe.com",
+          "https://kit.fontawesome.com",
+          "https://*.railway.app",
+          "wss://*.railway.app"
+        ],
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com",
+          "https://fonts.cdnfonts.com",
+          "https://db.onlinewebfonts.com",
+          "https://cdnjs.cloudflare.com",
+          "https://cdn.jsdelivr.net",
+          "https://unpkg.com",
+          "https://kit.fontawesome.com"
+        ],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
-        frameSrc: ["'self'"],
+        frameSrc: [
+          "'self'",
+          "https://*.stripe.com" // Required for Stripe payment iframe
+        ],
         workerSrc: ["'self'", "blob:"],
         childSrc: ["'self'", "blob:"],
         frameAncestors: ["'self'"],
-        formAction: ["'self'"],
+        formAction: ["'self'", "https://*.stripe.com"],
+        baseUri: ["'self'"],
+        manifestSrc: ["'self'"],
         upgradeInsecureRequests: []
       },
     },
@@ -284,9 +446,9 @@ app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')))
 
 // Middleware to make user data available to all views
 app.use((req, res, next) => {
-    res.locals.user = req.user;
-    res.locals.isAuthenticated = req.isAuthenticated();
-    next();
+  res.locals.user = req.user;
+  res.locals.isAuthenticated = req.isAuthenticated ? req.isAuthenticated() : false;
+  next();
 });
 
 // Apply optional JWT middleware to all routes
@@ -432,47 +594,59 @@ app.get('/admin/logout', (req, res) => {
 
 // Increase request timeout
 app.use((req, res, next) => {
-  res.setTimeout(30000, () => {
+  // Set longer timeout for cart operations
+  const timeout = req.path.startsWith('/cart/') ? 60000 : 30000; // 60 seconds for cart, 30 seconds for others
+  res.setTimeout(timeout, () => {
     console.log('Request has timed out.');
     res.status(408).send('Request has timed out.');
   });
   next();
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err : {}
+// Custom 404 and admin privilege error handler
+app.use((req, res, next) => {
+  // Check if this is an admin privilege error
+  if (req.path.startsWith('/admin') && (!req.user || req.user.role !== 'admin')) {
+    return res.status(404).render('404', {
+      title: 'Access Denied',
+      message: 'You do not have the required privileges to access this page. Please contact an administrator if you believe this is an error.'
+    });
+  }
+  
+  // Handle 404 errors
+  res.status(404).render('404', {
+    title: 'Page Not Found',
+    message: 'The page you are looking for does not exist or has been moved.'
   });
 });
 
-// Start server
-if (require.main === module) {
-  connectDB()
-    .then(() => {
-      const server = app.listen(config.port, () => {
-        console.log(`Server running on port ${config.port}`);
-        console.log(`Serving static files from: ${publicPath}`);
-        console.log(`Frontend URL: ${config.frontendUrl}`);
-      });
+// Error handling middleware (should be last)
+app.use(errorHandler);
 
-      process.on('SIGTERM', () => {
-        console.log('SIGTERM received. Shutting down gracefully...');
-        server.close(() => {
-          mongoose.connection.close(false, () => {
-            console.log('MongoDB connection closed');
-            process.exit(0);
-          });
-        });
-      });
-    })
-    .catch((err) => {
-      console.error('Failed to start server:', err);
-      process.exit(1);
-    });
-}
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
+
+
+// Generate QR Code with customization data
+app.post('/generate-qr', async (req, res) => {
+  try {
+    const { strap, case: watchCase, dial, bezel } = req.body;
+    
+    // Create URL with customization parameters
+    const arUrl = `https://${req.get('host')}/ar-viewer.html?strap=${strap}&case=${watchCase}&dial=${dial}&bezel=${bezel}`;
+    
+    // Generate QR code
+    const qrImage = await qr.toDataURL(arUrl);
+    
+    res.json({ qrImage, arUrl });
+  } catch (err) {
+    res.status(500).send('Error generating QR');
+  }
+});
 
 module.exports = app;

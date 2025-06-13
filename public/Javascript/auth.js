@@ -25,7 +25,8 @@ const validateLoginData = (email, password) => {
   return errors;
 };
 
-const handleLogin = async (event) => {
+// Make handlers available globally
+window.handleLogin = async (event) => {
   event.preventDefault();
 
   const email = document.getElementById('email')?.value?.trim();
@@ -129,7 +130,7 @@ const handleLogin = async (event) => {
   }
 };
 
-const handleSignup = async (event) => {
+window.handleSignup = async (event) => {
   event.preventDefault();
 
   // Get all form data
@@ -189,6 +190,103 @@ const handleSignup = async (event) => {
     }
   }
 };
+
+// Check authentication state
+const checkAuthState = () => {
+  const token = localStorage.getItem('authToken');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const currentPath = window.location.pathname;
+  
+  // Don't check token if we're on auth-related pages
+  if (currentPath.includes('/LoginSignup') || 
+      currentPath.includes('/api/auth/login') || 
+      currentPath.includes('/api/auth/signup')) {
+    return;
+  }
+  
+  if (token && user) {
+    // Verify token is still valid
+    fetch('/api/auth/verify-token', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.valid) {
+        // Token is invalid, try to refresh
+        refreshToken();
+      }
+    })
+    .catch(() => {
+      // If verification fails, try to refresh token
+      refreshToken();
+    });
+  }
+};
+
+// Refresh token function
+const refreshToken = () => {
+  const refreshToken = localStorage.getItem('refreshToken');
+  const currentPath = window.location.pathname;
+  
+  // Don't redirect if we're already on auth-related pages
+  if (currentPath.includes('/LoginSignup') || 
+      currentPath.includes('/api/auth/login') || 
+      currentPath.includes('/api/auth/signup')) {
+    return;
+  }
+  
+  if (!refreshToken) {
+    // No refresh token, clear auth data and redirect to login
+    clearAuthData();
+    return;
+  }
+
+  fetch('/api/auth/refresh-token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ refreshToken }),
+    credentials: 'include'
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update tokens
+      localStorage.setItem('authToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+    } else {
+      // Refresh failed, clear auth data and redirect to login
+      clearAuthData();
+    }
+  })
+  .catch(() => {
+    // Refresh failed, clear auth data and redirect to login
+    clearAuthData();
+  });
+};
+
+// Helper function to clear auth data and redirect
+const clearAuthData = () => {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
+  localStorage.removeItem('refreshToken');
+  const currentPath = window.location.pathname;
+  if (!currentPath.includes('/LoginSignup')) {
+    window.location.href = '/user/LoginSignup';
+  }
+};
+
+// Check auth state periodically
+setInterval(checkAuthState, 5 * 60 * 1000); // Check every 5 minutes
+
+// Initial check
+checkAuthState();
 
 // Add event listeners when the document is loaded
 document.addEventListener('DOMContentLoaded', () => {

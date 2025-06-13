@@ -272,7 +272,7 @@
             }
 
             try {
-              const response = await fetch('/user/payment/process', {
+              const response = await fetch('/api/payment/process', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -294,8 +294,9 @@
                   successPopup.style.display = 'flex';
                   successPopup.querySelector('h2').textContent = 'Payment information saved successfully!';
                   
+                  // Wait for 2 seconds before redirecting
                   setTimeout(() => {
-                    window.location.href = data.redirect || '/user/shipping';
+                    window.location.href = '/user/shipping';
                   }, 2000);
                 }
               } else {

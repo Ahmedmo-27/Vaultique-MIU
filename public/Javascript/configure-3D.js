@@ -506,3 +506,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+

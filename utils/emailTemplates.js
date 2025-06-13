@@ -106,17 +106,20 @@ const accountVerificationTemplate = (userName, verificationLink) => ({
   html: `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #2c3e50; margin-bottom: 10px;">Verify Your Account</h1>
-        <p style="color: #7f8c8d; font-size: 18px;">One step closer to accessing Vaultique</p>
+        <h1 style="color: #2c3e50; margin-bottom: 10px;">Welcome to Vaultique</h1>
+        <p style="color: #7f8c8d; font-size: 18px;">One step closer to accessing luxury timepieces</p>
       </div>
       
       <div style="background-color: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Dear ${userName},</p>
-        <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Thank you for creating your Vaultique account. To complete your registration and access all features, please verify your email address:</p>
+        <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Thank you for creating your Vaultique account. To complete your registration and access all features, please verify your email address by clicking the button below:</p>
         
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${verificationLink}" style="background-color: #27ae60; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify Email Address</a>
+          <a href="${verificationLink}" style="background-color: #2c3e50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Verify Email Address</a>
         </div>
+
+        <p style="color: #7f8c8d; font-size: 14px; text-align: center;">Or copy and paste this link in your browser:</p>
+        <p style="color: #3498db; font-size: 14px; text-align: center; word-break: break-all;">${verificationLink}</p>
 
         <div style="margin: 25px 0; padding: 20px; background-color: #f8f9fa; border-radius: 6px;">
           <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 15px;">After Verification:</h2>
@@ -127,6 +130,8 @@ const accountVerificationTemplate = (userName, verificationLink) => ({
             <li>Special member benefits</li>
           </ul>
         </div>
+
+        <p style="color: #e74c3c; font-size: 14px; text-align: center; margin-top: 20px;">This verification link will expire in 24 hours.</p>
       </div>
 
       <div style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 14px;">
@@ -136,7 +141,7 @@ const accountVerificationTemplate = (userName, verificationLink) => ({
     </div>
   `,
   text: `
-    Verify Your Account
+    Welcome to Vaultique
 
     Dear ${userName},
 
@@ -149,6 +154,8 @@ const accountVerificationTemplate = (userName, verificationLink) => ({
     - Secure document storage
     - Priority customer support
     - Special member benefits
+
+    This verification link will expire in 24 hours.
 
     If you didn't create this account, please ignore this email.
 

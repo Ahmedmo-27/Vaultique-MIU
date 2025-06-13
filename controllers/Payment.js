@@ -1,196 +1,198 @@
 const Order = require('../models/Orders');
 const User = require('../models/Users');
 const { generateOrderNumber } = require('../utils/orderUtils');
+const { encryptData, decryptData } = require('../utils/securityUtils');
+const { validatePaymentInput, validatePaymentMiddleware } = require('../middleware/paymentValidation');
+const { AppError } = require('../utils/securityUtils');
+const rateLimit = require('express-rate-limit');
+
+// Rate limiting for payment attempts
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: JSON.stringify({
+    success: false,
+    message: 'Too many payment attempts, please try again later'
+  })
+});
 
 // Process payment
-exports.processPayment = async (req, res) => {
-  try {
-    const {
-      name,
-      card_number,
-      bank_name,
-      expiry,
-      cvv
-    } = req.body;
-
-    // Validate required fields
-    if (!name || !card_number || !bank_name || !expiry || !cvv) {
-      return res.status(400).json({
-        success: false,
-        message: 'All payment fields are required'
+exports.processPayment = [
+  paymentLimiter,
+  validatePaymentInput,
+  validatePaymentMiddleware,
+  async (req, res, next) => {
+    try {
+      console.log('Processing payment request:', {
+        hasUser: !!req.user,
+        hasSession: !!req.session,
+        hasCart: !!req.session?.cart,
+        cartItems: req.session?.cart?.items?.length
       });
-    }
 
-    // Validate card number (basic validation)
-    if (!/^\d{16}$/.test(card_number.replace(/\s/g, ''))) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid card number'
-      });
-    }
-
-    // Validate expiry date
-    if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(expiry)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid expiry date'
-      });
-    }
-
-    // Validate CVV
-    if (!/^\d{3,4}$/.test(cvv)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid CVV'
-      });
-    }
-
-    // Create order number
-    const orderNumber = generateOrderNumber();
-
-    // Create new order
-    const order = new Order({
-      userId: req.user ? req.user._id : null,
-      orderNumber,
-      paymentInfo: {
+      const {
         name,
-        cardNumber: card_number.replace(/\s/g, '').slice(-4), // Store only last 4 digits
-        bankName: bank_name,
-        expiry
-      },
-      status: 'payment_processed'
-    });
+        card_number,
+        bank_name,
+        expiry,
+        cvv
+      } = req.body;
 
-    await order.save();
-
-    // If user is logged in, save payment info for future use
-    if (req.user) {
-      await User.findByIdAndUpdate(req.user._id, {
-        $set: {
-          'paymentInfo.name': name,
-          'paymentInfo.cardNumber': card_number.replace(/\s/g, '').slice(-4),
-          'paymentInfo.bankName': bank_name,
-          'paymentInfo.expiry': expiry
-        }
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: 'Payment processed successfully',
-      data: {
-        orderId: order._id,
-        orderNumber
+      // Check if cart exists and has items
+      if (!req.session.cart?.items?.length) {
+        return res.status(400).json({
+          success: false,
+          message: 'Cart is empty'
+        });
       }
-    });
-  } catch (error) {
-    console.error('Payment processing error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error processing payment',
-      error: error.message
-    });
+
+      // Store payment info in session
+      req.session.paymentInfo = {
+        name,
+        cardNumber: card_number.replace(/\s/g, '').slice(-4), // Only store last 4 digits
+        bankName: bank_name,
+        expiry,
+        paymentType: 'credit'
+      };
+
+      // If user is logged in, save payment info to their account
+      if (req.user) {
+        await User.findByIdAndUpdate(req.user._id, {
+          $set: {
+            'Payment.cardHolder': name,
+            'Payment.cardNumber': card_number.replace(/\s/g, '').slice(-4),
+            'Payment.bankName': bank_name,
+            'Payment.expiryDate': expiry,
+            'Payment.paymentType': 'credit',
+            'Payment.lastUsed': new Date()
+          }
+        });
+        console.log('Payment info saved for user:', req.user._id);
+      }
+
+      // Save session
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) {
+            console.error('Error saving session:', err);
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
+
+      console.log('Payment processed successfully');
+      res.json({
+        success: true,
+        message: 'Payment processed successfully',
+        redirect: '/user/shipping'
+      });
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      next(new AppError('Error processing payment', 500));
+    }
   }
-};
+];
 
 // Get payment information
-exports.getPaymentInfo = async (req, res) => {
+exports.getPaymentInfo = async (req, res, next) => {
   try {
     if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not authenticated'
-      });
+      throw new AppError('User not authenticated', 401);
     }
 
     const user = await User.findById(req.user._id).select('paymentInfo');
     
+    if (!user.paymentInfo) {
+      return res.status(200).json({
+        success: true,
+        data: {}
+      });
+    }
+
+    // Decrypt sensitive data
+    const decryptedPaymentInfo = {
+      ...user.paymentInfo.toObject(),
+      cardNumber: decryptData(user.paymentInfo.cardNumber),
+      expiry: decryptData(user.paymentInfo.expiry)
+    };
+    
     res.status(200).json({
       success: true,
-      data: user.paymentInfo || {}
+      data: decryptedPaymentInfo
     });
   } catch (error) {
-    console.error('Error fetching payment info:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching payment information',
-      error: error.message
-    });
+    next(error);
   }
 };
 
 // Update payment information
-exports.updatePaymentInfo = async (req, res) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not authenticated'
-      });
-    }
-
-    const {
-      name,
-      card_number,
-      bank_name,
-      expiry
-    } = req.body;
-
-    // Validate required fields
-    if (!name || !card_number || !bank_name || !expiry) {
-      return res.status(400).json({
-        success: false,
-        message: 'All payment fields are required'
-      });
-    }
-
-    await User.findByIdAndUpdate(req.user._id, {
-      $set: {
-        'paymentInfo.name': name,
-        'paymentInfo.cardNumber': card_number.replace(/\s/g, '').slice(-4),
-        'paymentInfo.bankName': bank_name,
-        'paymentInfo.expiry': expiry
+exports.updatePaymentInfo = [
+  validatePaymentInput,
+  validatePaymentMiddleware,
+  async (req, res, next) => {
+    try {
+      if (!req.user) {
+        throw new AppError('User not authenticated', 401);
       }
-    });
 
-    res.status(200).json({
-      success: true,
-      message: 'Payment information updated successfully'
-    });
-  } catch (error) {
-    console.error('Error updating payment info:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error updating payment information',
-      error: error.message
-    });
+      const {
+        name,
+        card_number,
+        bank_name,
+        expiry
+      } = req.body;
+
+      // Encrypt sensitive data
+      const encryptedCardNumber = encryptData(card_number.replace(/\s/g, '').slice(-4));
+      const encryptedExpiry = encryptData(expiry);
+
+      await User.findByIdAndUpdate(req.user._id, {
+        $set: {
+          'paymentInfo.name': name,
+          'paymentInfo.cardNumber': encryptedCardNumber,
+          'paymentInfo.bankName': bank_name,
+          'paymentInfo.expiry': encryptedExpiry
+        }
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Payment information updated successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-};
+];
 
 // Get payment history
-exports.getPaymentHistory = async (req, res) => {
+exports.getPaymentHistory = async (req, res, next) => {
   try {
     if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not authenticated'
-      });
+      throw new AppError('User not authenticated', 401);
     }
 
     const orders = await Order.find({ userId: req.user._id })
       .select('orderNumber paymentInfo status createdAt')
       .sort({ createdAt: -1 });
 
+    // Decrypt sensitive data in payment history
+    const decryptedOrders = orders.map(order => ({
+      ...order.toObject(),
+      paymentInfo: {
+        ...order.paymentInfo,
+        cardNumber: decryptData(order.paymentInfo.cardNumber),
+        expiry: decryptData(order.paymentInfo.expiry)
+      }
+    }));
+
     res.status(200).json({
       success: true,
-      data: orders
+      data: decryptedOrders
     });
   } catch (error) {
-    console.error('Error fetching payment history:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching payment history',
-      error: error.message
-    });
+    next(error);
   }
 }; 

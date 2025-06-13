@@ -137,121 +137,208 @@ document.addEventListener("DOMContentLoaded", function () {
       const Name = document.getElementById("Name").value;
       const email = document.getElementById("email-signup").value;
       const password = document.getElementById("password-signup").value;
-      const phone = document.getElementById("phone").value || null;
-      const dob = document.getElementById("dob").value || null;
+      const phone = document.getElementById("phone").value;
+      const dob = document.getElementById("dob").value;
       const language = document.getElementById("language-signup").value;
       
-      console.log("Form data:", { username, Name, email, phone, dob, language });
+      // Get optional address information
+      const street = document.getElementById("street")?.value || '';
+      const city = document.getElementById("city")?.value || '';
+      const state = document.getElementById("state")?.value || '';
+      const zip = document.getElementById("zip")?.value || '';
+      const country = document.getElementById("country")?.value || '';
+      
+      // Validate required fields
+      if (!username || !Name || !email || !password || !language) {
+        window.showNotification('error', 'Please fill all required fields');
+        return;
+      }
+
+      // Validate username format
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        window.showNotification('error', 'Username can only contain letters, numbers and underscores');
+        return;
+      }
+
+      // Validate name length
+      if (Name.length < 2) {
+        window.showNotification('error', 'Name must be at least 2 characters long');
+        return;
+      }
+
+      // Validate username length
+      if (username.length < 3) {
+        window.showNotification('error', 'Username must be at least 3 characters long');
+        return;
+      }
+
+      // Validate email format
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        window.showNotification('error', 'Please enter a valid email address');
+        return;
+      }
+
+      // Validate password strength
+      const passwordErrors = [];
+      if (password.length < 8) passwordErrors.push("Password must be at least 8 characters long");
+      if (!/[A-Z]/.test(password)) passwordErrors.push("Password must contain at least one uppercase letter");
+      if (!/[a-z]/.test(password)) passwordErrors.push("Password must contain at least one lowercase letter");
+      if (!/[0-9]/.test(password)) passwordErrors.push("Password must contain at least one number");
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) passwordErrors.push("Password must contain at least one special character");
+      
+      if (passwordErrors.length > 0) {
+        window.showNotification('error', "Password requirements:\n" + passwordErrors.join("\n"));
+        return;
+      }
+      
+      // Validate phone number format if provided
+      if (phone && !/^\+?[1-9]\d{1,14}$/.test(phone)) {
+        window.showNotification('error', 'Please enter a valid phone number (e.g., +1234567890)');
+        return;
+      }
+
+      // Validate DOB format if provided
+      if (dob && !/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+        window.showNotification('error', 'Please enter a valid date of birth (YYYY-MM-DD)');
+        return;
+      }
+      
+      // Create form data object
+      const formData = {
+        Name: Name,
+        username: username,
+        email: email.toLowerCase(),
+        password: password,
+        phone_number: phone || null,
+        DOB: dob || null,
+        language: language,
+        Address: street || city || state || zip || country ? {
+          city: city,
+          street: street,
+          addressType: 'Home',
+          state: state,
+          country: country,
+          postalCode: zip
+        } : undefined,
+        Payment: undefined,
+        cart: localStorage.getItem('guestCart') ? JSON.parse(localStorage.getItem('guestCart')) : undefined
+      };
+      
+      console.log('Form data:', formData);
       
       try {
-        const response = await fetch('http://localhost:3001/api/auth/signup', {
+        const response = await fetch('/api/auth/signup', {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
           },
-          body: JSON.stringify({ 
-            Name: Name,
-            username: username,
-            email: email.toLowerCase(),
-            password,
-            phone_number: phone,
-            DOB: dob,
-            language,
-            role: 'user',
-            status: 'active'
-          })
+          body: JSON.stringify(formData),
+          credentials: 'include'
         });
-        
-        console.log("Response status:", response.status);
+
         const data = await response.json();
-        console.log("Response data:", data);
-        
+        console.log('Response status:', response.status);
+        console.log('Response data:', data);
+
         if (response.ok) {
-          window.showNotification('success', data.message || "Signup successful! Redirecting to home page...");
-          // Redirect to home page after successful signup
+          // Clear guest cart after successful signup
+          localStorage.removeItem('guestCart');
+          
+          // Show success message
+          showNotification('Signup successful! Please check your email to verify your account.', 'success');
+          
+          // Redirect to login page after a short delay
           setTimeout(() => {
-            window.location.href = '/user/home';
-          }, 1500);
+            window.location.href = '/user/LoginSignup';
+          }, 2000);
         } else {
-          window.showNotification('error', data.message || "Error creating account");
+          showNotification(data.message || 'Signup failed. Please try again.', 'error');
         }
       } catch (error) {
-        console.error('Signup error:', error);
-        window.showNotification('error', "Error creating account. Please make sure the server is running at http://localhost:3001");
+        console.error('Error during signup:', error);
+        showNotification('An error occurred during signup. Please try again.', 'error');
       }
     });
   } else {
     console.error("Complete signup button not found");
   }
 
-  // Login form submission
-  loginForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
+  // Prevent default form submissions and handle them properly
+  if (loginForm) {
+    // Remove any existing listeners
+    loginForm.removeEventListener('submit', handleLogin);
+    const oldSubmitHandler = loginForm.onsubmit;
+    if (oldSubmitHandler) {
+      loginForm.removeEventListener('submit', oldSubmitHandler);
+    }
     
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    // Add single submit handler
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-    try {
-      console.log('Login attempt details:', { email, hasPassword: !!password });
-      
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      try {
+        console.log('Login attempt details:', { email, hasPassword: !!password });
+        
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: 'include'
+        });
 
-      let data;
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        // Handle non-JSON responses (like rate limit messages)
-        const text = await response.text();
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          data = {
-            success: false,
-            message: text
-          };
+        let data;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json();
+        } else {
+          const text = await response.text();
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            data = { success: false, message: text };
+          }
         }
-      }
 
-      if (response.ok) {
-        if (data.success) {
-          // Show success message
-          showNotification('success', 'Login successful!');
+        if (response.ok && data.success) {
+          window.showNotification('success', 'Login successful!');
+          
+          // Store user data
+          if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+          }
           
           // Redirect based on user role
-          if (data.user.role === 'admin') {
-            window.location.href = '/admin/dashboard';
-          } else {
-            window.location.href = '/user/home';
-          }
+          setTimeout(() => {
+            window.location.href = data.user?.role === 'admin' ? '/admin/dashboard' : '/user/home';
+          }, 1000);
         } else {
-          showNotification('error', data.message || 'Login failed');
+          window.showNotification('error', data.message || 'Login failed');
+          // Clear password field for security
+          document.getElementById('password').value = '';
         }
-      } else {
-        // Handle different error status codes
-        switch (response.status) {
-          case 429:
-            showNotification('error', 'Too many login attempts. Please try again later.');
-            break;
-          case 423:
-            showNotification('error', 'Account is temporarily locked. Please try again later.');
-            break;
-          default:
-            showNotification('error', data.message || 'Login failed');
-        }
+      } catch (error) {
+        console.error('Login error:', error);
+        window.showNotification('error', 'An error occurred during login');
+        // Clear password field for security
+        document.getElementById('password').value = '';
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      showNotification('error', 'An error occurred during login');
-    }
-  });
+    });
+  }
+
+  if (signupForm) {
+    // Remove any existing listeners
+    signupForm.removeEventListener('submit', handleSignup);
+    
+    // Add single submit handler
+    signupForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      // Your existing signup logic here
+    });
+  }
 
   // Social login buttons (placeholder functionality)
   document.querySelectorAll(".btn-google, .btn-facebook").forEach(btn => {
