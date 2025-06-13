@@ -770,336 +770,6 @@ const products = [
     ],
   },
   {
-    id: 'T1166171604700',
-    name: 'Tissot Chrono XL Classic',
-    brand: 'TIS_1',
-    strapMaterial: 'Metal',
-    movement: 'Quartz',
-    waterResistance: '100m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'Silver',
-    stock: true,
-    stockCount: 10,
-    Vcollection: 'Casual & Everyday',
-    gender: 'Male',
-    price: 415,
-    image: '/Assets/Images/Watches/Tissot Chrono XL Classic.png',
-    description:
-      'The Tissot Chrono XL Classic is a reliable quartz chronograph with a silver dial and stainless steel case. Its large size and sporty design make it a standout choice. The three sub-dials provide stopwatch functionality, while the tachymeter scale on the bezel allows for speed calculations, making it both stylish and functional.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '45.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '12.50 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '52.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'Silver',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'CHRONOGRAPH FUNCTION',
-        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
-      },
-      {
-        featureName: 'TACHYMETRIC SCALE',
-        featureDesc: 'Bezel scale for calculating speed based on time measurement',
-      },
-      {
-        featureName: 'QUARTZ MOVEMENT',
-        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '100m water resistance for swimming and water sports',
-      },
-      {
-        featureName: 'METAL BRACELET',
-        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-    ],
-  },
-  {
-    id: 'T1014101603100',
-    name: 'Tissot PR 100',
-    brand: 'TIS_1',
-    strapMaterial: 'Leather',
-    movement: 'Quartz',
-    waterResistance: '100m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'Grey',
-    stock: true,
-    stockCount: 12,
-    Vcollection: 'Classic & Dress',
-    gender: 'Male',
-    price: 415,
-    image: '/Assets/Images/Watches/Tissot PR 100.png',
-    description:
-      'The Tissot PR 100 is a classic quartz watch with a grey dial and leather strap. Its timeless design and durability make it perfect for everyday wear. The slim case profile and clean dial design with applied hour markers create a sophisticated look suitable for both business and casual occasions.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '40.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '9.50 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '46.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'Grey',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'SLIM PROFILE',
-        featureDesc: 'Ultra-thin case design for comfortable everyday wear',
-      },
-      {
-        featureName: 'QUARTZ MOVEMENT',
-        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '100m water resistance for swimming and water sports',
-      },
-      {
-        featureName: 'LEATHER STRAP',
-        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-      {
-        featureName: 'APPLIED HOUR MARKERS',
-        featureDesc: 'Elegant applied markers for enhanced readability and style',
-      },
-    ],
-  },
-  {
-    id: 'T1374271104100',
-    name: 'Tissot PRX Automatic Chronograph 42mm',
-    brand: 'TIS_1',
-    strapMaterial: 'Metal',
-    movement: 'Automatic',
-    waterResistance: '100m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'White',
-    stock: true,
-    stockCount: 8,
-    Vcollection: 'Casual & Everyday',
-    gender: 'Male',
-    price: 2150,
-    image: '/Assets/Images/Watches/Tissot PRX Automatic Chronograph 42mm.png',
-    description:
-      'The Tissot PRX Automatic Chronograph 42mm is a modern timepiece with a white dial and stainless steel case. Its automatic movement ensures precision and style. Inspired by 1970s design, the integrated bracelet and angular case create a distinctive look, while the chronograph function adds practical utility.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '42.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '14.50 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '48.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'White',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'CHRONOGRAPH FUNCTION',
-        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
-      },
-      {
-        featureName: 'AUTOMATIC MOVEMENT',
-        featureDesc: 'Self-winding mechanical movement with exceptional precision',
-      },
-      {
-        featureName: 'INTEGRATED BRACELET',
-        featureDesc: 'Seamlessly integrated bracelet design inspired by 1970s aesthetics',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '100m water resistance for swimming and water sports',
-      },
-      {
-        featureName: 'METAL BRACELET',
-        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-    ],
-  },
-  {
-    id: 'T1374071104100',
-    name: 'Tissot PRX Powermatic 80',
-    brand: 'TIS_1',
-    strapMaterial: 'Metal',
-    movement: 'Automatic',
-    waterResistance: '100m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'Blue',
-    stock: true,
-    stockCount: 9,
-    Vcollection: 'Casual & Everyday',
-    gender: 'Male',
-    price: 1100,
-    image: '/Assets/Images/Watches/Tissot PRX Powermatic 80.png',
-    description:
-      'The Tissot PRX Powermatic 80 is a sleek automatic watch with a blue dial and stainless steel case. Its 80-hour power reserve makes it a practical choice. The integrated bracelet design and waffle-patterned dial pay homage to 1970s watch aesthetics while offering modern reliability and comfort.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '40.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '10.90 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '46.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'Blue',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'WAFFLE DIAL',
-        featureDesc: 'Distinctive textured dial pattern inspired by 1970s design',
-      },
-      {
-        featureName: 'AUTOMATIC MOVEMENT',
-        featureDesc: 'Self-winding mechanical movement with 80-hour power reserve',
-      },
-      {
-        featureName: 'INTEGRATED BRACELET',
-        featureDesc: 'Seamlessly integrated bracelet design for modern aesthetics',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '100m water resistance for swimming and water sports',
-      },
-      {
-        featureName: 'METAL BRACELET',
-        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-    ],
-  },
-  {
-    id: 'T1096101107700',
-    name: 'Tissot Everytime 40mm',
-    brand: 'TIS_1',
-    strapMaterial: 'Metal',
-    movement: 'Quartz',
-    waterResistance: '30m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'Green',
-    stock: true,
-    stockCount: 15,
-    Vcollection: 'Casual & Everyday',
-    gender: 'Male',
-    price: 255,
-    image: '/Assets/Images/Watches/Tissot Everytime 40mm.png',
-    description:
-      'The Tissot Everytime 40mm is a minimalist quartz watch with a green dial and stainless steel case. Its clean design makes it a versatile accessory. The simple baton hour markers and slim profile create an understated elegance that works equally well with business attire or casual wear.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '40.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '8.50 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '45.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'Green',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'MINIMALIST DESIGN',
-        featureDesc: 'Clean, uncluttered dial for timeless elegance',
-      },
-      {
-        featureName: 'QUARTZ MOVEMENT',
-        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '30m water resistance for everyday wear',
-      },
-      {
-        featureName: 'METAL BRACELET',
-        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-      {
-        featureName: 'BATON HOUR MARKERS',
-        featureDesc: 'Slim, elegant hour markers for enhanced readability',
-      },
-    ],
-  },
-  {
     id: 'WSSA0018',
     name: 'Cartier Santos de Cartier',
     brand: 'CAR_1',
@@ -2102,16 +1772,16 @@ const products = [
     id: '405.034',
     name: 'A. Lange & Söhne Datograph 405.034 UpDown Lumen Platinum Black Dial',
     brand: 'ALS_1',
-    strapMaterial: '',
+    strapMaterial: 'Leather',
     movement: 'Manual Winding',
     waterResistance: '50m',
     caseMaterial: 'Platinum',
     dialColor: 'Black',
     stock:'true' ,
     stockCount: '3' ,
-    Vcollection: '',
+    Vcollection: 'Classic & Dress',
     gender: 'Male',
-    price: '$228,000.00',
+    price: 228000,
     image: 'a-lange-sohne-zeitwerk-striking-time-white-gold-black-dial-145-029-a-lange-sohne-40258736947444.jpg',
     description:
       "",
@@ -2169,16 +1839,16 @@ const products = [
     id: '405.831',
     name: 'A. Lange & Söhne Datograph Flyback 405.831 Rose Gold Baguette Bezel Black Dial Limited Edition',
     brand: 'ALS_1',
-    strapMaterial: 'Alligator Strap',
-    movement: 'Manual Winding',
+    strapMaterial: 'Leather',
+    movement: 'Manual',
     waterResistance: '30m',
     caseMaterial: 'Rose Gold',
     dialColor: 'Black',
     stock:'true' ,
     stockCount: '5' ,
-    Vcollection: '',
+    Vcollection: 'Classic & Dress',
     gender: 'Male',
-    price: '$180,000.00',
+    price: 180000,
     image: 'a-lange-sohne-datograph-flyback-rose-gold-baguette-bezel-black-dial-limited-edition-405-831-a-lange-sohne-40258660499700.jpg',
     description:
       "",
@@ -2236,16 +1906,16 @@ const products = [
     id: '145.029',
     name: 'A. Lange & Söhne Zeitwerk 145.029 Striking Time White Gold Black Dial',
     brand: 'ALS_1',
-    strapMaterial: 'Leather Strap',
-    movement: 'Manual Winding',
+    strapMaterial: 'Leather',
+    movement: 'Manual',
     waterResistance: '30m',
     caseMaterial: 'White Gold',
     dialColor: 'Black',
     stock:'true' ,
     stockCount: '3' ,
-    Vcollection: '',
+    Vcollection: 'Classic & Dress',
     gender: 'Male',
-    price: '$120,000.00',
+    price: 120000,
     image: 
       '/Assets/Images/Photos/A lange/a-lange-sohne-zeitwerk-striking-time-white-gold-black-dial-145-029-a-lange-sohne-40258736947444.jpg',
      galleryImages: [
@@ -2309,16 +1979,16 @@ const products = [
     id: 'RM 035',
     name: 'Richard Mille RM 035 Americas 2 Rose Gold Toro Skeleton Limited Edition (2018)',
     brand: 'RMI_1',
-    strapMaterial: 'Rubber Strap',
-    movement: 'Manual Winding',
+    strapMaterial: 'Rubber',
+    movement: 'Manual',
     waterResistance: '100m',
     caseMaterial: 'Rose Gold',
-    dialColor: 'Skeleton',
+    dialColor: 'Other',
     stock:'true' ,
     stockCount: '5' ,
-    Vcollection: '',
+    Vcollection: 'Casual & Everyday',
     gender: 'Male',
-    price: '$495,000.00',
+    price: 495000,
     image: 'richard-mille-americas-rose-gold-toro-skeleton-limited-edition-rm-035-richard-mille-40266311827700.png',
     description:
       "",
@@ -2376,16 +2046,16 @@ const products = [
     id: 'RM 011',
     name: 'Richard-Mille-RM-011-White-Ghost',
     brand: 'RMI_1',
-    strapMaterial: 'Rubber Strap',
+    strapMaterial: 'Rubber',
     movement: 'Automatic',
     waterResistance: '100m',
     caseMaterial: 'Ceramic',
-    dialColor: 'Skeleton',
+    dialColor: 'Other',
     stock:'true' ,
     stockCount: '3' ,
-    Vcollection: '',
+    Vcollection: 'Casual & Everyday',
     gender: 'Male',
-    price: '$380,000.00',
+    price: 380000,
     image: '/Assets/Images/Photos/RM 011/richard-mille-rm-011-fm-white-ghost-white-ceramic-limited-edition-richard-mille-1151957426.png',
      galleryImages: [
       '/Assets/Images/Photos/RM 011/richard-mille-rm-72-01-lifestyle-in-house-chronograph-white-ceramic-2023-richard-mille-42985899720948.jpg',
@@ -2444,88 +2114,20 @@ const products = [
     ],
   },
 
-
-{
-    id: 'BGOP45BGLDCHQR-101837',
-    name: 'BVLGARI Octo Retrogradi Chronograph BGOP45BGLDCHQR-101837',
-    brand: 'JAC_1',
-    strapMaterial: 'Alligator Strap',
-    movement: 'Automatic',
-    waterResistance: '50m',
-    caseMaterial: 'Rose Gold',
-    dialColor: 'Black',
-    stock:'true' ,
-    stockCount: '3' ,
-    Vcollection: '',
-    gender: 'Male',
-    price: '$560,000.00',
-    image: 'bvlgari-octo-retrogradi-chronograph-bgop45bgldchqr-101837-bvlgari-40260747854068.png',
-    description:
-      "",
-    specifications: [
-      {
-        specName: '',
-        specValue: '',
-      },
-      {
-        specName: '',
-        specValue: '',
-      },
-      {
-        specName: '',
-        specValue: '',
-      },
-      {
-        specName: '',
-        specValue: '',
-      },
-      {
-        specName: '',
-        specValue: '',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: '',
-        featureDesc: '',
-      },
-      {
-        featureName: '',
-        featureDesc: '',
-      },
-      {
-        featureName: '',
-        featureDesc: '',
-      },
-      {
-        featureName: '',
-        featureDesc: '',
-      },
-      {
-        featureName: '',
-        featureDesc: '',
-      },
-      {
-        featureName: '',
-        featureDesc: '',
-      },
-    ],
-  },
-
 {
     id: '26284RO.OO.D002CR.01',
-    name: 'Audemars Piguet Royal Oak Offshore 26284RO.OO.D002CR.01 Rubens Barrichello lll Chronograph',
+    name: 'Jacob Co. At150-40 AC SD A Gravitational Triple Axis Automatic Tourbillon Piece Unique',
     brand: 'JAC_1',
-    strapMaterial: 'Alligator Strap',
+    strapMaterial: 'Leather',
     movement: 'Automatic',
     waterResistance: '30m',
     caseMaterial: 'Rose Gold',
     dialColor: 'Red',
     stock:'true' ,
     stockCount: '5' ,
-    Vcollection: '',
+    Vcollection: 'Luxury & Heritage',
     gender: 'Male',
-    price: '$420,000.00',
+    price: 420000,
     image: 'audemars-piguet-royal-oak-offshore-rubens-barrichello-lll-26284ro-oo-d002cr-01-audemars-piguet-40259238527220.png',
     description:
       "",
@@ -2581,18 +2183,18 @@ const products = [
 
 {
     id: '15416CE.OO.1225CE.02',
-    name: 'Audemars Piguet Royal Oak 15416CE.OO.1225CE.02 Double Balance Wheel Black Ceramic Openworked Dial Limited Edition',
+    name: 'Jacob Co. At150-40 AC SD A Gravitational Triple Axis Automatic Tourbillon Piece Unique',
     brand: 'JAC_1',
     strapMaterial: 'Ceramic',
     movement: 'Automatic',
     waterResistance: '30m',
     caseMaterial: 'Ceramic',
-    dialColor: 'Openworked',
+    dialColor: 'Other',
     stock:'true' ,
     stockCount: '5' ,
-    Vcollection: '',
+    Vcollection: 'Luxury & Heritage',
     gender: 'Male',
-    price: '$385,000.00',
+    price: 385000,
     image: '/Assets/Images/Photos/JAC 1/jacob-co-astronomia-at150-40-ac-sd-a-gravitational-triple-axis-automatic-tourbillon-piece-unique-2018-jacob-co-1154935480.jpg',
     galleryImages: [
       '/Assets/Images/Photos/JAC 1/jacob-co-astronomia-at150-40-ac-sd-a-gravitational-triple-axis-automatic-tourbillon-piece-unique-2018-jacob-co-1155822434.jpg',
@@ -2654,16 +2256,16 @@ const products = [
     id: '5100T/000R-B623',
     name: 'Vacheron Constantin Traditionnelle Tourbillon Chronograph 5100T/000R-B623 Rose Gold',
     brand: 'VAC_1',
-    strapMaterial: 'Alligator Strap',
+    strapMaterial: 'Leather',
     movement: 'Automatic',
     waterResistance: '50m',
     caseMaterial: 'Rose Gold',
     dialColor: 'Silver',
     stock:'true' ,
     stockCount: '5' ,
-    Vcollection: '',
-    gender: 'FEMALE',
-    price: '$195,000.00',
+    Vcollection: 'Classic & Dress',
+    gender: 'Female',
+    price: 195000,
     image: 'Assets/Images/Photos/vacheron/vacheron-constantin-traditionnelle-tourbillon-chronograph-rose-gold-5100t-000r-b623-vacheron-constantin-40272885547252.jpg',
     galleryImages: [
       '/Assets/Images/Photos/vacheron/vacheron-constantin-traditionnelle-tourbillon-chronograph-rose-gold-5100t-000r-b623-vacheron-constantin-40272885973236.jpg',
@@ -2730,12 +2332,12 @@ const products = [
     movement: 'Automatic',
     waterResistance: '50m',
     caseMaterial: 'Stainless Steel',
-    dialColor: 'Black "Patrizzi"',
+    dialColor: 'Black',
     stock:'true' ,
     stockCount: '3' ,
-    Vcollection: '',
+    Vcollection: 'Casual & Everyday',
     gender: 'Male',
-    price: '$49,000.00',
+    price: 49000,
     image: 'rolex-daytona-116520-stainless-steel-black-dial-zenith-1997-rolex-43846969000180.jpg',
      galleryImages: [
       '/Assets/Images/Photos/vacheron-constantin-traditionnelle-tourbillon-chronograph-rose-gold-5100t-000r-b623-vacheron-constantin-40272885547252/rolex-daytona-116520-stainless-steel-black-dial-zenith-1997-rolex-43846969196788.jpg',
@@ -2802,12 +2404,12 @@ const products = [
     movement: 'Automatic',
     waterResistance: '30m',
     caseMaterial: 'Yellow Gold',
-    dialColor: 'Champagne Dial',
+    dialColor: 'Other',
     stock:'true' ,
     stockCount: '5' ,
-    Vcollection: '',
+    Vcollection: 'Casual & Everyday',
     gender: 'Male',
-    price: '$78,900.00',
+    price: 78900,
     image: '/Assets/Images/Photos/historique/vacheron-constantin-historiques-222-yellow-gold-champagne-dial-vacheron-constantin-42478825013492.jpg',
      galleryImages: [
       '/Assets/Images/Photos/historique/vacheron-constantin-historiques-222-yellow-gold-champagne-dial-vacheron-constantin-42478825144564.jpg',
@@ -2897,6 +2499,4 @@ async function seedDatabase() {
   }
 }
 
-// Make sure dotenv is configured before seeding
-require('dotenv').config();
 seedDatabase();
