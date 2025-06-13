@@ -34,7 +34,7 @@ const transporter = nodemailer.createTransport({
   },
   secure: true,
   tls: {
-    rejectUnauthorized: true,
+    rejectUnauthorized: false, // Allow self-signed certificates
     minVersion: 'TLSv1.2'
   },
   pool: true,
@@ -56,11 +56,15 @@ transporter.verify(function(error, success) {
       console.error('   EMAIL_PASSWORD=your-16-digit-app-password');
       console.error('3. Check if your Gmail account has 2FA enabled');
       console.error('4. Generate a new App Password from Google Account settings');
-    } else {
+      console.error('5. If using Gmail, make sure "Less secure app access" is enabled or use an App Password');
+    } else if (error.code === 'EAUTH') {
       console.error('Authentication failed. Please check:');
       console.error('1. Your Gmail address is correct');
       console.error('2. You are using an App Password (not your regular Gmail password)');
       console.error('3. 2-Step Verification is enabled on your Google Account');
+      console.error('4. The App Password is correctly copied without any extra spaces');
+    } else {
+      console.error('Unexpected error:', error.message);
     }
     process.exit(1);
   } else {
