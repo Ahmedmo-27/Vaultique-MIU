@@ -158,7 +158,7 @@
         });
 
         // Add featured item
-        let featuredItemCount = <%= collection.featuredItems.length %>;
+        let featuredItemCount = (collection && collection.featuredItems) ? collection.featuredItems.length : 0;
 
         function addFeaturedItem() {
             const container = document.getElementById('featuredItems');

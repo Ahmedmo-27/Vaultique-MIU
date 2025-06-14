@@ -8,6 +8,7 @@ const Order = require('../models/Orders');
 const { authenticateJWT } = require('../middleware/jwt');
 const Cart = require('../models/cart');
 const { generateOrderNumber } = require('../utils/orderUtils');
+const validator = require('validator');
 
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification') => {
@@ -2175,6 +2176,51 @@ router.get('/for-her', async (req, res) => {
             show: true
         });
     }
+    // Contact Us page route
+router.get('/contact-us', async (req, res) => {
+  try {
+    // Pass flash messages to the template
+    const success = req.flash('success');
+    const error = req.flash('error');
+    
+    res.render('Contact-Us', {
+      title: 'Vaultique | Contact Us',
+      user: req.user || null,
+      formData: req.flash('formData')[0] || {},
+      notification: {
+        hasSuccess: success.length > 0,
+        success: success[0],
+        hasError: error.length > 0,
+        error: error[0]
+      }
+    });
+  } catch (error) {
+    console.error('Error loading contact page:', error);
+    req.flash('error', 'Failed to load contact page. Please try again later.');
+    res.redirect('/contact-us');
+  }
+});
+
+router.get('/about-us', async (req, res) => {
+    try {
+        res.render('/about', {  // Renders the aboutus.ejs file
+            title: 'Vaultique | About Us',
+            user: req.user || null,
+            // Add any other data you want to pass to the template
+        });
+    } catch (error) {
+        console.error('Error loading about page:', error);
+        // Handle error with flash message
+        req.flash('error', 'Failed to load about page. Please try again later.');
+        res.redirect('/');
+    }
+    });
+
+
+
+       
+  
+
 });
 
 module.exports = router;
