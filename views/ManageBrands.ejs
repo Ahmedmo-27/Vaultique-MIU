@@ -94,7 +94,6 @@
                                 <th>Name</th>
                                 <th>Slug</th>
                                 <th>Description</th>
-                                <th>Website</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -113,15 +112,6 @@
                                         <td><%= brand.slug %></td>
                                         <td class="brand-description"><%= brand.description %></td>
                                         <td>
-                                            <% if (brand.website) { %>
-                                                <a href="<%= brand.website %>" target="_blank" class="text-decoration-none">
-                                                    <i class="fas fa-external-link-alt"></i> Visit
-                                                </a>
-                                            <% } else { %>
-                                                N/A
-                                            <% } %>
-                                        </td>
-                                        <td>
                                             <div class="btn-group" role="group">
                                                 <a href="/admin/brands/<%= brand._id %>" class="btn btn-info btn-sm" title="View">
                                                     <i class="fas fa-eye"></i>
@@ -139,7 +129,7 @@
                                 <% }); %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="6" class="text-center">No brands found</td>
+                                    <td colspan="5" class="text-center">No brands found</td>
                                 </tr>
                             <% } %>
                         </tbody>

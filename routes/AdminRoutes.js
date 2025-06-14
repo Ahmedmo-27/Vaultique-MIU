@@ -109,7 +109,14 @@ router.patch('/api/todos/:id/toggle', adminController.toggleTodo);
 router.get('/brands', isAdmin, adminController.renderBrands);
 router.get('/brands/create', isAdmin, adminController.renderCreateBrand);
 router.post('/brands', isAdmin, upload.fields([
-    { name: 'logo', maxCount: 1 }
+    { name: 'logo', maxCount: 1 },
+    { name: 'coverImage', maxCount: 1 },
+    { name: 'coverImage2', maxCount: 1 },
+    { name: 'heroVideo', maxCount: 1 },
+    { name: 'model3d', maxCount: 1 },
+    { name: 'featuredModels[0][image]', maxCount: 1 },
+    { name: 'featuredModels[1][image]', maxCount: 1 },
+    { name: 'featuredModels[2][image]', maxCount: 1 }
 ]), adminController.createBrand);
 router.get('/brands/:id', isAdmin, adminController.getBrand);
 router.get('/brands/:id/edit', isAdmin, adminController.renderEditBrand);

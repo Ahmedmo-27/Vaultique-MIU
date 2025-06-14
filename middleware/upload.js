@@ -27,70 +27,93 @@ const createUploadDirectories = () => {
 // Create directories when module is loaded
 createUploadDirectories();
 
-// Configure storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        let uploadPath = path.join(projectRoot, 'public', 'Assets');
-        
-        // Determine subdirectory based on file type (case-insensitive)
-        if (file.mimetype.toLowerCase().startsWith('image/')) {
-            uploadPath = path.join(uploadPath, 'Images');
-        } else if (file.mimetype.toLowerCase().startsWith('video/')) {
-            uploadPath = path.join(uploadPath, 'Videos');
-        } else if (file.originalname.endsWith('.glb')) {
-            uploadPath = path.join(uploadPath, '3D Models');
-        }
-        
-        cb(null, uploadPath);
-    },
-    filename: function (req, file, cb) {
-        // Create unique filename
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
 // File filter
 const fileFilter = (req, file, cb) => {
-    // Log file information for debugging
-    console.log('Processing file:', {
+    // Enhanced logging for debugging
+    console.log('File upload attempt:', {
         fieldname: file.fieldname,
         originalname: file.originalname,
         mimetype: file.mimetype,
-        size: (file.size / (1024 * 1024)).toFixed(2) + 'MB' // Log file size in MB
+        size: (file.size / (1024 * 1024)).toFixed(2) + 'MB',
+        extension: path.extname(file.originalname).toLowerCase()
     });
 
     // Check file extension
     const ext = path.extname(file.originalname).toLowerCase();
     
     // Define allowed file types
-    const allowedImageTypes = ['.jpg', '.jpeg', '.png'];
+    const allowedImageTypes = ['.jpg', '.jpeg', '.png', '.avif'];
     const allowedVideoTypes = ['.mp4'];
-    const allowedModelTypes = ['.glb'];
+    const allowedModelTypes = ['.glb', '.gltf'];
 
     // Check if file type is allowed based on field name
-    if (file.fieldname === 'image' || file.fieldname === 'galleryImages') {
+    if (file.fieldname === 'logo' || 
+        file.fieldname === 'coverImage' || 
+        file.fieldname === 'coverImage2' || 
+        file.fieldname === 'image' || 
+        file.fieldname === 'galleryImages' || 
+        file.fieldname.startsWith('featuredModels[')) {
+        
+        console.log('Checking image file:', {
+            extension: ext,
+            allowedTypes: allowedImageTypes,
+            isAllowed: allowedImageTypes.includes(ext)
+        });
+
         if (allowedImageTypes.includes(ext)) {
             cb(null, true);
         } else {
-            cb(new Error(`Invalid image format. Only .jpg, .jpeg, and .png files are allowed.`), false);
+            cb(new Error(`Invalid image format: ${ext}. Only .jpg, .jpeg, .png, and .avif files are allowed.`), false);
         }
-    } else if (file.fieldname === 'video') {
+    } else if (file.fieldname === 'video' || file.fieldname === 'heroVideo') {
         if (allowedVideoTypes.includes(ext)) {
             cb(null, true);
         } else {
-            cb(new Error(`Invalid video format. Only .mp4 files are allowed.`), false);
+            cb(new Error(`Invalid video format: ${ext}. Only .mp4 files are allowed.`), false);
         }
-    } else if (file.fieldname === 'model3D') {
+    } else if (file.fieldname === 'model3d') {
         if (allowedModelTypes.includes(ext)) {
             cb(null, true);
         } else {
-            cb(new Error(`Invalid 3D model format. Only .glb files are allowed.`), false);
+            cb(new Error(`Invalid 3D model format: ${ext}. Only .glb and .gltf files are allowed.`), false);
         }
     } else {
         cb(new Error(`Invalid field name: ${file.fieldname}`), false);
     }
 };
+
+// Configure storage
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        let uploadPath = path.join(__dirname, '..', 'public', 'Assets');
+        
+        // Determine the appropriate subdirectory based on field name
+        if (file.fieldname === 'logo') {
+            uploadPath = path.join(uploadPath, 'Brands Logos');
+        } else if (file.fieldname === 'coverImage' || file.fieldname === 'coverImage2') {
+            uploadPath = path.join(uploadPath, 'Images');
+        } else if (file.fieldname === 'heroVideo') {
+            uploadPath = path.join(uploadPath, 'Videos');
+        } else if (file.fieldname === 'model3d') {
+            uploadPath = path.join(uploadPath, '3D Models');
+        } else if (file.fieldname === 'image' || file.fieldname === 'galleryImages' || file.fieldname.startsWith('featuredModels[')) {
+            uploadPath = path.join(uploadPath, 'Images');
+        } else if (file.fieldname === 'video') {
+            uploadPath = path.join(uploadPath, 'Videos');
+        }
+
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+
+        cb(null, uploadPath);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
 
 // Create multer upload instance
 const upload = multer({

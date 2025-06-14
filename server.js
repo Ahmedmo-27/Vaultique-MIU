@@ -17,6 +17,7 @@ const { errorHandler } = require('./utils/securityUtils');
 const rateLimit = require('express-rate-limit');
 const User = require('./models/Users');
 const MongoStore = require('connect-mongo');
+const fs = require('fs');
 
 // Import route files
 const apiRouter = require('./routes/api');
@@ -303,138 +304,61 @@ app.use(express.static(publicPath, {
   }
 }));
 
-// CSS files with explicit MIME type and case-insensitive handling
-app.get('/CSS/*', (req, res, next) => {
-  const cssPath = path.join(publicPath, req.path);
-  res.set('Content-Type', 'text/css');
-  
-  // Try multiple case variations
-  const tryPaths = [
-    cssPath, // Original path
-    path.join(path.dirname(cssPath), path.basename(cssPath).toLowerCase()), // Lowercase
-    path.join(path.dirname(cssPath), path.basename(cssPath).toUpperCase()) // Uppercase
-  ];
+// Assets directory with case-insensitive handling
+app.get('/Assets/*', (req, res, next) => {
+    const assetPath = path.join(publicPath, req.path);
+    const ext = path.extname(assetPath).toLowerCase();
+    
+    // Set appropriate MIME type based on file extension
+    const mimeTypes = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.gif': 'image/gif',
+        '.avif': 'image/avif',
+        '.webp': 'image/webp',
+        '.mp4': 'video/mp4',
+        '.webm': 'video/webm',
+        '.glb': 'model/gltf-binary'
+    };
+    
+    res.set('Content-Type', mimeTypes[ext] || 'application/octet-stream');
+    
+    // Try multiple paths for the asset
+    const tryPaths = [
+        assetPath, // Original path
+        path.join(publicPath, 'Assets/Images', path.basename(req.path)), // Images directory
+        path.join(publicPath, 'Assets/Videos', path.basename(req.path)), // Videos directory
+        path.join(publicPath, 'Assets/3D Models', path.basename(req.path)), // 3D Models directory
+        path.join(publicPath, 'Assets/Brands Logos', path.basename(req.path)), // Brands Logos directory
+        path.join(path.dirname(assetPath), path.basename(assetPath).toLowerCase()) // Lowercase version
+    ];
 
-  const tryNextPath = (index) => {
-    if (index >= tryPaths.length) {
-      console.error(`All attempts failed for CSS: ${req.path}`);
-      next();
-      return;
-    }
+    const tryNextPath = (index) => {
+        if (index >= tryPaths.length) {
+            console.error(`All attempts failed for asset: ${req.path}`);
+            next();
+            return;
+        }
 
-    res.sendFile(tryPaths[index], err => {
-      if (err) {
-        console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err.message);
-        tryNextPath(index + 1);
-      }
-    });
-  };
+        // Check if the path exists and is a file (not a directory)
+        fs.stat(tryPaths[index], (err, stats) => {
+            if (err || !stats.isFile()) {
+                console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err?.message || 'Not a file');
+                tryNextPath(index + 1);
+                return;
+            }
 
-  tryNextPath(0);
-});
+            res.sendFile(tryPaths[index], err => {
+                if (err) {
+                    console.error(`Error sending file ${tryPaths[index]}:`, err.message);
+                    tryNextPath(index + 1);
+                }
+            });
+        });
+    };
 
-// JavaScript files with explicit MIME type and case-insensitive handling
-app.get('/Javascript/*', (req, res, next) => {
-  const jsPath = path.join(publicPath, req.path);
-  res.set('Content-Type', 'application/javascript');
-  
-  // Try multiple case variations
-  const tryPaths = [
-    jsPath, // Original path
-    path.join(path.dirname(jsPath), path.basename(jsPath).toLowerCase()), // Lowercase
-    path.join(path.dirname(jsPath), path.basename(jsPath).toUpperCase()) // Uppercase
-  ];
-
-  const tryNextPath = (index) => {
-    if (index >= tryPaths.length) {
-      console.error(`All attempts failed for JS: ${req.path}`);
-      next();
-      return;
-    }
-
-    res.sendFile(tryPaths[index], err => {
-      if (err) {
-        console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err.message);
-        tryNextPath(index + 1);
-      }
-    });
-  };
-
-  tryNextPath(0);
-});
-
-// Image files with explicit MIME types and case-insensitive handling
-app.get('/Assets/Images/*', (req, res, next) => {
-  const imagePath = path.join(publicPath, req.path);
-  const ext = path.extname(imagePath).toLowerCase();
-  
-  // Set appropriate MIME type based on file extension
-  const mimeTypes = {
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.png': 'image/png',
-    '.gif': 'image/gif',
-    '.avif': 'image/avif',
-    '.webp': 'image/webp'
-  };
-  
-  res.set('Content-Type', mimeTypes[ext] || 'application/octet-stream');
-  
-  // Try multiple paths for the image
-  const tryPaths = [
-    imagePath, // Original path
-    path.join(publicPath, 'Assets/Images/Watches', path.basename(req.path)), // Watches directory
-    path.join(publicPath, 'Assets/Images/Brands Logos', path.basename(req.path)), // Brands Logos directory
-    path.join(publicPath, 'Assets/Images/Photos', path.basename(req.path)), // Photos directory
-    path.join(path.dirname(imagePath), path.basename(imagePath).toLowerCase()) // Lowercase version
-  ];
-
-  const tryNextPath = (index) => {
-    if (index >= tryPaths.length) {
-      console.error(`All attempts failed for image: ${req.path}`);
-      next();
-      return;
-    }
-
-    res.sendFile(tryPaths[index], err => {
-      if (err) {
-        console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err.message);
-        tryNextPath(index + 1);
-      }
-    });
-  };
-
-  tryNextPath(0);
-});
-
-// 3D Model files with explicit MIME type and case-insensitive handling
-app.get('/Assets/3D Models/*', (req, res, next) => {
-  const modelPath = path.join(__dirname, '..', 'Ahmed', '3D Models', decodeURIComponent(path.basename(req.path)));
-  res.set('Content-Type', 'model/gltf-binary');
-  
-  // Try multiple case variations
-  const tryPaths = [
-    modelPath, // Original path
-    path.join(path.dirname(modelPath), path.basename(modelPath).toLowerCase()), // Lowercase
-    path.join(path.dirname(modelPath), path.basename(modelPath).toUpperCase()) // Uppercase
-  ];
-
-  const tryNextPath = (index) => {
-    if (index >= tryPaths.length) {
-      console.error(`All attempts failed for 3D model: ${req.path}`);
-      next();
-      return;
-    }
-
-    res.sendFile(tryPaths[index], err => {
-      if (err) {
-        console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err.message);
-        tryNextPath(index + 1);
-      }
-    });
-  };
-
-  tryNextPath(0);
+    tryNextPath(0);
 });
 
 // Fallback static file handlers (case-insensitive)

@@ -8,6 +8,8 @@ const Session = require("../models/Sessions");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
+const path = require("path");
+const fs = require("fs");
 
 // Store todos in memory since we're not using the database
 let todos = [
@@ -943,27 +945,27 @@ exports.createCollection = async (req, res) => {
     } = req.body;
 
     // Handle file uploads
-    const logo = req.files?.logo ? `/Assets/${req.files.logo[0].filename}` : null;
-    const coverImage = req.files?.coverImage ? `/Assets/${req.files.coverImage[0].filename}` : null;
-    const heroVideo = req.files?.heroVideo ? `/Assets/${req.files.heroVideo[0].filename}` : null;
+    const logo = req.files?.logo ? `/Assets/Images/${req.files.logo[0].filename}` : null;
+    const coverImage = req.files?.coverImage ? `/Assets/Images/${req.files.coverImage[0].filename}` : null;
+    const heroVideo = req.files?.heroVideo ? `/Assets/Videos/${req.files.heroVideo[0].filename}` : null;
 
     console.log('Processed file paths:', { logo, coverImage, heroVideo });
 
     // Process featured items
     const processedFeaturedItems = [];
     if (featuredItems) {
-      console.log('Featured items before processing:', featuredItems);
-      const items = Array.isArray(featuredItems) ? featuredItems : [featuredItems];
-      for (const item of items) {
-        const itemImage = req.files?.[`featuredItems[${items.indexOf(item)}][image]`]?.[0];
-        processedFeaturedItems.push({
-          name: item.name,
-          image: itemImage ? `/Assets/${itemImage.filename}` : null,
-          tagline: item.tagline,
-          description: item.description
-        });
-      }
-      console.log('Processed featured items:', processedFeaturedItems);
+        console.log('Featured items before processing:', featuredItems);
+        const items = Array.isArray(featuredItems) ? featuredItems : [featuredItems];
+        for (const item of items) {
+            const itemImage = req.files?.[`featuredItems[${items.indexOf(item)}][image]`]?.[0];
+            processedFeaturedItems.push({
+                name: item.name,
+                image: itemImage ? `/Assets/Images/${itemImage.filename}` : null,
+                tagline: item.tagline,
+                description: item.description
+            });
+        }
+        console.log('Processed featured items:', processedFeaturedItems);
     }
 
     const collection = new Collection({
@@ -1011,13 +1013,13 @@ exports.updateCollection = async (req, res) => {
         // Handle file uploads
         if (req.files) {
             if (req.files.logo) {
-                collection.logo = `/Assets/${req.files.logo[0].filename}`;
+                collection.logo = `/Assets/Images/${req.files.logo[0].filename}`;
             }
             if (req.files.coverImage) {
-                collection.coverImage = `/Assets/${req.files.coverImage[0].filename}`;
+                collection.coverImage = `/Assets/Images/${req.files.coverImage[0].filename}`;
             }
             if (req.files.heroVideo) {
-                collection.heroVideo = `/Assets/${req.files.heroVideo[0].filename}`;
+                collection.heroVideo = `/Assets/Videos/${req.files.heroVideo[0].filename}`;
             }
         }
 
@@ -1039,7 +1041,7 @@ exports.updateCollection = async (req, res) => {
 
                 // Handle featured item image if uploaded
                 if (req.files && req.files[`featuredItems[${i}][image]`]) {
-                    item.image = `/Assets/${req.files[`featuredItems[${i}][image]`][0].filename}`;
+                    item.image = `/Assets/Images/${req.files[`featuredItems[${i}][image]`][0].filename}`;
                 } else if (collection.featuredItems[i] && collection.featuredItems[i].image) {
                     // Keep existing image if no new one uploaded
                     item.image = collection.featuredItems[i].image;
@@ -1206,14 +1208,24 @@ exports.renderBrands = async (req, res) => {
                 prevPage: page - 1,
                 nextPage: page + 1
             },
-            user: req.user
+            user: req.user,
+            error: null
         });
     } catch (error) {
         console.error('Error rendering brands:', error);
-        res.status(500).render('error', {
+        res.status(500).render('ManageBrands', {
             title: 'Error',
-            message: 'Error loading brands',
-            error: error.message
+            brands: [],
+            pagination: {
+                currentPage: 1,
+                totalPages: 1,
+                hasPrevPage: false,
+                hasNextPage: false,
+                prevPage: 1,
+                nextPage: 1
+            },
+            user: req.user,
+            error: 'Error loading brands: ' + error.message
         });
     }
 };
@@ -1236,19 +1248,88 @@ exports.renderCreateBrand = async (req, res) => {
 
 exports.createBrand = async (req, res) => {
     try {
-        console.log('Creating brand with data:', req.body);
-        console.log('Files:', req.files);
+        console.log('=== Create Brand Request ===');
+        console.log('Request body:', req.body);
+        console.log('Request files:', req.files);
+        console.log('Request headers:', req.headers);
 
         const brandData = {
+            _id: req.body._id,
             name: req.body.name,
             slug: req.body.slug,
+            header: req.body.header,
             description: req.body.description,
             website: req.body.website
         };
 
+        console.log('Initial brand data:', brandData);
+
+        // Handle logo
         if (req.files && req.files.logo) {
-            brandData.logo = `/Assets/${req.files.logo[0].filename}`;
+            console.log('Processing logo file:', req.files.logo[0]);
+            const fileExt = path.extname(req.files.logo[0].originalname);
+            const newFilename = `${req.body.name}${fileExt}`;
+            const oldPath = req.files.logo[0].path;
+            const newPath = path.join(__dirname, '..', 'public', 'Assets', 'Brands Logos', newFilename);
+            
+            // Create directory if it doesn't exist
+            const logoDir = path.dirname(newPath);
+            if (!fs.existsSync(logoDir)) {
+                console.log('Creating logo directory:', logoDir);
+                fs.mkdirSync(logoDir, { recursive: true });
+            }
+            
+            // Rename the file
+            console.log('Renaming logo file from', oldPath, 'to', newPath);
+            fs.renameSync(oldPath, newPath);
+            brandData.logo = `/Assets/Brands Logos/${newFilename}`;
         }
+
+        // Handle cover images
+        if (req.files && req.files.coverImage) {
+            console.log('Processing cover image:', req.files.coverImage[0]);
+            brandData.coverImage = req.files.coverImage[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+        }
+        if (req.files && req.files.coverImage2) {
+            console.log('Processing secondary cover image:', req.files.coverImage2[0]);
+            brandData.coverImage2 = req.files.coverImage2[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+        }
+
+        // Handle hero video
+        if (req.files && req.files.heroVideo) {
+            console.log('Processing hero video:', req.files.heroVideo[0]);
+            brandData.heroVideo = req.files.heroVideo[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+        }
+
+        // Handle 3D model
+        if (req.files && req.files.model3d) {
+            console.log('Processing 3D model:', req.files.model3d[0]);
+            brandData.Model3d = req.files.model3d[0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+        }
+
+        // Handle featured models
+        brandData.featuredModels = [];
+        const featuredModelCount = Object.keys(req.body).filter(key => key.startsWith('featuredModels[')).length / 4; // 4 fields per model
+        console.log('Processing featured models. Count:', featuredModelCount);
+
+        for (let i = 0; i < featuredModelCount; i++) {
+            const model = {
+                name: req.body[`featuredModels[${i}][name]`],
+                tagline: req.body[`featuredModels[${i}][tagline]`],
+                description: req.body[`featuredModels[${i}][description]`]
+            };
+
+            // Handle model image
+            const imageField = `featuredModels[${i}][image]`;
+            if (req.files && req.files[imageField]) {
+                console.log(`Processing featured model ${i} image:`, req.files[imageField][0]);
+                model.image = req.files[imageField][0].path.replace(/\\/g, '/').replace(/^.*?public/, '');
+            }
+
+            brandData.featuredModels.push(model);
+        }
+
+        console.log('Final brand data before save:', brandData);
 
         const brand = new Brand(brandData);
         await brand.save();
@@ -1329,7 +1410,24 @@ exports.updateBrand = async (req, res) => {
 
         // Handle file upload
         if (req.files && req.files.logo) {
-            brand.logo = `/Assets/${req.files.logo[0].filename}`;
+            // Create a consistent filename based on the brand name
+            const fileExt = path.extname(req.files.logo[0].originalname);
+            const newFilename = `${req.body.name}${fileExt}`;
+            const oldPath = req.files.logo[0].path;
+            const newPath = path.join(__dirname, '..', 'public', 'Assets', 'Brands Logos', newFilename);
+            
+            // Delete old logo if it exists
+            if (brand.logo) {
+                const oldLogoPath = path.join(__dirname, '..', 'public', brand.logo);
+                if (fs.existsSync(oldLogoPath)) {
+                    fs.unlinkSync(oldLogoPath);
+                }
+            }
+            
+            // Rename the new file
+            fs.renameSync(oldPath, newPath);
+            
+            brand.logo = `/Assets/Brands Logos/${newFilename}`;
         }
 
         // Update basic information

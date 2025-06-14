@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Brand - Admin Dashboard</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
+    <!-- Custom JavaScript -->
+    <script src="/Javascript/nav-bar.js"></script>
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+        }
+        .notification.success {
+            background-color: #28a745;
+        }
+        .notification.error {
+            background-color: #dc3545;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .featured-model {
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        .featured-model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/Admin-navigation') %>
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="mb-4">Create New Brand</h2>
+            <form id="createBrandForm" action="/admin/brands" method="POST" enctype="multipart/form-data">
+                <!-- Basic Information -->
+                <div class="mb-3">
+                    <label for="_id" class="form-label">Brand ID</label>
+                    <input type="text" class="form-control" id="_id" name="_id" required>
+                    <small class="form-text text-muted">Unique identifier (e.g., "ROL_1")</small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="name" class="form-label">Brand Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="slug" class="form-label">Slug</label>
+                    <input type="text" class="form-control" id="slug" name="slug" required>
+                    <small class="form-text text-muted">This will be used in the URL (e.g., "rolex")</small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="header" class="form-label">Header</label>
+                    <input type="text" class="form-control" id="header" name="header" required>
+                    <small class="form-text text-muted">Short tagline or header text</small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                </div>
+
+                <!-- Media -->
+                <div class="mb-3">
+                    <label for="logo" class="form-label">Brand Logo</label>
+                    <input type="file" class="form-control" id="logo" name="logo" accept="image/*" required>
+                    <img id="logoPreview" class="preview-image d-none" src="#" alt="Logo Preview">
+                </div>
+
+                <div class="mb-3">
+                    <label for="coverImage" class="form-label">Cover Image</label>
+                    <input type="file" class="form-control" id="coverImage" name="coverImage" accept="image/*" required>
+                    <img id="coverImagePreview" class="preview-image d-none" src="#" alt="Cover Image Preview">
+                </div>
+
+                <div class="mb-3">
+                    <label for="coverImage2" class="form-label">Secondary Cover Image</label>
+                    <input type="file" class="form-control" id="coverImage2" name="coverImage2" accept="image/*" required>
+                    <img id="coverImage2Preview" class="preview-image d-none" src="#" alt="Secondary Cover Image Preview">
+                </div>
+
+                <div class="mb-3">
+                    <label for="heroVideo" class="form-label">Hero Video</label>
+                    <input type="file" class="form-control" id="heroVideo" name="heroVideo" accept="video/*">
+                    <video id="heroVideoPreview" class="preview-image d-none" controls></video>
+                </div>
+
+                <div class="mb-3">
+                    <label for="model3d" class="form-label">3D Model</label>
+                    <input type="file" class="form-control" id="model3d" name="model3d" accept=".glb,.gltf">
+                </div>
+
+                <!-- Featured Models -->
+                <div class="mb-3">
+                    <label class="form-label">Featured Models</label>
+                    <div id="featuredModels">
+                        <div class="featured-model">
+                            <div class="featured-model-header">
+                                <h5>Featured Model 1</h5>
+                                <button type="button" class="btn btn-danger btn-sm remove-model">Remove</button>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" name="featuredModels[0][name]" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Image</label>
+                                <input type="file" class="form-control" name="featuredModels[0][image]" accept="image/*" required>
+                                <img class="preview-image d-none model-preview" src="#" alt="Model Preview">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tagline</label>
+                                <input type="text" class="form-control" name="featuredModels[0][tagline]" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" name="featuredModels[0][description]" rows="3" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="addFeaturedModel">Add Featured Model</button>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Create Brand</button>
+                    <a href="/admin/brands" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-generate slug from brand name
+        document.getElementById('name').addEventListener('input', function(e) {
+            const slug = e.target.value
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+            document.getElementById('slug').value = slug;
+        });
+
+        // Preview images
+        function setupImagePreview(inputId, previewId) {
+            document.getElementById(inputId).addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.getElementById(previewId);
+                        preview.src = e.target.result;
+                        preview.classList.remove('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Setup previews for main images
+        setupImagePreview('logo', 'logoPreview');
+        setupImagePreview('coverImage', 'coverImagePreview');
+        setupImagePreview('coverImage2', 'coverImage2Preview');
+
+        // Preview video
+        document.getElementById('heroVideo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const preview = document.getElementById('heroVideoPreview');
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('d-none');
+            }
+        });
+
+        // Add featured model
+        let modelCount = 1;
+        document.getElementById('addFeaturedModel').addEventListener('click', function() {
+            const template = document.querySelector('.featured-model').cloneNode(true);
+            template.querySelector('h5').textContent = `Featured Model ${modelCount + 1}`;
+            
+            // Update input names
+            template.querySelectorAll('input, textarea').forEach(input => {
+                input.name = input.name.replace('[0]', `[${modelCount}]`);
+                input.value = '';
+            });
+            
+            // Setup image preview for new model
+            const imageInput = template.querySelector('input[type="file"]');
+            const preview = template.querySelector('.model-preview');
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.classList.remove('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            document.getElementById('featuredModels').appendChild(template);
+            modelCount++;
+        });
+
+        // Remove featured model
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-model')) {
+                if (document.querySelectorAll('.featured-model').length > 1) {
+                    e.target.closest('.featured-model').remove();
+                }
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('createBrandForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(this);
+                console.log('Submitting form with data:', Object.fromEntries(formData));
+                
+                // Show loading state
+                const submitButton = this.querySelector('button[type="submit"]');
+                const originalText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...';
+                
+                const response = await fetch('/admin/brands', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include' // This is important for sending cookies
+                }).catch(error => {
+                    console.error('Network error:', error);
+                    throw new Error('Network error: Unable to reach the server. Please check your connection and try again.');
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Session expired or invalid
+                        window.location.href = '/login';
+                        throw new Error('Session expired. Please log in again.');
+                    }
+                    const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
+                    throw new Error(errorData.message || `Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Server response:', data);
+                
+                if (data.success) {
+                    showNotification(data.message || 'Brand created successfully', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin/brands';
+                    }, 1000);
+                } else {
+                    showNotification(data.message || 'Error creating brand', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(error.message || 'Error creating brand', 'error');
+            } finally {
+                // Reset button state
+                const submitButton = this.querySelector('button[type="submit"]');
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Create Brand';
+            }
+        });
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000); // Increased to 5 seconds to give more time to read errors
+        }
+    </script>
+</body>
+</html> 
