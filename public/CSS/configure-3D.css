@@ -938,7 +938,6 @@ model-viewer {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     width: 100%;
     margin-bottom: 20px;
-    z-index: 1000;
     position: static;
     right: auto;
     top: auto;

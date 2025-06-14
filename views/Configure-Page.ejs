@@ -17,81 +17,299 @@
     <script src="/Javascript/Loading Screen.js"></script>
     <script src="/Javascript/Light-Mode.js"></script>
     <style>
-      .customization-panel {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 16px 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 18px;
-            width: 100%;
-            align-items: flex-end;
-            margin-bottom: 24px;
-            position: static;
-            max-width: 100%;
-            overflow-x: visible;
-        }
+:root {
+  --primary: #2c3e50;
+  --secondary: #3498db;
+  --accent: #e74c3c;
+  --bg: #f5f6fa;
+  --card-bg: #fff;
+  --border-radius: 14px;
+  --shadow: 0 4px 16px rgba(44,62,80,0.08);
+  --gap: 2rem;
+  --transition: 0.2s;
+}
 
-        .customization-section {
-            margin-bottom: 0;
-            margin-right: 10px;
-            min-width: 90px;
-        }
+body {
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+  color: var(--primary);
+  margin: 0;
+}
 
-        .customization-section h3 {
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 16px;
-        }
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
 
-        .color-options {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
+.grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: var(--gap);
+  align-items: flex-start;
+}
 
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid #ddd;
-            transition: transform 0.2s;
-        }
+.configurator-column,
+.customization-column {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
 
-        .color-option:hover {
-            transform: scale(1.1);
-        }
+.model-selector {
+  margin-bottom: 1.5rem;
+}
 
-        .color-option.active {
-            border-color: #333;
-        }
+.model-selector label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+}
 
-        .price-display {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            font-size: 18px;
-            font-weight: bold;
-        }
+.model-selector select {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid #e0e0e0;
+  font-size: 1rem;
+  background: #fafbfc;
+  margin-top: 0.5rem;
+}
 
-        .add-to-cart {
-            width: 100%;
-            padding: 12px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background 0.2s;
-        }
+.watch-specs-horizontal {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: #f8f9fa;
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  font-size: 1rem;
+}
 
-        .add-to-cart:hover {
-            background: #444;
-        }
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.model-container {
+  aspect-ratio: 1/1;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--border-radius);
+  border: none;
+  background: #f8f9fa;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:hover {
+  background: var(--secondary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.customization-panel {
+  margin-bottom: 2rem;
+}
+
+.customization-header h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+
+.customization-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.customization-section {
+  background: #f8f9fa;
+  border-radius: var(--border-radius);
+  padding: 1.2rem 1rem;
+}
+
+.customization-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.strap-options {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.strap-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border var(--transition);
+}
+
+.strap-option.active,
+.strap-option:hover {
+  background: var(--secondary);
+  color: #fff;
+  border-color: var(--secondary);
+}
+
+.color-options {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  border: 2.5px solid #e0e0e0;
+  cursor: pointer;
+  transition: border var(--transition), box-shadow var(--transition), transform var(--transition);
+  box-shadow: 0 1px 4px rgba(44,62,80,0.07);
+}
+
+.color-option.active,
+.color-option:hover {
+  border: 2.5px solid var(--secondary);
+  box-shadow: 0 0 0 2px var(--primary);
+  transform: scale(1.08);
+}
+
+.config-summary {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.config-summary h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+
+.summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ececec;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-label {
+  color: #888;
+  font-weight: 500;
+}
+
+.summary-value {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.summary-total {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #ececec;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.price-display {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  text-align: right;
+}
+
+.add-to-cart {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.add-to-cart:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--hover-shadow);
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .configurator-column,
+  .customization-column {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .container {
+    padding: 0.5rem;
+  }
+  .configurator-column,
+  .customization-column {
+    padding: 1rem;
+  }
+  .customization-section {
+    padding: 0.7rem 0.5rem;
+  }
+}
     </style>
 </head>
 
@@ -107,23 +325,16 @@
                 <div class="grid">
                     <!-- Left Column - Configurator -->
                     <div class="configurator-column">
-                        <!-- Watch Specs -->
-                        <h1 id="specs-heading" class="visually-hidden">3D Previewer</h1>
                         <div class="model-selector">
                             <label for="model-selector">Select Watch Model:</label>
                             <select id="model-selector" class="model-selector">
-                                <% if (typeof brands !== 'undefined' && brands.length > 0) { %>
-                                    <% brands.forEach(brand => { %>
-                                        <option value="/Assets/3D Models/<%= encodeURIComponent(brand.Model3d.split('/').pop()) %>" <%= brand.name === 'Rolex' ? 'selected' : '' %>>
-                                            <%= brand.name %>
-                                        </option>
-                                    <% }); %>
-                                <% } else { %>
-                                    <option value="" disabled>No models available</option>
-                                <% } %>
+                                <option value="/Assets/3D Models/Omega Sea Master.glb">Omega</option>
+                                <option value="/Assets/3D Models/Rolex Daytona.glb">Rolex</option>
+                                <option value="/Assets/3D Models/Santos.glb">Cartier</option>
+                                <option value="/Assets/3D Models/Audemars Piguet Royal Oak.gltf">Audemars</option>
                             </select>
                         </div>
-                        <br>
+
                         <div class="watch-specs-horizontal">
                             <div class="spec-item">
                                 <i class="fas fa-clock" aria-hidden="true"></i>
@@ -139,71 +350,121 @@
                             </div>
                         </div>
 
-                        <!-- 3D Viewer -->
-                        <section class="watch-viewer" aria-labelledby="viewer-heading">
-                            <div class="model-container">
-                                <model-viewer 
-                                    id="watch-model"
-                                    src="<%= brands && brands.length > 0 ? '/Assets/3D Models/' + encodeURIComponent(brands[0].Model3d.split('/').pop()) : '' %>"
-                                    camera-controls
-                                    auto-rotate
-                                    ar
-                                    ar-modes="webxr scene-viewer quick-look"
-                                    camera-orbit="0deg 75deg 105%"
-                                    min-camera-orbit="auto auto 50%"
-                                    max-camera-orbit="auto auto 150%"
-                                    min-field-of-view="30deg"
-                                    max-field-of-view="90deg"
-                                    shadow-intensity="1"
-                                    exposure="1"
-                                    environment-image="neutral"
-                                    style="width: 100%; height: 100%;"
-                                >
-                                    <div class="progress-bar" slot="progress-bar"></div>
-                                    <div slot="poster" style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;">
-                                        <div class="loading-spinner"></div>
-                                    </div>
-                                </model-viewer>
-                            </div>
-                            <div class="controls">
-                                <button id="toggle-rotate" class="btn btn-secondary">
-                                    <i class="fas fa-sync-alt"></i> Toggle Rotation
-                                </button>
-                                <button id="reset-camera" class="btn btn-secondary">
-                                    <i class="fas fa-undo"></i> Reset View
-                                </button>
-                                <button id="fullscreen" class="btn btn-secondary">
-                                    <i class="fas fa-expand"></i> Fullscreen
-                                </button>
-                                <button id="virtual-try-on" class="btn btn-secondary">
-                                    <i class="fas fa-vr-cardboard"></i> Virtual Try-On
-                                </button>
-                                
-                            </div>
-                            <div class="viewer-tips">
-                                <p><i class="fas fa-info-circle"></i> Click and drag to rotate • Scroll to zoom • Right-click to pan</p>
-                            </div>
-                        </section>
+                        <div class="model-container">
+                            <model-viewer 
+                                id="watch-model"
+                                src="/Assets/3D Models/Omega Sea Master.glb"
+                                camera-controls
+                                auto-rotate
+                                ar
+                                ar-modes="webxr scene-viewer quick-look"
+                                camera-orbit="0deg 75deg 105%"
+                                min-camera-orbit="auto auto 50%"
+                                max-camera-orbit="auto auto 150%"
+                                min-field-of-view="30deg"
+                                max-field-of-view="90deg"
+                                shadow-intensity="1"
+                                exposure="1"
+                                environment-image="neutral"
+                                style="width: 100%; height: 100%;"
+                            >
+                                <div class="progress-bar" slot="progress-bar"></div>
+                                <div slot="poster" style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </model-viewer>
+                        </div>
 
-                        
+                        <div class="controls">
+                            <button id="toggle-rotate" class="btn">
+                                <i class="fas fa-sync-alt"></i> Toggle Rotation
+                            </button>
+                            <button id="reset-camera" class="btn">
+                                <i class="fas fa-undo"></i> Reset View
+                            </button>
+                            <button id="fullscreen" class="btn">
+                                <i class="fas fa-expand"></i> Fullscreen
+                            </button>
+                            <button id="virtual-try-on" class="btn">
+                                <i class="fas fa-vr-cardboard"></i> Virtual Try-On
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Right Column - Watch Details and Summary -->
-                    <div>
+                    <div class="customization-panel">
+                        <div class="customization-sections">
+                            <!-- Color Sections -->
+                            <div class="customization-section">
+                                <h3>Strap Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #1A1A1A;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #8B4513;" data-color="brown"></div>
+                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
+                                    <div class="color-option" style="background-color: #D4AF37;" data-color="gold"></div>
+                                    <div class="color-option" style="background-color: #B87333;" data-color="rose-gold"></div>
+                                </div>
+                            </div>
+
+                            <div class="customization-section">
+                                <h3>Case Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #1A1A1A;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
+                                    <div class="color-option" style="background-color: #D4AF37;" data-color="gold"></div>
+                                    <div class="color-option" style="background-color: #B87333;" data-color="rose-gold"></div>
+                                    <div class="color-option" style="background-color: #2F4F4F;" data-color="platinum"></div>
+                                </div>
+                            </div>
+
+                            <div class="customization-section">
+                                <h3>Bezel Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #1A1A1A;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
+                                    <div class="color-option" style="background-color: #D4AF37;" data-color="gold"></div>
+                                    <div class="color-option" style="background-color: #B87333;" data-color="rose-gold"></div>
+                                    <div class="color-option" style="background-color: #2F4F4F;" data-color="platinum"></div>
+                                </div>
+                            </div>
+
+                            <div class="customization-section">
+                                <h3>Dial Color</h3>
+                                <div class="color-options">
+                                    <div class="color-option" style="background-color: #1A1A1A;" data-color="black"></div>
+                                    <div class="color-option" style="background-color: #FFFFFF;" data-color="white"></div>
+                                    <div class="color-option" style="background-color: #2F4F4F;" data-color="platinum"></div>
+                                    <div class="color-option" style="background-color: #8B4513;" data-color="brown"></div>
+                                    <div class="color-option" style="background-color: #4682B4;" data-color="blue"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="customization-footer">
+                            <div class="price-display">
+                                Total: $<span id="total-price">8,500</span>
+                            </div>
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <div class="customization-column">
                         <div class="watch-details">
                             <h2 id="details-heading">Daytona</h2>
-                            <p>
+                            <p id="watch-description">
                                 <%= locals.watch?.description || 'The Cosmograph Daytona is designed for those with a passion for driving and speed. Introduced in 1963, this iconic chronograph allows drivers to measure elapsed time and read average speeds on its signature tachymetric bezel.' %>
                             </p>
                         </div>
 
-                        <!-- Configuration Summary -->
-                        <aside class="config-summary" aria-labelledby="summary-heading">
-                            <h3 id="summary-heading">Your Configuration</h3>
-                            <div class="summary-details" aria-live="polite">
+                        <div class="config-summary">
+                            <h3>Your Configuration</h3>
+                            <div class="summary-details">
                                 <div class="summary-row">
                                     <span class="summary-label">Model</span>
-                                    <span class="summary-value">Daytona</span>
+                                    <span class="summary-value" id="summary-model">Daytona</span>
                                 </div>
                                 <div class="summary-row">
                                     <span class="summary-label">Strap</span>
@@ -223,101 +484,12 @@
                                 </div>
                                 <div class="summary-row summary-total">
                                     <span class="summary-label">Total Price</span>
-                                    <span id="summary-price" class="summary-value price" aria-live="polite">
+                                    <span id="summary-price" class="summary-value price">
                                         $<%= (locals.watch?.basePrice || 8500).toLocaleString() %>
                                     </span>
                                 </div>
                             </div>
-                        </aside>
-
-                        <!-- Color Customization Panel -->
-                        <div class="customization-panel hidden">
-                            <div class="customization-section">
-                                <h3>Strap Color</h3>
-                                <div class="color-options">
-                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
-                                    <div class="color-option" style="background-color: #8B4513;" data-color="brown"></div>
-                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
-                                    <div class="color-option" style="background-color: #FFD700;" data-color="gold"></div>
-                                    <div class="color-option" style="background-color: #000080;" data-color="navy"></div>
-                                </div>
-                            </div>
-
-                            <div class="customization-section">
-                                <h3>Case Color</h3>
-                                <div class="color-options">
-                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
-                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
-                                    <div class="color-option" style="background-color: #FFD700;" data-color="gold"></div>
-                                    <div class="color-option" style="background-color: #B87333;" data-color="rose-gold"></div>
-                                </div>
-                            </div>
-
-                            <div class="customization-section">
-                                <h3>Bezel Color</h3>
-                                <div class="color-options">
-                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
-                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
-                                    <div class="color-option" style="background-color: #FFD700;" data-color="gold"></div>
-                                    <div class="color-option" style="background-color: #B87333;" data-color="rose-gold"></div>
-                                </div>
-                            </div>
-
-                            <div class="customization-section">
-                                <h3>Dial Color</h3>
-                                <div class="color-options">
-                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
-                                    <div class="color-option" style="background-color: #FFFFFF;" data-color="white"></div>
-                                    <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
-                                    <div class="color-option" style="background-color: #000080;" data-color="navy"></div>
-                                </div>
-                            </div>
-
-                            <div class="customization-section">
-                                <h3>Numerals Color</h3>
-                                <div class="color-options">
-                                    <div class="color-option" style="background-color: #000000;" data-color="black"></div>
-                                    <div class="color-option" style="background-color: #FFFFFF;" data-color="white"></div>
-                                    <div class="color-option" style="background-color: #FFD700;" data-color="gold"></div>
-                                </div>
-                            </div>
-
-                            <div class="price-display">
-                                Total: $<span id="total-price">8,500</span>
-                            </div>
-
-                            <button class="add-to-cart">Add to Cart</button>
                         </div>
-
-                        <!-- Trust Indicators 
-                        <div class="trust-container">
-                            <section class="trust-indicators" aria-labelledby="trust-heading">
-                                <h3 id="trust-heading">Trust Information</h3>
-                                <div class="trust-grid">
-                                    <div class="trust-item">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <div class="trust-content">
-                                            <h4>Warranty</h4>
-                                            <p><%= locals.watch?.warranty || '5-year warranty' %></p>
-                                        </div>
-                                    </div>
-                                    <div class="trust-item">
-                                        <i class="fas fa-shipping-fast"></i>
-                                        <div class="trust-content">
-                                            <h4>Free Shipping</h4>
-                                            <p>Worldwide delivery</p>
-                                        </div>
-                                    </div>
-                                    <div class="trust-item">
-                                        <i class="fas fa-medal"></i>
-                                        <div class="trust-content">
-                                            <h4>Authenticity</h4>
-                                            <p>Certified timepiece</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>-->
                     </div>
                 </div>
             </div>
@@ -325,169 +497,31 @@
         <%- include('partials/footer') %>
     </div>
 
+    <!-- QR Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 class="modal-title">Scan to Try On</h3>
+            <div id="qr-code-container" class="qr-code">
+                <img id="customImage" src="../Assets/Images/QR-Rolex.png" alt="QR-Rolex">
+            </div>
+            <p class="modal-text">Scan this QR code with your smartphone camera to launch the virtual try-on experience.</p>
+            <p>Open your camera app, point it at the QR code, and follow the link to try our watches virtually!</p>
+        </div>
+    </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const modelViewer = document.querySelector('#watch-model');
-            const modelSelect = document.querySelector('#model-selector');
-            const rotateBtn = document.getElementById('toggle-rotate');
-            const resetBtn = document.getElementById('reset-camera');
-            const fullscreenBtn = document.getElementById('fullscreen');
-            const totalPrice = document.getElementById('total-price');
-            
-            // Material mappings for different watch models
-            const materialMappings = {
-                'Omega Sea Master': {
-                    strap: ['Strap_MORK.001'],
-                    case: ['Screws'],
-                    bezel: ['Urtavla_PrimarOpaqueTEXT.001'],
-                    numerals: ['Siffor+Kvartar_UrtavlaFYLL.001'],
-                    dial: ['Brushed Aluminum 2.001'],
-                    clasp: ['Brushed Aluminum 2']
-                },
-                'Rolex Daytona': {
-                    strap: ['Bracelet', 'Bracelet_Links'],
-                    case: ['Case', 'Case_Metal'],
-                    bezel: ['Bezel', 'Bezel_Insert'],
-                    dial: ['Dial', 'Dial_Base'],
-                    numerals: ['Numerals', 'Hour_Markers']
-                }
-            };
-
-            // Color mappings for different materials and components
-            const colorMappings = {
-                black: [0.0, 0.0, 0.0, 1.0],
-                white: [1.0, 1.0, 1.0, 1.0],
-                silver: [0.75, 0.75, 0.75, 1.0],
-                gold: [1.0, 0.84, 0.0, 1.0],
-                'rose-gold': [0.72, 0.45, 0.2, 1.0],
-                brown: [0.55, 0.27, 0.07, 1.0],
-                navy: [0.0, 0.0, 0.5, 1.0]
-            };
-
-            // Current colors state
-            let currentColors = {
-                strap: 'black',
-                case: 'silver',
-                bezel: 'silver',
-                dial: 'black',
-                numerals: 'white'
-            };
-
-            // Toggle auto-rotation
-            rotateBtn.addEventListener('click', () => {
-                modelViewer.autoRotate = !modelViewer.autoRotate;
-                rotateBtn.classList.toggle('active');
-            });
-
-            // Reset camera
-            resetBtn.addEventListener('click', () => {
-                modelViewer.cameraOrbit = '0deg 75deg 105%';
-                modelViewer.fieldOfView = '45deg';
-            });
-
-            // Toggle fullscreen
-            fullscreenBtn.addEventListener('click', () => {
-                if (document.fullscreenElement) {
-                    document.exitFullscreen();
-                } else {
-                    modelViewer.requestFullscreen();
-                }
-            });
-
-            // Model loading progress
-            modelViewer.addEventListener('progress', (event) => {
-                const progressBar = document.querySelector('.progress-bar');
-                progressBar.style.setProperty('--progress', event.detail.totalProgress * 100 + '%');
-            });
-
-            // Model loaded successfully
-            modelViewer.addEventListener('load', () => {
-                console.log('3D model loaded successfully');
-                // Apply initial colors for all components
-                Object.entries(currentColors).forEach(([component, color]) => {
-                    updateModelComponent(component, color);
-                });
-            });
-
-            // Error handling
-            modelViewer.addEventListener('error', (error) => {
-                console.error('Error loading 3D model:', error);
-            });
-
-            // Handle model selection change
-            modelSelect.addEventListener('change', function() {
-                const selectedModel = this.value;
-                modelViewer.src = selectedModel;
-            });
-
-            // Add color selection for all components
-            const colorOptions = document.querySelectorAll('.color-option');
-            colorOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const color = option.dataset.color;
-                    const section = option.closest('.customization-section');
-                    const component = section.querySelector('h3').textContent.toLowerCase().replace(' color', '');
-                    
-                    // Remove active class from all color options in this section
-                    section.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-
-                    // Update the current color for the component
-                    currentColors[component] = color;
-
-                    // Update the model based on the component
-                    updateModelComponent(component, color);
-
-                    // Update summary
-                    document.querySelector(`#summary-${component}`).textContent = 
-                        color.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-
-                    // Update price
-                    updateTotalPrice();
-                });
-            });
-
-            function updateModelComponent(component, color) {
-                if (!modelViewer.model || !modelViewer.model.materials) {
-                    console.log('Model or materials not yet loaded');
-                    return;
-                }
-
-                try {
-                    const currentModel = modelSelect.options[modelSelect.selectedIndex].text;
-                    const mappings = materialMappings[currentModel] || materialMappings['Omega Sea Master'];
-                    const componentMaterials = mappings[component] || [];
-
-                    modelViewer.model.materials.forEach((material, index) => {
-                        if (!material || !material.name) return;
-
-                        const materialName = material.name;
-                        const shouldUpdate = componentMaterials.some(name => materialName === name);
-
-                        if (shouldUpdate) {
-                            if (material.pbrMetallicRoughness) {
-                                material.pbrMetallicRoughness.setBaseColorFactor(colorMappings[color] || colorMappings.black);
-                                
-                                // Adjust material properties based on color and component
-                                if (color === 'silver' || color === 'gold' || color === 'rose-gold') {
-                                    material.pbrMetallicRoughness.setMetallicFactor(0.8);
-                                    material.pbrMetallicRoughness.setRoughnessFactor(0.3);
-                                } else {
-                                    material.pbrMetallicRoughness.setMetallicFactor(0.0);
-                                    material.pbrMetallicRoughness.setRoughnessFactor(0.5);
-                                }
-                            }
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error updating material:', error);
-                }
-            }
-
-            // Price calculation
-            function updateTotalPrice() {
-                const basePrice = 8500;
-                const priceAdjustments = {
+            // Constants and configuration
+            const CONFIG = {
+                basePrice: 8500,
+                priceAdjustments: {
+                    strap: {
+                        leather: 0,
+                        metal: 1000,
+                        rubber: 500,
+                        fabric: 300
+                    },
                     case: {
                         'silver': 0,
                         'gold': 2000,
@@ -500,271 +534,399 @@
                         'rose-gold': 1500,
                         'black': 800
                     }
+                },
+                colorMap: {
+                    black: [0.102, 0.102, 0.102, 1.0],      // #1A1A1A - Rich black
+                    white: [1.0, 1.0, 1.0, 1.0],            // #FFFFFF - Pure white
+                    silver: [0.75, 0.75, 0.75, 1.0],        // #C0C0C0 - Classic silver
+                    gold: [0.831, 0.686, 0.216, 1.0],       // #D4AF37 - Classic gold
+                    'rose-gold': [0.722, 0.451, 0.2, 1.0],  // #B87333 - Rose gold
+                    brown: [0.545, 0.271, 0.075, 1.0],      // #8B4513 - Saddle brown
+                    platinum: [0.184, 0.31, 0.31, 1.0],     // #2F4F4F - Platinum
+                    blue: [0.275, 0.51, 0.706, 1.0]         // #4682B4 - Steel blue
+                },
+                watchData: {
+                    "Omega": {
+                        name: "Omega Sea Master",
+                        description: "The Omega Sea Master combines elegance with professional diving capabilities. A true icon in the world of luxury diving watches, it offers exceptional precision and reliability.",
+                        movement: "8800 Calibre",
+                        waterResistance: "300m Water Resistant",
+                        powerReserve: "55h Power Reserve",
+                        price: 7500
+                    },
+                    "Cartier": {
+                        name: "Santos",
+                        description: "The Cartier Santos is a masterpiece of design and elegance. With its distinctive rectangular case and Roman numerals, it has become one of the most iconic timepieces in watchmaking history.",
+                        movement: "1847 MC Calibre",
+                        waterResistance: "30m Water Resistant",
+                        powerReserve: "40h Power Reserve",
+                        price: 6800
+                    },
+                    "Audemars": {
+                        name: "Royal Oak",
+                        description: "The Audemars Piguet Royal Oak revolutionized watchmaking with its distinctive octagonal bezel and integrated bracelet. A true icon of luxury sports watches.",
+                        movement: "3120 Calibre",
+                        waterResistance: "50m Water Resistant",
+                        powerReserve: "60h Power Reserve",
+                        price: 9200
+                    },
+                    "Rolex": {
+                        name: "Daytona",
+                        description: "The Cosmograph Daytona is the ultimate tool for high-performance timing. Born to satisfy the demands of professional racing drivers, it remains the benchmark for those who appreciate the fusion of high technology with traditional craftsmanship.",
+                        movement: "4130 Calibre",
+                        waterResistance: "100m Water Resistant",
+                        powerReserve: "72h Power Reserve",
+                        price: 8500
+                    }
+                }
+            };
+
+            // DOM Elements
+            const elements = {
+                modelViewer: document.querySelector('model-viewer'),
+                resetBtn: document.getElementById('reset-camera'),
+                rotateBtn: document.getElementById('toggle-rotate'),
+                fullscreenBtn: document.getElementById('fullscreen'),
+                tryOnBtn: document.getElementById('virtual-try-on'),
+                modal: document.getElementById('qrModal'),
+                closeBtn: document.querySelector('.close-modal'),
+                modelSelect: document.getElementById('model-selector'),
+                totalPrice: document.getElementById('total-price'),
+                strapOptions: document.querySelectorAll('.strap-option'),
+                colorOptions: document.querySelectorAll('.color-option')
+            };
+
+            // State management
+            const state = {
+                currentColors: {
+                    strap: 'black',
+                    case: 'silver',
+                    bezel: 'silver',
+                    dial: 'black'
+                },
+                currentModel: null,
+                currentPrice: CONFIG.basePrice
+            };
+
+            // Model viewer setup
+            function setupModelViewer() {
+                if (!elements.modelViewer) return;
+
+                elements.modelViewer.addEventListener('progress', (event) => {
+                    const progressBar = document.querySelector('.progress-bar');
+                    if (progressBar) {
+                        progressBar.style.setProperty('--progress', event.detail.totalProgress * 100 + '%');
+                    }
+                });
+
+                elements.modelViewer.addEventListener('load', () => {
+                    console.log('3D model loaded successfully');
+                    updateModelStrap('Rubber');
+                });
+
+                elements.modelViewer.addEventListener('error', (error) => {
+                    console.error('Error loading 3D model:', error);
+                });
+            }
+
+            // Controls setup
+            function setupControls() {
+                if (elements.rotateBtn) {
+                    elements.rotateBtn.addEventListener('click', () => {
+                        elements.modelViewer.autoRotate = !elements.modelViewer.autoRotate;
+                        elements.rotateBtn.textContent = elements.modelViewer.autoRotate ? 'Stop Rotation' : 'Start Rotation';
+                    });
+                }
+
+                if (elements.resetBtn) {
+                    elements.resetBtn.addEventListener('click', () => {
+                        elements.modelViewer.cameraOrbit = "0deg 75deg 105%";
+                    });
+                }
+
+                if (elements.fullscreenBtn) {
+                    elements.fullscreenBtn.addEventListener('click', () => {
+                        elements.modelViewer.requestFullscreen();
+                    });
+                }
+            }
+
+            // Customization handlers
+            function setupCustomizationHandlers() {
+                // Strap selection
+                elements.strapOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        elements.strapOptions.forEach(opt => opt.classList.remove('active'));
+                        option.classList.add('active');
+                        const strap = option.dataset.strap;
+                        updateModelStrap(strap);
+                        updateTotalPrice();
+                    });
+                });
+
+                // Color selection
+                elements.colorOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const color = option.dataset.color;
+                        const section = option.closest('.customization-section');
+                        const component = section.querySelector('h3').textContent.toLowerCase().replace(' color', '');
+                        
+                        section.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+                        option.classList.add('active');
+
+                        state.currentColors[component] = color;
+                        updateModelComponent(component, color);
+                        updateTotalPrice();
+                    });
+                });
+            }
+
+            // Model selection handler
+            function setupModelSelection() {
+                if (!elements.modelSelect) return;
+
+                elements.modelSelect.addEventListener('change', function() {
+                    const selectedModel = this.value;
+                    const modelName = this.options[this.selectedIndex].text;
+                    const modelInfo = CONFIG.watchData[modelName];
+                    
+                    if (modelInfo) {
+                        state.currentModel = modelName;
+                        updateModelViewer(selectedModel, modelInfo);
+                        updateWatchDetails(modelInfo);
+                    }
+                });
+
+                // Initialize with first model
+                const initialModel = elements.modelSelect.options[0].text;
+                const initialModelInfo = CONFIG.watchData[initialModel];
+                if (initialModelInfo) {
+                    updateWatchDetails(initialModelInfo);
+                }
+            }
+
+            // Update functions
+            function updateModelViewer(modelPath, modelInfo) {
+                if (!elements.modelViewer) return;
+                elements.modelViewer.src = modelPath;
+            }
+
+            function updateWatchDetails(modelInfo) {
+                const elements = {
+                    heading: document.getElementById('details-heading'),
+                    description: document.getElementById('watch-description'),
+                    model: document.getElementById('summary-model'),
+                    price: document.getElementById('summary-price'),
+                    totalPrice: document.getElementById('total-price')
                 };
 
-                let totalPrice = basePrice;
-                
+                if (elements.heading) elements.heading.textContent = modelInfo.name;
+                if (elements.description) elements.description.textContent = modelInfo.description;
+                if (elements.model) elements.model.textContent = modelInfo.name;
+                if (elements.price) elements.price.textContent = '$' + modelInfo.price.toLocaleString();
+                if (elements.totalPrice) elements.totalPrice.textContent = modelInfo.price.toLocaleString();
+
+                // Update specs
+                const specsContainer = document.querySelector('.watch-specs-horizontal');
+                if (specsContainer) {
+                    specsContainer.innerHTML = `
+                        <div class="spec-item">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            <span>${modelInfo.movement}</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-tint" aria-hidden="true"></i>
+                            <span>${modelInfo.waterResistance}</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-battery-full" aria-hidden="true"></i>
+                            <span>${modelInfo.powerReserve}</span>
+                        </div>
+                    `;
+                }
+            }
+
+            function updateTotalPrice() {
+                let totalPrice = state.currentPrice;
+
+                // Add strap price adjustment
+                const currentStrap = document.querySelector('.strap-option.active')?.dataset.strap;
+                if (currentStrap && CONFIG.priceAdjustments.strap[currentStrap]) {
+                    totalPrice += CONFIG.priceAdjustments.strap[currentStrap];
+                }
+
                 // Add case price adjustment
-                if (priceAdjustments.case[currentColors.case]) {
-                    totalPrice += priceAdjustments.case[currentColors.case];
+                if (CONFIG.priceAdjustments.case[state.currentColors.case]) {
+                    totalPrice += CONFIG.priceAdjustments.case[state.currentColors.case];
                 }
 
                 // Add bezel price adjustment
-                if (priceAdjustments.bezel[currentColors.bezel]) {
-                    totalPrice += priceAdjustments.bezel[currentColors.bezel];
+                if (CONFIG.priceAdjustments.bezel[state.currentColors.bezel]) {
+                    totalPrice += CONFIG.priceAdjustments.bezel[state.currentColors.bezel];
                 }
 
-                document.getElementById('total-price').textContent = totalPrice.toLocaleString();
-                document.getElementById('summary-price').textContent = `$${totalPrice.toLocaleString()}`;
+                if (elements.totalPrice) {
+                    elements.totalPrice.textContent = totalPrice.toLocaleString();
+                }
             }
 
-            const customizationPanel = document.querySelector('.customization-panel');
-            // Listen for loading screen to finish
-            const loadingScreen = document.querySelector('.loading-screen');
-            if (loadingScreen) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.attributeName === 'style' && loadingScreen.style.display === 'none') {
-                            customizationPanel.classList.remove('hidden');
+            // Add updateModelStrap function
+            function updateModelStrap(strapType) {
+                if (!elements.modelViewer || !elements.modelViewer.model || !elements.modelViewer.model.materials) {
+                    console.log('Model or materials not yet loaded');
+                    return;
+                }
+
+                const materials = elements.modelViewer.model.materials;
+                const strapMaterial = materials.find(m => m.name === 'Strap_MORK.001');
+                
+                if (strapMaterial && strapMaterial.pbrMetallicRoughness) {
+                    try {
+                        switch(strapType) {
+                            case 'leather':
+                                strapMaterial.pbrMetallicRoughness.setBaseColorFactor([0.545, 0.271, 0.075, 1.0]); // Brown
+                                strapMaterial.pbrMetallicRoughness.setMetallicFactor(0.0);
+                                strapMaterial.pbrMetallicRoughness.setRoughnessFactor(0.8);
+                                break;
+                            case 'metal':
+                                strapMaterial.pbrMetallicRoughness.setBaseColorFactor([0.75, 0.75, 0.75, 1.0]); // Silver
+                                strapMaterial.pbrMetallicRoughness.setMetallicFactor(0.9);
+                                strapMaterial.pbrMetallicRoughness.setRoughnessFactor(0.2);
+                                break;
+                            case 'rubber':
+                                strapMaterial.pbrMetallicRoughness.setBaseColorFactor([0.102, 0.102, 0.102, 1.0]); // Black
+                                strapMaterial.pbrMetallicRoughness.setMetallicFactor(0.0);
+                                strapMaterial.pbrMetallicRoughness.setRoughnessFactor(0.5);
+                                break;
+                            case 'fabric':
+                                strapMaterial.pbrMetallicRoughness.setBaseColorFactor([0.275, 0.51, 0.706, 1.0]); // Blue
+                                strapMaterial.pbrMetallicRoughness.setMetallicFactor(0.0);
+                                strapMaterial.pbrMetallicRoughness.setRoughnessFactor(0.7);
+                                break;
                         }
-                    });
-                });
-                observer.observe(loadingScreen, { attributes: true });
-            } else {
-                // Fallback: show panel if loading screen not found
-                customizationPanel.classList.remove('hidden');
+                    } catch (error) {
+                        console.error('Error updating strap material:', error);
+                    }
+                }
             }
-        
+
+            // Update material mappings based on actual material names
+            const materialMappings = {
+                'Omega Sea Master': {
+                    strap: ['Strap_MORK.001'],
+                    case: ['Screws', 'Brushed Aluminum 2', 'Silver'],
+                    bezel: ['Urtavla_PrimarOpaqueTEXT.001'],
+                    dial: ['Brushed Aluminum 2.001'],
+                    numerals: ['Siffror+Kvartar_UrtavlaFYLL.001', 'Siffor+kvartar_UrtavlaRAM.001'],
+                    logo: ['Urtavla_OMEGA_Logo_VIT.001'],
+                    glass: ['Glass']
+                },
+                'Cartier': {
+                    strap: ['Strap'],
+                    case: ['Case'],
+                    bezel: ['Bezel'],
+                    dial: ['Face'],
+                    numerals: ['Face'],
+                    screws: ['Screws']
+                },
+                'Audemars': {
+                    strap: ['metal.001'],
+                    case: ['Screws', 'Silver', 'back plate'],
+                    bezel: ['metal.001'],
+                    dial: ['blue'],
+                    numerals: ['AP inner text'],
+                    glass: ['Glass']
+                },
+                'Rolex': {
+                    strap: ['Strap'],
+                    case: ['Case', 'Silver', 'Screws'],
+                    bezel: ['Bezel'],
+                    dial: ['Face'],
+                    numerals: ['Analogs'],
+                    glass: ['Glass']
+                }
+            };
+
+            function updateModelComponent(component, color) {
+                if (!elements.modelViewer || !elements.modelViewer.model || !elements.modelViewer.model.materials) {
+                    console.log('Model or materials not yet loaded');
+                    return;
+                }
+
+                const materials = elements.modelViewer.model.materials;
+                console.log('Current materials:', materials.map(m => m.name));
+                console.log('Updating component:', component, 'with color:', color);
+
+                // Detect current model from source URL
+                const currentModel = elements.modelViewer.src.includes('Santos') ? 'Cartier' : 
+                                   elements.modelViewer.src.includes('Royal') ? 'Audemars' : 
+                                   elements.modelViewer.src.includes('Rolex') ? 'Rolex' :
+                                   'Omega Sea Master';
+                console.log('Current model:', currentModel);
+
+                const mappings = materialMappings[currentModel];
+                if (!mappings || !mappings[component]) {
+                    console.log('No material mappings found for model:', currentModel, 'component:', component);
+                    return;
+                }
+
+                // Update materials based on mapping
+                mappings[component].forEach(materialName => {
+                    const material = materials.find(m => m.name === materialName);
+                    if (material && material.pbrMetallicRoughness) {
+                        console.log('Updating material:', materialName);
+                        material.pbrMetallicRoughness.setBaseColorFactor(CONFIG.colorMap[color]);
+                        
+                        // Set appropriate metallic and roughness values based on material type
+                        if (materialName.includes('Strap') || materialName.includes('strap')) {
+                            material.pbrMetallicRoughness.setMetallicFactor(0.0);
+                            material.pbrMetallicRoughness.setRoughnessFactor(0.5);
+                        } else if (materialName.includes('Glass') || materialName.includes('glass')) {
+                            material.pbrMetallicRoughness.setMetallicFactor(0.0);
+                            material.pbrMetallicRoughness.setRoughnessFactor(0.1);
+                        } else if (materialName.includes('Dial') || materialName.includes('Face') || materialName.includes('dial') || materialName.includes('blue')) {
+                            material.pbrMetallicRoughness.setMetallicFactor(0.0);
+                            material.pbrMetallicRoughness.setRoughnessFactor(0.4);
+                        } else {
+                            material.pbrMetallicRoughness.setMetallicFactor(0.9);
+                            material.pbrMetallicRoughness.setRoughnessFactor(0.2);
+                        }
+                    }
+                });
+            }
+
+            // Modal setup
+            function setupModal() {
+                if (!elements.tryOnBtn || !elements.modal || !elements.closeBtn) return;
+
+                elements.tryOnBtn.addEventListener('click', () => {
+                    elements.modal.classList.add('active');
+                });
+
+                elements.closeBtn.addEventListener('click', () => {
+                    elements.modal.classList.remove('active');
+                });
+
+                window.addEventListener('click', (event) => {
+                    if (event.target === elements.modal) {
+                        elements.modal.classList.remove('active');
+                    }
+                });
+            }
+
+            // Initialize
+            function init() {
+                setupModelViewer();
+                setupControls();
+                setupCustomizationHandlers();
+                setupModelSelection();
+                setupModal();
+            }
+
+            // Start the application
+            init();
         });
     </script>
-
-   <!-- Add this modal structure at the bottom of your body, just before the closing </body> tag -->
-<div id="qrModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h3 class="modal-title">Scan to Try On</h3>
-        
-       <div id="qr-code-container" class="qr-code">
-            <!-- QR code will be generated here -->
-             <img id="customImage" src="../Assets/Images/QR-Rolex.png" alt="QR-Rolex">
-           
-        </div>
-        
-        <p class="modal-text">Scan this QR code with your smartphone camera to launch the virtual try-on experience.</p>
-        
-        
-        
-        <p>Open your camera app, point it at the QR code, and follow the link to try our watches virtually!</p>
-    </div>
-</div>
-
-<style>
-    /* Add these styles to your existing CSS */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .modal.active {
-        display: flex;
-        opacity: 1;
-    }
-    
-    .modal-content {
-        background: white;
-        border-radius: 20px;
-        width: 90%;
-        max-width: 400px;
-        padding: 40px 30px;
-        text-align: center;
-        position: relative;
-        transform: scale(0.9);
-        transition: transform 0.4s ease;
-    }
-    
-    .modal.active .modal-content {
-        transform: scale(1);
-    }
-    
-    .close-modal {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 28px;
-        color: #7f8c8d;
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-    
-    .close-modal:hover {
-        color: #e74c3c;
-    }
-    
-    .modal-title {
-        font-size: 24px;
-        color: #2c3e50;
-        margin-bottom: 20px;
-    }
-    
-    .qr-code {
-        width: 300px;
-        height: 300px;
-        margin: 20px auto;
-        background: #f8f9fa;
-        border-radius: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .qr-code::before {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: 
-            linear-gradient(45deg, transparent 48%, #2c3e50 48%, #2c3e50 52%, transparent 52%),
-            linear-gradient(-45deg, transparent 48%, #2c3e50 48%, #2c3e50 52%, transparent 52%);
-        background-size: 20px 20px;
-        opacity: 0.1;
-    }
-    
-    .qr-center {
-        width: 50px;
-        height: 50px;
-        background: #2c3e50;
-        border-radius: 10px;
-        position: relative;
-        z-index: 2;
-    }
-    
-    .qr-center::before {
-        content: "";
-        position: absolute;
-        width: 30px;
-        height: 30px;
-        background: white;
-        border-radius: 5px;
-        top: 10px;
-        left: 10px;
-    }
-    
-    .modal-text {
-        color: #7f8c8d;
-        line-height: 1.6;
-        margin: 20px 0;
-    }
-    
-    .steps {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin: 25px 0;
-    }
-    
-    .step {
-        background: #f1f8ff;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: bold;
-        color: #4b6cb7;
-        font-size: 18px;
-    }
-</style>
-
-<script>
-    // Add this JavaScript to your existing script section
-    document.addEventListener('DOMContentLoaded', function() {
-        const tryOnBtn = document.getElementById('virtual-try-on');
-        const modal = document.getElementById('qrModal');
-        const closeBtn = document.querySelector('.close-modal');
-        
-        // Open modal when try-on button is clicked
-        if (tryOnBtn) {
-            tryOnBtn.addEventListener('click', function() {
-                modal.classList.add('active');
-            });
-        }
-        
-        // Close modal when close button is clicked
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                modal.classList.remove('active');
-            });
-        }
-        
-        // Close modal when clicking outside of modal content
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.classList.remove('active');
-            }
-        });
-
-        
-
-        // QR Code mapping
-            const qrImages = {
-                'rolex': '/Assets/Images/QR-Rolex.png',
-                'omega': '/Assets/Images/QR-Omega.png',
-                'patek': '/Assets/Images/QR-Patek.png',
-                'cartier': '/Assets/Images/QR-Cartier.png'
-            };
-            
-            // Current watch model
-            let currentModel = 'rolex';
-            
-            // Handle model selection change
-            modelSelect.addEventListener('change', function() {
-                const selectedModel = this.value;
-                currentModel = selectedModel;
-                
-                // Update watch details
-                const modelInfo = modelData[selectedModel];
-                document.querySelector('.watch-details h2').textContent = modelInfo.name;
-                document.querySelector('.watch-details p').textContent = modelInfo.description;
-                document.querySelector('#summary-price').textContent = '$' + modelInfo.price.toLocaleString();
-                document.querySelector('#total-price').textContent = modelInfo.price.toLocaleString();
-                
-                // Update QR code based on model
-                qrImage.src = qrImages[selectedModel];
-            });
-    });
-
-      const watchData = 
-          {
-                "Rolex": {
-                name: "Daytona",
-                description: "The Cosmograph Daytona is the ultimate tool for high-performance timing. Born to satisfy the demands of professional racing drivers, it remains the benchmark for those who appreciate the fusion of high technology with traditional craftsmanship.",
-                movement: "4130 Calibre",
-                waterResistance: "100m Water Resistant",
-                powerReserve: "72h Power Reserve"
-                },
-                "Omega": {
-                    name: "Omega Sea Master",
-                    description: "The Omega Sea Master combines elegance with professional diving capabilities.",
-                    movement: "8800 Calibre",
-                    waterResistance: "300m Water Resistant",
-                    powerReserve: "55h Power Reserve"
-                }
-                };
-
-</script>
 </body>
 
 </html> 
