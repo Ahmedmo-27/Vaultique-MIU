@@ -2520,7 +2520,7 @@ const products = [
 
   {
     id: '4200H/222J-B935',
-    name: 'Vacheron Constantin Historiques 222 4200H/222J-B935 Yellow Gold Champagne Dial',
+    name: 'Vacheron Constantin Historiques Yellow Gold Champagne Dial',
     brand: 'VAC_1',
     strapMaterial: 'rubber',
     movement: 'Automatic',
