@@ -1206,14 +1206,24 @@ exports.renderBrands = async (req, res) => {
                 prevPage: page - 1,
                 nextPage: page + 1
             },
-            user: req.user
+            user: req.user,
+            error: null
         });
     } catch (error) {
         console.error('Error rendering brands:', error);
-        res.status(500).render('error', {
+        res.status(500).render('ManageBrands', {
             title: 'Error',
-            message: 'Error loading brands',
-            error: error.message
+            brands: [],
+            pagination: {
+                currentPage: 1,
+                totalPages: 1,
+                hasPrevPage: false,
+                hasNextPage: false,
+                prevPage: null,
+                nextPage: null
+            },
+            user: req.user,
+            error: 'Error loading brands: ' + error.message
         });
     }
 };

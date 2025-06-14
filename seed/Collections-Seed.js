@@ -16,25 +16,25 @@ const Collections = [
       'The Classic & Dress Collection embodies traditional watchmaking excellence with contemporary sophistication. Each timepiece is a testament to enduring style and meticulous craftsmanship.',
     featuredItems: [
       {
-        name: 'Heritage Automatic',
-        image: '/Assets/Images/Watches/Heritage Automatic.png',
-        tagline: 'Traditional craftsmanship meets modern precision',
+        name: 'Cartier Tank',
+        image: '/Assets/Images/Watches/Cartier Tank.webp',
+        tagline: 'Classic design meets modern precision',
         description:
-          'The Heritage Automatic combines classic design elements with modern mechanical innovation, creating a timepiece that bridges past and present.',
+          'The Cartier Tank combines classic design elements with modern mechanical innovation, creating a timepiece that bridges past and present.',
       },
       {
-        name: 'Elegance Date',
-        image: '/Ahmed/Collections/Classic/Elegance Date.png',
+        name: 'Patek Philippe Golden Ellipse',
+        image: '/Assets/Images/Watches/Patek Philippe Golden Ellipse.png',
         tagline: 'Sophisticated simplicity',
         description:
-          'With its clean lines and refined aesthetics, the Elegance Date represents the essence of classic watchmaking with a modern touch.',
+          'With its clean lines and refined aesthetics, the Patek Philippe Golden Ellipse represents the essence of classic watchmaking with a modern touch.',
       },
       {
-        name: 'Master Moonphase',
-        image: '/Ahmed/Collections/Classic/Master Moonphase.png',
+        name: 'Rolex 1908',
+        image: '/Assets/Images/Watches/Rolex 1908.png',
         tagline: 'Celestial precision',
         description:
-          'The Master Moonphase combines traditional moon phase indication with modern mechanical engineering, creating a timepiece of exceptional beauty and complexity.',
+          'The Rolex 1908 combines traditional moon phase indication with modern mechanical engineering, creating a timepiece of exceptional beauty and complexity.',
       },
     ],
   },
@@ -51,15 +51,15 @@ const Collections = [
       'The Casual & Everyday Collection offers versatile timepieces designed for daily wear. These watches combine comfort, durability, and style for the modern lifestyle.',
     featuredItems: [
       {
-        name: 'Urban Chronograph',
-        image: '/Ahmed/Collections/Casual/Urban Chronograph.png',
+        name: 'Audemars Piguet Royal Oak',
+        image: '/Assets/Images/Watches/Audemars Piguet Royal Oak.png',
         tagline: 'Perfect for the city life',
         description:
           'The Urban Chronograph features a sleek design with practical chronograph functions, making it ideal for everyday wear.',
       },
       {
-        name: 'Weekend Automatic',
-        image: '/Ahmed/Collections/Casual/Weekend Automatic.png',
+        name: 'Omega Seamaster',
+        image: '/Assets/Images/Watches/Omega Seamaster.png',
         tagline: 'Relaxed sophistication',
         description:
           'The Weekend Automatic combines casual elegance with mechanical precision, perfect for both work and leisure.',
