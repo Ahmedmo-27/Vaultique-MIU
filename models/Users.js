@@ -162,20 +162,6 @@ const UserSchema = new mongoose.Schema({
       ],
     },
   ],
-  cart: [
-    {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true,
-      },
-      quantity: {
-        type: Number,
-        required: true,
-        min: 1,
-      },
-    },
-  ],
   wishlist: [
     {
       product: {

@@ -1257,38 +1257,42 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create the content structure
         content.innerHTML = `
             <div class="order-info">
-                <h4>Order #${order._id}</h4>
+                <h4>Order #${order.orderNumber || order._id}</h4>
                 <p><strong>Status:</strong> <span class="status-${order.status.toLowerCase()}">${order.status}</span></p>
-                <p><strong>Order Date:</strong> ${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
-                <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery || 'Not available'}</p>
+                <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+                <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString() : 'Not available'}</p>
             </div>
             
             <div class="order-summary">
                 <h5>Order Summary</h5>
                 <div class="summary-grid">
                     <div><strong>Subtotal:</strong></div>
-                    <div>$${order.total?.toFixed(2) || '0.00'}</div>
+                    <div>$${order.subtotal.toFixed(2)}</div>
                     <div><strong>Shipping:</strong></div>
-                    <div>$${order.shippingCost?.toFixed(2) || '0.00'}</div>
+                    <div>$${order.shippingCost.toFixed(2)}</div>
                     <div><strong>Tax:</strong></div>
-                    <div>$${order.tax?.toFixed(2) || '0.00'}</div>
+                    <div>$${order.tax.toFixed(2)}</div>
                     <div><strong>Total:</strong></div>
-                    <div>$${order.total?.toFixed(2) || '0.00'}</div>
+                    <div>$${order.total.toFixed(2)}</div>
                 </div>
             </div>
             
             <div class="order-products">
                 <h5>Products</h5>
-                ${order.items?.map(item => `
+                ${order.items.map(item => `
                     <div class="order-product-detail">
-                        <img src="${item.productId && item.productId.image ? (item.productId.image.startsWith('/') ? item.productId.image : `/Assets/Images/Watches/${item.productId.image}`) : '/Assets/Images/product-placeholder.jpg'}" alt="${item.productId && item.productId.name ? item.productId.name : 'Product'}">
+                        <img src="${item.product?.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg'}" 
+                             alt="${item.product?.name || 'Product'}">
                         <div>
-                            <h5>${item.productId && item.productId.name ? item.productId.name : 'Unknown Product'}</h5>
-                            <p>Qty: ${item.quantity || 1}</p>
-                            <p>Price: $${item.price?.toFixed(2) || '0.00'}</p>
+                            <h5>${item.product?.name || 'Unknown Product'}</h5>
+                            <p>Brand: ${item.product?.brand || 'Unknown Brand'}</p>
+                            <p>Collection: ${item.product?.collection || 'Unknown Collection'}</p>
+                            <p>Qty: ${item.quantity}</p>
+                            <p>Price: $${item.price.toFixed(2)}</p>
+                            <p>Total: $${item.total.toFixed(2)}</p>
                         </div>
                     </div>
-                `).join('') || 'No products found'}
+                `).join('')}
             </div>
             
             <div class="shipping-details">
@@ -1321,7 +1325,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show/hide track order button based on order status
         const trackOrderBtn = modal.querySelector('.track-order-btn');
         if (trackOrderBtn) {
-            trackOrderBtn.style.display = order.status === 'Shipped' ? 'block' : 'none';
+            trackOrderBtn.style.display = order.status === 'shipped' ? 'block' : 'none';
         }
 
         // Show the modal

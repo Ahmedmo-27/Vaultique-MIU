@@ -8,7 +8,6 @@ const Order = require('../models/Orders');
 const { authenticateJWT } = require('../middleware/jwt');
 const Cart = require('../models/cart');
 const { generateOrderNumber } = require('../utils/orderUtils');
-const validator = require('validator');
 
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification') => {
@@ -1409,7 +1408,14 @@ router.get('/account-details', authenticateJWT, async (req, res) => {
 router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId)
-      .populate('items.productId')
+      .populate({
+        path: 'items.productId',
+        select: 'name image price brand Vcollection',
+        populate: [
+          { path: 'brand', select: 'name' },
+          { path: 'Vcollection', select: 'name' }
+        ]
+      })
       .lean();
 
     if (!order) {
@@ -1427,16 +1433,40 @@ router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
       });
     }
 
+    // Format the order data for the frontend
+    const formattedOrder = {
+      ...order,
+      items: order.items.map(item => ({
+        ...item,
+        product: item.productId ? {
+          _id: item.productId._id,
+          name: item.productId.name,
+          image: item.productId.image,
+          price: item.productId.price,
+          brand: item.productId.brand?.name || 'Unknown Brand',
+          collection: item.productId.Vcollection?.name || 'Unknown Collection'
+        } : null,
+        total: item.price * item.quantity
+      })),
+      subtotal: order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+      shippingCost: order.shippingCost || 0,
+      tax: order.tax || 0,
+      total: order.total || 0,
+      status: order.status || 'pending',
+      orderDate: order.createdAt,
+      estimatedDelivery: order.estimatedDelivery || null
+    };
+
     res.json({
       success: true,
-      data: order
+      data: formattedOrder
     });
   } catch (error) {
     console.error('Error fetching order details:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching order details',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
@@ -1504,6 +1534,101 @@ router.get('/payment', async (req, res) => {
       type: 'error',
       show: true
     });
+  }
+});
+
+// Comparison Routes
+router.get('/compare', async (req, res) => {
+  try {
+    const comparisonList = req.session.comparisonList || [];
+    // Populate the brand field
+    const products = await Product.find({ _id: { $in: comparisonList } }).populate('brand');
+
+    // Get brand and collection names
+    const productsWithDetails = await Promise.all(products.map(async (product) => {
+      const collection = await Collection.findOne({ name: product.Vcollection });
+      return {
+        ...product.toObject(),
+        brand: product.brand && product.brand.name ? product.brand.name : product.brand,
+        Vcollection: collection ? collection.name : product.Vcollection
+      };
+    }));
+
+    res.render('compare', {
+      products: productsWithDetails,
+      title: 'Product Comparison'
+    });
+  } catch (error) {
+    console.error('Error loading comparison page:', error);
+    renderNotification(res, 'error', 'Failed to load comparison page. Please try again later.');
+  }
+});
+
+router.post('/compare/add', async (req, res) => {
+  try {
+    console.log('Received compare/add request:', req.body);
+    const { productId } = req.body;
+    if (!productId) {
+      console.log('No productId provided');
+      return res.status(400).json({ success: false, message: 'Product ID is required' });
+    }
+
+    // Initialize comparison list if it doesn't exist
+    if (!req.session.comparisonList) {
+      console.log('Initializing comparison list');
+      req.session.comparisonList = [];
+    }
+
+    console.log('Current comparison list:', req.session.comparisonList);
+
+    // Check if product is already in comparison list
+    if (req.session.comparisonList.includes(productId)) {
+      console.log('Product already in comparison list');
+      return res.status(400).json({ success: false, message: 'Product is already in comparison list' });
+    }
+
+    // Add product to comparison list
+    req.session.comparisonList.push(productId);
+    console.log('Updated comparison list:', req.session.comparisonList);
+
+    // Limit comparison list to 3 products
+    if (req.session.comparisonList.length > 3) {
+      req.session.comparisonList.shift(); // Remove oldest product
+      console.log('Trimmed comparison list:', req.session.comparisonList);
+    }
+
+    res.json({ success: true, message: 'Product added to comparison list' });
+  } catch (error) {
+    console.error('Error adding product to comparison:', error);
+    res.status(500).json({ success: false, message: 'Failed to add product to comparison list' });
+  }
+});
+
+router.delete('/compare/remove/:productId', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    
+    if (!req.session.comparisonList) {
+      return res.status(400).json({ success: false, message: 'Comparison list is empty' });
+    }
+
+    // Remove product from comparison list
+    req.session.comparisonList = req.session.comparisonList.filter(id => id !== productId);
+
+    res.json({ success: true, message: 'Product removed from comparison list' });
+  } catch (error) {
+    console.error('Error removing product from comparison:', error);
+    res.status(500).json({ success: false, message: 'Failed to remove product from comparison list' });
+  }
+});
+
+router.get('/compare/list', (req, res) => {
+  try {
+    const comparisonList = req.session.comparisonList || [];
+    res.json({ success: true, comparisonList });
+  } catch (error) {
+    console.error('Error getting comparison list:', error);
+    res.status(500).json({ success: false, message: 'Failed to get comparison list' });
   }
 });
 
@@ -1631,12 +1756,20 @@ router.post('/shipping/process', async (req, res) => {
             orderNumber,
             items: await Promise.all(cartItems.map(async item => {
                 const product = await Product.findById(item.product);
+                // Fetch the full brand name
+                let brandName = product.brand;
+                if (product.brand) {
+                    const brandDoc = await Brand.findOne({ _id: product.brand });
+                    if (brandDoc && brandDoc.name) {
+                        brandName = brandDoc.name;
+                    }
+                }
                 return {
                     productId: item.product,
                     productDetails: {
                         name: product.name,
                         image: product.image,
-                        brand: product.brand,
+                        brand: brandName,
                         price: product.price,
                         strapMaterial: product.strapMaterial,
                         movement: product.movement,
@@ -1897,102 +2030,6 @@ router.get('/faq', async (req, res) => {
   } catch (error) {
     console.error('Error loading FAQ page:', error);
     renderNotification(res, 'error', 'Failed to load FAQ page. Please try again later.');
-  }
-});
-
-// Comparison Routes
-router.get('/compare', async (req, res) => {
-  try {
-    const comparisonList = req.session.comparisonList || [];
-    const products = await Product.find({ _id: { $in: comparisonList } });
-    
-    // Get brand and collection names
-    const productsWithDetails = await Promise.all(products.map(async (product) => {
-      const brand = await Brand.findOne({ name: product.brand });
-      const collection = await Collection.findOne({ name: product.Vcollection });
-      
-      return {
-        ...product.toObject(),
-        brand: brand ? brand.name : product.brand,
-        Vcollection: collection ? collection.name : product.Vcollection
-      };
-    }));
-    
-    res.render('compare', {
-      products: productsWithDetails,
-      title: 'Product Comparison'
-    });
-  } catch (error) {
-    console.error('Error loading comparison page:', error);
-    renderNotification(res, 'error', 'Failed to load comparison page. Please try again later.');
-  }
-});
-
-router.post('/compare/add', async (req, res) => {
-  try {
-    console.log('Received compare/add request:', req.body);
-    const { productId } = req.body;
-    if (!productId) {
-      console.log('No productId provided');
-      return res.status(400).json({ success: false, message: 'Product ID is required' });
-    }
-
-    // Initialize comparison list if it doesn't exist
-    if (!req.session.comparisonList) {
-      console.log('Initializing comparison list');
-      req.session.comparisonList = [];
-    }
-
-    console.log('Current comparison list:', req.session.comparisonList);
-
-    // Check if product is already in comparison list
-    if (req.session.comparisonList.includes(productId)) {
-      console.log('Product already in comparison list');
-      return res.status(400).json({ success: false, message: 'Product is already in comparison list' });
-    }
-
-    // Add product to comparison list
-    req.session.comparisonList.push(productId);
-    console.log('Updated comparison list:', req.session.comparisonList);
-
-    // Limit comparison list to 3 products
-    if (req.session.comparisonList.length > 3) {
-      req.session.comparisonList.shift(); // Remove oldest product
-      console.log('Trimmed comparison list:', req.session.comparisonList);
-    }
-
-    res.json({ success: true, message: 'Product added to comparison list' });
-  } catch (error) {
-    console.error('Error adding product to comparison:', error);
-    res.status(500).json({ success: false, message: 'Failed to add product to comparison list' });
-  }
-});
-
-router.delete('/compare/remove/:productId', async (req, res) => {
-  try {
-    const { productId } = req.params;
-    
-    if (!req.session.comparisonList) {
-      return res.status(400).json({ success: false, message: 'Comparison list is empty' });
-    }
-
-    // Remove product from comparison list
-    req.session.comparisonList = req.session.comparisonList.filter(id => id !== productId);
-
-    res.json({ success: true, message: 'Product removed from comparison list' });
-  } catch (error) {
-    console.error('Error removing product from comparison:', error);
-    res.status(500).json({ success: false, message: 'Failed to remove product from comparison list' });
-  }
-});
-
-router.get('/compare/list', (req, res) => {
-  try {
-    const comparisonList = req.session.comparisonList || [];
-    res.json({ success: true, comparisonList });
-  } catch (error) {
-    console.error('Error getting comparison list:', error);
-    res.status(500).json({ success: false, message: 'Failed to get comparison list' });
   }
 });
 
@@ -2310,13 +2347,8 @@ router.get('/about-us', async (req, res) => {
         req.flash('error', 'Failed to load about page. Please try again later.');
         res.redirect('/');
     }
-    });
-
-
-
-       
+    });     
   
-
 });
 
 module.exports = router;

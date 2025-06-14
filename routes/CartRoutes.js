@@ -537,8 +537,8 @@ router.post('/remove', async (req, res) => {
 
         // Remove item using either product or productId
         cart.items = cart.items.filter(item => 
-            (item.product && item.product.toString() !== productId) && 
-            (item.productId && item.productId.toString() !== productId)
+            !((item.product && item.product.toString() === productId) ||
+              (item.productId && item.productId.toString() === productId))
         );
 
         calculateTotals(cart);
