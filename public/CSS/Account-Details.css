@@ -1206,3 +1206,77 @@ body
         color: #ce93d8;
     }
 }
+
+.request-refund {
+    background-color: #ff6b6b;
+    color: gray;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.request-refund:hover {
+    background-color: #ff5252;
+}
+
+#refundRequestModal .modal-container {
+    max-width: 500px;
+    width: 90%;
+}
+
+#refundRequestModal .form-group {
+    margin-bottom: 20px;
+}
+
+#refundRequestModal label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+#refundRequestModal select,
+#refundRequestModal textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#refundRequestModal textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+#refundRequestModal .submit-refund-btn {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+#refundRequestModal .submit-refund-btn:hover {
+    background-color: #ff5252;
+}
+
+#refundRequestModal .cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+#refundRequestModal .cancel-btn:hover {
+    background-color: #5a6268;
+}

@@ -167,6 +167,7 @@
                                         <button class="buy-again">Buy Again</button>
                                     <% } %>
                                     <button class="order-details">View Details</button>
+                                    <button class="request-refund" data-order-id="<%= order.orderId %>">Request Refund</button>
                                 </div>
                             </div>
                         <% }); %>
@@ -451,6 +452,44 @@
                 <div class="modal-footer">
                     <button type="button" class="cancel-btn">Close</button>
                     <button type="button" class="cancel-request-btn">Cancel Request</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Refund Request Modal -->
+        <div id="refundRequestModal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3>Request Refund</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="refundRequestForm">
+                        <input type="hidden" id="refundOrderId" name="orderId">
+                        <div class="form-group">
+                            <label for="refundReason">Reason for Refund</label>
+                            <select id="refundReason" name="reason" required>
+                                <option value="">Select a reason</option>
+                                <option value="Product not as described">Product not as described</option>
+                                <option value="Product damaged">Product damaged</option>
+                                <option value="Wrong item received">Wrong item received</option>
+                                <option value="Quality issues">Quality issues</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="otherReasonGroup" style="display: none;">
+                            <label for="otherReason">Please specify</label>
+                            <textarea id="otherReason" name="otherReason" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="refundDetails">Additional Details</label>
+                            <textarea id="refundDetails" name="details" rows="4" placeholder="Please provide any additional information that will help us process your refund"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="button" class="submit-refund-btn">Submit Request</button>
                 </div>
             </div>
         </div>

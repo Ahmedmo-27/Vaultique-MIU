@@ -33,6 +33,7 @@ const shippingRoutes = require('./routes/ShippingRoutes');
 const paymentRoutes = require('./routes/PaymentRoutes');
 const configuratorRoutes = require('./routes/ConfiguratorRoutes');
 const configuratorController = require('./controllers/Configurator');
+const refundRoutes = require('./routes/refundRoutes');
 const app = express();
 const qr = require('qrcode');
 
@@ -141,7 +142,7 @@ passport.use(new LocalStrategy(
       }
 
       // Check if account is locked
-      if (user.isAccountLocked()) {
+      if (user.accountLockedUntil && user.accountLockedUntil > Date.now()) {
         return done(null, false, { message: 'Account is temporarily locked due to too many failed attempts. Please try again later.' });
       }
 
@@ -475,6 +476,9 @@ app.use('/api/products', productRoutes);
 // Configurator routes
 app.get('/configurator', configuratorController.renderConfigurator);
 app.use('/api/configurator', configuratorRoutes);
+
+// Refund routes
+app.use('/refunds', refundRoutes);
 
 // Global logout route for client-side usage
 app.all('/logout', (req, res) => {

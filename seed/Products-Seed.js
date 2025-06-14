@@ -1768,6 +1768,138 @@ const products = [
     ],
   },
 
+{
+    id: 'P32398101C1S2',
+    name: 'Chronomat Automatic GMT 40',
+    brand: 'BRE_1',
+    strapMaterial: 'Rubber',
+    movement: 'Automatic',
+    waterResistance: '200 m',
+    caseMaterial: 'Platinum',
+    dialColor: 'white',
+    stock:'true',
+    stockCount: '4',
+    Vcollection: 'aviation and travel',
+    gender: 'Male',
+    price: '$8,400',
+    image: '/Assets/Images/photos/p32398101c1s2-soldier_4134a98c_thumbnail_2048.webp',
+    description: "The Breitling Chronomat Automatic GMT 40 combines precision timekeeping with elegant design, featuring a platinum case and GMT functionality for travelers.",
+    specifications: [
+      {
+        specName: 'Case Diameter',
+        specValue: '40 mm',
+      },
+      {
+        specName: 'Case Thickness',
+        specValue: '12.5 mm',
+      },
+      {
+        specName: 'Power Reserve',
+        specValue: '42 hours',
+      },
+      {
+        specName: 'Functions',
+        specValue: 'Hours, Minutes, Seconds, Date, GMT',
+      },
+      {
+        specName: 'Caliber',
+        specValue: 'Breitling 32',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: 'GMT Function',
+        featureDesc: 'Track a second time zone with the 24-hour GMT hand',
+      },
+      {
+        featureName: 'Unidirectional Rotating Bezel',
+        featureDesc: 'For precise timing of events',
+      },
+      {
+        featureName: 'Super-LumiNova',
+        featureDesc: 'Luminous hands and markers for low-light visibility',
+      },
+      {
+        featureName: 'Screw-down Crown',
+        featureDesc: 'Ensures water resistance and protection',
+      },
+      {
+        featureName: 'Chronometer Certified',
+        featureDesc: 'Meets COSC standards for precision',
+      },
+      {
+        featureName: 'Interchangeable Strap',
+        featureDesc: 'Quick-release system for easy strap changes',
+      },
+    ],
+  },
+
+  {
+    id: 'AB0145331K1P2',
+    name: 'Premier B01 Chronograph 42',
+    brand: 'BRE_1',
+    strapMaterial: 'Alligator leather',
+    movement: 'Self-winding mechanical',
+    waterResistance: '200 m',
+    caseMaterial: 'Stainless steel',
+    dialColor: 'white',
+    stock:'true',
+    stockCount: '4',
+    Vcollection: 'aviation and travel',
+    gender: 'Male',
+    price: '$8,400',
+    image: '/Assets/Images/photos/ab0145331k1p2-soldier_d3e32517_thumbnail_2048.webp',
+    description: "The Premier B01 Chronograph 42 showcases Breitling's heritage with a modern chronograph movement and elegant design.",
+    specifications: [
+      {
+        specName: 'Case Diameter',
+        specValue: '42 mm',
+      },
+      {
+        specName: 'Case Thickness',
+        specValue: '13.65 mm',
+      },
+      {
+        specName: 'Power Reserve',
+        specValue: '70 hours',
+      },
+      {
+        specName: 'Functions',
+        specValue: 'Hours, Minutes, Seconds, Date, Chronograph',
+      },
+      {
+        specName: 'Caliber',
+        specValue: 'Breitling B01',
+      },
+    ],
+    specialFeatures: [
+      {
+        featureName: 'In-house Chronograph',
+        featureDesc: 'Manufacture movement with column wheel and vertical clutch',
+      },
+      {
+        featureName: 'Transparent Caseback',
+        featureDesc: 'View the beautifully decorated movement',
+      },
+      {
+        featureName: 'Tachymeter Scale',
+        featureDesc: 'Measure speed based on travel time',
+      },
+      {
+        featureName: 'Sapphire Crystal',
+        featureDesc: 'Scratch-resistant with anti-reflective coating',
+      },
+      {
+        featureName: '30-minute Counter',
+        featureDesc: 'At 3 o\'clock for chronograph functionality',
+      },
+      {
+        featureName: '12-hour Counter',
+        featureDesc: 'At 6 o\'clock for extended timing',
+      },
+    ],
+  },
+
   {
     id: '405.034',
     name: 'A. Lange & Söhne Datograph 405.034 UpDown Lumen Platinum Black Dial',
@@ -1783,59 +1915,58 @@ const products = [
     gender: 'Male',
     price: 228000,
     image: 'a-lange-sohne-zeitwerk-striking-time-white-gold-black-dial-145-029-a-lange-sohne-40258736947444.jpg',
-    description:
-      "",
+    description: "The Datograph UpDown Lumen combines Lange's legendary chronograph with luminous elements and a power reserve indicator in a platinum case.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '41 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '13.1 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '60 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Functions',
+        specValue: 'Hours, Minutes, Seconds, Date, Chronograph, Power Reserve',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Caliber',
+        specValue: 'L951.7',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Luminous Elements',
+        featureDesc: 'Glowing hands and markers for nighttime visibility',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Flyback Chronograph',
+        featureDesc: 'Allows instant restart of timing function',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Power Reserve Indicator',
+        featureDesc: 'Up/Down display at 6 o\'clock',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'German Silver Movement',
+        featureDesc: 'Hand-finished with Glashütte ribbing',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Balance Wheel',
+        featureDesc: 'Free-sprung with eccentric poising weights',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Limited Edition',
+        featureDesc: 'Exclusive production with special features',
       },
     ],
   },
 
-{
+  {
     id: '405.831',
     name: 'A. Lange & Söhne Datograph Flyback 405.831 Rose Gold Baguette Bezel Black Dial Limited Edition',
     brand: 'ALS_1',
@@ -1850,59 +1981,58 @@ const products = [
     gender: 'Male',
     price: 180000,
     image: 'a-lange-sohne-datograph-flyback-rose-gold-baguette-bezel-black-dial-limited-edition-405-831-a-lange-sohne-40258660499700.jpg',
-    description:
-      "",
+    description: "This limited edition Datograph Flyback features a rose gold case with baguette diamond bezel and Lange's exceptional chronograph movement.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '41 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '13.1 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '60 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Functions',
+        specValue: 'Hours, Minutes, Seconds, Date, Flyback Chronograph',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Caliber',
+        specValue: 'L951.6',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Baguette Diamond Bezel',
+        featureDesc: 'Set with 36 top Wesselton diamonds',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Flyback Function',
+        featureDesc: 'Instant reset and restart of chronograph',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Outsize Date',
+        featureDesc: 'Large date display at 12 o\'clock',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Hand-Engraved Balance Cock',
+        featureDesc: 'Traditional floral pattern decoration',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Column Wheel Control',
+        featureDesc: 'For precise chronograph operation',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Limited Edition',
+        featureDesc: 'Exclusive numbered production',
       },
     ],
   },
 
-{
+  {
     id: '145.029',
     name: 'A. Lange & Söhne Zeitwerk 145.029 Striking Time White Gold Black Dial',
     brand: 'ALS_1',
@@ -1922,60 +2052,58 @@ const products = [
       '/Assets/Images/Photos/A lange/a-lange-sohne-zeitwerk-striking-time-white-gold-black-dial-145-029-a-lange-sohne-40258737242356.jpg',
       '/Assets/Images/Photos/A lange/a-lange-sohne-zeitwerk-striking-time-white-gold-black-dial-145-029-a-lange-sohne-40258742157556.jpg',
     ],
-    description:
-      "",
+    description: "The Zeitwerk Striking Time combines Lange's digital time display with acoustic time indication in a white gold case.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '44.2 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '13.1 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '36 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Functions',
+        specValue: 'Jumping Digital Hours and Minutes, Small Seconds, Striking Mechanism',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Caliber',
+        specValue: 'L043.2',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Digital Time Display',
+        featureDesc: 'Precise jumping numerals for hours and minutes',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Acoustic Time Indication',
+        featureDesc: 'Strikes each quarter hour',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Constant Force Escapement',
+        featureDesc: 'Ensures consistent power delivery',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Power Reserve Indicator',
+        featureDesc: 'On the movement side',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Hand-Engraved Balance Cock',
+        featureDesc: 'Traditional floral pattern decoration',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Three-Quarter Plate',
+        featureDesc: 'German silver with Glashütte ribbing',
       },
     ],
   },
 
-
-{
+  {
     id: 'RM 035',
     name: 'Richard Mille RM 035 Americas 2 Rose Gold Toro Skeleton Limited Edition (2018)',
     brand: 'RMI_1',
@@ -1990,59 +2118,58 @@ const products = [
     gender: 'Male',
     price: 495000,
     image: 'richard-mille-americas-rose-gold-toro-skeleton-limited-edition-rm-035-richard-mille-40266311827700.png',
-    description:
-      "",
+    description: "This limited edition RM 035 features a rose gold case with skeletonized movement and special Americas 2 theme.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '50.7 x 42.7 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '13.15 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '55 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Functions',
+        specValue: 'Hours, Minutes, Seconds',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Caliber',
+        specValue: 'RMUL2',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Skeletonized Movement',
+        featureDesc: 'Full view of the intricate mechanics',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Limited Edition',
+        featureDesc: 'Only 50 pieces produced',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Tonneau Case',
+        featureDesc: 'Signature Richard Mille shape',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Variable Geometry Rotor',
+        featureDesc: 'Adjustable winding efficiency',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Americas 2 Theme',
+        featureDesc: 'Special decoration for this edition',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Shock Resistant',
+        featureDesc: 'Designed for extreme conditions',
       },
     ],
   },
 
-{
+  {
     id: 'RM 011',
     name: 'Richard-Mille-RM-011-White-Ghost',
     brand: 'RMI_1',
@@ -2057,59 +2184,57 @@ const products = [
     gender: 'Male',
     price: 380000,
     image: '/Assets/Images/Photos/RM 011/richard-mille-rm-011-fm-white-ghost-white-ceramic-limited-edition-richard-mille-1151957426.png',
-     galleryImages: [
+    galleryImages: [
       '/Assets/Images/Photos/RM 011/richard-mille-rm-72-01-lifestyle-in-house-chronograph-white-ceramic-2023-richard-mille-42985899720948.jpg',
       '/Assets/Images/Photos/RM 011/richard-mille-rm-011-fm-white-ghost-white-ceramic-limited-edition-richard-mille-1151957425.jpg',
     ],
-
-    description:
-      "",
+    description: "The RM 011 White Ghost features a white ceramic case with skeletonized flyback chronograph movement.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '50 x 42 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '16.15 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '55 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Functions',
+        specValue: 'Hours, Minutes, Seconds, Date, Flyback Chronograph',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Caliber',
+        specValue: 'RMAC1',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'White Ceramic Case',
+        featureDesc: 'Lightweight and scratch-resistant',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Flyback Chronograph',
+        featureDesc: 'Instant restart of timing function',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Annual Calendar',
+        featureDesc: 'Automatic month adjustment',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Variable Geometry Rotor',
+        featureDesc: 'Adjustable winding efficiency',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Skeletonized Dial',
+        featureDesc: 'View of the intricate movement',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Limited Edition',
+        featureDesc: 'Exclusive production run',
       },
     ],
   },
@@ -2129,63 +2254,63 @@ const products = [
     gender: 'Male',
     price: 420000,
     image: 'audemars-piguet-royal-oak-offshore-rubens-barrichello-lll-26284ro-oo-d002cr-01-audemars-piguet-40259238527220.png',
-    description:
-      "",
+    description: "This special edition Royal Oak Offshore was created in collaboration with Formula 1 driver Rubens Barrichello.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '42 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '14.55 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '60 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Functions',
+        specValue: 'Hours, Minutes, Seconds, Date, Chronograph',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Caliber',
+        specValue: 'AP 2385',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Rubens Barrichello Edition',
+        featureDesc: 'Created in collaboration with the F1 driver',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Rose Gold Case',
+        featureDesc: '18k rose gold construction',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Méga Tapisserie Dial',
+        featureDesc: 'Signature AP textured dial',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Column Wheel Chronograph',
+        featureDesc: 'Precision timing mechanism',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Screw-Locked Crown',
+        featureDesc: 'For enhanced water resistance',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Limited Edition',
+        featureDesc: 'Exclusive numbered production',
       },
     ],
   },
+
 
 {
     id: '15416CE.OO.1225CE.02',
     name: 'Jacob Co. At150-40 AC SD A Gravitational Triple Axis Automatic Tourbillon Piece Unique',
     brand: 'JAC_1',
-    strapMaterial: 'Ceramic',
+    strapMaterial: 'rubber',
     movement: 'Automatic',
     waterResistance: '30m',
     caseMaterial: 'Ceramic',
@@ -2200,54 +2325,53 @@ const products = [
       '/Assets/Images/Photos/JAC 1/jacob-co-astronomia-at150-40-ac-sd-a-gravitational-triple-axis-automatic-tourbillon-piece-unique-2018-jacob-co-1155822434.jpg',
       '/Assets/Images/Photos/JAC 1/jacob-co-astronomia-at150-40-ac-sd-a-gravitational-triple-axis-automatic-tourbillon-piece-unique-2018-jacob-co-1154935485.jpg',
     ],
-    description:
-      "",
+    description: "The Royal Oak Double Balance Wheel Openworked in black ceramic combines Audemars Piguet's iconic design with cutting-edge horological technology, featuring a skeletonized dial that reveals the intricate double balance wheel mechanism.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '41 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '10.4 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '50 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Frequency',
+        specValue: '28,800 vibrations per hour (4Hz)',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Jewels',
+        specValue: '32',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Double Balance Wheel',
+        featureDesc: 'Two balance wheels connected by a bridge for improved precision and stability',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Black Ceramic Case',
+        featureDesc: 'Lightweight, scratch-resistant ceramic construction with brushed and polished finishes',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Openworked Dial',
+        featureDesc: 'Skeletonized to reveal the intricate movement beneath',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Tapisserie Pattern',
+        featureDesc: 'Signature Royal Oak design on the movement bridges',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Limited Edition',
+        featureDesc: 'Exclusive production with numbered pieces',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Integrated Rubber Strap',
+        featureDesc: 'Comfortable and durable with ceramic deployant clasp',
       },
     ],
   },
@@ -2272,61 +2396,60 @@ const products = [
       '/Assets/Images/Photos/vacheron/vacheron-constantin-traditionnelle-tourbillon-chronograph-rose-gold-5100t-000r-b623-vacheron-constantin-40272886497524.jpg',
       '/Assets/Images/Photos/vacheron/vacheron-constantin-traditionnelle-tourbillon-chronograph-rose-gold-5100t-000r-b623-vacheron-constantin-40272908419316.jpg',
     ],
-    description:
-      "",
+    description: "This exquisite timepiece combines Vacheron Constantin's mastery of tourbillon and chronograph complications in a elegant rose gold case, featuring a silver-toned dial with exquisite guilloché decoration.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '42 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '12.9 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '45 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Movement Caliber',
+        specValue: '3200',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Jewels',
+        specValue: '37',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Tourbillon Regulator',
+        featureDesc: 'Rotating cage that compensates for positional errors in timekeeping',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Column-Wheel Chronograph',
+        featureDesc: 'Precision timing mechanism with smooth operation',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Guilloché Dial',
+        featureDesc: 'Hand-engraved silver-toned dial with intricate patterns',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Rose Gold Case',
+        featureDesc: '18k rose gold construction with polished and satin-brushed finishes',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Geneva Seal',
+        featureDesc: 'Certification guaranteeing exceptional craftsmanship and finishing',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Alligator Strap',
+        featureDesc: 'Hand-stitched, saddle-finish Mississippiensis alligator leather',
       },
     ],
   },
 
   {
     id: '16520',
-    name: 'Vacheron Constantin Traditionnelle Tourbillon Chronograph 5100T/000R-B623 Rose Gold',
+    name: 'Rolex Daytona 116520 Stainless Steel Black "Patrizzi" Dial',
     brand: 'VAC_1',
     strapMaterial: 'Stainless Steel',
     movement: 'Automatic',
@@ -2339,59 +2462,58 @@ const products = [
     gender: 'Male',
     price: 49000,
     image: 'rolex-daytona-116520-stainless-steel-black-dial-zenith-1997-rolex-43846969000180.jpg',
-     galleryImages: [
+    galleryImages: [
       '/Assets/Images/Photos/vacheron-constantin-traditionnelle-tourbillon-chronograph-rose-gold-5100t-000r-b623-vacheron-constantin-40272885547252/rolex-daytona-116520-stainless-steel-black-dial-zenith-1997-rolex-43846969196788.jpg',
       '/Assets/Images/Photos/vacheron-constantin-traditionnelle-tourbillon-chronograph-rose-gold-5100t-000r-b623-vacheron-constantin-40272885547252/rolex-daytona-116520-stainless-steel-black-dial-zenith-1997-rolex-43846969360628.jpg',
       '/Assets/Images/Photos/vacheron-constantin-traditionnelle-tourbillon-chronograph-rose-gold-5100t-000r-b623-vacheron-constantin-40272885547252/rolex-daytona-116520-stainless-steel-black-dial-zenith-1997-rolex-43846969393396.jpg',
     ],
-    description:
-      "",
+    description: "The Rolex Daytona 116520 with black 'Patrizzi' dial is a highly coveted chronograph featuring the legendary Zenith El Primero movement, known for its distinctive tropical patina that develops over time.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '40 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '12.5 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '50 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Movement',
+        specValue: 'Rolex 4030 (based on Zenith El Primero)',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Crystal',
+        specValue: 'Sapphire, scratch-resistant',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Patrizzi Dial',
+        featureDesc: 'Highly sought-after black dial that develops a tropical brown patina over time',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Zenith El Primero Movement',
+        featureDesc: 'Legendary high-frequency chronograph movement adapted by Rolex',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Stainless Steel Construction',
+        featureDesc: '904L stainless steel for enhanced corrosion resistance',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Tachymetric Scale',
+        featureDesc: 'Ceramic bezel for measuring speed',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Screw-down Pushers',
+        featureDesc: 'For enhanced water resistance',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Oyster Bracelet',
+        featureDesc: 'Iconic Rolex design with secure folding clasp',
       },
     ],
   },
@@ -2400,7 +2522,7 @@ const products = [
     id: '4200H/222J-B935',
     name: 'Vacheron Constantin Historiques 222 4200H/222J-B935 Yellow Gold Champagne Dial',
     brand: 'VAC_1',
-    strapMaterial: 'Yellow Gold',
+    strapMaterial: 'rubber',
     movement: 'Automatic',
     waterResistance: '30m',
     caseMaterial: 'Yellow Gold',
@@ -2411,63 +2533,62 @@ const products = [
     gender: 'Male',
     price: 78900,
     image: '/Assets/Images/Photos/historique/vacheron-constantin-historiques-222-yellow-gold-champagne-dial-vacheron-constantin-42478825013492.jpg',
-     galleryImages: [
+    galleryImages: [
       '/Assets/Images/Photos/historique/vacheron-constantin-historiques-222-yellow-gold-champagne-dial-vacheron-constantin-42478825144564.jpg',
       '/Assets/Images/Photos/historique/vacheron-constantin-historiques-222-yellow-gold-champagne-dial-vacheron-constantin-42478824882420.jpg',
       '/Assets/Images/Photos/historique/vacheron-constantin-historiques-222-yellow-gold-champagne-dial-vacheron-constantin-42478825046260.jpg',
     ],
-    description:
-      "",
+    description: "The Historiques 222 faithfully recreates Vacheron Constantin's iconic 1977 design, featuring a distinctive integrated bracelet and monocoque case in luxurious yellow gold with a champagne-colored dial.",
     specifications: [
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Diameter',
+        specValue: '37 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Case Thickness',
+        specValue: '7.95 mm',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Power Reserve',
+        specValue: '45 hours',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Movement Caliber',
+        specValue: '2455/2',
       },
       {
-        specName: '',
-        specValue: '',
+        specName: 'Jewels',
+        specValue: '27',
       },
     ],
     specialFeatures: [
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Reissue of Iconic 222',
+        featureDesc: 'Faithful recreation of the groundbreaking 1977 design',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Integrated Bracelet',
+        featureDesc: 'Seamless design from case to bracelet',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Monocoque Case',
+        featureDesc: 'Single-piece construction for enhanced durability',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Yellow Gold Construction',
+        featureDesc: '18k yellow gold case and bracelet',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Champagne Dial',
+        featureDesc: 'Sunburst finish with gold hour markers',
       },
       {
-        featureName: '',
-        featureDesc: '',
+        featureName: 'Geneva Seal',
+        featureDesc: 'Certification of exceptional craftsmanship',
       },
     ],
-  },
-];
+  }
+]
 
 async function seedDatabase() {
   try {

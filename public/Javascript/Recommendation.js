@@ -1,4 +1,3 @@
-
 const questions = [
     {
         question: "What's your approach to wearing watches?",
@@ -57,25 +56,42 @@ const watchPersonalities = [
         name: "The Traditionalist",
         description: "You appreciate timeless designs and reliable functionality. For you, a watch is first and foremost a precision instrument.",
         scoreRange: [0, 6],
-        recommendation: "Consider classic brands like Rolex Datejust, Omega De Ville, or Grand Seiko"
+        recommendation: "Consider classic brands like Rolex Datejust, Omega De Ville, or Grand Seiko",
+        filter: {
+            Vcollection: "Classic & Dress",
+            sort: "price-asc"
+        }
     },
     {
         name: "The Style Enthusiast",
         description: "You see watches as fashion accessories and love matching them to your outfits and occasions.",
         scoreRange: [7, 10],
-        recommendation: "Look at versatile options from Nomos, Frederique Constant, or Cartier Tank"
+        recommendation: "Look at versatile options from Nomos, Frederique Constant, or Cartier Tank",
+        filter: {
+            Vcollection: "Casual & Everyday",
+            sort: "popularity"
+        }
     },
     {
         name: "The Collector",
         description: "You're passionate about horology and appreciate both the artistry and engineering of fine timepieces.",
         scoreRange: [11, 13],
-        recommendation: "Explore pieces from Jaeger-LeCoultre, Patek Philippe, or independent watchmakers"
+        recommendation: "Explore pieces from Jaeger-LeCoultre, Patek Philippe, or independent watchmakers",
+        filter: {
+            Vcollection: "Luxury & Heritage",
+            sort: "price-desc"
+        }
     },
     {
         name: "The Connoisseur",
         description: "You seek exceptional craftsmanship and unique complications. For you, watches are wearable art.",
         scoreRange: [14, 16],
-        recommendation: "High-end pieces from A. Lange & Söhne, Vacheron Constantin, or Roger Dubuis"
+        recommendation: "High-end pieces from A. Lange & Söhne, Vacheron Constantin, or Roger Dubuis",
+        filter: {
+            Vcollection: "Luxury & Heritage",
+            sort: "price-desc",
+            minPrice: 10000
+        }
     }
 ];
 
@@ -152,18 +168,34 @@ function showResults() {
     ) || watchPersonalities[0];
 
     quizResultsEl.innerHTML = `
-        <h3>${result.name}</h3>
-        <p>${result.description}</p>
-        <div class="result-score">Your score: ${score}/${maxScore}</div>
-        <h3>Our Recommendation</h3>
-        <p>${result.recommendation}</p>
-        <button class="btn-retake" id="retakeBtn">Start Over</button>
+        <div class="result-content">
+            <h3>${result.name}</h3>
+            <p>${result.description}</p>
+            <div class="result-score">Your score: ${score}/${maxScore}</div>
+            <h3>Our Recommendation</h3>
+            <p>${result.recommendation}</p>
+            <div class="button-group">
+                <button class="btn btn-retake" id="retakeBtn">Start Over</button>
+                <button class="btn btn-view" id="viewBtn">View Recommended Watches</button>
+            </div>
+        </div>
     `;
+    
     quizResultsEl.style.display = 'block';
     quizResultsEl.classList.add('animate__animated', 'animate__fadeIn');
 
     document.getElementById('retakeBtn').addEventListener('click', resetQuiz);
+    
+    document.getElementById('viewBtn').addEventListener('click', () => {
+        const params = new URLSearchParams();
+        for (const [key, value] of Object.entries(result.filter)) {
+            params.append(key, value);
+        }
+        window.location.href = `/user/products?${params.toString()}`;
+    });
 }
+
+
 
 function resetQuiz() {
     currentQuestion = 0;
@@ -185,7 +217,6 @@ skipBtn.addEventListener('click', () => {
     } else {
         showResults();
     }
-
 });
 
 renderQuestion();

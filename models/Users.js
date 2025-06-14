@@ -279,7 +279,8 @@ const UserSchema = new mongoose.Schema({
   },
   accountLockedUntil: {
     type: Date,
-    select: false
+    select: false,
+    default: null
   },
   lastLogin: {
     type: Date,
