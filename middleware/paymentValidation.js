@@ -13,7 +13,11 @@ const validatePaymentInput = [
     .trim()
     .notEmpty()
     .withMessage('Card number is required')
-    .custom((value) => {
+    .custom((value, { req }) => {
+      // Skip validation for masked numbers (authenticated users)
+      if (value.startsWith('*')) {
+        return true;
+      }
       if (!isValidCardNumber(value)) {
         throw new Error('Invalid card number');
       }

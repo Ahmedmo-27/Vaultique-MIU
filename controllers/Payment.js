@@ -9,7 +9,7 @@ const rateLimit = require('express-rate-limit');
 // Rate limiting for payment attempts
 const paymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
+  max: process.env.NODE_ENV === 'development' ? 50 : 5, // More lenient in development
   message: JSON.stringify({
     success: false,
     message: 'Too many payment attempts, please try again later'
@@ -49,7 +49,7 @@ exports.processPayment = [
       // Store payment info in session
       req.session.paymentInfo = {
         name,
-        cardNumber: card_number.replace(/\s/g, '').slice(-4), // Only store last 4 digits
+        cardNumber: card_number.startsWith('*') ? card_number : card_number.replace(/\s/g, '').slice(-4), // Handle masked numbers
         bankName: bank_name,
         expiry,
         paymentType: 'credit'
@@ -60,7 +60,7 @@ exports.processPayment = [
         await User.findByIdAndUpdate(req.user._id, {
           $set: {
             'Payment.cardHolder': name,
-            'Payment.cardNumber': card_number.replace(/\s/g, '').slice(-4),
+            'Payment.cardNumber': card_number.startsWith('*') ? card_number : card_number.replace(/\s/g, '').slice(-4), // Handle masked numbers
             'Payment.bankName': bank_name,
             'Payment.expiryDate': expiry,
             'Payment.paymentType': 'credit',

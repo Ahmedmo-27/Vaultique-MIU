@@ -86,8 +86,13 @@ CartSchema.pre('save', async function(next) {
     this.total = this.subtotal + this.shippingCost;
 
     // Validate stock availability for each item
+    const Product = mongoose.model('Product');
+    const productIds = [...new Set(this.items.map(item => item.product.toString()))];
+    const products = await Product.find({ _id: { $in: productIds } });
+    const productMap = new Map(products.map(p => [p._id.toString(), p]));
+
     for (const item of this.items) {
-      const product = await mongoose.model('Product').findById(item.product);
+      const product = productMap.get(item.product.toString());
       if (!product) {
         throw new Error(`Product ${item.product} not found`);
       }

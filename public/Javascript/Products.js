@@ -96,17 +96,6 @@ function initApp() {
     return;
   }
 
-  // Create quick view modal elements
-  quickViewModal = document.createElement('div');
-  quickViewModal.id = 'quickView';
-  quickViewModal.className = 'quick-view-modal';
-  document.body.appendChild(quickViewModal);
-
-  quickViewOverlay = document.createElement('div');
-  quickViewOverlay.id = 'quickViewOverlay';
-  quickViewOverlay.className = 'quick-view-overlay';
-  document.body.appendChild(quickViewOverlay);
-
   initializeFilters();
   setupEventListeners();
 }
@@ -254,15 +243,6 @@ function setupEventListeners() {
     }
   });
 
-  // Add event listeners for quick view buttons
-  document.querySelectorAll('.quick-view').forEach((button) => {
-    button.addEventListener('click', function () {
-      const productCard = this.closest('.product-card');
-      const productData = JSON.parse(productCard.dataset.product);
-      toggleQuickView(productData);
-    });
-  });
-
   // Add sorting event listeners
   document.querySelectorAll('.sort-options button').forEach(button => {
     button.addEventListener('click', function() {
@@ -395,132 +375,6 @@ function resetFilters() {
   });
 
   document.getElementById('inStockFilter').checked = false;
-}
-
-function toggleQuickView(product = null) {
-  if (!quickViewModal || !quickViewOverlay) return;
-
-  const isOpening = !quickViewModal.classList.contains('open');
-
-  if (isOpening && product) {
-    // Create thumbnail items - use galleryImages if available, otherwise just the main image
-    const thumbnails =
-      product.galleryImages && product.galleryImages.length > 0
-        ? product.galleryImages
-            .map(
-              (img, idx) => `
-          <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-image="${img.startsWith('/') ? img : `/public/Assets/Images/Watches/${img}`}">
-            <img src="${img.startsWith('/') ? img : `/public/Assets/Images/Watches/${img}`}" alt="Thumbnail ${idx + 1}">
-          </div>
-        `
-            )
-            .join('')
-        : `
-          <div class="thumbnail active" data-image="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}">
-            <img src="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}" alt="Product Thumbnail">
-          </div>
-        `;
-
-    quickViewModal.innerHTML = `
-      <button class="close-btn" id="closeQuickView">✖</button>
-      <div class="quick-view-content">
-        <section class="product-gallery">
-          <div class="all_image">
-            <div class="main-image">
-              <img src="${product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`}" alt="${product.name}" id="quickViewMainImage">
-            </div>
-            <div class="thumbnail-container">
-              ${thumbnails}
-            </div>
-          </div>
-        </section>
-        
-        <div class="product-info">
-          <div class="product-header">
-            <h1>${product.name}</h1>
-            <div class="product-meta">
-              <div class="price-qv">$${product.price.toLocaleString()}</div>
-            </div>
-          </div>
-          
-          <div class="product-actions">
-            <button class="wishlist-btn" data-product-id="${product._id}">
-              <i class="far fa-heart"></i>
-            </button>
-            <button class="add-to-cart" data-product-id="${product._id}">
-              <i class="fas fa-shopping-bag"></i> Add to Cart
-            </button>
-            <button class="find-store">
-              <i class="fas fa-map-marker-alt"></i> View 3D Model
-            </button>
-          </div>
-          
-          <div class="product-description">
-            <p>${product.description || 'No description available'}</p>
-          </div>
-        </div>
-      </div>
-    `;
-
-    // Add event listeners after rendering
-    document.getElementById('closeQuickView').addEventListener('click', toggleQuickView);
-
-    // Add thumbnail click handlers
-    document.querySelectorAll('.thumbnail-container .thumbnail').forEach((thumb) => {
-      thumb.addEventListener('click', function () {
-        const newImageSrc = this.getAttribute('data-image');
-        const mainImage = document.getElementById('quickViewMainImage');
-        mainImage.src = newImageSrc;
-        document.querySelectorAll('.thumbnail').forEach((t) => t.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
-
-    // Add zoom functionality to quick view image
-    const quickViewImage = document.getElementById('quickViewMainImage');
-    let isZoomed = false;
-    let originalTransform = '';
-
-    quickViewImage.parentElement.addEventListener('click', function(e) {
-      if (!isZoomed) {
-        // Zoom in
-        originalTransform = quickViewImage.style.transform;
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        // Calculate zoom center point
-        const centerX = (x / rect.width) * 100;
-        const centerY = (y / rect.height) * 100;
-        
-        quickViewImage.style.transform = `scale(2)`;
-        quickViewImage.style.transformOrigin = `${centerX}% ${centerY}%`;
-        this.style.cursor = 'zoom-out';
-        isZoomed = true;
-      } else {
-        // Zoom out
-        quickViewImage.style.transform = originalTransform;
-        this.style.cursor = 'zoom-in';
-        isZoomed = false;
-      }
-    });
-
-    // Add add-to-cart button event listener
-    document.querySelector('.add-to-cart').addEventListener('click', function () {
-      const productId = this.dataset.productId;
-      addToCartFromQuickView(productId);
-    });
-  }
-
-  // Toggle visibility
-  quickViewModal.classList.toggle('open');
-  quickViewOverlay.classList.toggle('show');
-
-  // Close when clicking overlay
-  quickViewOverlay.onclick = () => {
-    quickViewModal.classList.remove('open');
-    quickViewOverlay.classList.remove('show');
-  };
 }
 
 function createModal(title, content, buttons = []) {
@@ -824,7 +678,6 @@ async function removeFromWishlist(productId) {
 }
 
 // Make functions available globally
-window.toggleQuickView = toggleQuickView;
 window.loadProducts = loadProducts;
 window.resetFilters = resetFilters;
 window.openFilterPanel = openFilterPanel;

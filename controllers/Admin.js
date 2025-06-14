@@ -1221,8 +1221,8 @@ exports.renderBrands = async (req, res) => {
                 totalPages: 1,
                 hasPrevPage: false,
                 hasNextPage: false,
-                prevPage: 1,
-                nextPage: 1
+                prevPage: null,
+                nextPage: null
             },
             user: req.user,
             error: 'Error loading brands: ' + error.message

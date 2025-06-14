@@ -273,12 +273,12 @@ router.post('/add', async (req, res) => {
         }
 
         // Check stock
-        if (product.stock < quantity) {
+        if (!product.stock || product.stockCount < quantity) {
             return res.status(400).json({
                 success: false,
                 error: 'Not enough stock available',
                 code: 'INSUFFICIENT_STOCK',
-                available: product.stock
+                available: product.stockCount
             });
         }
 
@@ -293,12 +293,12 @@ router.post('/add', async (req, res) => {
             const newQuantity = cart.items[existingItemIndex].quantity + quantity;
             
             // Check if new total quantity exceeds stock
-            if (newQuantity > product.stock) {
+            if (newQuantity > product.stockCount) {
                 return res.status(400).json({
                     success: false,
                     error: 'Not enough stock available',
                     code: 'INSUFFICIENT_STOCK',
-                    available: product.stock
+                    available: product.stockCount
                 });
             }
             

@@ -73,6 +73,9 @@
       </div>
 
       <form id="payment-form" class="checkout-form">
+        <!-- Add hidden input for authentication status -->
+        <input type="hidden" id="isAuthenticated" value="<%= isAuthenticated %>">
+        
         <div class="input-line">
           <label for="name">FULL NAME</label>
           <input
@@ -93,7 +96,7 @@
             placeholder="1234 5678 9012 3456"
             value="<%= paymentInfo ? paymentInfo.card_number : '' %>"
             maxlength="19"
-            required
+            <%= isAuthenticated ? 'disabled' : 'required' %>
           />
         </div>
 
@@ -137,7 +140,7 @@
               value="<%= paymentInfo ? paymentInfo.expiry : '' %>"
               maxlength="5"
               class="expiry-input"
-              required
+              <%= isAuthenticated ? 'disabled' : 'required' %>
             />
             <p class="error" id="expiryError">
               Please enter a valid expiry date in MM/YY format
@@ -241,11 +244,24 @@
             e.preventDefault();
             
             // Get form values
+            const isAuthenticated = document.getElementById('isAuthenticated')?.value === 'true';
             const name = document.getElementById('name')?.value;
-            const cardNumber = document.getElementById('card-number')?.value.replace(/\s/g, '');
+            const cardNumberInput = document.getElementById('card-number');
+            const cardNumber = isAuthenticated ? 
+              cardNumberInput?.getAttribute('data-masked-number') || cardNumberInput?.value.replace(/\s/g, '') :
+              cardNumberInput?.value.replace(/\s/g, '');
             const bankName = document.getElementById('bank-name')?.value;
             const expiry = document.getElementById('expiry')?.value;
             const cvv = document.getElementById('cvv')?.value;
+
+            console.log('Form values:', {
+              name,
+              cardNumber,
+              bankName,
+              expiry,
+              cvv,
+              isAuthenticated
+            });
 
             // Validate required fields
             if (!name || !cardNumber || !bankName || !expiry || !cvv) {
@@ -253,8 +269,8 @@
               return;
             }
 
-            // Validate card number
-            if (!/^\d{16}$/.test(cardNumber)) {
+            // Skip card number validation for authenticated users
+            if (!isAuthenticated && !/^\d{16}$/.test(cardNumber)) {
               alert('Please enter a valid 16-digit card number');
               return;
             }
@@ -272,21 +288,35 @@
             }
 
             try {
+              const requestData = {
+                name,
+                card_number: cardNumber,
+                bank_name: bankName,
+                expiry,
+                cvv
+              };
+              console.log('Sending payment request with data:', requestData);
+
               const response = await fetch('/api/payment/process', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                  name,
-                  card_number: cardNumber,
-                  bank_name: bankName,
-                  expiry,
-                  cvv
-                })
+                body: JSON.stringify(requestData)
               });
 
-              const data = await response.json();
+              console.log('Response status:', response.status);
+              const responseText = await response.text();
+              console.log('Raw response:', responseText);
+
+              let data;
+              try {
+                data = JSON.parse(responseText);
+                console.log('Parsed response data:', data);
+              } catch (e) {
+                console.error('Error parsing response:', e);
+                throw new Error('Invalid response from server');
+              }
 
               if (data.success) {
                 const successPopup = document.getElementById('login-message-popup');

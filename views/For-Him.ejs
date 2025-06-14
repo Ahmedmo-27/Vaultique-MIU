@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Vaultique | <%= collection.name %></title>
+        <title>Vaultique | For Him</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/CSS/Loading Screen.css">
@@ -28,16 +28,16 @@
         <section class="section topic">
             <div class="video-container">
                 <video autoplay muted loop playsinline>
-                    <source src="<%= collection.heroVideo %>" id="brandVideoSource">
+                    <source src="/public/Assets/Videos/for-him.mp4" id="heroVideoSource">
                 </video>
             </div>
         </section>
 
-        <!-- Collection Slider Section -->
+        <!-- Featured Models Slider Section -->
         <div class="slider-container">
             <div class="slides-wrapper" id="slidesWrapper">
-                <% if (collection.featuredItems && collection.featuredItems.length > 0) { %>
-                    <% collection.featuredItems.forEach((model, index) => { %>
+                <% if (featuredModels && featuredModels.length > 0) { %>
+                    <% featuredModels.forEach((model, index) => { %>
                         <div class="slide" data-index="<%= index %>" data-model="<%= index + 1 %>">
                             <div class="slide-content">
                                 <div class="watch-info">
@@ -68,28 +68,28 @@
 
             <!-- Pagination Dots -->
             <div class="pagination-slider" id="paginationSlider">
-                <% if (collection.featuredItems && collection.featuredItems.length > 0) { %>
-                    <% collection.featuredItems.forEach((_, index) => { %>
+                <% if (featuredModels && featuredModels.length > 0) { %>
+                    <% featuredModels.forEach((_, index) => { %>
                         <button class="dot <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>" aria-label="Go to slide <%= index + 1 %>" <%= index === 0 ? 'aria-current="true"' : '' %>></button>
                     <% }); %>
                 <% } %>
             </div>
         </div>
 
-        <!-- Collection Info Section -->
+        <!-- Page Information Section -->
         <div class="image" style="margin-bottom: -90px;">
-            <img src="<%= collection.coverImage %>" alt="Brand Image" id="brandCoverImage">
+            <img src="/public/Assets/Images/for-him-cover.jpg" alt="For Him Cover Image" id="pageCoverImage">
             <div class="brand-logo">
-                <h1 id="brandLogo"><%= collection.name %></h1>
+                <h1 id="pageTitle">For Him</h1>
             </div>
             <div class="text-overlay">
-                <h2 id="brandHeader"><%= collection.header %></h2>
-                <p id="brandDescription"><%= collection.description %></p>
+                <h2 id="pageHeader">Timeless Elegance for the Modern Gentleman</h2>
+                <p id="pageDescription">Discover our curated collection of sophisticated timepieces designed for the discerning gentleman. From classic dress watches to robust sports models, find the perfect expression of your style.</p>
             </div>
         </div>
 
         <!-- Filter Button -->
-        <button class="filter-btn" onclick="openFilterPanel()">
+        <button data-action="open-filter-panel" class="filter-btn">
             <span>Filters and Sorting</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="4" y1="6" x2="20" y2="6" />
@@ -101,65 +101,54 @@
             </svg>
         </button>
 
+        <div class="overlay" id="overlay"></div>
+
         <!-- Filter Panel -->
-        <div class="overlay" id="overlay" onclick="closeFilterPanel()"></div>
         <div class="filter-panel" id="filterPanel">
-            <button class="close-btn" onclick="closeFilterPanel()">
+            <button class="close-btn" data-action="close-filter-panel">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M18 6L6 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M6 6L18 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
-
-            <div class="sort-options">
-                <h3>Sort By</h3>
-                <a href="javascript:void(0)" onclick="updateSort('default')" class="<%= sort === 'default' ? 'active' : '' %>">Default</a>
-                <a href="javascript:void(0)" onclick="updateSort('new')" class="<%= sort === 'new' ? 'active' : '' %>">New</a>
-                <a href="javascript:void(0)" onclick="updateSort('price-asc')" class="<%= sort === 'price-asc' ? 'active' : '' %>">Price ↑</a>
-                <a href="javascript:void(0)" onclick="updateSort('price-desc')" class="<%= sort === 'price-desc' ? 'active' : '' %>">Price ↓</a>
-                <a href="javascript:void(0)" onclick="updateSort('popularity')" class="<%= sort === 'popularity' ? 'active' : '' %>">Popularity</a>
-            </div>
-
-            <!-- Filters Form -->
-            <form method="GET" action="/collections/<%= collection.slug %>" class="filters">
-                <h3>Filters</h3>
+            
+            <form id="filterForm" class="filter-form" method="GET" action="/user/for-him">
                 <input type="hidden" name="sort" value="<%= sort %>">
                 <input type="hidden" name="page" value="1">
-
-                <!-- Collection Filter -->
-                <div class="filter-group">
-                    <label>Collection:</label>
-                    <select name="Vcollection" class="tag">
-                        <option value="<%= collection.name %>" selected><%= collection.name %></option>
-                    </select>
+                <input type="hidden" name="limit" value="10">
+                <input type="hidden" name="format" value="html">
+                <input type="hidden" name="gender" value="Male">
+                
+                <div class="sort-options">
+                    <h3>Sort By</h3>
+                    <a href="javascript:void(0)" onclick="updateSort('default')" class="<%= sort === 'default' ? 'active' : '' %>">Default</a>
+                    <a href="javascript:void(0)" onclick="updateSort('new')" class="<%= sort === 'new' ? 'active' : '' %>">New</a>
+                    <a href="javascript:void(0)" onclick="updateSort('price-asc')" class="<%= sort === 'price-asc' ? 'active' : '' %>">Price ↑</a>
+                    <a href="javascript:void(0)" onclick="updateSort('price-desc')" class="<%= sort === 'price-desc' ? 'active' : '' %>">Price ↓</a>
+                    <a href="javascript:void(0)" onclick="updateSort('popularity')" class="<%= sort === 'popularity' ? 'active' : '' %>">Popularity</a>
                 </div>
 
-                <!-- Brand Filter -->
-                <div class="filter-group">
+                <div class="filters">
+                    <h3>Filters</h3>
+
+                    <label>Collection:</label>
+                    <select id="collection" name="Vcollection" class="tag">
+                        <option value="All" <%= filters.Vcollection === 'All' ? 'selected' : '' %>>All</option>
+                        <% collections.forEach(collection => { %>
+                            <option value="<%= collection.name %>" <%= filters.Vcollection === collection.name ? 'selected' : '' %>><%= collection.name %></option>
+                        <% }); %>
+                    </select>
+
                     <label>Brand:</label>
-                    <select name="brand" class="tag">
+                    <select id="brand" name="brand" class="tag">
                         <option value="All" <%= filters.brand === 'All' ? 'selected' : '' %>>All</option>
                         <% brands.forEach(brand => { %>
                             <option value="<%= brand.name %>" <%= filters.brand === brand.name ? 'selected' : '' %>><%= brand.name %></option>
                         <% }); %>
                     </select>
-                </div>
 
-                <!-- Gender Filter -->
-                <div class="filter-group">
-                    <label>Gender:</label>
-                    <select name="gender" class="tag">
-                        <option value="All" <%= filters.gender === 'All' ? 'selected' : '' %>>All</option>
-                        <option value="Male" <%= filters.gender === 'Male' ? 'selected' : '' %>>Male</option>
-                        <option value="Female" <%= filters.gender === 'Female' ? 'selected' : '' %>>Female</option>
-                        <option value="Unisex" <%= filters.gender === 'Unisex' ? 'selected' : '' %>>Unisex</option>
-                    </select>
-                </div>
-
-                <!-- Strap Material Filter -->
-                <div class="filter-group">
                     <label>Strap Material:</label>
-                    <select name="strapMaterial" class="tag">
+                    <select id="Strap_Material" name="strapMaterial" class="tag">
                         <option value="All" <%= filters.strapMaterial === 'All' ? 'selected' : '' %>>All</option>
                         <option value="Leather" <%= filters.strapMaterial === 'Leather' ? 'selected' : '' %>>Leather</option>
                         <option value="Metal" <%= filters.strapMaterial === 'Metal' ? 'selected' : '' %>>Metal</option>
@@ -169,35 +158,26 @@
                         <option value="White Gold" <%= filters.strapMaterial === 'White Gold' ? 'selected' : '' %>>White Gold</option>
                         <option value="Else" <%= filters.strapMaterial === 'Else' ? 'selected' : '' %>>Else</option>
                     </select>
-                </div>
 
-                <!-- Movement Filter -->
-                <div class="filter-group">
                     <label>Movement:</label>
-                    <select name="movement" class="tag">
+                    <select id="Movement" name="movement" class="tag">
                         <option value="All" <%= filters.movement === 'All' ? 'selected' : '' %>>All</option>
                         <option value="Automatic" <%= filters.movement === 'Automatic' ? 'selected' : '' %>>Automatic</option>
                         <option value="Quartz" <%= filters.movement === 'Quartz' ? 'selected' : '' %>>Quartz</option>
                         <option value="Manual" <%= filters.movement === 'Manual' ? 'selected' : '' %>>Manual</option>
                     </select>
-                </div>
 
-                <!-- Water Resistance Filter -->
-                <div class="filter-group">
                     <label>Water Resistance:</label>
-                    <select name="waterResistance" class="tag">
+                    <select id="Water_Resistance" name="waterResistance" class="tag">
                         <option value="All" <%= filters.waterResistance === 'All' ? 'selected' : '' %>>All</option>
                         <option value="30m" <%= filters.waterResistance === '30m' ? 'selected' : '' %>>30m</option>
                         <option value="50m" <%= filters.waterResistance === '50m' ? 'selected' : '' %>>50m</option>
                         <option value="100m" <%= filters.waterResistance === '100m' ? 'selected' : '' %>>100m</option>
                         <option value="200m" <%= filters.waterResistance === '200m' ? 'selected' : '' %>>200m</option>
                     </select>
-                </div>
 
-                <!-- Case Material Filter -->
-                <div class="filter-group">
                     <label>Case Material:</label>
-                    <select name="caseMaterial" class="tag">
+                    <select id="Case_Material" name="caseMaterial" class="tag">
                         <option value="All" <%= filters.caseMaterial === 'All' ? 'selected' : '' %>>All</option>
                         <option value="Stainless Steel" <%= filters.caseMaterial === 'Stainless Steel' ? 'selected' : '' %>>Stainless Steel</option>
                         <option value="Gold" <%= filters.caseMaterial === 'Gold' ? 'selected' : '' %>>Gold</option>
@@ -211,15 +191,13 @@
                     </select>
                 </div>
 
-                <!-- Price Range Filter -->
-                <div class="filter-group price-range">
+                <div class="price-range">
                     <h3>Price Range</h3>
-                    <input type="number" name="minPrice" class="priceRangeValue" placeholder="From" value="<%= filters.minPrice || '' %>">
-                    <input type="number" name="maxPrice" class="priceRangeValue" placeholder="To" value="<%= filters.maxPrice || '' %>">
+                    <input type="number" id="priceRangeFrom" name="minPrice" class="priceRangeValue" placeholder="From" value="<%= filters.minPrice || '0' %>">
+                    <input type="number" id="priceRangeTo" name="maxPrice" class="priceRangeValue" placeholder="To" value="<%= filters.maxPrice || '50000000' %>">
                 </div>
 
-                <!-- Dial Color Filter -->
-                <div class="filter-group">
+                <div class="filter-options">
                     <h3>Dial Color</h3>
                     <% const selectedColors = filters.dialColor ? filters.dialColor.split(',') : ['All']; %>
                     <label><input type="checkbox" name="dialColor" value="All" class="dial-color" <%= selectedColors.includes('All') ? 'checked' : '' %>> All</label>
@@ -232,45 +210,45 @@
                     <label><input type="checkbox" name="dialColor" value="Else" class="dial-color" <%= selectedColors.includes('Else') ? 'checked' : '' %>> Else</label>
                 </div>
 
-                <!-- Stock Filter -->
-                <div class="filter-group stock-filter">
+                <div class="stock-filter">
                     <label>
-                        <input type="checkbox" name="inStock" id="inStockFilter" <%= filters.inStock ? 'checked' : '' %>> In Stock Only
+                        <input type="checkbox" id="inStockFilter" name="inStock" value="true" <%= filters.inStock === 'true' ? 'checked' : '' %>> In Stock Only
                     </label>
                 </div>
 
-                <!-- Filter Actions -->
                 <div class="filter-actions">
                     <button type="submit" class="submit">Apply Filters</button>
-                    <a href="/collections/<%= collection.slug %>" class="clear">Clear All</a>
+                    <button type="button" class="clear" onclick="clearFilters()">Clear All</button>
                 </div>
             </form>
         </div>
 
-        <!-- Product Grid -->
+        <!-- Products Section -->
         <section class="product-container">
             <div class="product-grid" id="productGrid">
                 <% if (products && products.length > 0) { %>
                     <% products.forEach((product) => { %>
-                        <div class="product-card">
+                        <div class="product-card" data-product='<%= JSON.stringify(product).replace(/'/g, "&apos;") %>'>
                             <div class="product-image-container">
-                                <div class="wishlist-icon" data-product-id="<%= product._id %>">
+                                <div class="wishlist-icon <%= product.inWishlist ? 'filled' : '' %>" data-product-id="<%= product._id %>">
                                     <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path class="heart" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"/>
+                                        <path class="heart <%= product.inWishlist ? 'filled' : '' %>" 
+                                              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"
+                                              fill="<%= product.inWishlist ? 'red' : 'transparent' %>"/>
                                     </svg>
                                 </div>
-                                <a href="/products/<%= product._id %>">
+                                <a href="/user/product?id=<%= product._id %>">
                                     <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
-                                </a>
-                            </div>
-                            <div class="product-details">
-                                <a href="/products/<%= product._id %>">
-                                    <h4><%= product.name %></h4>
                                 </a>
                                 <div class="hover-buttons">
                                     <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
                                     <button class="compare" data-product-id="<%= product._id %>">Compare</button>
                                 </div>
+                            </div>
+                            <div class="product-details">
+                                <a href="/user/product?id=<%= product._id %>">
+                                    <h4><%= product.name %></h4>
+                                </a>
                                 <p class="price">$<%= product.price.toLocaleString() %></p>
                                 <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
                                     <p class="stock in-stock">In Stock</p>
@@ -282,8 +260,7 @@
                     <% }); %>
                 <% } else { %>
                     <div class="no-products">
-                        <p>No products found matching your criteria.</p>
-                        <a href="/collections/<%= collection.slug %>" class="clear-filters">Clear Filters</a>
+                        No products found matching your criteria.
                     </div>
                 <% } %>
             </div>
@@ -309,7 +286,6 @@
             <% } %>
         </div>
 
-        <!-- Footer -->
         <%- include('partials/footer') %>
         <%- include('partials/notification') %>
 

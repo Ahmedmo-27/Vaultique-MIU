@@ -42,13 +42,13 @@ exports.requestRefund = async (req, res) => {
         await refund.save();
 
         // Update order status
-        order.status = 'Refunded';
+        order.status = 'Refund Requested';
         await order.save();
 
         // Update user's orders array
-        await User.findByIdAndUpdate(userId, {
-            $pull: { orders: orderId },
-            $push: { refunds: refund._id }
+       await User.findByIdAndUpdate(userId, {
+         $pull: { orders: order._Id },
+         $push: { refunds: refund._id }
         });
 
         res.json({ success: true, message: 'Refund request submitted successfully' });

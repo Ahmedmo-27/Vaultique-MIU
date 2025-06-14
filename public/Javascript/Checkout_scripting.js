@@ -130,19 +130,34 @@ const paymentForm = document.querySelector('.payment-form');
 function handleFormSubmission(event) {
   event.preventDefault();
 
+  // Check if this is a payment form
+  const isPaymentForm = event.target.classList.contains('payment-form');
+  
+  if (isPaymentForm) {
+    handlePaymentSubmission(event);
+    return;
+  }
+
   const isValid = validateForm();
   if (isValid) {
     console.log('Form is valid. Proceeding to the next step...');
 
     const formData = {
-      fullName: document.getElementById('name').value,
-      email: document.getElementById('Email').value,
-      address: document.getElementById('Address').value,
-      city: document.getElementById('City').value,
-      state: document.getElementById('State').value,
-      zipCode: document.getElementById('Zipcode').value,
-      orderId: document.querySelector('input[name="orderId"]').value
+      fullName: document.getElementById('name')?.value,
+      email: document.getElementById('Email')?.value,
+      address: document.getElementById('Address')?.value,
+      city: document.getElementById('City')?.value,
+      state: document.getElementById('State')?.value,
+      zipCode: document.getElementById('Zipcode')?.value,
+      orderId: document.querySelector('input[name="orderId"]')?.value
     };
+
+    // Validate that all required fields are present
+    if (!formData.fullName || !formData.email || !formData.address || 
+        !formData.city || !formData.state || !formData.zipCode || !formData.orderId) {
+      showErrorPopup('Please fill in all required fields');
+      return;
+    }
 
     fetch('/api/shipping/create', {
       method: 'POST',
