@@ -41,6 +41,7 @@
     "multer": "^2.0.0",
     "nodemailer": "^7.0.3",
     "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "qrcode": "^1.5.4",
     "stream-chat": "^9.1.1",

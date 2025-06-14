@@ -60,12 +60,27 @@
                                 <i class="fab fa-google"></i>
                                 <span>Google</span>
                             </button>
-                            <button class="social-btn btn-facebook">
-                                <i class="fab fa-facebook-f"></i>
-                                <span>Facebook</span>
-                            </button>
+                            
                         </div>
-                    </div>
+
+                        <div class="google-btn-container">
+                            <div id="g_id_onload"
+                                data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                                data-context="signin"
+                                data-ux_mode="popup"
+                                data-callback="handleGoogleSignIn"
+                                data-auto_prompt="false">
+                            </div>
+                            <div class="g_id_signin"
+                                data-type="standard"
+                                data-shape="rectangular"
+                                data-theme="filled_blue"
+                                data-text="signin_with"
+                                data-size="large"
+                                data-logo_alignment="left">
+                            </div>
+                        </div>
+                </div>
                     <p>Don't have an account? <a href="#" id="register-link">Register</a></p>
                 </form>
             </div>
