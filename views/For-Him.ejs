@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Vaultique | For Him</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/CSS/Loading Screen.css">
+        <link rel="stylesheet" href="/CSS/nav-bar.css">
+        <link rel="stylesheet" href="/CSS/Slider.css">
+        <link rel="stylesheet" href="/CSS/Products.css">
+        <link rel="stylesheet" href="/CSS/footer.css">
+        <link rel="stylesheet" href="/CSS/notifications.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script src="/Javascript/Loading Screen.js"></script>
+        <script src="/Javascript/nav-bar.js"></script>
+        <script src="/Javascript/Page-Handler.js"></script>
+        <script src="/Javascript/Slider.js"></script>
+        <script src="/Javascript/Products.js"></script>
+        <script src="/Javascript/Light-Mode.js"></script>
+        <script src="/Javascript/notifications.js"></script>
+        <script src="/Javascript/compare.js" defer></script>
+    </head>
+    <body>
+        <%- include('partials/loading-screen') %>
+        <%- include('partials/navigation') %>
+        
+        <!-- Hero Section -->
+        <section class="section topic">
+            <div class="video-container">
+                <video autoplay muted loop playsinline>
+                    <source src="/public/Assets/Videos/for-him.mp4" id="heroVideoSource">
+                </video>
+            </div>
+        </section>
+
+        <!-- Featured Models Slider Section -->
+        <div class="slider-container">
+            <div class="slides-wrapper" id="slidesWrapper">
+                <% if (featuredModels && featuredModels.length > 0) { %>
+                    <% featuredModels.forEach((model, index) => { %>
+                        <div class="slide" data-index="<%= index %>" data-model="<%= index + 1 %>">
+                            <div class="slide-content">
+                                <div class="watch-info">
+                                    <h1 class="watch-title"><%= model.name %></h1>
+                                    <h2 class="watch-tagline"><%= model.tagline %></h2>
+                                    <p class="watch-description"><%= model.description %></p>
+                                </div>
+                                <div class="watch-image-container">
+                                    <img src="<%= model.image %>" alt="<%= model.name %>" class="watch-image" onerror="this.style.display='none'">
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
+
+            <!-- Navigation Arrows -->
+            <button id="prevSlide" class="nav-arrow nav-arrow-left" aria-label="Previous slide">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </button>
+            <button id="nextSlide" class="nav-arrow nav-arrow-right" aria-label="Next slide">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </button>
+
+            <!-- Pagination Dots -->
+            <div class="pagination-slider" id="paginationSlider">
+                <% if (featuredModels && featuredModels.length > 0) { %>
+                    <% featuredModels.forEach((_, index) => { %>
+                        <button class="dot <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>" aria-label="Go to slide <%= index + 1 %>" <%= index === 0 ? 'aria-current="true"' : '' %>></button>
+                    <% }); %>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Page Information Section -->
+        <div class="image" style="margin-bottom: -90px;">
+            <img src="/public/Assets/Images/for-him-cover.jpg" alt="For Him Cover Image" id="pageCoverImage">
+            <div class="brand-logo">
+                <h1 id="pageTitle">For Him</h1>
+            </div>
+            <div class="text-overlay">
+                <h2 id="pageHeader">Timeless Elegance for the Modern Gentleman</h2>
+                <p id="pageDescription">Discover our curated collection of sophisticated timepieces designed for the discerning gentleman. From classic dress watches to robust sports models, find the perfect expression of your style.</p>
+            </div>
+        </div>
+
+        <!-- Filter Button -->
+        <button data-action="open-filter-panel" class="filter-btn">
+            <span>Filters and Sorting</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="12" y1="4" x2="12" y2="8" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="8" y1="10" x2="8" y2="14" />    
+                <line x1="4" y1="18" x2="20" y2="18" />
+                <line x1="16" y1="16" x2="16" y2="20" />
+            </svg>
+        </button>
+
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Filter Panel -->
+        <div class="filter-panel" id="filterPanel">
+            <button class="close-btn" data-action="close-filter-panel">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            
+            <form id="filterForm" class="filter-form" method="GET" action="/user/for-him">
+                <input type="hidden" name="sort" value="<%= sort %>">
+                <input type="hidden" name="page" value="1">
+                <input type="hidden" name="limit" value="10">
+                <input type="hidden" name="format" value="html">
+                <input type="hidden" name="gender" value="Male">
+                
+                <div class="sort-options">
+                    <h3>Sort By</h3>
+                    <a href="javascript:void(0)" onclick="updateSort('default')" class="<%= sort === 'default' ? 'active' : '' %>">Default</a>
+                    <a href="javascript:void(0)" onclick="updateSort('new')" class="<%= sort === 'new' ? 'active' : '' %>">New</a>
+                    <a href="javascript:void(0)" onclick="updateSort('price-asc')" class="<%= sort === 'price-asc' ? 'active' : '' %>">Price ↑</a>
+                    <a href="javascript:void(0)" onclick="updateSort('price-desc')" class="<%= sort === 'price-desc' ? 'active' : '' %>">Price ↓</a>
+                    <a href="javascript:void(0)" onclick="updateSort('popularity')" class="<%= sort === 'popularity' ? 'active' : '' %>">Popularity</a>
+                </div>
+
+                <div class="filters">
+                    <h3>Filters</h3>
+
+                    <label>Collection:</label>
+                    <select id="collection" name="Vcollection" class="tag">
+                        <option value="All" <%= filters.Vcollection === 'All' ? 'selected' : '' %>>All</option>
+                        <% collections.forEach(collection => { %>
+                            <option value="<%= collection.name %>" <%= filters.Vcollection === collection.name ? 'selected' : '' %>><%= collection.name %></option>
+                        <% }); %>
+                    </select>
+
+                    <label>Brand:</label>
+                    <select id="brand" name="brand" class="tag">
+                        <option value="All" <%= filters.brand === 'All' ? 'selected' : '' %>>All</option>
+                        <% brands.forEach(brand => { %>
+                            <option value="<%= brand.name %>" <%= filters.brand === brand.name ? 'selected' : '' %>><%= brand.name %></option>
+                        <% }); %>
+                    </select>
+
+                    <label>Strap Material:</label>
+                    <select id="Strap_Material" name="strapMaterial" class="tag">
+                        <option value="All" <%= filters.strapMaterial === 'All' ? 'selected' : '' %>>All</option>
+                        <option value="Leather" <%= filters.strapMaterial === 'Leather' ? 'selected' : '' %>>Leather</option>
+                        <option value="Metal" <%= filters.strapMaterial === 'Metal' ? 'selected' : '' %>>Metal</option>
+                        <option value="Rubber" <%= filters.strapMaterial === 'Rubber' ? 'selected' : '' %>>Rubber</option>
+                        <option value="Gold" <%= filters.strapMaterial === 'Gold' ? 'selected' : '' %>>Gold</option>
+                        <option value="Rose Gold" <%= filters.strapMaterial === 'Rose Gold' ? 'selected' : '' %>>Rose Gold</option>
+                        <option value="White Gold" <%= filters.strapMaterial === 'White Gold' ? 'selected' : '' %>>White Gold</option>
+                        <option value="Else" <%= filters.strapMaterial === 'Else' ? 'selected' : '' %>>Else</option>
+                    </select>
+
+                    <label>Movement:</label>
+                    <select id="Movement" name="movement" class="tag">
+                        <option value="All" <%= filters.movement === 'All' ? 'selected' : '' %>>All</option>
+                        <option value="Automatic" <%= filters.movement === 'Automatic' ? 'selected' : '' %>>Automatic</option>
+                        <option value="Quartz" <%= filters.movement === 'Quartz' ? 'selected' : '' %>>Quartz</option>
+                        <option value="Manual" <%= filters.movement === 'Manual' ? 'selected' : '' %>>Manual</option>
+                    </select>
+
+                    <label>Water Resistance:</label>
+                    <select id="Water_Resistance" name="waterResistance" class="tag">
+                        <option value="All" <%= filters.waterResistance === 'All' ? 'selected' : '' %>>All</option>
+                        <option value="30m" <%= filters.waterResistance === '30m' ? 'selected' : '' %>>30m</option>
+                        <option value="50m" <%= filters.waterResistance === '50m' ? 'selected' : '' %>>50m</option>
+                        <option value="100m" <%= filters.waterResistance === '100m' ? 'selected' : '' %>>100m</option>
+                        <option value="200m" <%= filters.waterResistance === '200m' ? 'selected' : '' %>>200m</option>
+                    </select>
+
+                    <label>Case Material:</label>
+                    <select id="Case_Material" name="caseMaterial" class="tag">
+                        <option value="All" <%= filters.caseMaterial === 'All' ? 'selected' : '' %>>All</option>
+                        <option value="Stainless Steel" <%= filters.caseMaterial === 'Stainless Steel' ? 'selected' : '' %>>Stainless Steel</option>
+                        <option value="Gold" <%= filters.caseMaterial === 'Gold' ? 'selected' : '' %>>Gold</option>
+                        <option value="Rose Gold" <%= filters.caseMaterial === 'Rose Gold' ? 'selected' : '' %>>Rose Gold</option>
+                        <option value="White Gold" <%= filters.caseMaterial === 'White Gold' ? 'selected' : '' %>>White Gold</option>
+                        <option value="Silver" <%= filters.caseMaterial === 'Silver' ? 'selected' : '' %>>Silver</option>
+                        <option value="Titanium" <%= filters.caseMaterial === 'Titanium' ? 'selected' : '' %>>Titanium</option>
+                        <option value="Platinum" <%= filters.caseMaterial === 'Platinum' ? 'selected' : '' %>>Platinum</option>
+                        <option value="Ceramic" <%= filters.caseMaterial === 'Ceramic' ? 'selected' : '' %>>Ceramic</option>
+                        <option value="Else" <%= filters.caseMaterial === 'Else' ? 'selected' : '' %>>Else</option>
+                    </select>
+                </div>
+
+                <div class="price-range">
+                    <h3>Price Range</h3>
+                    <input type="number" id="priceRangeFrom" name="minPrice" class="priceRangeValue" placeholder="From" value="<%= filters.minPrice || '0' %>">
+                    <input type="number" id="priceRangeTo" name="maxPrice" class="priceRangeValue" placeholder="To" value="<%= filters.maxPrice || '50000000' %>">
+                </div>
+
+                <div class="filter-options">
+                    <h3>Dial Color</h3>
+                    <% const selectedColors = filters.dialColor ? filters.dialColor.split(',') : ['All']; %>
+                    <label><input type="checkbox" name="dialColor" value="All" class="dial-color" <%= selectedColors.includes('All') ? 'checked' : '' %>> All</label>
+                    <label><input type="checkbox" name="dialColor" value="Black" class="dial-color" <%= selectedColors.includes('Black') ? 'checked' : '' %>> Black</label>
+                    <label><input type="checkbox" name="dialColor" value="Silver" class="dial-color" <%= selectedColors.includes('Silver') ? 'checked' : '' %>> Silver</label>
+                    <label><input type="checkbox" name="dialColor" value="Gold" class="dial-color" <%= selectedColors.includes('Gold') ? 'checked' : '' %>> Gold</label>
+                    <label><input type="checkbox" name="dialColor" value="Blue" class="dial-color" <%= selectedColors.includes('Blue') ? 'checked' : '' %>> Blue</label>
+                    <label><input type="checkbox" name="dialColor" value="White" class="dial-color" <%= selectedColors.includes('White') ? 'checked' : '' %>> White</label>
+                    <label><input type="checkbox" name="dialColor" value="Green" class="dial-color" <%= selectedColors.includes('Green') ? 'checked' : '' %>> Green</label>
+                    <label><input type="checkbox" name="dialColor" value="Else" class="dial-color" <%= selectedColors.includes('Else') ? 'checked' : '' %>> Else</label>
+                </div>
+
+                <div class="stock-filter">
+                    <label>
+                        <input type="checkbox" id="inStockFilter" name="inStock" value="true" <%= filters.inStock === 'true' ? 'checked' : '' %>> In Stock Only
+                    </label>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="submit">Apply Filters</button>
+                    <button type="button" class="clear" onclick="clearFilters()">Clear All</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Products Section -->
+        <section class="product-container">
+            <div class="product-grid" id="productGrid">
+                <% if (products && products.length > 0) { %>
+                    <% products.forEach((product) => { %>
+                        <div class="product-card" data-product='<%= JSON.stringify(product).replace(/'/g, "&apos;") %>'>
+                            <div class="product-image-container">
+                                <div class="wishlist-icon <%= product.inWishlist ? 'filled' : '' %>" data-product-id="<%= product._id %>">
+                                    <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path class="heart <%= product.inWishlist ? 'filled' : '' %>" 
+                                              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 .81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78 -3.4 6.86 -8.55 11.54L12 21.35z"
+                                              fill="<%= product.inWishlist ? 'red' : 'transparent' %>"/>
+                                    </svg>
+                                </div>
+                                <a href="/user/product?id=<%= product._id %>">
+                                    <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                                </a>
+                                <div class="hover-buttons">
+                                    <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
+                                    <button class="compare" data-product-id="<%= product._id %>">Compare</button>
+                                </div>
+                            </div>
+                            <div class="product-details">
+                                <a href="/user/product?id=<%= product._id %>">
+                                    <h4><%= product.name %></h4>
+                                </a>
+                                <p class="price">$<%= product.price.toLocaleString() %></p>
+                                <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
+                                    <p class="stock in-stock">In Stock</p>
+                                <% } else { %>
+                                    <p class="stock out-of-stock">Out of Stock</p>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-products">
+                        No products found matching your criteria.
+                    </div>
+                <% } %>
+            </div>
+        </section>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <% if (pagination.totalPages > 1) { %>
+                <% if (pagination.currentPage > 1) { %>
+                    <a href="?page=<%= pagination.currentPage - 1 %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" class="page-link">Previous</a>
+                <% } %>
+                
+                <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+                    <a href="?page=<%= i %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" 
+                       class="page-link <%= pagination.currentPage === i ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                <% } %>
+                
+                <% if (pagination.currentPage < pagination.totalPages) { %>
+                    <a href="?page=<%= pagination.currentPage + 1 %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" class="page-link">Next</a>
+                <% } %>
+            <% } %>
+        </div>
+
+        <%- include('partials/footer') %>
+        <%- include('partials/notification') %>
+
+        <!-- Quick View Modal -->
+        <div id="quickViewModal" class="quick-view-modal">
+            <button class="close-btn" id="closeQuickView">✖</button>
+            <div class="quick-view-content">
+                <section class="product-gallery">
+                    <div class="all_image">
+                        <div class="main-image">
+                            <img id="quickViewMainImage" alt="Product Image">
+                        </div>
+                        <div class="thumbnail-container" id="thumbnailContainer">
+                            <!-- Thumbnails will be populated here -->
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="product-info">
+                    <div class="product-header">
+                        <h1 id="quickViewProductName"></h1>
+                        <div class="product-meta">
+                            <div class="price-qv" id="quickViewPrice"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-actions">
+                        <button class="wishlist-btn" id="quickViewWishlistBtn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button class="add-to-cart" id="quickViewAddToCart">
+                            <i class="fas fa-shopping-bag"></i> Add to Cart
+                        </button>
+                        <button class="find-store">
+                            <i class="fas fa-map-marker-alt"></i> View 3D Model
+                        </button>
+                    </div>
+                    
+                    <div class="product-description">
+                        <p id="quickViewDescription"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="quickViewOverlay" class="quick-view-overlay"></div>
+
+        <script>
+            function updateSort(sortValue) {
+                document.querySelector('input[name="sort"]').value = sortValue;
+                document.getElementById('filterForm').submit();
+            }
+
+            function clearFilters() {
+                // Reset all form fields to their default values
+                document.querySelectorAll('#filterForm select').forEach(select => {
+                    select.value = 'All';
+                });
+                document.querySelectorAll('#filterForm input[type="number"]').forEach(input => {
+                    input.value = input.placeholder === 'From' ? '0' : '500000';
+                });
+                document.querySelectorAll('#filterForm input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = checkbox.value === 'All';
+                });
+                document.querySelector('input[name="sort"]').value = 'default';
+                document.querySelector('input[name="page"]').value = '1';
+                document.getElementById('filterForm').submit();
+            }
+
+            // Loading functions
+            function showLoading() {
+                const loadingScreen = document.querySelector('.loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'flex';
+                }
+            }
+
+            function hideLoading() {
+                const loadingScreen = document.querySelector('.loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize modal elements
+                const quickViewModal = document.getElementById('quickViewModal');
+                const quickViewOverlay = document.getElementById('quickViewOverlay');
+                const closeQuickViewBtn = document.getElementById('closeQuickView');
+                const mainImage = document.getElementById('quickViewMainImage');
+                const thumbnailContainer = document.getElementById('thumbnailContainer');
+                const productName = document.getElementById('quickViewProductName');
+                const productPrice = document.getElementById('quickViewPrice');
+                const productDescription = document.getElementById('quickViewDescription');
+                const wishlistBtn = document.getElementById('quickViewWishlistBtn');
+                const addToCartBtn = document.getElementById('quickViewAddToCart');
+
+                // Function to get correct image path
+                function getImagePath(image) {
+                    if (!image) return '';
+                    return image.startsWith('/') ? image : `/public/Assets/Images/Watches/${image}`;
+                }
+
+                // Function to show quick view
+                function showQuickView(product) {
+                    // Update product details
+                    productName.textContent = product.name;
+                    productPrice.textContent = `$${product.price.toLocaleString()}`;
+                    productDescription.textContent = product.description || 'No description available';
+                    
+                    // Update main image
+                    mainImage.src = getImagePath(product.image);
+                    mainImage.alt = product.name;
+
+                    // Update thumbnails
+                    const thumbnails = product.galleryImages && product.galleryImages.length > 0
+                        ? product.galleryImages
+                        : [product.image];
+
+                    thumbnailContainer.innerHTML = thumbnails.map((img, idx) => `
+                        <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-image="${getImagePath(img)}">
+                            <img src="${getImagePath(img)}" alt="Thumbnail ${idx + 1}">
+                        </div>
+                    `).join('');
+
+                    // Update wishlist button state
+                    wishlistBtn.innerHTML = `<i class="${product.inWishlist ? 'fas' : 'far'} fa-heart"></i>`;
+                    wishlistBtn.classList.toggle('filled', product.inWishlist);
+                    wishlistBtn.dataset.productId = product._id;
+
+                    // Update add to cart button
+                    addToCartBtn.dataset.productId = product._id;
+
+                    // Show modal and overlay
+                    quickViewModal.classList.add('open');
+                    quickViewOverlay.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+
+                    // Add zoom functionality
+                    let isZoomed = false;
+                    mainImage.parentElement.addEventListener('click', function(e) {
+                        if (!isZoomed) {
+                            const rect = this.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+                            const centerX = (x / rect.width) * 100;
+                            const centerY = (y / rect.height) * 100;
+                            
+                            mainImage.style.transform = `scale(2)`;
+                            mainImage.style.transformOrigin = `${centerX}% ${centerY}%`;
+                            this.style.cursor = 'zoom-out';
+                            isZoomed = true;
+                        } else {
+                            mainImage.style.transform = '';
+                            this.style.cursor = 'zoom-in';
+                            isZoomed = false;
+                        }
+                    });
+                }
+
+                // Add click event listeners to all quick view buttons
+                document.querySelectorAll('.quick-view').forEach(button => {
+                    button.addEventListener('click', async function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const productId = this.dataset.productId;
+                        
+                        try {
+                            showLoading();
+                            const response = await fetch(`/products/${productId}?format=json`);
+                            const data = await response.json();
+                            
+                            if (data.success && data.data) {
+                                showQuickView(data.data);
+                            } else {
+                                throw new Error('Failed to fetch product details');
+                            }
+                        } catch (error) {
+                            showNotification(error.message, 'error');
+                        } finally {
+                            hideLoading();
+                        }
+                    });
+                });
+
+                // Add thumbnail click handlers
+                thumbnailContainer.addEventListener('click', function(e) {
+                    const thumbnail = e.target.closest('.thumbnail');
+                    if (thumbnail) {
+                        const newImageSrc = thumbnail.dataset.image;
+                        mainImage.src = newImageSrc;
+                        mainImage.style.transform = '';
+                        mainImage.parentElement.style.cursor = 'zoom-in';
+                        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                        thumbnail.classList.add('active');
+                    }
+                });
+
+                // Close modal handlers
+                function hideQuickView() {
+                    quickViewModal.classList.remove('open');
+                    quickViewOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                    mainImage.style.transform = '';
+                    mainImage.parentElement.style.cursor = 'zoom-in';
+                }
+
+                closeQuickViewBtn.addEventListener('click', hideQuickView);
+                quickViewOverlay.addEventListener('click', hideQuickView);
+
+                // Close modal when pressing Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && quickViewModal.classList.contains('open')) {
+                        hideQuickView();
+                    }
+                });
+
+                // Handle wishlist button click
+                wishlistBtn.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    try {
+                        showLoading();
+                        const response = await fetch('/wishlist/toggle', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ productId })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            this.innerHTML = `<i class="${data.inWishlist ? 'fas' : 'far'} fa-heart"></i>`;
+                            this.classList.toggle('filled', data.inWishlist);
+                            showNotification(data.message);
+                        } else {
+                            throw new Error(data.message);
+                        }
+                    } catch (error) {
+                        showNotification(error.message, 'error');
+                    } finally {
+                        hideLoading();
+                    }
+                });
+
+                // Handle add to cart button click
+                addToCartBtn.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    try {
+                        showLoading();
+                        const response = await fetch('/cart/add', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ productId, quantity: 1 })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            showNotification('Product added to cart successfully');
+                            // Update cart count if element exists
+                            const cartCount = document.getElementById('cart-items-count');
+                            if (cartCount) {
+                                cartCount.textContent = data.cart.items.reduce((total, item) => total + (item.quantity || 1), 0);
+                            }
+                            hideQuickView();
+                        } else {
+                            throw new Error(data.message || 'Failed to add to cart');
+                        }
+                    } catch (error) {
+                        showNotification(error.message, 'error');
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html> 

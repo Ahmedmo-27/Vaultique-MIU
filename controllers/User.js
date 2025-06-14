@@ -1899,4 +1899,282 @@ router.get('/faq', async (req, res) => {
   }
 });
 
+// For Him Page Route
+router.get('/for-him', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        // Build filter query
+        const filterQuery = { gender: 'Male' };
+        
+        // Apply other filters if present
+        if (req.query.Vcollection && req.query.Vcollection !== 'All') {
+            filterQuery.Vcollection = req.query.Vcollection;
+        }
+        if (req.query.brand && req.query.brand !== 'All') {
+            filterQuery.brand = req.query.brand;
+        }
+        if (req.query.strapMaterial && req.query.strapMaterial !== 'All') {
+            filterQuery.strapMaterial = req.query.strapMaterial;
+        }
+        if (req.query.movement && req.query.movement !== 'All') {
+            filterQuery.movement = req.query.movement;
+        }
+        if (req.query.waterResistance && req.query.waterResistance !== 'All') {
+            filterQuery.waterResistance = req.query.waterResistance;
+        }
+        if (req.query.caseMaterial && req.query.caseMaterial !== 'All') {
+            filterQuery.caseMaterial = req.query.caseMaterial;
+        }
+        if (req.query.dialColor && req.query.dialColor !== 'All') {
+            filterQuery.dialColor = req.query.dialColor;
+        }
+
+        // Price range
+        if (req.query.minPrice) {
+            filterQuery.price = { ...filterQuery.price, $gte: parseFloat(req.query.minPrice) };
+        }
+        if (req.query.maxPrice) {
+            filterQuery.price = { ...filterQuery.price, $lte: parseFloat(req.query.maxPrice) };
+        }
+
+        // Stock filter
+        if (req.query.inStock === 'true') {
+            filterQuery.stock = true;
+        }
+
+        // Get sort option
+        let sort = {};
+        switch (req.query.sort) {
+            case 'new':
+                sort = { createdAt: -1 };
+                break;
+            case 'price-asc':
+                sort = { price: 1 };
+                break;
+            case 'price-desc':
+                sort = { price: -1 };
+                break;
+            case 'popularity':
+                sort = { popularity: -1 };
+                break;
+            default:
+                sort = { createdAt: -1 };
+        }
+
+        // Get total count for pagination
+        const totalProducts = await Product.countDocuments(filterQuery);
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        // Get products with pagination and sorting
+        const products = await Product.find(filterQuery)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .populate('brand', 'name');
+
+        // Get featured models for the slider
+        const featuredModels = await Product.find({ gender: 'Male', featured: true })
+            .limit(5)
+            .select('name tagline description image');
+
+        // Get collections for filter
+        const collections = await Collection.find().sort({ name: 1 });
+
+        // Get brands for filter
+        const brands = await Brand.find().sort({ name: 1 });
+
+        // Check wishlist status for each product if user is logged in
+        let productsWithWishlist = products;
+        if (req.user) {
+            const user = await User.findById(req.user._id).populate('wishlist');
+            productsWithWishlist = products.map(product => ({
+                ...product.toObject(),
+                inWishlist: user.wishlist.some(item => item._id.toString() === product._id.toString())
+            }));
+        }
+
+        // Current filters for maintaining state
+        const currentFilters = {
+            Vcollection: req.query.Vcollection || 'All',
+            brand: req.query.brand || 'All',
+            gender: 'Male',
+            strapMaterial: req.query.strapMaterial || 'All',
+            movement: req.query.movement || 'All',
+            waterResistance: req.query.waterResistance || 'All',
+            caseMaterial: req.query.caseMaterial || 'All',
+            dialColor: req.query.dialColor || 'All',
+            minPrice: req.query.minPrice || '0',
+            maxPrice: req.query.maxPrice || '50000000',
+            inStock: req.query.inStock || 'false'
+        };
+
+        res.render('For-Him', {
+            title: 'For Him',
+            products: productsWithWishlist,
+            featuredModels,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalProducts,
+                itemsPerPage: limit
+            },
+            filters: currentFilters,
+            sort: req.query.sort || 'default',
+            collections,
+            brands,
+            user: req.user || null
+        });
+    } catch (error) {
+        console.error('Error loading For Him page:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'An error occurred while loading the For Him page.',
+            type: 'error',
+            show: true
+        });
+    }
+});
+
+// For Her Page Route
+router.get('/for-her', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        // Build filter query
+        const filterQuery = { gender: 'Female' };
+        
+        // Apply other filters if present
+        if (req.query.Vcollection && req.query.Vcollection !== 'All') {
+            filterQuery.Vcollection = req.query.Vcollection;
+        }
+        if (req.query.brand && req.query.brand !== 'All') {
+            filterQuery.brand = req.query.brand;
+        }
+        if (req.query.strapMaterial && req.query.strapMaterial !== 'All') {
+            filterQuery.strapMaterial = req.query.strapMaterial;
+        }
+        if (req.query.movement && req.query.movement !== 'All') {
+            filterQuery.movement = req.query.movement;
+        }
+        if (req.query.waterResistance && req.query.waterResistance !== 'All') {
+            filterQuery.waterResistance = req.query.waterResistance;
+        }
+        if (req.query.caseMaterial && req.query.caseMaterial !== 'All') {
+            filterQuery.caseMaterial = req.query.caseMaterial;
+        }
+        if (req.query.dialColor && req.query.dialColor !== 'All') {
+            filterQuery.dialColor = req.query.dialColor;
+        }
+
+        // Price range
+        if (req.query.minPrice) {
+            filterQuery.price = { ...filterQuery.price, $gte: parseFloat(req.query.minPrice) };
+        }
+        if (req.query.maxPrice) {
+            filterQuery.price = { ...filterQuery.price, $lte: parseFloat(req.query.maxPrice) };
+        }
+
+        // Stock filter
+        if (req.query.inStock === 'true') {
+            filterQuery.stock = true;
+        }
+
+        // Get sort option
+        let sort = {};
+        switch (req.query.sort) {
+            case 'new':
+                sort = { createdAt: -1 };
+                break;
+            case 'price-asc':
+                sort = { price: 1 };
+                break;
+            case 'price-desc':
+                sort = { price: -1 };
+                break;
+            case 'popularity':
+                sort = { popularity: -1 };
+                break;
+            default:
+                sort = { createdAt: -1 };
+        }
+
+        // Get total count for pagination
+        const totalProducts = await Product.countDocuments(filterQuery);
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        // Get products with pagination and sorting
+        const products = await Product.find(filterQuery)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .populate('brand', 'name');
+
+        // Get featured models for the slider
+        const featuredModels = await Product.find({ gender: 'Female', featured: true })
+            .limit(5)
+            .select('name tagline description image');
+
+        // Get collections for filter
+        const collections = await Collection.find().sort({ name: 1 });
+
+        // Get brands for filter
+        const brands = await Brand.find().sort({ name: 1 });
+
+        // Check wishlist status for each product if user is logged in
+        let productsWithWishlist = products;
+        if (req.user) {
+            const user = await User.findById(req.user._id).populate('wishlist');
+            productsWithWishlist = products.map(product => ({
+                ...product.toObject(),
+                inWishlist: user.wishlist.some(item => item._id.toString() === product._id.toString())
+            }));
+        }
+
+        // Current filters for maintaining state
+        const currentFilters = {
+            Vcollection: req.query.Vcollection || 'All',
+            brand: req.query.brand || 'All',
+            gender: 'Female',
+            strapMaterial: req.query.strapMaterial || 'All',
+            movement: req.query.movement || 'All',
+            waterResistance: req.query.waterResistance || 'All',
+            caseMaterial: req.query.caseMaterial || 'All',
+            dialColor: req.query.dialColor || 'All',
+            minPrice: req.query.minPrice || '0',
+            maxPrice: req.query.maxPrice || '50000000',
+            inStock: req.query.inStock || 'false'
+        };
+
+        res.render('For-Her', {
+            title: 'For Her',
+            products: productsWithWishlist,
+            featuredModels,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalProducts,
+                itemsPerPage: limit
+            },
+            filters: currentFilters,
+            sort: req.query.sort || 'default',
+            collections,
+            brands,
+            user: req.user || null
+        });
+    } catch (error) {
+        console.error('Error loading For Her page:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'An error occurred while loading the For Her page.',
+            type: 'error',
+            show: true
+        });
+    }
+});
+
 module.exports = router;
