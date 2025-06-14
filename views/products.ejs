@@ -234,6 +234,49 @@
 
 <%- include('partials/notification') %>
 
+<!-- Quick View Modal -->
+<div id="quickViewModal" class="quick-view-modal">
+    <button class="close-btn" id="closeQuickView">✖</button>
+    <div class="quick-view-content">
+        <section class="product-gallery">
+            <div class="all_image">
+                <div class="main-image">
+                    <img id="quickViewMainImage" alt="Product Image">
+                </div>
+                <div class="thumbnail-container" id="thumbnailContainer">
+                    <!-- Thumbnails will be populated here -->
+                </div>
+            </div>
+        </section>
+        
+        <div class="product-info">
+            <div class="product-header">
+                <h1 id="quickViewProductName"></h1>
+                <div class="product-meta">
+                    <div class="price-qv" id="quickViewPrice"></div>
+                </div>
+            </div>
+            
+            <div class="product-actions">
+                <button class="wishlist-btn" id="quickViewWishlistBtn">
+                    <i class="far fa-heart"></i>
+                </button>
+                <button class="add-to-cart" id="quickViewAddToCart">
+                    <i class="fas fa-shopping-bag"></i> Add to Cart
+                </button>
+                <button class="find-store">
+                    <i class="fas fa-map-marker-alt"></i> View 3D Model
+                </button>
+            </div>
+            
+            <div class="product-description">
+                <p id="quickViewDescription"></p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="quickViewOverlay" class="quick-view-overlay"></div>
+
 <script>
     function updateSort(sortValue) {
         document.querySelector('input[name="sort"]').value = sortValue;
@@ -255,6 +298,215 @@
         document.querySelector('input[name="page"]').value = '1';
         document.getElementById('filterForm').submit();
     }
+
+    // Loading functions
+    function showLoading() {
+        const loadingScreen = document.querySelector('.loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'flex';
+        }
+    }
+
+    function hideLoading() {
+        const loadingScreen = document.querySelector('.loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize modal elements
+        const quickViewModal = document.getElementById('quickViewModal');
+        const quickViewOverlay = document.getElementById('quickViewOverlay');
+        const closeQuickViewBtn = document.getElementById('closeQuickView');
+        const mainImage = document.getElementById('quickViewMainImage');
+        const thumbnailContainer = document.getElementById('thumbnailContainer');
+        const productName = document.getElementById('quickViewProductName');
+        const productPrice = document.getElementById('quickViewPrice');
+        const productDescription = document.getElementById('quickViewDescription');
+        const wishlistBtn = document.getElementById('quickViewWishlistBtn');
+        const addToCartBtn = document.getElementById('quickViewAddToCart');
+
+        // Function to get correct image path
+        function getImagePath(image) {
+            if (!image) return '';
+            return image.startsWith('/') ? image : `/public/Assets/Images/Watches/${image}`;
+        }
+
+        // Function to show quick view
+        function showQuickView(product) {
+            // Update product details
+            productName.textContent = product.name;
+            productPrice.textContent = `$${product.price.toLocaleString()}`;
+            productDescription.textContent = product.description || 'No description available';
+            
+            // Update main image
+            mainImage.src = getImagePath(product.image);
+            mainImage.alt = product.name;
+
+            // Update thumbnails
+            const thumbnails = product.galleryImages && product.galleryImages.length > 0
+                ? product.galleryImages
+                : [product.image];
+
+            thumbnailContainer.innerHTML = thumbnails.map((img, idx) => `
+                <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-image="${getImagePath(img)}">
+                    <img src="${getImagePath(img)}" alt="Thumbnail ${idx + 1}">
+                </div>
+            `).join('');
+
+            // Update wishlist button state
+            wishlistBtn.innerHTML = `<i class="${product.inWishlist ? 'fas' : 'far'} fa-heart"></i>`;
+            wishlistBtn.classList.toggle('filled', product.inWishlist);
+            wishlistBtn.dataset.productId = product._id;
+
+            // Update add to cart button
+            addToCartBtn.dataset.productId = product._id;
+
+            // Show modal and overlay
+            quickViewModal.classList.add('open');
+            quickViewOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+
+            // Add zoom functionality
+            let isZoomed = false;
+            mainImage.parentElement.addEventListener('click', function(e) {
+                if (!isZoomed) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = (x / rect.width) * 100;
+                    const centerY = (y / rect.height) * 100;
+                    
+                    mainImage.style.transform = `scale(2)`;
+                    mainImage.style.transformOrigin = `${centerX}% ${centerY}%`;
+                    this.style.cursor = 'zoom-out';
+                    isZoomed = true;
+                } else {
+                    mainImage.style.transform = '';
+                    this.style.cursor = 'zoom-in';
+                    isZoomed = false;
+                }
+            });
+        }
+
+        // Add click event listeners to all quick view buttons
+        document.querySelectorAll('.quick-view').forEach(button => {
+            button.addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productId = this.dataset.productId;
+                
+                try {
+                    showLoading();
+                    const response = await fetch(`/products/${productId}?format=json`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.data) {
+                        showQuickView(data.data);
+                    } else {
+                        throw new Error('Failed to fetch product details');
+                    }
+                } catch (error) {
+                    showNotification(error.message, 'error');
+                } finally {
+                    hideLoading();
+                }
+            });
+        });
+
+        // Add thumbnail click handlers
+        thumbnailContainer.addEventListener('click', function(e) {
+            const thumbnail = e.target.closest('.thumbnail');
+            if (thumbnail) {
+                const newImageSrc = thumbnail.dataset.image;
+                mainImage.src = newImageSrc;
+                mainImage.style.transform = '';
+                mainImage.parentElement.style.cursor = 'zoom-in';
+                document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                thumbnail.classList.add('active');
+            }
+        });
+
+        // Close modal handlers
+        function hideQuickView() {
+            quickViewModal.classList.remove('open');
+            quickViewOverlay.classList.remove('show');
+            document.body.style.overflow = '';
+            mainImage.style.transform = '';
+            mainImage.parentElement.style.cursor = 'zoom-in';
+        }
+
+        closeQuickViewBtn.addEventListener('click', hideQuickView);
+        quickViewOverlay.addEventListener('click', hideQuickView);
+
+        // Close modal when pressing Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && quickViewModal.classList.contains('open')) {
+                hideQuickView();
+            }
+        });
+
+        // Handle wishlist button click
+        wishlistBtn.addEventListener('click', async function() {
+            const productId = this.dataset.productId;
+            try {
+                showLoading();
+                const response = await fetch('/wishlist/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    this.innerHTML = `<i class="${data.inWishlist ? 'fas' : 'far'} fa-heart"></i>`;
+                    this.classList.toggle('filled', data.inWishlist);
+                    showNotification(data.message);
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                showNotification(error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Handle add to cart button click
+        addToCartBtn.addEventListener('click', async function() {
+            const productId = this.dataset.productId;
+            try {
+                showLoading();
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId, quantity: 1 })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Product added to cart successfully');
+                    // Update cart count if element exists
+                    const cartCount = document.getElementById('cart-items-count');
+                    if (cartCount) {
+                        cartCount.textContent = data.cart.items.reduce((total, item) => total + (item.quantity || 1), 0);
+                    }
+                    hideQuickView();
+                } else {
+                    throw new Error(data.message || 'Failed to add to cart');
+                }
+            } catch (error) {
+                showNotification(error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        });
+    });
 </script>
 
 </body>
