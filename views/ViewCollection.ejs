@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= collection.name %> - Collection Details</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        .collection-header {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        .collection-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .collection-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+        .collection-logo {
+            max-width: 200px;
+            margin-bottom: 1rem;
+        }
+        .featured-items {
+            margin-top: 2rem;
+        }
+        .featured-item {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+        .featured-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .hero-video {
+            width: 100%;
+            max-height: 400px;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/Admin-navigation') %>
+
+    <div class="container">
+        <div class="collection-header">
+            <% if (collection.coverImage) { %>
+                <img src="<%= collection.coverImage %>" alt="<%= collection.name %>" class="collection-cover">
+            <% } %>
+            <div class="collection-overlay">
+                <div>
+                    <% if (collection.logo) { %>
+                        <img src="<%= collection.logo %>" alt="<%= collection.name %> Logo" class="collection-logo">
+                    <% } %>
+                    <h1><%= collection.name %></h1>
+                    <p class="lead"><%= collection.header %></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="description">
+                    <h2>About the Collection</h2>
+                    <p><%= collection.description %></p>
+                </div>
+
+                <% if (collection.heroVideo) { %>
+                    <div class="video-section">
+                        <h2>Collection Video</h2>
+                        <video class="hero-video" controls>
+                            <source src="<%= collection.heroVideo %>" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                <% } %>
+
+                <div class="featured-items">
+                    <h2>Featured Items</h2>
+                    <div class="row">
+                        <% collection.featuredItems.forEach(item => { %>
+                            <div class="col-md-6">
+                                <div class="featured-item">
+                                    <% if (item.image) { %>
+                                        <img src="<%= item.image %>" alt="<%= item.name %>">
+                                    <% } %>
+                                    <h3><%= item.name %></h3>
+                                    <h4><%= item.tagline %></h4>
+                                    <p><%= item.description %></p>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Collection Details</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Slug:</strong> <%= collection.slug %></li>
+                            <li><strong>Created:</strong> <%= new Date(collection._id.split('_')[1]).toLocaleDateString() %></li>
+                        </ul>
+                        <div class="d-grid gap-2">
+                            <a href="/admin/collections/<%= collection._id %>/edit" class="btn btn-primary">
+                                <i class="fas fa-edit"></i> Edit Collection
+                            </a>
+                            <a href="/admin/collections" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Collections
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -127,7 +127,13 @@
                 <div class="card mt-4">
                     <div class="card-body">
                         <h5 class="card-title">Sales and Orders Over Time</h5>
-                        <canvas id="salesChart"></canvas>
+                        <div style="position: relative; height: 400px; width: 100%;">
+                            <canvas id="salesChart" 
+                                data-labels='<%- JSON.stringify(salesChartData.labels || []) %>'
+                                data-sales='<%- JSON.stringify(salesChartData.sales || []) %>'
+                                data-orders='<%- JSON.stringify(salesChartData.orders || []) %>'
+                            ></canvas>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -139,36 +145,130 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('salesChart').getContext('2d');
+            const canvas = document.getElementById('salesChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Get data from data attributes
+            const labels = JSON.parse(canvas.dataset.labels);
+            const sales = JSON.parse(canvas.dataset.sales);
+            const orders = JSON.parse(canvas.dataset.orders);
+            
+            // Create gradient for sales line
+            const salesGradient = ctx.createLinearGradient(0, 0, 0, 400);
+            salesGradient.addColorStop(0, 'rgba(75, 192, 192, 0.2)');
+            salesGradient.addColorStop(1, 'rgba(75, 192, 192, 0)');
+
+            // Create gradient for orders line
+            const ordersGradient = ctx.createLinearGradient(0, 0, 0, 400);
+            ordersGradient.addColorStop(0, 'rgba(255, 99, 132, 0.2)');
+            ordersGradient.addColorStop(1, 'rgba(255, 99, 132, 0)');
+            
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: JSON.stringify(salesChartData.labels),
+                    labels: labels,
                     datasets: [{
                         label: 'Sales ($)',
-                        data: JSON.stringify(salesChartData.sales),
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1,
-                        yAxisID: 'y'
+                        data: sales,
+                        borderColor: '#4BC0C0',
+                        backgroundColor: salesGradient,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        yAxisID: 'y',
+                        fill: true,
+                        pointBackgroundColor: '#4BC0C0',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#4BC0C0',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
                     }, {
                         label: 'Number of Orders',
-                        data: JSON.stringify(salesChartData.orders),
-                        borderColor: 'rgb(255, 99, 132)',
-                        tension: 0.1,
-                        yAxisID: 'y1'
+                        data: orders,
+                        borderColor: '#FF6384',
+                        backgroundColor: ordersGradient,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        yAxisID: 'y1',
+                        fill: true,
+                        pointBackgroundColor: '#FF6384',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#FF6384',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     interaction: {
                         mode: 'index',
                         intersect: false,
                     },
+                    layout: {
+                        padding: {
+                            top: 20,
+                            right: 20,
+                            bottom: 20,
+                            left: 20
+                        }
+                    },
                     stacked: false,
                     plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 12,
+                                    family: "'Inter', sans-serif",
+                                    weight: '600'
+                                }
+                            }
+                        },
                         title: {
                             display: true,
-                            text: 'Sales and Orders Over Time'
+                            text: 'Sales and Orders Over Time',
+                            font: {
+                                size: 16,
+                                family: "'Inter', sans-serif",
+                                weight: '600'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#333',
+                            bodyColor: '#666',
+                            borderColor: '#ddd',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.yAxisID === 'y') {
+                                        label += '$' + context.parsed.y.toLocaleString();
+                                    } else {
+                                        label += context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -178,7 +278,24 @@
                             position: 'left',
                             title: {
                                 display: true,
-                                text: 'Sales ($)'
+                                text: 'Sales ($)',
+                                font: {
+                                    size: 12,
+                                    family: "'Inter', sans-serif",
+                                    weight: '600'
+                                }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                },
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
                             }
                         },
                         y1: {
@@ -187,10 +304,31 @@
                             position: 'right',
                             title: {
                                 display: true,
-                                text: 'Number of Orders'
+                                text: 'Number of Orders',
+                                font: {
+                                    size: 12,
+                                    family: "'Inter', sans-serif",
+                                    weight: '600'
+                                }
                             },
                             grid: {
-                                drawOnChartArea: false
+                                drawOnChartArea: false,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                }
                             }
                         }
                     }
@@ -201,3 +339,4 @@
 
 </body>
 </html>
+

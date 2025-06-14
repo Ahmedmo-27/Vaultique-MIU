@@ -298,6 +298,96 @@ body {
 #content main .table-data .todo .todo-list li:last-child {
     margin-bottom: 0;
 }
+
+/* Todo form styles */
+.add-todo-form {
+    display: none;
+    gap: 10px;
+    padding: 15px;
+    background: var(--grey);
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.add-todo-form input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.add-todo-form button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-submit {
+    background-color: var(--blue);
+    color: white;
+}
+
+.btn-submit:hover {
+    background-color: #2d7fd6;
+}
+
+.btn-cancel {
+    background-color: var(--grey);
+    color: var(--dark);
+}
+
+.btn-cancel:hover {
+    background-color: #ddd;
+}
+
+/* Todo actions */
+.todo-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.todo-actions i {
+    cursor: pointer;
+    font-size: 18px;
+    transition: color 0.2s;
+}
+
+.todo-actions .toggle-todo {
+    color: var(--blue);
+}
+
+.todo-actions .toggle-todo:hover {
+    color: #2d7fd6;
+}
+
+.todo-actions .delete-todo {
+    color: var(--red);
+}
+
+.todo-actions .delete-todo:hover {
+    color: #c73e3a;
+}
+
+.btn-add-todo {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.btn-add-todo i {
+    font-size: 20px;
+    color: var(--blue);
+}
+
+.btn-add-todo:hover i {
+    color: #2d7fd6;
+}
+
 @media screen and (max-width: 576px) {
     #content nav form .form-input input {
         display: none;

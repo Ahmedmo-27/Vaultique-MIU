@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Brands - Admin Dashboard</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
+    <!-- Custom JavaScript -->
+    <script src="/Javascript/nav-bar.js"></script>
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        .container-fluid {
+            margin-top: 20px;
+        }
+        .d-flex.justify-content-between {
+            margin-bottom: 30px;
+        }
+        .brand-logo {
+            width: 100px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            padding: 5px;
+        }
+        .brand-description {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+        }
+        .notification.success {
+            background-color: #28a745;
+        }
+        .notification.error {
+            background-color: #dc3545;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/Admin-navigation') %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-md-12 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Manage Brands</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="/admin/brands/create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add New Brand
+                        </a>
+                    </div>
+                </div>
+
+                <% if (error) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                <% } %>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Logo</th>
+                                <th>Name</th>
+                                <th>Slug</th>
+                                <th>Description</th>
+                                <th>Website</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (brands && brands.length > 0) { %>
+                                <% brands.forEach(brand => { %>
+                                    <tr>
+                                        <td>
+                                            <% if (brand.logo) { %>
+                                                <img src="<%= brand.logo %>" alt="<%= brand.name %>" class="brand-logo">
+                                            <% } else { %>
+                                                <div class="no-image">No Logo</div>
+                                            <% } %>
+                                        </td>
+                                        <td><%= brand.name %></td>
+                                        <td><%= brand.slug %></td>
+                                        <td class="brand-description"><%= brand.description %></td>
+                                        <td>
+                                            <% if (brand.website) { %>
+                                                <a href="<%= brand.website %>" target="_blank" class="text-decoration-none">
+                                                    <i class="fas fa-external-link-alt"></i> Visit
+                                                </a>
+                                            <% } else { %>
+                                                N/A
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="/admin/brands/<%= brand._id %>" class="btn btn-info btn-sm" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="/admin/brands/<%= brand._id %>/edit" class="btn btn-warning btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-danger btn-sm" 
+                                                        onclick="confirmDelete('<%= brand._id %>')" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" class="text-center">No brands found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <% if (pagination && pagination.totalPages > 1) { %>
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <% if (pagination.hasPrevPage) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= pagination.prevPage %>">Previous</a>
+                                </li>
+                            <% } %>
+                            
+                            <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+                                <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                            
+                            <% if (pagination.hasNextPage) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= pagination.nextPage %>">Next</a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                <% } %>
+            </main>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this brand? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmDelete(brandId) {
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            
+            confirmBtn.onclick = async function() {
+                try {
+                    const response = await fetch(`/admin/brands/${brandId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'include'
+                    });
+
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Server did not return JSON');
+                    }
+
+                    const data = await response.json();
+                    console.log('Delete response:', data);
+                    
+                    if (data.success) {
+                        showNotification(data.message || 'Brand deleted successfully', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showNotification(data.message || 'Error deleting brand', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification('Error deleting brand: ' + error.message, 'error');
+                } finally {
+                    modal.hide();
+                }
+            };
+            
+            modal.show();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

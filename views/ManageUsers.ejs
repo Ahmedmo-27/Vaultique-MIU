@@ -90,34 +90,106 @@
           <h2>User Orders</h2>
           <div class="modal-body">
             <% if (typeof userOrders !== 'undefined' && userOrders && userOrders.length > 0) { %>
-              <ul class="orders-list">
+              <div class="orders-list">
                 <% userOrders.forEach(order => { %>
-                  <li>
-                    <div class="order-info">
-                      <span class="order-id">Order #<%= order._id %></span>
-                      <span class="order-date"><%= new Date(order.date).toLocaleDateString() %></span>
-                    </div>
-                    <div class="order-details">
-                      <span class="order-total">$<%= order.total.toFixed(2) %></span>
-                      <span class="order-status <%= order.status.toLowerCase() %>"><%= order.status %></span>
-                    </div>
-                    <% if (order.items && order.items.length > 0) { %>
-                      <div class="order-items">
-                        <h4>Items:</h4>
-                        <ul>
-                          <% order.items.forEach(item => { %>
-                            <li>
-                              <%= item.product ? item.product.name : 'Unknown Product' %> - 
-                              Quantity: <%= item.quantity %>, 
-                              Price: $<%= item.price.toFixed(2) %>
-                            </li>
-                          <% }); %>
-                        </ul>
+                  <div class="order-card">
+                    <div class="order-header">
+                      <div class="row align-items-center">
+                        <div class="col-md-3">
+                          <h5 class="mb-0">Order #<%= order.orderNumber %></h5>
+                          <small class="text-muted">Placed on <%= new Date(order.createdAt).toLocaleString() %></small>
+                        </div>
+                        <div class="col-md-3">
+                          <span class="order-status status-<%= order.status %>">
+                            <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %>
+                          </span>
+                        </div>
+                        <div class="col-md-3">
+                          <strong>Total: $<%= order.total.toFixed(2) %></strong>
+                        </div>
                       </div>
-                    <% } %>
-                  </li>
+                    </div>
+                    <div class="order-body">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <h6>Customer Information</h6>
+                          <p class="mb-1"><strong>Name:</strong> <%= order.shipping.name %></p>
+                          <p class="mb-1"><strong>Email:</strong> <%= order.shipping.email %></p>
+                          <p class="mb-1"><strong>Address:</strong> <%= order.shipping.address %></p>
+                          <p class="mb-1"><strong>City:</strong> <%= order.shipping.city %></p>
+                          <p class="mb-1"><strong>State:</strong> <%= order.shipping.state %></p>
+                          <p class="mb-1"><strong>ZIP:</strong> <%= order.shipping.zipCode %></p>
+                        </div>
+                        <div class="col-md-6">
+                          <h6>Payment Information</h6>
+                          <p class="mb-1"><strong>Cardholder:</strong> <%= order.payment.name %></p>
+                          <p class="mb-1"><strong>Card:</strong> **** **** **** <%= order.payment.cardNumber %></p>
+                          <p class="mb-1"><strong>Bank:</strong> <%= order.payment.bankName %></p>
+                          <p class="mb-1"><strong>Expiry:</strong> <%= order.payment.expiry %></p>
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="row">
+                        <div class="col-12">
+                          <h6>Order Items</h6>
+                          <div class="table-responsive">
+                            <table class="table table-sm">
+                              <thead>
+                                <tr>
+                                  <th>Product</th>
+                                  <th>Brand</th>
+                                  <th>Price</th>
+                                  <th>Quantity</th>
+                                  <th>Total</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <% order.items.forEach(item => { %>
+                                  <tr>
+                                    <td>
+                                      <div class="d-flex align-items-center">
+                                        <img src="<%= item.productDetails.image %>" alt="<%= item.productDetails.name %>" class="product-image me-2">
+                                        <div>
+                                          <%= item.productDetails.name %>
+                                          <% if (item.productDetails.Vcollection) { %>
+                                            <br><small class="text-muted">Collection: <%= item.productDetails.Vcollection %></small>
+                                          <% } %>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td><%= item.productDetails.brand %></td>
+                                    <td>$<%= item.price.toFixed(2) %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td>$<%= (item.price * item.quantity).toFixed(2) %></td>
+                                  </tr>
+                                <% }); %>
+                              </tbody>
+                              <tfoot>
+                                <tr>
+                                  <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                                  <td>$<%= (order.total - order.shippingCost - order.tax).toFixed(2) %></td>
+                                </tr>
+                                <tr>
+                                  <td colspan="4" class="text-end"><strong>Shipping:</strong></td>
+                                  <td>$<%= order.shippingCost.toFixed(2) %></td>
+                                </tr>
+                                <tr>
+                                  <td colspan="4" class="text-end"><strong>Tax:</strong></td>
+                                  <td>$<%= order.tax.toFixed(2) %></td>
+                                </tr>
+                                <tr>
+                                  <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                                  <td><strong>$<%= order.total.toFixed(2) %></strong></td>
+                                </tr>
+                              </tfoot>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 <% }); %>
-              </ul>
+              </div>
             <% } else { %>
               <p>No orders found for this user</p>
             <% } %>
@@ -410,7 +482,180 @@
         }
       });
     });
+
+    async function viewUserOrders(userId) {
+      try {
+        console.log('Fetching orders for user:', userId);
+        const response = await fetch(`/admin/users/${userId}/orders`);
+        const data = await response.json();
+        console.log('Orders response:', data);
+
+        if (data.success) {
+          const orders = data.data;
+          const modal = document.getElementById('ordersModal');
+          const modalBody = modal.querySelector('.modal-body');
+
+          if (orders && orders.length > 0) {
+            modalBody.innerHTML = `
+              <div class="orders-list">
+                ${orders.map(order => `
+                  <div class="order-card">
+                    <div class="order-header">
+                      <div class="row align-items-center">
+                        <div class="col-md-3">
+                          <h5 class="mb-0">Order #${order.orderNumber}</h5>
+                          <small class="text-muted">Placed on ${new Date(order.createdAt).toLocaleString()}</small>
+                        </div>
+                        <div class="col-md-3">
+                          <span class="order-status status-${order.status}">
+                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          </span>
+                        </div>
+                        <div class="col-md-3">
+                          <strong>Total: $${order.total.toFixed(2)}</strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="order-body">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <h6>Customer Information</h6>
+                          <p class="mb-1"><strong>Name:</strong> ${order.shipping.name}</p>
+                          <p class="mb-1"><strong>Email:</strong> ${order.shipping.email}</p>
+                          <p class="mb-1"><strong>Address:</strong> ${order.shipping.address}</p>
+                          <p class="mb-1"><strong>City:</strong> ${order.shipping.city}</p>
+                          <p class="mb-1"><strong>State:</strong> ${order.shipping.state}</p>
+                          <p class="mb-1"><strong>ZIP:</strong> ${order.shipping.zipCode}</p>
+                        </div>
+                        <div class="col-md-6">
+                          <h6>Payment Information</h6>
+                          <p class="mb-1"><strong>Cardholder:</strong> ${order.payment.name}</p>
+                          <p class="mb-1"><strong>Card:</strong> **** **** **** ${order.payment.cardNumber}</p>
+                          <p class="mb-1"><strong>Bank:</strong> ${order.payment.bankName}</p>
+                          <p class="mb-1"><strong>Expiry:</strong> ${order.payment.expiry}</p>
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="row">
+                        <div class="col-12">
+                          <h6>Order Items</h6>
+                          <div class="table-responsive">
+                            <table class="table table-sm">
+                              <thead>
+                                <tr>
+                                  <th>Product</th>
+                                  <th>Brand</th>
+                                  <th>Price</th>
+                                  <th>Quantity</th>
+                                  <th>Total</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                ${order.items.map(item => `
+                                  <tr>
+                                    <td>
+                                      <div class="d-flex align-items-center">
+                                        <img src="${item.productDetails.image}" alt="${item.productDetails.name}" class="product-image me-2">
+                                        <div>
+                                          ${item.productDetails.name}
+                                          ${item.productDetails.Vcollection ? `
+                                            <br><small class="text-muted">Collection: ${item.productDetails.Vcollection}</small>
+                                          ` : ''}
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td>${item.productDetails.brand}</td>
+                                    <td>$${item.price.toFixed(2)}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                                  </tr>
+                                `).join('')}
+                              </tbody>
+                              <tfoot>
+                                <tr>
+                                  <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                                  <td>$${(order.total - order.shippingCost - order.tax).toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                  <td colspan="4" class="text-end"><strong>Shipping:</strong></td>
+                                  <td>$${order.shippingCost.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                  <td colspan="4" class="text-end"><strong>Tax:</strong></td>
+                                  <td>$${order.tax.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                  <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                                  <td><strong>$${order.total.toFixed(2)}</strong></td>
+                                </tr>
+                              </tfoot>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          } else {
+            modalBody.innerHTML = '<p>No orders found for this user</p>';
+          }
+
+          modal.classList.remove('hidden');
+        } else {
+          showNotification('error', data.message || 'Failed to fetch orders');
+        }
+      } catch (error) {
+        console.error('Error fetching user orders:', error);
+        showNotification('error', 'Error fetching user orders: ' + error.message);
+      }
+    }
   </script>
+
+  <style>
+    .order-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    .order-header {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px 10px 0 0;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .order-body {
+      padding: 20px;
+    }
+    .order-status {
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+    .status-pending { background-color: #fff3cd; color: #856404; }
+    .status-confirmed { background-color: #cce5ff; color: #004085; }
+    .status-processing { background-color: #d4edda; color: #155724; }
+    .status-shipped { background-color: #d1e7dd; color: #0f5132; }
+    .status-delivered { background-color: #d4edda; color: #155724; }
+    .status-cancelled { background-color: #f8d7da; color: #721c24; }
+    .product-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .modal-content {
+      max-width: 90%;
+      margin: 20px auto;
+    }
+    .modal-body {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+  </style>
 </body>
 </html>
     

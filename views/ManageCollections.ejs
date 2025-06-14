@@ -181,25 +181,36 @@
                     }
 
                     const data = await response.json();
+                    console.log('Delete response:', data);
                     
                     if (data.success) {
-                        window.location.reload();
+                        showNotification(data.message || 'Collection deleted successfully', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                     } else {
-                        alert('Error deleting collection: ' + (data.message || 'Unknown error'));
+                        showNotification(data.message || 'Error deleting collection', 'error');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    if (error.message === 'Server did not return JSON') {
-                        alert('Server error: Invalid response format');
-                    } else {
-                        alert('Error deleting collection. Please try again.');
-                    }
+                    showNotification('Error deleting collection: ' + error.message, 'error');
                 } finally {
                     modal.hide();
                 }
             };
             
             modal.show();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
     </script>
 </body>

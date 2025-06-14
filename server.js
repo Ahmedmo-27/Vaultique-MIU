@@ -268,7 +268,7 @@ app.use(
           "https://kit.fontawesome.com"
         ],
         objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
+        mediaSrc: ["'self'", "blob:", "data:"],
         frameSrc: [
           "'self'",
           "https://*.stripe.com" // Required for Stripe payment iframe

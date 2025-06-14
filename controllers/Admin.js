@@ -9,6 +9,40 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
+// Store todos in memory since we're not using the database
+let todos = [
+  {
+    id: '1',
+    text: "Review and approve pending orders",
+    completed: false,
+    createdAt: new Date()
+  },
+  {
+    id: '2',
+    text: "Update product inventory levels",
+    completed: true,
+    createdAt: new Date()
+  },
+  {
+    id: '3',
+    text: "Check customer support tickets",
+    completed: false,
+    createdAt: new Date()
+  },
+  {
+    id: '4',
+    text: "Prepare weekly sales report",
+    completed: false,
+    createdAt: new Date()
+  },
+  {
+    id: '5',
+    text: "Update store promotions",
+    completed: false,
+    createdAt: new Date()
+  }
+];
+
 // Load users from database
 const loadUsers = async () => {
   try {
@@ -90,9 +124,11 @@ exports.renderDashboard = async (req, res) => {
     const totalUsers = await User.countDocuments();
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
+    
+    // Calculate total sales from all orders
     const totalSales = await Order.aggregate([
-      { $match: { status: "Completed" } },
-      { $group: { _id: null, total: { $sum: "$total" } } },
+      { $match: { status: { $ne: "Cancelled" } } }, // Exclude cancelled orders
+      { $group: { _id: null, total: { $sum: "$total" } } }
     ]);
 
     const recentOrdersRaw = await Order.find()
@@ -106,8 +142,6 @@ exports.renderDashboard = async (req, res) => {
       dateOrder: order.createdAt,
       status: order.status || 'Unknown',
     }));
-
-    const todos = await Todo.find().sort({ createdAt: -1 }).limit(5);
 
     res.render("AdminHubHomePage", {
       title: "Admin Dashboard",
@@ -761,32 +795,72 @@ exports.getOrderById = async (req, res) => {
 };
 
 exports.updateOrderStatus = async (req, res) => {
-  try {
-    const { status } = req.body;
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true, runValidators: true }
-    );
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
 
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+        // Validate status
+        const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid status value'
+            });
+        }
+
+        // Update the order
+        const order = await Order.findByIdAndUpdate(
+            id,
+            { 
+                status,
+                updatedAt: Date.now()
+            },
+            { new: true }
+        );
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        // Update the order status in the user's orders array
+        if (order.userId) {
+            try {
+                const user = await User.findById(order.userId);
+                if (user && user.orders) {
+                    // Find and update the order in the user's orders array
+                    const orderIndex = user.orders.findIndex(
+                        orderRef => orderRef.orderId === order._id.toString()
+                    );
+
+                    if (orderIndex !== -1) {
+                        // Update the status in the user's orders array
+                        user.orders[orderIndex].status = status.charAt(0).toUpperCase() + status.slice(1);
+                        await user.save();
+                        console.log('Updated user order status:', user.orders[orderIndex]);
+                    }
+                }
+            } catch (userUpdateError) {
+                console.error('Error updating user orders:', userUpdateError);
+                // Continue even if user update fails - the order is already updated
+            }
+        }
+
+        res.json({
+            success: true,
+            message: 'Order status updated successfully',
+            order
+        });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating order status',
+            error: error.message
+        });
     }
-
-    res.status(200).json({
-      success: true,
-      data: order,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error updating order status",
-      error: error.message,
-    });
-  }
 };
 
 // Collection Management
@@ -857,18 +931,43 @@ exports.renderCollections = async (req, res) => {
 
 exports.createCollection = async (req, res) => {
   try {
+    console.log('Request body:', req.body);
+    console.log('Request files:', req.files);
+
     const {
       name,
       slug,
-      logo,
-      coverImage,
-      heroVideo,
       header,
       description,
       featuredItems
     } = req.body;
 
+    // Handle file uploads
+    const logo = req.files?.logo ? `/Assets/${req.files.logo[0].filename}` : null;
+    const coverImage = req.files?.coverImage ? `/Assets/${req.files.coverImage[0].filename}` : null;
+    const heroVideo = req.files?.heroVideo ? `/Assets/${req.files.heroVideo[0].filename}` : null;
+
+    console.log('Processed file paths:', { logo, coverImage, heroVideo });
+
+    // Process featured items
+    const processedFeaturedItems = [];
+    if (featuredItems) {
+      console.log('Featured items before processing:', featuredItems);
+      const items = Array.isArray(featuredItems) ? featuredItems : [featuredItems];
+      for (const item of items) {
+        const itemImage = req.files?.[`featuredItems[${items.indexOf(item)}][image]`]?.[0];
+        processedFeaturedItems.push({
+          name: item.name,
+          image: itemImage ? `/Assets/${itemImage.filename}` : null,
+          tagline: item.tagline,
+          description: item.description
+        });
+      }
+      console.log('Processed featured items:', processedFeaturedItems);
+    }
+
     const collection = new Collection({
+      _id: `COL_${Date.now()}`, // Generate a unique ID
       name,
       slug,
       logo,
@@ -876,82 +975,119 @@ exports.createCollection = async (req, res) => {
       heroVideo,
       header,
       description,
-      featuredItems: featuredItems ? JSON.parse(featuredItems) : []
+      featuredItems: processedFeaturedItems
     });
 
+    console.log('Collection object before save:', collection);
+
     await collection.save();
-    res.redirect('/admin/collections');
+    console.log('Collection saved successfully');
+    
+    res.json({ success: true, message: 'Collection created successfully' });
   } catch (error) {
-    console.error('Error in createCollection:', error);
-    res.status(500).render("error", {
-      title: "Error",
-      message: "Error creating collection",
+    console.error('Detailed error in createCollection:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    res.status(500).json({
+      success: false,
+      message: 'Error creating collection',
       error: error.message
     });
   }
 };
 
 exports.updateCollection = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const {
-      name,
-      slug,
-      logo,
-      coverImage,
-      heroVideo,
-      header,
-      description,
-      featuredItems
-    } = req.body;
+    try {
+        console.log('Updating collection:', req.params.id);
+        const collection = await Collection.findById(req.params.id);
+        
+        if (!collection) {
+            console.log('Collection not found');
+            return res.status(404).json({ message: 'Collection not found' });
+        }
 
-    const collection = await Collection.findById(id);
-    if (!collection) {
-      return res.status(404).render("error", {
-        title: "Error",
-        message: "Collection not found"
-      });
+        // Handle file uploads
+        if (req.files) {
+            if (req.files.logo) {
+                collection.logo = `/Assets/${req.files.logo[0].filename}`;
+            }
+            if (req.files.coverImage) {
+                collection.coverImage = `/Assets/${req.files.coverImage[0].filename}`;
+            }
+            if (req.files.heroVideo) {
+                collection.heroVideo = `/Assets/${req.files.heroVideo[0].filename}`;
+            }
+        }
+
+        // Update basic information
+        collection.name = req.body.name;
+        collection.slug = req.body.slug;
+        collection.header = req.body.header;
+        collection.description = req.body.description;
+
+        // Handle featured items
+        if (req.body.featuredItems) {
+            const featuredItems = [];
+            for (let i = 0; i < req.body.featuredItems.length; i++) {
+                const item = {
+                    name: req.body.featuredItems[i].name,
+                    tagline: req.body.featuredItems[i].tagline,
+                    description: req.body.featuredItems[i].description
+                };
+
+                // Handle featured item image if uploaded
+                if (req.files && req.files[`featuredItems[${i}][image]`]) {
+                    item.image = `/Assets/${req.files[`featuredItems[${i}][image]`][0].filename}`;
+                } else if (collection.featuredItems[i] && collection.featuredItems[i].image) {
+                    // Keep existing image if no new one uploaded
+                    item.image = collection.featuredItems[i].image;
+                }
+
+                featuredItems.push(item);
+            }
+            collection.featuredItems = featuredItems;
+        }
+
+        await collection.save();
+        console.log('Collection updated successfully');
+        res.json({ message: 'Collection updated successfully', collection });
+    } catch (error) {
+        console.error('Error updating collection:', error);
+        res.status(500).json({ message: 'Error updating collection', error: error.message });
     }
-
-    collection.name = name;
-    collection.slug = slug;
-    collection.logo = logo;
-    collection.coverImage = coverImage;
-    collection.heroVideo = heroVideo;
-    collection.header = header;
-    collection.description = description;
-    if (featuredItems) {
-      collection.featuredItems = JSON.parse(featuredItems);
-    }
-
-    await collection.save();
-    res.redirect('/admin/collections');
-  } catch (error) {
-    console.error('Error in updateCollection:', error);
-    res.status(500).render("error", {
-      title: "Error",
-      message: "Error updating collection",
-      error: error.message
-    });
-  }
 };
 
 exports.deleteCollection = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log('Attempting to delete collection with ID:', id);
+
     const collection = await Collection.findById(id);
     
     if (!collection) {
+      console.log('Collection not found with ID:', id);
       return res.status(404).json({
         success: false,
         message: "Collection not found"
       });
     }
 
-    await collection.remove();
-    res.json({ success: true });
+    // Delete the collection
+    await Collection.deleteOne({ _id: id });
+    console.log('Collection deleted successfully:', id);
+
+    res.json({ 
+      success: true,
+      message: "Collection deleted successfully"
+    });
   } catch (error) {
-    console.error('Error in deleteCollection:', error);
+    console.error('Error in deleteCollection:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     res.status(500).json({
       success: false,
       message: "Error deleting collection",
@@ -963,9 +1099,12 @@ exports.deleteCollection = async (req, res) => {
 exports.getCollection = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log('Fetching collection with ID:', id);
+
     const collection = await Collection.findById(id);
     
     if (!collection) {
+      console.log('Collection not found with ID:', id);
       return res.status(404).render("error", {
         title: "Error",
         message: "Collection not found"
@@ -974,10 +1113,15 @@ exports.getCollection = async (req, res) => {
 
     res.render("ViewCollection", {
       title: collection.name,
-      collection
+      collection,
+      user: req.user
     });
   } catch (error) {
-    console.error('Error in getCollection:', error);
+    console.error('Error in getCollection:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     res.status(500).render("error", {
       title: "Error",
       message: "Error loading collection",
@@ -989,9 +1133,12 @@ exports.getCollection = async (req, res) => {
 exports.renderEditCollection = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log('Rendering edit form for collection ID:', id);
+
     const collection = await Collection.findById(id);
     
     if (!collection) {
+      console.log('Collection not found with ID:', id);
       return res.status(404).render("error", {
         title: "Error",
         message: "Collection not found"
@@ -1000,10 +1147,15 @@ exports.renderEditCollection = async (req, res) => {
 
     res.render("EditCollection", {
       title: "Edit Collection",
-      collection
+      collection,
+      user: req.user
     });
   } catch (error) {
-    console.error('Error in renderEditCollection:', error);
+    console.error('Error in renderEditCollection:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     res.status(500).render("error", {
       title: "Error",
       message: "Error loading collection",
@@ -1029,69 +1181,189 @@ exports.getAllBrands = async (req, res) => {
   }
 };
 
+exports.renderBrands = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
+        const brands = await Brand.find()
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Brand.countDocuments();
+        const totalPages = Math.ceil(total / limit);
+
+        res.render('ManageBrands', {
+            title: 'Manage Brands',
+            brands,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                hasPrevPage: page > 1,
+                hasNextPage: page < totalPages,
+                prevPage: page - 1,
+                nextPage: page + 1
+            },
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error rendering brands:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Error loading brands',
+            error: error.message
+        });
+    }
+};
+
+exports.renderCreateBrand = async (req, res) => {
+    try {
+        res.render('CreateBrand', {
+            title: 'Create Brand',
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error rendering create brand form:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Error rendering create brand form',
+            error: error.message
+        });
+    }
+};
+
 exports.createBrand = async (req, res) => {
-  try {
-    const brand = await Brand.create(req.body);
-    res.status(201).json({
-      success: true,
-      data: brand,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error creating brand",
-      error: error.message,
-    });
-  }
+    try {
+        console.log('Creating brand with data:', req.body);
+        console.log('Files:', req.files);
+
+        const brandData = {
+            name: req.body.name,
+            slug: req.body.slug,
+            description: req.body.description,
+            website: req.body.website
+        };
+
+        if (req.files && req.files.logo) {
+            brandData.logo = `/Assets/${req.files.logo[0].filename}`;
+        }
+
+        const brand = new Brand(brandData);
+        await brand.save();
+
+        console.log('Brand created successfully:', brand);
+        res.json({ 
+            success: true, 
+            message: 'Brand created successfully',
+            brand 
+        });
+    } catch (error) {
+        console.error('Error creating brand:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error creating brand',
+            error: error.message 
+        });
+    }
+};
+
+exports.getBrand = async (req, res) => {
+    try {
+        const brand = await Brand.findById(req.params.id);
+        if (!brand) {
+            return res.status(404).render('error', {
+                title: 'Error',
+                message: 'Brand not found'
+            });
+        }
+        res.render('ViewBrand', {
+            title: brand.name,
+            brand,
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error getting brand:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Error loading brand',
+            error: error.message
+        });
+    }
+};
+
+exports.renderEditBrand = async (req, res) => {
+    try {
+        const brand = await Brand.findById(req.params.id);
+        if (!brand) {
+            return res.status(404).render('error', {
+                title: 'Error',
+                message: 'Brand not found'
+            });
+        }
+        res.render('EditBrand', {
+            title: `Edit ${brand.name}`,
+            brand,
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error rendering edit brand form:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Error loading brand',
+            error: error.message
+        });
+    }
 };
 
 exports.updateBrand = async (req, res) => {
-  try {
-    const brand = await Brand.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    try {
+        console.log('Updating brand:', req.params.id);
+        const brand = await Brand.findById(req.params.id);
+        
+        if (!brand) {
+            console.log('Brand not found');
+            return res.status(404).json({ message: 'Brand not found' });
+        }
 
-    if (!brand) {
-      return res.status(404).json({
-        success: false,
-        message: "Brand not found",
-      });
+        // Handle file upload
+        if (req.files && req.files.logo) {
+            brand.logo = `/Assets/${req.files.logo[0].filename}`;
+        }
+
+        // Update basic information
+        brand.name = req.body.name;
+        brand.slug = req.body.slug;
+        brand.description = req.body.description;
+        brand.website = req.body.website;
+
+        await brand.save();
+        console.log('Brand updated successfully');
+        res.json({ message: 'Brand updated successfully', brand });
+    } catch (error) {
+        console.error('Error updating brand:', error);
+        res.status(500).json({ message: 'Error updating brand', error: error.message });
     }
-
-    res.status(200).json({
-      success: true,
-      data: brand,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error updating brand",
-      error: error.message,
-    });
-  }
 };
 
 exports.deleteBrand = async (req, res) => {
-  try {
-    const brand = await Brand.findByIdAndDelete(req.params.id);
-    if (!brand) {
-      return res.status(404).json({
-        success: false,
-        message: "Brand not found",
-      });
+    try {
+        console.log('Deleting brand:', req.params.id);
+        const brand = await Brand.findById(req.params.id);
+        
+        if (!brand) {
+            console.log('Brand not found');
+            return res.status(404).json({ message: 'Brand not found' });
+        }
+
+        await brand.deleteOne();
+        console.log('Brand deleted successfully');
+        res.json({ success: true, message: 'Brand deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting brand:', error);
+        res.status(500).json({ message: 'Error deleting brand', error: error.message });
     }
-    res.status(200).json({
-      success: true,
-      message: "Brand deleted successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error deleting brand",
-      error: error.message,
-    });
-  }
 };
 
 // Analytics
@@ -1515,7 +1787,6 @@ exports.getUserOrders = async (req, res) => {
     }
 
     const orders = await Order.find({ userId: req.params.id })
-      .populate('items.productId')
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -1667,4 +1938,213 @@ exports.listCollections = async (req, res) => {
       error: error.message
     });
   }
+};
+
+// Add todo
+exports.addTodo = async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) {
+      return res.status(400).json({
+        success: false,
+        message: "Todo text is required"
+      });
+    }
+
+    const newTodo = {
+      id: Date.now().toString(),
+      text,
+      completed: false,
+      createdAt: new Date()
+    };
+
+    todos.unshift(newTodo);
+    
+    res.status(201).json({
+      success: true,
+      data: newTodo
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error adding todo",
+      error: error.message
+    });
+  }
+};
+
+// Remove todo
+exports.removeTodo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const initialLength = todos.length;
+    todos = todos.filter(todo => todo.id !== id);
+
+    if (todos.length === initialLength) {
+      return res.status(404).json({
+        success: false,
+        message: "Todo not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Todo removed successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error removing todo",
+      error: error.message
+    });
+  }
+};
+
+// Toggle todo completion
+exports.toggleTodo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const todo = todos.find(todo => todo.id === id);
+
+    if (!todo) {
+      return res.status(404).json({
+        success: false,
+        message: "Todo not found"
+      });
+    }
+
+    todo.completed = !todo.completed;
+
+    res.status(200).json({
+      success: true,
+      data: todo
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error toggling todo",
+      error: error.message
+    });
+  }
+};
+
+exports.renderCreateCollection = async (req, res) => {
+    try {
+        res.render('CreateCollection', {
+            title: 'Create Collection',
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error rendering create collection form:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Error rendering create collection form',
+            error: error.message
+        });
+    }
+};
+
+exports.renderOrders = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
+        // Build filter object
+        const filter = {};
+        if (req.query.status) {
+            filter.status = req.query.status;
+        }
+        if (req.query.dateFrom || req.query.dateTo) {
+            filter.createdAt = {};
+            if (req.query.dateFrom) {
+                filter.createdAt.$gte = new Date(req.query.dateFrom);
+            }
+            if (req.query.dateTo) {
+                filter.createdAt.$lte = new Date(req.query.dateTo);
+            }
+        }
+        if (req.query.search) {
+            filter.$or = [
+                { orderNumber: { $regex: req.query.search, $options: 'i' } },
+                { 'shipping.name': { $regex: req.query.search, $options: 'i' } },
+                { 'shipping.email': { $regex: req.query.search, $options: 'i' } }
+            ];
+        }
+
+        const orders = await Order.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Order.countDocuments(filter);
+        const totalPages = Math.ceil(total / limit);
+
+        res.render('ManageOrders', {
+            title: 'Manage Orders',
+            orders,
+            currentPage: page,
+            totalPages,
+            status: req.query.status || '',
+            dateFrom: req.query.dateFrom || '',
+            dateTo: req.query.dateTo || '',
+            search: req.query.search || '',
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error rendering orders:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Error loading orders',
+            error: error.message
+        });
+    }
+};
+
+exports.getOrder = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id)
+            .populate('customer', 'name email address')
+            .populate('items.product', 'name price images');
+
+        if (!order) {
+            return res.status(404).render('error', {
+                title: 'Error',
+                message: 'Order not found'
+            });
+        }
+
+        res.render('ViewOrder', {
+            title: `Order ${order._id}`,
+            order,
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Error getting order:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Error loading order',
+            error: error.message
+        });
+    }
+};
+
+exports.deleteOrder = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        await order.deleteOne();
+        res.json({ success: true, message: 'Order deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error deleting order',
+            error: error.message 
+        });
+    }
 };

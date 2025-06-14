@@ -72,13 +72,19 @@ function showNotification(type, message) {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
     
-    const container = document.querySelector('.container-fluid');
-    container.insertBefore(notification, container.firstChild);
-    
-    // Auto dismiss after 5 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
+    // Find the form container instead of container-fluid
+    const container = document.querySelector('.form-container');
+    if (container) {
+        container.insertBefore(notification, container.firstChild);
+        
+        // Auto dismiss after 5 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    } else {
+        // Fallback to console if container not found
+        console.error('Notification container not found:', message);
+    }
 }
 
 // Initialize form
@@ -194,12 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create product');
-            }
-
             const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to create product');
+            }
             
             if (data.success) {
                 showNotification('success', 'Product created successfully!');

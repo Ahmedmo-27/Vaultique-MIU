@@ -11,6 +11,139 @@
     <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <script src="/Javascript/nav-bar.js"></script>
+    <style>
+        .table-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+            width: 100%;
+        }
+
+        .order {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .order .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .order .head h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .order .head i {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .order .head i:hover {
+            color: #333;
+        }
+
+        .order table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order table thead th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #eee;
+        }
+
+        .order table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .order table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .order table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+            min-width: 100px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .status.pending {
+            background-color: #ffd700;
+            color: #856404;
+            border: 1px solid #ffd700;
+        }
+
+        .status.confirmed {
+            background-color: #007bff;
+            color: white;
+            border: 1px solid #007bff;
+        }
+
+        .status.processing {
+            background-color: #28a745;
+            color: white;
+            border: 1px solid #28a745;
+        }
+
+        .status.shipped {
+            background-color: #17a2b8;
+            color: white;
+            border: 1px solid #17a2b8;
+        }
+
+        .status.delivered {
+            background-color: #20c997;
+            color: white;
+            border: 1px solid #20c997;
+        }
+
+        .status.cancelled {
+            background-color: #dc3545;
+            color: white;
+            border: 1px solid #dc3545;
+        }
+
+        .order table tbody td:last-child {
+            text-align: center;
+        }
+
+        @media screen and (max-width: 768px) {
+            .table-data {
+                grid-template-columns: 1fr;
+            }
+
+            .order {
+                overflow-x: auto;
+            }
+
+            .order table {
+                min-width: 500px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -59,8 +192,10 @@
                 <div class="order">
                     <div class="head">
                         <h3>Recent Orders</h3>
-                        <i class='bx bx-search'></i>
-                        <i class='bx bx-filter'></i>
+                        <div class="actions">
+                            <i class='bx bx-search' title="Search orders"></i>
+                            <i class='bx bx-filter' title="Filter orders"></i>
+                        </div>
                     </div>
                     <table>
                         <thead>
@@ -85,7 +220,7 @@
                                 <% }); %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="3">No recent orders</td>
+                                    <td colspan="3" style="text-align: center; color: #666;">No recent orders</td>
                                 </tr>
                             <% } %>
                         </tbody>
@@ -94,15 +229,25 @@
                 <div class="todo">
                     <div class="head">
                         <h3>Todos</h3>
-                        <i class='bx bx-plus'></i>
+                        <button id="addTodoBtn" class="btn-add-todo">
+                            <i class='bx bx-plus'></i>
+                        </button>
                         <i class='bx bx-filter'></i>
+                    </div>
+                    <div id="addTodoForm" style="display: none;" class="add-todo-form">
+                        <input type="text" id="newTodoText" placeholder="Enter new todo...">
+                        <button id="submitTodo" class="btn-submit">Add</button>
+                        <button id="cancelTodo" class="btn-cancel">Cancel</button>
                     </div>
                     <ul class="todo-list">
                         <% if (todos && todos.length > 0) { %>
                             <% todos.forEach(todo => { %>
-                                <li class="<%= todo.completed ? 'completed' : '' %>">
+                                <li class="<%= todo.completed ? 'completed' : '' %>" data-id="<%= todo.id %>">
                                     <p><%= todo.text %></p>
-                                    <i class='bx bx-dots-vertical-rounded'></i>
+                                    <div class="todo-actions">
+                                        <i class='bx bx-check toggle-todo' title="Toggle completion"></i>
+                                        <i class='bx bx-trash delete-todo' title="Delete todo"></i>
+                                    </div>
                                 </li>
                             <% }); %>
                         <% } else { %>
@@ -121,6 +266,7 @@
     <!-- Inline script to ensure side panel works -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Side panel functionality
             const sideIcon = document.getElementById('side-icon');
             const closebtn = document.getElementById('closebtn');
             const mySidepanel = document.getElementById('mySidepanel');
@@ -128,16 +274,111 @@
             if (sideIcon) {
                 sideIcon.onclick = function() {
                     mySidepanel.style.width = '250px';
-                    console.log('Side panel opened');
                 };
             }
             
             if (closebtn) {
                 closebtn.onclick = function() {
                     mySidepanel.style.width = '0';
-                    console.log('Side panel closed');
                 };
             }
+
+            // Todo functionality
+            const addTodoBtn = document.getElementById('addTodoBtn');
+            const addTodoForm = document.getElementById('addTodoForm');
+            const newTodoText = document.getElementById('newTodoText');
+            const submitTodo = document.getElementById('submitTodo');
+            const cancelTodo = document.getElementById('cancelTodo');
+            const todoList = document.querySelector('.todo-list');
+
+            // Show add todo form
+            addTodoBtn.addEventListener('click', () => {
+                addTodoForm.style.display = 'flex';
+                newTodoText.focus();
+            });
+
+            // Hide add todo form
+            cancelTodo.addEventListener('click', () => {
+                addTodoForm.style.display = 'none';
+                newTodoText.value = '';
+            });
+
+            // Add new todo
+            submitTodo.addEventListener('click', async () => {
+                const text = newTodoText.value.trim();
+                if (!text) return;
+
+                try {
+                    const response = await fetch('/admin/api/todos', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ text }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const todo = data.data;
+                        
+                        const li = document.createElement('li');
+                        li.dataset.id = todo.id;
+                        li.innerHTML = `
+                            <p>${todo.text}</p>
+                            <div class="todo-actions">
+                                <i class='bx bx-check toggle-todo' title="Toggle completion"></i>
+                                <i class='bx bx-trash delete-todo' title="Delete todo"></i>
+                            </div>
+                        `;
+                        
+                        todoList.insertBefore(li, todoList.firstChild);
+                        addTodoForm.style.display = 'none';
+                        newTodoText.value = '';
+                    }
+                } catch (error) {
+                    console.error('Error adding todo:', error);
+                }
+            });
+
+            // Delete todo
+            todoList.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('delete-todo')) {
+                    const li = e.target.closest('li');
+                    const id = li.dataset.id;
+
+                    try {
+                        const response = await fetch(`/admin/api/todos/${id}`, {
+                            method: 'DELETE',
+                        });
+
+                        if (response.ok) {
+                            li.remove();
+                        }
+                    } catch (error) {
+                        console.error('Error deleting todo:', error);
+                    }
+                }
+            });
+
+            // Toggle todo completion
+            todoList.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('toggle-todo')) {
+                    const li = e.target.closest('li');
+                    const id = li.dataset.id;
+
+                    try {
+                        const response = await fetch(`/admin/api/todos/${id}/toggle`, {
+                            method: 'PATCH',
+                        });
+
+                        if (response.ok) {
+                            li.classList.toggle('completed');
+                        }
+                    } catch (error) {
+                        console.error('Error toggling todo:', error);
+                    }
+                }
+            });
         });
     </script>
 </body>

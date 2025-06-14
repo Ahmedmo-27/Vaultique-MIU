@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Collection</title>
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/AdminHubHomePage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 100px;
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .featured-item {
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+        }
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: cover;
+            margin-top: 10px;
+        }
+        .btn-add-featured {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/Admin-navigation') %>
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="mb-4">Create New Collection</h2>
+            <form id="collectionForm" action="/admin/collections" method="POST" enctype="multipart/form-data">
+                <!-- Basic Information -->
+                <div class="form-group">
+                    <label for="name">Collection Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="slug">Slug</label>
+                    <input type="text" class="form-control" id="slug" name="slug" required>
+                    <small class="form-text text-muted">This will be used in the URL (e.g., "classic-and-dress")</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="header">Header</label>
+                    <input type="text" class="form-control" id="header" name="header" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                </div>
+
+                <!-- Media -->
+                <div class="form-group">
+                    <label for="logo">Logo</label>
+                    <input type="file" class="form-control" id="logo" name="logo" accept="image/*" required>
+                    <img id="logoPreview" class="preview-image d-none" src="#" alt="Logo Preview">
+                </div>
+
+                <div class="form-group">
+                    <label for="coverImage">Cover Image</label>
+                    <input type="file" class="form-control" id="coverImage" name="coverImage" accept="image/*" required>
+                    <img id="coverPreview" class="preview-image d-none" src="#" alt="Cover Preview">
+                </div>
+
+                <div class="form-group">
+                    <label for="heroVideo">Hero Video (Optional)</label>
+                    <input type="file" class="form-control" id="heroVideo" name="heroVideo" accept="video/*">
+                    <video id="videoPreview" class="preview-image d-none" controls></video>
+                </div>
+
+                <!-- Featured Items -->
+                <div class="form-group">
+                    <label>Featured Items</label>
+                    <button type="button" class="btn btn-secondary btn-add-featured" onclick="addFeaturedItem()">
+                        <i class="fas fa-plus"></i> Add Featured Item
+                    </button>
+                    <div id="featuredItems">
+                        <!-- Featured items will be added here -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Create Collection</button>
+                    <a href="/admin/collections" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Preview images when selected
+        document.getElementById('logo').addEventListener('change', function(e) {
+            previewImage(e.target, 'logoPreview');
+        });
+
+        document.getElementById('coverImage').addEventListener('change', function(e) {
+            previewImage(e.target, 'coverPreview');
+        });
+
+        document.getElementById('heroVideo').addEventListener('change', function(e) {
+            previewVideo(e.target, 'videoPreview');
+        });
+
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewVideo(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const url = URL.createObjectURL(input.files[0]);
+                preview.src = url;
+                preview.classList.remove('d-none');
+            }
+        }
+
+        // Generate slug from name
+        document.getElementById('name').addEventListener('input', function(e) {
+            const slug = e.target.value
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+            document.getElementById('slug').value = slug;
+        });
+
+        // Featured Items Management
+        let featuredItemCount = 0;
+
+        function addFeaturedItem() {
+            const container = document.getElementById('featuredItems');
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'featured-item';
+            itemDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" class="form-control" name="featuredItems[${featuredItemCount}][name]" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Image</label>
+                            <input type="file" class="form-control" name="featuredItems[${featuredItemCount}][image]" accept="image/*" required>
+                            <img class="preview-image d-none" src="#" alt="Featured Item Preview">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tagline</label>
+                    <input type="text" class="form-control" name="featuredItems[${featuredItemCount}][tagline]" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" name="featuredItems[${featuredItemCount}][description]" rows="2" required></textarea>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            `;
+            container.appendChild(itemDiv);
+            featuredItemCount++;
+
+            // Add image preview functionality
+            const imageInput = itemDiv.querySelector('input[type="file"]');
+            const preview = itemDiv.querySelector('img');
+            imageInput.addEventListener('change', function(e) {
+                previewImage(e.target, preview);
+            });
+        }
+
+        // Form submission
+        document.getElementById('collectionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(this);
+                
+                // Log form data for debugging
+                for (let pair of formData.entries()) {
+                    console.log(pair[0] + ': ' + pair[1]);
+                }
+
+                const response = await fetch('/admin/collections', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server did not return JSON');
+                }
+
+                const result = await response.json();
+                console.log('Server response:', result);
+
+                if (response.ok) {
+                    showNotification(result.message || 'Collection created successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin/collections';
+                    }, 1500);
+                } else {
+                    showNotification(result.message || 'Failed to create collection', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('An error occurred while creating the collection: ' + error.message, 'error');
+            }
+        });
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 
