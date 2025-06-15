@@ -12,7 +12,11 @@ const { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail, sendOrd
 const { sendWelcomeSMS } = require('../utils/smsService');
 const { setSessionCookie, removeCookie } = require('../utils/cookieManager');
 const passport = require('passport');
+const { OAuth2Client } = require('google-auth-library');
 // Authentication security is handled by JWT middleware
+
+// Initialize Google OAuth client
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Rate limiting for login attempts
 const loginLimiter = rateLimit({
@@ -509,6 +513,84 @@ router.get('/verify-email/:token', async (req, res) => {
     console.error('Email verification error:', error);
     res.render('email-verification-error', {
       message: 'An error occurred during email verification. Please try again later or contact support.'
+    });
+  }
+});
+
+// Google Sign-In callback route
+router.post('/google', async (req, res) => {
+  try {
+    const { credential, redirect_uri } = req.body;
+    
+    if (!credential) {
+      return res.status(400).json({
+        success: false,
+        message: 'No credential provided'
+      });
+    }
+
+    // Verify the Google token
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, picture } = payload;
+
+    // Check if user exists
+    let user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      // Create new user if doesn't exist
+      user = new User({
+        email: email.toLowerCase(),
+        Name: name,
+        username: email.split('@')[0] + Math.random().toString(36).substring(2, 8),
+        password: crypto.randomBytes(32).toString('hex'), // Random password for Google users
+        isEmailVerified: true, // Google emails are pre-verified
+        status: 'active',
+        profilePicture: picture
+      });
+
+      await user.save();
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // Set session data
+    req.session.user = {
+      id: user._id,
+      email: user.email,
+      role: user.role
+    };
+    req.session.isAuthenticated = true;
+
+    // Set tokens in HTTP-only cookies
+    setSessionCookie(res, 'token', accessToken);
+    setSessionCookie(res, 'refreshToken', refreshToken);
+
+    // Create safe user response object
+    const userResponse = {
+      _id: user._id,
+      Name: user.Name,
+      email: user.email,
+      role: user.role
+    };
+
+    res.json({
+      success: true,
+      message: 'Google Sign-In successful',
+      user: userResponse,
+      redirectUrl: '/user/home'
+    });
+  } catch (error) {
+    console.error('Google Sign-In error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Google Sign-In failed',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });

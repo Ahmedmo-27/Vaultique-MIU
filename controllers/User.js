@@ -11,12 +11,13 @@ const { generateOrderNumber } = require('../utils/orderUtils');
 const { sendOrderConfirmationEmail } = require('../utils/emailService');
 
 // Helper function to render notification
-const renderNotification = (res, type, message, title = 'Notification') => {
-  res.render('error', {
+const renderNotification = (res, type, message, title = 'Notification', status = 500) => {
+  res.status(status).render('error', {
     title,
     type,
     message,
     show: true,
+    user: res.locals.user || null
   });
 };
 
@@ -41,12 +42,7 @@ router.get('/products/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate('brand');
     if (!product) {
-      return res.status(404).render('error', {
-        title: 'Product Not Found',
-        message: 'The requested product does not exist.',
-        type: 'error',
-        show: true
-      });
+      return renderNotification(res, 'error', 'The requested product does not exist.', 'Product Not Found', 404);
     }
 
     // Get wishlist status if user is logged in
@@ -66,12 +62,7 @@ router.get('/products/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Error loading product detail:', error);
-    res.status(500).render('error', {
-      title: 'Error',
-      message: 'Failed to load product details. Please try again later.',
-      type: 'error',
-      show: true
-    });
+    renderNotification(res, 'error', 'Failed to load product details. Please try again later.', 'Error');
   }
 });
 
@@ -743,49 +734,66 @@ router.get('/logout', (req, res) => {
   res.redirect('/user/LoginSignup');
 });
 
+// Helper function to initialize cart session
+const initializeCartSession = (req) => {
+  if (!req.session.cart) {
+    req.session.cart = {
+      items: [],
+      shippingMethod: 'standard',
+      subtotal: 0,
+      shippingCost: 20,
+      total: 20,
+      lastUpdated: new Date()
+    };
+  }
+  return req.session.cart;
+};
+
+// Helper function to save cart session
+const saveCartSession = async (req) => {
+  return new Promise((resolve, reject) => {
+    req.session.save((err) => {
+      if (err) {
+        console.error('Error saving session:', err);
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
 // Cart routes (public)
 router.get('/cart', async (req, res) => {
-    try {
-        // Initialize cart from session
-        if (!req.session.cart) {
-            req.session.cart = {
-                items: [],
-                shippingMethod: 'standard',
-                subtotal: 0,
-                shippingCost: 20,
-                total: 20,
-                lastUpdated: new Date()
-            };
-        }
+  try {
+    // Initialize cart from session
+    const cart = initializeCartSession(req);
 
-        // If user is authenticated, sync with DB cart
-        if (req.user) {
-            let userCart = await Cart.findOne({ userId: req.user._id });
-            if (userCart) {
-                req.session.cart = {
-                    items: userCart.items,
-                    shippingMethod: userCart.shippingMethod,
-                    subtotal: userCart.subtotal,
-                    shippingCost: userCart.shippingCost,
-                    total: userCart.total,
-                    lastUpdated: userCart.lastUpdated
-                };
-            }
-        }
-
-        res.render('cart', {
-            cart: req.session.cart,
-            isEmpty: !req.session.cart.items || req.session.cart.items.length === 0,
-            error: null,
-            user: req.user || null
-        });
-    } catch (error) {
-        console.error('Error viewing cart:', error);
-        res.status(500).render('error', {
-            message: 'An error occurred while loading your cart.',
-            error: error.message
-        });
+    // If user is authenticated, sync with DB cart
+    if (req.user) {
+      let userCart = await Cart.findOne({ userId: req.user._id });
+      if (userCart) {
+        req.session.cart = {
+          items: userCart.items,
+          shippingMethod: userCart.shippingMethod,
+          subtotal: userCart.subtotal,
+          shippingCost: userCart.shippingCost,
+          total: userCart.total,
+          lastUpdated: userCart.lastUpdated
+        };
+      }
     }
+
+    res.render('cart', {
+      cart: req.session.cart,
+      isEmpty: !req.session.cart.items || req.session.cart.items.length === 0,
+      error: null,
+      user: req.user || null
+    });
+  } catch (error) {
+    console.error('Error viewing cart:', error);
+    renderNotification(res, 'error', 'An error occurred while loading your cart.', 'Error');
+  }
 });
 
 // POST /user/cart/add - Add item to cart (DB for logged in, session for guests)
@@ -1397,7 +1405,19 @@ router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
   }
 });
 
-// Keep the main payment routes
+// Helper function to sanitize payment info
+const sanitizePaymentInfo = (paymentInfo) => {
+  if (!paymentInfo) return null;
+  
+  return {
+    name: paymentInfo.name,
+    card_number: paymentInfo.cardNumber ? `**** **** **** ${paymentInfo.cardNumber.slice(-4)}` : null,
+    bank_name: paymentInfo.bankName,
+    expiry: paymentInfo.expiryDate
+  };
+};
+
+// Payment route
 router.get('/payment', async (req, res) => {
   try {
     console.log('Payment route - Cart state:', {
@@ -1436,12 +1456,7 @@ router.get('/payment', async (req, res) => {
     if (req.user) {
       const user = await User.findById(req.user._id).select('Payment');
       if (user?.Payment) {
-        paymentInfo = {
-          name: user.Payment.cardHolder,
-          card_number: `**** **** **** ${user.Payment.cardNumber}`,
-          bank_name: user.Payment.bankName,
-          expiry: user.Payment.expiryDate
-        };
+        paymentInfo = sanitizePaymentInfo(user.Payment);
       }
     }
 
@@ -1454,12 +1469,7 @@ router.get('/payment', async (req, res) => {
     });
   } catch (error) {
     console.error('Error loading payment page:', error);
-    res.status(500).render('error', {
-      title: 'Error',
-      message: 'An error occurred while loading the payment page.',
-      type: 'error',
-      show: true
-    });
+    renderNotification(res, 'error', 'An error occurred while loading the payment page.', 'Error');
   }
 });
 
@@ -2235,5 +2245,230 @@ router.get('/about-us', async (req, res) => {
         });
     }
   });       
+
+// Helper function to build filter query
+const buildFilterQuery = (query, baseFilter = {}) => {
+  const filterQuery = { ...baseFilter };
+  
+  // Collection filter
+  if (query.Vcollection && query.Vcollection !== 'All') {
+    filterQuery.Vcollection = query.Vcollection;
+  }
+
+  // Brand filter
+  if (query.brand && query.brand !== 'All') {
+    filterQuery.brand = query.brand;
+  }
+
+  // Other filters
+  const filterFields = [
+    'gender',
+    'strapMaterial',
+    'movement',
+    'waterResistance',
+    'caseMaterial',
+    'dialColor'
+  ];
+
+  filterFields.forEach(field => {
+    if (query[field] && query[field] !== 'All') {
+      filterQuery[field] = query[field];
+    }
+  });
+
+  // Price range
+  if (query.minPrice) {
+    filterQuery.price = { ...filterQuery.price, $gte: parseFloat(query.minPrice) };
+  }
+  if (query.maxPrice) {
+    filterQuery.price = { ...filterQuery.price, $lte: parseFloat(query.maxPrice) };
+  }
+
+  // Stock filter
+  if (query.inStock === 'true') {
+    filterQuery.stock = true;
+  }
+
+  return filterQuery;
+};
+
+// Helper function to get sort options
+const getSortOptions = (sort) => {
+  switch (sort) {
+    case 'price-asc':
+      return { price: 1 };
+    case 'price-desc':
+      return { price: -1 };
+    case 'new':
+      return { createdAt: -1 };
+    case 'popularity':
+      return { popularityScore: -1 };
+    default:
+      return { createdAt: -1 };
+  }
+};
+
+// Helper function to get current filters
+const getCurrentFilters = (query, defaultGender = null) => {
+  return {
+    Vcollection: query.Vcollection || 'All',
+    brand: query.brand || 'All',
+    gender: defaultGender || query.gender || 'All',
+    strapMaterial: query.strapMaterial || 'All',
+    movement: query.movement || 'All',
+    waterResistance: query.waterResistance || 'All',
+    caseMaterial: query.caseMaterial || 'All',
+    dialColor: query.dialColor || 'All',
+    minPrice: query.minPrice || '0',
+    maxPrice: query.maxPrice || '50000000',
+    inStock: query.inStock || 'false'
+  };
+};
+
+// Review Order page route
+router.get('/review', async (req, res) => {
+  try {
+    // Check if order info exists in session
+    if (!req.session.orderInfo) {
+      return res.redirect('/user/shipping');
+    }
+
+    // Get order details
+    const order = await Order.findById(req.session.orderInfo.orderId)
+      .populate('items.productId')
+      .lean();
+
+    if (!order) {
+      return res.redirect('/user/shipping');
+    }
+
+    // Prepare order summary
+    const orderSummary = {
+      subtotal: order.subtotal || 0,
+      shippingCost: order.shippingCost || 0,
+      total: order.total || 0
+    };
+
+    // Format order data for display
+    const formattedOrder = {
+      ...order,
+      items: order.items.map(item => ({
+        ...item,
+        productId: {
+          ...item.productId,
+          image: item.productId.image || '/Assets/Images/default-product.jpg',
+          name: item.productId.name || 'Unknown Product'
+        }
+      })),
+      shipping: {
+        name: order.shipping.name || '',
+        email: order.shipping.email || '',
+        address: order.shipping.address || '',
+        city: order.shipping.city || '',
+        state: order.shipping.state || '',
+        zipCode: order.shipping.zipCode || ''
+      },
+      payment: {
+        name: order.payment.name || '',
+        cardNumber: order.payment.cardNumber ? order.payment.cardNumber.slice(-4) : '',
+        bankName: order.payment.bankName || '',
+        expiry: order.payment.expiry || ''
+      }
+    };
+
+    res.render('review', {
+      title: 'Review Order',
+      order: formattedOrder,
+      orderSummary,
+      user: req.user || null
+    });
+  } catch (error) {
+    console.error('Error loading review page:', error);
+    renderNotification(res, 'error', 'Failed to load order review page. Please try again.', 'Error');
+  }
+});
+
+// Address Management
+exports.updateAddress = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { city, street, addressType, state, country, postalCode } = req.body;
+
+    // Validate required fields
+    if (!city || !street || !addressType || !state || !country || !postalCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'All address fields are required'
+      });
+    }
+
+    // Update user's address
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        Address: {
+          city,
+          street,
+          addressType,
+          state,
+          country,
+          postalCode
+        }
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Address updated successfully',
+      address: updatedUser.Address
+    });
+  } catch (error) {
+    console.error('Error updating address:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating address',
+      error: error.message
+    });
+  }
+};
+
+exports.removeAddress = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $unset: { Address: 1 } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Address removed successfully'
+    });
+  } catch (error) {
+    console.error('Error removing address:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error removing address',
+      error: error.message
+    });
+  }
+};
 
 module.exports = router;

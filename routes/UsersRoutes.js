@@ -7,6 +7,7 @@ const Product = require('../models/Products');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Order = require('../models/Orders');
+const userController = require('../controllers/User');
 
 // Store temporary wishlists for non-logged-in users
 const temporaryWishlists = new Map();
@@ -494,5 +495,6 @@ router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
         });
     }
 });
+
 
 module.exports = router;

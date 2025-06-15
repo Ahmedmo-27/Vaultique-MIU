@@ -1107,4 +1107,118 @@ document.addEventListener('DOMContentLoaded', function () {
         hideLoading();
     }
   }
+
+  // Address Management Functions
+  async function updateAddress(addressData) {
+    try {
+      const response = await fetch('/user/address', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(addressData)
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update address');
+      }
+
+      showNotification('success', 'Address updated successfully');
+      return data.address;
+    } catch (error) {
+      console.error('Error updating address:', error);
+      showNotification('error', error.message);
+      throw error;
+    }
+  }
+
+  async function removeAddress() {
+    try {
+      const response = await fetch('/user/address', {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to remove address');
+      }
+
+      showNotification('success', 'Address removed successfully');
+      return true;
+    } catch (error) {
+      console.error('Error removing address:', error);
+      showNotification('error', error.message);
+      throw error;
+    }
+  }
+
+  // Event Listeners for Address Management
+  document.addEventListener('DOMContentLoaded', () => {
+    const editAddressBtn = document.querySelector('.edit-address');
+    const removeAddressBtn = document.querySelector('.remove-address');
+    const addAddressBtn = document.querySelector('.add-address-btn');
+
+    if (editAddressBtn) {
+      editAddressBtn.addEventListener('click', () => {
+        // Show edit address form
+        const addressForm = document.getElementById('addressForm');
+        if (addressForm) {
+          addressForm.style.display = 'block';
+        }
+      });
+    }
+
+    if (removeAddressBtn) {
+      removeAddressBtn.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to remove this address?')) {
+          try {
+            await removeAddress();
+            // Refresh the page or update UI
+            window.location.reload();
+          } catch (error) {
+            console.error('Error removing address:', error);
+          }
+        }
+      });
+    }
+
+    if (addAddressBtn) {
+      addAddressBtn.addEventListener('click', () => {
+        // Show add address form
+        const addressForm = document.getElementById('addressForm');
+        if (addressForm) {
+          addressForm.style.display = 'block';
+        }
+      });
+    }
+
+    // Handle address form submission
+    const addressForm = document.getElementById('addressForm');
+    if (addressForm) {
+      addressForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(addressForm);
+        const addressData = {
+          city: formData.get('city'),
+          street: formData.get('street'),
+          addressType: formData.get('addressType'),
+          state: formData.get('state'),
+          country: formData.get('country'),
+          postalCode: formData.get('postalCode')
+        };
+
+        try {
+          await updateAddress(addressData);
+          // Refresh the page or update UI
+          window.location.reload();
+        } catch (error) {
+          console.error('Error updating address:', error);
+        }
+      });
+    }
+  });
 });

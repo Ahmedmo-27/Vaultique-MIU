@@ -222,73 +222,58 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'", // Required for some third-party integrations
-          "'unsafe-eval'", // Required for some JavaScript frameworks
-          "https://cdn.jsdelivr.net",
-          "https://unpkg.com",
-          "https://ajax.googleapis.com",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "'unsafe-hashes'",
+          "https://accounts.google.com",
+          "https://apis.google.com",
           "https://kit.fontawesome.com",
-          "https://cdnjs.cloudflare.com"
+          "https://cdn.jsdelivr.net"
         ],
-        scriptSrcAttr: ["'unsafe-inline'"], // Required for some UI components
+        scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: [
           "'self'",
-          "'unsafe-inline'", // Required for dynamic styles
+          "'unsafe-inline'",
+          "https://accounts.google.com",
           "https://fonts.googleapis.com",
-          "https://cdnjs.cloudflare.com",
-          "https://fonts.cdnfonts.com",
-          "https://db.onlinewebfonts.com",
           "https://cdn.jsdelivr.net",
-          "https://unpkg.com",
-          "https://kit.fontawesome.com"
+          "https://cdnjs.cloudflare.com",
+          "https://stackpath.bootstrapcdn.com",
+          "https://maxcdn.bootstrapcdn.com",
+          "https://db.onlinewebfonts.com",
+          "https://fonts.cdnfonts.com",
+          "https://unpkg.com"
         ],
         imgSrc: [
           "'self'",
           "data:",
           "blob:",
-          "https://*.cloudinary.com",
-          "https://*.amazonaws.com",
-          "https://*.railway.app",
-          "https://*.stripe.com"
+          "https://*.googleusercontent.com"
         ],
         connectSrc: [
           "'self'",
-          "blob:",
-          "https://api.stripe.com",
-          "https://kit.fontawesome.com",
-          "https://*.railway.app",
-          "wss://*.railway.app"
+          "https://accounts.google.com",
+          "https://oauth2.googleapis.com"
         ],
-        fontSrc: [
-          "'self'",
-          "https://fonts.gstatic.com",
-          "https://fonts.cdnfonts.com",
-          "https://db.onlinewebfonts.com",
-          "https://cdnjs.cloudflare.com",
-          "https://cdn.jsdelivr.net",
-          "https://unpkg.com",
-          "https://kit.fontawesome.com"
-        ],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'", "blob:", "data:"],
         frameSrc: [
           "'self'",
-          "https://*.stripe.com" // Required for Stripe payment iframe
-        ],
-        workerSrc: ["'self'", "blob:"],
-        childSrc: ["'self'", "blob:"],
-        frameAncestors: ["'self'"],
-        formAction: ["'self'", "https://*.stripe.com"],
-        baseUri: ["'self'"],
-        manifestSrc: ["'self'"],
-        upgradeInsecureRequests: []
-      },
+          "https://accounts.google.com"
+        ]
+      }
     },
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: "cross-origin" },
-    crossOriginOpenerPolicy: false,
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
   })
 );
+
+// Add specific headers for Google Sign-In
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
 
 // Static File Serving Configuration
 const publicPath = path.join(__dirname, 'public');
@@ -393,9 +378,14 @@ app.use('/cart', cartRoutes);
 app.use('/api/shipping', shippingRoutes);
 app.use('/api/payment', paymentRoutes);
 
-// Protected routes (authentication required)
+// Admin routes
 app.use('/admin', adminRoutes);
 app.use('/api/products', productRoutes);
+
+// Analytics API routes
+app.get('/api/admin/analytics/sales', isAdmin, adminController.getSalesAnalytics);
+app.get('/api/admin/analytics/users', isAdmin, adminController.getUserAnalytics);
+app.get('/api/admin/analytics/products', isAdmin, adminController.getProductAnalytics);
 
 // Configurator routes
 app.get('/configurator', configuratorController.renderConfigurator);

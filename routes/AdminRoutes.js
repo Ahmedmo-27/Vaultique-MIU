@@ -50,6 +50,9 @@ router.delete('/products/:id', adminController.deleteProduct);
 
 // Analytics routes
 router.get('/analytics', adminController.renderAnalytics);
+router.get('/api/analytics/sales', adminController.getSalesAnalytics);
+router.get('/api/analytics/users', adminController.getUserAnalytics);
+router.get('/api/analytics/products', adminController.getProductAnalytics);
 
 // Manage Store dashboard
 router.get('/managestore', adminController.renderManageStore);

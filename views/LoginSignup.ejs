@@ -17,7 +17,8 @@
     <script src="/Javascript/auth.js"></script>
     <script defer src="/Javascript/LoginSignup.js"></script>
     <script src="/Javascript/Light-Mode.js"></script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="/Javascript/google-auth.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -37,7 +38,7 @@
             <!-- Login Form -->
             <div id="login-form" class="form-container">
                 <h2>Login</h2>
-                <form id="login-form-id" action="javascript:void(0);" autocomplete="off">
+                <form id="login-form-id" autocomplete="off">
                     <div class="input-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" placeholder="Enter your email" autocomplete="new-email" required>
@@ -57,32 +58,36 @@
                     
                     <div class="social-login">
                         <div class="social-divider">or continue with</div>
-                        <div class="social-buttons">
-                            <button class="social-btn btn-google">
+                        <div class="social-buttons"
+                            data-client_id="<%= process.env.GOOGLE_CLIENT_ID %>"
+                            data-context="signin"
+                            data-ux_mode="popup"
+                            data-callback="handleGoogleSignIn"
+                            data-auto_prompt="false"
+                            >
+                            <button class="social-btn btn-google" id="googleSignIn">
                                 <i class="fab fa-google"></i>
                                 <span>Google</span>
                             </button>
-                            
                         </div>
 
-                        <div class="google-btn-container">
-                            <div id="g_id_onload"
-                                data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                                data-context="signin"
-                                data-ux_mode="popup"
-                                data-callback="handleGoogleSignIn"
-                                data-auto_prompt="false">
-                            </div>
-                            <div class="g_id_signin"
-                                data-type="standard"
-                                data-shape="rectangular"
-                                data-theme="filled_blue"
-                                data-text="signin_with"
-                                data-size="large"
-                                data-logo_alignment="left">
-                            </div>
+                        <div id="g_id_onload"
+                            data-client_id="<%= process.env.GOOGLE_CLIENT_ID %>"
+                            data-context="signin"
+                            data-ux_mode="popup"
+                            data-callback="handleGoogleSignIn"
+                            data-auto_prompt="false">
                         </div>
-                </div>
+                        <div class="g_id_signin"
+                            data-type="standard"
+                            data-shape="rectangular"
+                            data-theme="filled_blue"
+                            data-text="signin_with"
+                            data-size="large"
+                            data-logo_alignment="left"
+                            data-width="250">
+                        </div>
+                    </div>
                     <p>Don't have an account? <a href="#" id="register-link">Register</a></p>
                 </form>
             </div>
@@ -90,7 +95,7 @@
             <!-- Multi-step Signup Form -->
             <div id="signup-form" class="form-container">
                 <h2>Sign Up</h2>
-                <form id="signup-form-id" action="javascript:void(0);">
+                <form id="signup-form-id">
                     <!-- Step 1 -->
                     <div class="signup-step" id="step1">
                         <div class="input-group">
@@ -220,4 +225,4 @@
         </div>
     </div>
 </body>
-</html> 
+</html>
