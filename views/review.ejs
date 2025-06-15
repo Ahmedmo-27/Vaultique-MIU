@@ -45,29 +45,35 @@
         <div class="order-summary">
           <h3>Order Summary</h3>
           <div class="order-items">
-            <% order.items.forEach(item => { %>
-              <div class="order-item">
-                <img src="<%= item.productId.image %>" alt="<%= item.productId.name %>" class="item-image">
-                <div class="item-details">
-                  <h4><%= item.productId.name %></h4>
-                  <p>Quantity: <%= item.quantity %></p>
-                  <p>Price: $<%= item.price.toFixed(2) %></p>
+            <% if (order.items && order.items.length > 0) { %>
+              <% order.items.forEach(item => { %>
+                <div class="order-item">
+                  <img src="<%= item.productId?.image || '/Assets/Images/default-product.jpg' %>" 
+                       alt="<%= item.productId?.name || 'Product' %>" 
+                       class="item-image">
+                  <div class="item-details">
+                    <h4><%= item.productId?.name || 'Unknown Product' %></h4>
+                    <p>Quantity: <%= item.quantity || 0 %></p>
+                    <p>Price: $<%= (item.price || 0).toFixed(2) %></p>
+                  </div>
                 </div>
-              </div>
-            <% }); %>
+              <% }); %>
+            <% } else { %>
+              <p class="no-items">No items in order</p>
+            <% } %>
           </div>
           <div class="order-totals">
             <div class="total-line">
               <span>Subtotal:</span>
-              <span>$<%= orderSummary.subtotal.toFixed(2) %></span>
+              <span>$<%= (orderSummary?.subtotal || 0).toFixed(2) %></span>
             </div>
             <div class="total-line">
               <span>Shipping:</span>
-              <span>$<%= orderSummary.shippingCost.toFixed(2) %></span>
+              <span>$<%= (orderSummary?.shippingCost || 0).toFixed(2) %></span>
             </div>
             <div class="total-line grand-total">
               <span>Total:</span>
-              <span>$<%= orderSummary.total.toFixed(2) %></span>
+              <span>$<%= (orderSummary?.total || 0).toFixed(2) %></span>
             </div>
           </div>
         </div>
@@ -75,21 +81,29 @@
         <!-- Shipping Information -->
         <div class="shipping-info">
           <h3>Shipping Information</h3>
-          <p><strong>Name:</strong> <%= order.shipping.name %></p>
-          <p><strong>Email:</strong> <%= order.shipping.email %></p>
-          <p><strong>Address:</strong> <%= order.shipping.address %></p>
-          <p><strong>City:</strong> <%= order.shipping.city %></p>
-          <p><strong>State:</strong> <%= order.shipping.state %></p>
-          <p><strong>Postal Code:</strong> <%= order.shipping.zipCode %></p>
+          <% if (order.shipping) { %>
+            <p><strong>Name:</strong> <%= order.shipping.name || 'Not provided' %></p>
+            <p><strong>Email:</strong> <%= order.shipping.email || 'Not provided' %></p>
+            <p><strong>Address:</strong> <%= order.shipping.address || 'Not provided' %></p>
+            <p><strong>City:</strong> <%= order.shipping.city || 'Not provided' %></p>
+            <p><strong>State:</strong> <%= order.shipping.state || 'Not provided' %></p>
+            <p><strong>Postal Code:</strong> <%= order.shipping.zipCode || 'Not provided' %></p>
+          <% } else { %>
+            <p>No shipping information available</p>
+          <% } %>
         </div>
 
         <!-- Payment Information -->
         <div class="payment-info">
           <h3>Payment Information</h3>
-          <p><strong>Card Holder:</strong> <%= order.payment.name %></p>
-          <p><strong>Card Number:</strong> **** **** **** <%= order.payment.cardNumber %></p>
-          <p><strong>Bank:</strong> <%= order.payment.bankName %></p>
-          <p><strong>Expiry Date:</strong> <%= order.payment.expiry %></p>
+          <% if (order.payment) { %>
+            <p><strong>Card Holder:</strong> <%= order.payment.name || 'Not provided' %></p>
+            <p><strong>Card Number:</strong> **** **** **** <%= order.payment.cardNumber || '****' %></p>
+            <p><strong>Bank:</strong> <%= order.payment.bankName || 'Not provided' %></p>
+            <p><strong>Expiry Date:</strong> <%= order.payment.expiry || 'Not provided' %></p>
+          <% } else { %>
+            <p>No payment information available</p>
+          <% } %>
         </div>
 
         <!-- Order Confirmation -->
@@ -283,6 +297,12 @@
       .submit-btn:disabled {
         opacity: 0.7;
         cursor: not-allowed;
+      }
+
+      .no-items {
+        text-align: center;
+        color: #6c757d;
+        padding: 1rem;
       }
     </style>
   </body>
