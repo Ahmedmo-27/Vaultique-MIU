@@ -6,11 +6,16 @@ let salesChart, userChart, productChart;
 // Fetch analytics data
 async function fetchAnalyticsData() {
   try {
+    console.log('Fetching analytics data...');
     const [salesResponse, userResponse, productResponse] = await Promise.all([
       fetch('/api/admin/analytics/sales'),
       fetch('/api/admin/analytics/users'),
       fetch('/api/admin/analytics/products'),
     ]);
+
+    if (!salesResponse.ok || !userResponse.ok || !productResponse.ok) {
+      throw new Error('One or more API requests failed');
+    }
 
     const salesData = await salesResponse.json();
     const userData = await userResponse.json();
@@ -20,91 +25,109 @@ async function fetchAnalyticsData() {
       updateSalesChart(salesData.data);
       updateUserStats(userData.data);
       updateProductStats(productData.data);
+    } else {
+      throw new Error('Failed to fetch analytics data');
     }
   } catch (error) {
     console.error('Error fetching analytics data:', error);
+    // Show error message to user
+    const errorContainer = document.getElementById('error-container');
+    if (errorContainer) {
+      errorContainer.textContent = 'Failed to load analytics data. Please try again later.';
+      errorContainer.style.display = 'block';
+    }
   }
 }
 
 // Update sales chart
 function updateSalesChart(data) {
-  const trafficChart = document.getElementById('trafficChart').getContext('2d');
+  const ctx = document.getElementById('salesChart');
+  if (!ctx) return;
 
   if (salesChart) {
     salesChart.destroy();
   }
 
-  salesChart = new Chart(trafficChart, {
+  const labels = data.map(item => `${item._id.year}-${item._id.month}`);
+  const salesData = data.map(item => item.totalSales);
+  const orderData = data.map(item => item.orderCount);
+
+  salesChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.map((item) => item._id),
+      labels: labels,
       datasets: [
         {
           label: 'Sales',
-          data: data.map((item) => item.totalSales),
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1,
+          data: salesData,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          tension: 0.3,
+          fill: false
         },
-      ],
+        {
+          label: 'Orders',
+          data: orderData,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          tension: 0.3,
+          fill: false
+        }
+      ]
     },
     options: {
       responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
-  });
-}
-
-// Update user statistics
-function updateUserStats(data) {
-  const totalUsers = data.reduce((sum, item) => sum + item.newUsers, 0);
-  const lastDayUsers = data[data.length - 1]?.newUsers || 0;
-  const previousDayUsers = data[data.length - 2]?.newUsers || 0;
-  const userGrowth = previousDayUsers
-    ? ((lastDayUsers - previousDayUsers) / previousDayUsers) * 100
-    : 0;
-
-  document.querySelector('.stats-box:nth-child(3) h3').textContent = totalUsers.toLocaleString();
-  document.querySelector('.stats-box:nth-child(3) p').textContent =
-    `${userGrowth >= 0 ? '↑' : '↓'} ${Math.abs(userGrowth).toFixed(1)}%`;
-}
-
-// Update product statistics
-function updateProductStats(data) {
-  // Update most selling brands
-  const brandStats = data.reduce((acc, item) => {
-    const brand = item.productDetails.brand;
-    if (!acc[brand]) {
-      acc[brand] = { total: 0, revenue: 0 };
+      plugins: {
+        legend: {
+          position: 'top',
+        }
+      }
     }
-    acc[brand].total += item.totalSold;
-    acc[brand].revenue += item.totalRevenue;
-    return acc;
-  }, {});
-
-  // Sort brands by revenue
-  const sortedBrands = Object.entries(brandStats)
-    .sort(([, a], [, b]) => b.revenue - a.revenue)
-    .slice(0, 5);
-
-  // Update brand bars
-  const brandContainer = document.querySelector('.card:nth-child(7)');
-  brandContainer.innerHTML = '<h3>Most Selling Brands</h3>';
-
-  sortedBrands.forEach(([brand, stats]) => {
-    const percentage = ((stats.revenue / sortedBrands[0][1].revenue) * 100).toFixed(0);
-    brandContainer.innerHTML += `
-            <p>${brand} | ${percentage}%</p>
-            <div class="bar" style="width: ${percentage}%"></div>
-        `;
   });
+}
+
+// Update user stats
+function updateUserStats(data) {
+  const userStatsContainer = document.getElementById('user-stats');
+  if (!userStatsContainer) return;
+
+  const totalUsers = data.reduce((sum, item) => sum + item.newUsers, 0);
+  const userGrowth = data.length >= 2 ? 
+    ((data[data.length - 1].newUsers - data[data.length - 2].newUsers) / data[data.length - 2].newUsers) * 100 : 0;
+
+  userStatsContainer.innerHTML = `
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Total Users</h5>
+        <p class="card-text">${totalUsers}</p>
+        <p class="card-text ${userGrowth >= 0 ? 'text-success' : 'text-danger'}">
+          ${userGrowth >= 0 ? '↑' : '↓'} ${Math.abs(userGrowth).toFixed(1)}%
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+// Update product stats
+function updateProductStats(data) {
+  const productStatsContainer = document.getElementById('product-stats');
+  if (!productStatsContainer) return;
+
+  const totalRevenue = data.reduce((sum, item) => sum + item.totalRevenue, 0);
+  const totalSold = data.reduce((sum, item) => sum + item.totalSold, 0);
+
+  productStatsContainer.innerHTML = `
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Product Performance</h5>
+        <p class="card-text">Total Revenue: $${totalRevenue.toFixed(2)}</p>
+        <p class="card-text">Total Units Sold: ${totalSold}</p>
+      </div>
+    </div>
+  `;
 }
 
 // Initialize analytics
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Dashboard loaded');
   fetchAnalyticsData();
   // Refresh data every 5 minutes
   setInterval(fetchAnalyticsData, 300000);

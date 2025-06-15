@@ -380,4 +380,107 @@ document.addEventListener("DOMContentLoaded", function () {
           alert("Please enter your email address.");
       }
   });
+
+  // Google Sign-in Handler
+  window.handleGoogleSignIn = async function(response) {
+    try {
+      const result = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          credential: response.credential
+        }),
+        credentials: 'include'
+      });
+
+      const data = await result.json();
+
+      if (result.ok && data.success) {
+        window.showNotification('success', 'Login successful!');
+        
+        // Store user data
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+        
+        // Redirect based on user role
+        setTimeout(() => {
+          window.location.href = data.user?.role === 'admin' ? '/admin/dashboard' : '/user/home';
+        }, 1000);
+      } else {
+        window.showNotification('error', data.message || 'Google login failed');
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      window.showNotification('error', 'An error occurred during Google login');
+    }
+  };
+
+  // Check if Google API is loaded
+  function checkGoogleAPI() {
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+      console.error('Google Sign-In API not loaded');
+      window.showNotification('error', 'Google Sign-In is not available. Please try again later.');
+      return false;
+    }
+    return true;
+  }
+
+  // Add error handling for Google API loading
+  window.onerror = function(msg, url, lineNo, columnNo, error) {
+    if (msg.includes('google') || msg.includes('Google')) {
+      console.error('Google API error:', msg);
+      window.showNotification('error', 'Google Sign-In is not available. Please try again later.');
+      return false;
+    }
+    return false;
+  };
+
+  // Add click handler for custom Google button
+  const googleSignInButton = document.getElementById('google-signin-button');
+  if (googleSignInButton) {
+    googleSignInButton.addEventListener('click', function() {
+      // Check if Google API is loaded and initialized
+      if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+        // Try to use FedCM first
+        try {
+          google.accounts.id.prompt((notification) => {
+            if (notification.isDisplayed()) {
+              console.log('Google Sign-In prompt is displayed');
+            } else if (notification.isDisplayMoment()) {
+              console.log('Google Sign-In prompt is being displayed');
+            } else if (notification.isNotDisplayed()) {
+              // Fall back to traditional sign-in if FedCM is disabled
+              window.showNotification('info', 'Opening Google Sign-In in a new window...');
+              const client = google.accounts.oauth2.initTokenClient({
+                client_id: '<%= process.env.GOOGLE_CLIENT_ID %>',
+                scope: 'email profile',
+                callback: handleGoogleSignIn
+              });
+              client.requestAccessToken();
+            } else if (notification.isSkippedMoment()) {
+              window.showNotification('error', 'Google Sign-In was skipped. Please try again.');
+            } else if (notification.isDismissedMoment()) {
+              window.showNotification('error', 'Google Sign-In was dismissed. Please try again.');
+            }
+          });
+        } catch (error) {
+          console.error('FedCM error:', error);
+          // Fall back to traditional sign-in
+          window.showNotification('info', 'Opening Google Sign-In in a new window...');
+          const client = google.accounts.oauth2.initTokenClient({
+            client_id: '<%= process.env.GOOGLE_CLIENT_ID %>',
+            scope: 'email profile',
+            callback: handleGoogleSignIn
+          });
+          client.requestAccessToken();
+        }
+      } else {
+        window.showNotification('error', 'Google Sign-In is not available. Please try again later.');
+        console.error('Google Sign-In API not loaded');
+      }
+    });
+  }
 });

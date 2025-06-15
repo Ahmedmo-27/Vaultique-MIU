@@ -16,15 +16,19 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email'],
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+    select: false,
   },
   password: {
     type: String,
@@ -299,9 +303,10 @@ const UserSchema = new mongoose.Schema({
   versionKey: false // Disable versioning to prevent version conflicts
 });
 
-// Add index for email and username for faster queries
-UserSchema.index({ email: 1 });
-UserSchema.index({ username: 1 });
+// Define indexes explicitly
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ username: 1 }, { unique: true });
+UserSchema.index({ googleId: 1 }, { unique: true });
 
 // Add a pre-save hook to hash passwords
 UserSchema.pre('save', async function (next) {
