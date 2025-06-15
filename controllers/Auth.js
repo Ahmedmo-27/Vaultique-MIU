@@ -359,19 +359,46 @@ router.post('/reset-password', [
   }
 });
 
-// Logout route
+// Consolidated logout route
 router.post('/logout', (req, res) => {
   try {
-    // Clear session
-    req.session.destroy();
+    // Clear user data from request
+    req.user = null;
     
-    // Clear cookies
-    removeCookie(res, 'token');
-    removeCookie(res, 'refreshToken');
-
+    // Clear session
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Session destroy error:', err);
+        }
+      });
+    }
+    
+    // Clear all auth cookies
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    res.clearCookie('connect.sid', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    
+    // Send success response
     res.json({
       success: true,
-      message: 'Logged out successfully'
+      message: 'Logged out successfully',
+      clearStorage: true
     });
   } catch (error) {
     console.error('Logout error:', error);

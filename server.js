@@ -448,7 +448,7 @@ app.all('/logout', (req, res) => {
       });
     } else {
       // Redirect to home page
-      res.redirect('/users/home');
+      res.redirect('/user/home');
     }
   } catch (error) {
     console.error('Logout error:', error);
@@ -458,7 +458,7 @@ app.all('/logout', (req, res) => {
         message: 'An error occurred during logout'
       });
     } else {
-      res.redirect('/users/home');
+      res.redirect('/user/home');
     }
   }
 });
@@ -512,10 +512,10 @@ app.get('/admin/logout', (req, res) => {
     });
     
     // Redirect to home page
-    res.redirect('/users/home');
+    res.redirect('/user/home');
   } catch (error) {
     console.error('Admin logout error:', error);
-    res.redirect('/users/home');
+    res.redirect('/user/home');
   }
 });
 

@@ -223,7 +223,7 @@
             } else {
               // Show error message
               const errorPopup = document.getElementById('login-message-error-popup');
-              errorPopup.querySelector('h2').textContent = data.message || 'An error occurred';
+              errorPopup.querySelector('h2').textContent = 'An error occurred. Please login to continue.';
               errorPopup.style.display = 'flex';
               
               // Hide error message after 3 seconds

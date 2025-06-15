@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= user?.Name || 'User' %> | Account Details</title>
+    <link rel="icon" type="image/x-icon" href="/Assets/Images/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/Account-Details.css">
@@ -25,14 +25,38 @@
    
     <div class="account-container">
         <div class="sidebar">
-            <div class="sidebar-item active" data-tab="personal-info"><i class="fas fa-user"></i> Personal Information</div>
-            <div class="sidebar-item" data-tab="addresses"><i class="fas fa-map-marker-alt"></i> My Addresses</div>
-            <div class="sidebar-item" data-tab="orders"><i class="fas fa-box"></i> My Orders</div>
-            <div class="sidebar-item" data-tab="wishlist"><i class="fas fa-heart"></i> My Wishlist</div>
-            <div class="sidebar-item" data-tab="refunds"><i class="fas fa-undo"></i> My Refunds</div>
-            <div class="sidebar-item" data-tab="payment-methods"><i class="fas fa-credit-card"></i> Payment Methods</div>
-            <div class="sidebar-item" data-tab="reviews"><i class="fas fa-star"></i> My Reviews</div>
-            <div class="sidebar-item" data-tab="logout"><i class="fas fa-sign-out-alt"></i> Logout</div>
+            <div class="sidebar-item active" data-tab="personal-info">
+                <i class="fas fa-user"></i>
+                <span>Personal Information</span>
+            </div>
+            <div class="sidebar-item" data-tab="addresses">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>My Addresses</span>
+            </div>
+            <div class="sidebar-item" data-tab="orders">
+                <i class="fas fa-box"></i>
+                <span>My Orders</span>
+            </div>
+            <div class="sidebar-item" data-tab="wishlist">
+                <i class="fas fa-heart"></i>
+                <span>My Wishlist</span>
+            </div>
+            <div class="sidebar-item" data-tab="refunds">
+                <i class="fas fa-undo"></i>
+                <span>My Refunds</span>
+            </div>
+            <div class="sidebar-item" data-tab="payment-methods">
+                <i class="fas fa-credit-card"></i>
+                <span>Payment Methods</span>
+            </div>
+            <div class="sidebar-item" data-tab="reviews">
+                <i class="fas fa-star"></i>
+                <span>My Reviews</span>
+            </div>
+            <div class="sidebar-item" data-tab="logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
         </div>
         
         <div class="main-content">
@@ -64,13 +88,13 @@
                     <label class="form-label">Phone Number</label>
                     <div class="phone-input-container">
                         <select id="countrySelect" class="country-select">
-                            <!-- Options populated by JavaScript -->
+                            <option value="20">+20 (Egypt)</option>
+                            <option value="1">+1 (USA/Canada)</option>
+                            <option value="44">+44 (UK)</option>
+                            <option value="971">+971 (UAE)</option>
+                            <option value="966">+966 (Saudi Arabia)</option>
                         </select>
                         <input id="phoneNumber" type="tel" value="<%= user?.phone_number || '' %>" placeholder="Enter your phone number">
-                        <!-- Debug info -->
-                        <script>
-                            console.log('Phone number:', '<%= user?.phone_number || "" %>');
-                        </script>
                     </div>
                 </div>
     
@@ -134,28 +158,22 @@
                         <% user.orders.forEach(order => { %>
                             <div class="order-card" data-order-id="<%= order.orderId %>">
                                 <div class="order-header">
-                                    <div class="order-id">Order #<%= order.orderId %></div>
+                                    <div class="order-id">Order #<%= order.orderNumber %></div>
                                     <div class="order-date">Placed on <%= new Date(order.orderDate).toLocaleDateString() %></div>
-                                    <div class="order-status <%= order.status.toLowerCase() %>"><%= order.status %></div>
-                                    <div class="order-total">$<%= order.total.toFixed(2) %></div>
+                                    <div class="order-status <%= order.status %>"><%= order.status %></div>
+                                    <div class="order-total">$<%= order.total %></div>
                                 </div>
                                 <div class="order-products">
                                     <% if (order.items && order.items.length > 0) { %>
                                         <% order.items.forEach(item => { %>
                                             <div class="order-product-detail">
-                                                <img src="${item.productDetails.image}" alt="${item.productDetails.name}">
+                                                <img src="<%= item.product && item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" 
+                                                     alt="<%= item.product && item.product.name ? item.product.name : 'Product' %>">
                                                 <div>
-                                                    <h5>${item.productDetails.name}</h5>
-                                                    <p>Brand: ${item.productDetails.brand}</p>
-                                                    <p>Movement: ${item.productDetails.movement}</p>
-                                                    <p>Case Material: ${item.productDetails.caseMaterial}</p>
-                                                    <p>Strap Material: ${item.productDetails.strapMaterial}</p>
-                                                    <p>Water Resistance: ${item.productDetails.waterResistance}</p>
-                                                    <p>Dial Color: ${item.productDetails.dialColor}</p>
-                                                    <p>Gender: ${item.productDetails.gender}</p>
-                                                    <p>Collection: ${item.productDetails.Vcollection}</p>
-                                                    <p>Qty: ${item.quantity}</p>
-                                                    <p>Price: $${item.price.toFixed(2)}</p>
+                                                    <h5><%= item.product && item.product.name %></h5>
+                                                    <p>Brand: <%= item.productDetails && item.productDetails.brand ? item.productDetails.brand : 'N/A' %></p>
+                                                    <p>Qty: <%= item.quantity %></p>
+                                                    <p>Price: $<%= item.price ? item.price.toFixed(2) : '0.00' %></p>
                                                 </div>
                                             </div>
                                         <% }); %>
@@ -167,8 +185,7 @@
                                     <% } else if (order.status === 'Delivered') { %>
                                         <button class="buy-again">Buy Again</button>
                                     <% } %>
-                                    <button class="order-details">View Details</button>
-                                    <button class="request-refund" data-order-id="<%= order.orderId %>">Request Refund</button>
+                                    <button class="order-details" data-order-id="<%= order.orderId %>">View Details</button>
                                 </div>
                             </div>
                         <% }); %>
@@ -187,35 +204,35 @@
                 <div class="wishlist-grid" id="wishlistGrid">
                     <% if (wishlistItems && wishlistItems.length > 0) { %>
                         <% wishlistItems.forEach(product => { %>
-                                <div class="product-card" data-product-id="<%= product._id %>">
-                                    <div class="product-image-container">
-                                        <div class="wishlist-icon remove-item" data-product-id="<%= product._id %>">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                            </svg>
-                                        </div>
-                                        <a href="/user/product?id=<%- product._id %>">
-                                            <img src="<%= product.image ? (product.image.startsWith('/') ? product.image : `/Assets/Images/Watches/${product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" alt="<%- product.name %>" loading="lazy">
-                                        </a>
-                                        <div class="hover-buttons">
-                                            <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
-                                            <button class="compare" data-product-id="<%= product._id %>">Compare</button>
-                                        </div>
+                            <div class="product-card" data-product-id="<%= product._id %>">
+                                <div class="product-image-container">
+                                    <div class="wishlist-icon remove-item" data-product-id="<%= product._id %>">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                        </svg>
                                     </div>
-                                    <div class="product-details">
-                                        <h4><%- product.name %></h4>
-                                        <div class="product-meta">
-                                            <p class="price">€ <%= (product.price || 0).toLocaleString() %></p>
-                                        </div>
-                                        <div class="product-status">
-                                            <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
-                                                <p class="stock in-stock">In Stock</p>
-                                            <% } else { %>
-                                                <p class="stock out-of-stock">Out of Stock</p>
-                                            <% } %>
-                                        </div>
+                                    <a href="/user/product?id=<%- product._id %>">
+                                        <img src="<%= product.image ? (product.image.startsWith('/') ? product.image : `/Assets/Images/Watches/${product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" alt="<%- product.name %>" loading="lazy">
+                                    </a>
+                                    <div class="hover-buttons">
+                                        <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
+                                        <button class="compare" data-product-id="<%= product._id %>">Compare</button>
                                     </div>
                                 </div>
+                                <div class="product-details">
+                                    <h4><%- product.name %></h4>
+                                    <div class="product-meta">
+                                        <p class="price">$ <%= (product.price || 0).toLocaleString() %></p>
+                                    </div>
+                                    <div class="product-status">
+                                        <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
+                                            <p class="stock in-stock">In Stock</p>
+                                        <% } else { %>
+                                            <p class="stock out-of-stock">Out of Stock</p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
                         <% }); %>
                     <% } else { %>
                         <div class="empty-wishlist">
@@ -366,47 +383,51 @@
     <div id="quickViewModal" class="quick-view-modal">
         <button class="close-btn" id="closeQuickView">✖</button>
         <div class="quick-view-content">
-            <section class="product-gallery">
-                <div class="all_image">
-                    <div class="main-image">
-                        <img id="quickViewMainImage" alt="Product Image">
+            <% if (user?.wishlist && user.wishlist.length > 0) { %>
+                <% user.wishlist.filter(item => item.product).forEach(item => { %>
+                    <div class="product-quick-view" id="quickView-<%= item.product._id %>" style="display: none;">
+                        <section class="product-gallery">
+                            <div class="all_image">
+                                <div class="main-image">
+                                    <img src="<%= item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" 
+                                         alt="<%= item.product.name %>">
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <div class="product-info">
+                            <div class="product-header">
+                                <h1><%= item.product.name %></h1>
+                                <div class="product-meta">
+                                    <div class="price-qv">$ <%= (item.product.price || 0).toLocaleString() %></div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-actions">
+                                <button class="wishlist-btn filled" data-product-id="<%= item.product._id %>">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="add-to-cart" data-product-id="<%= item.product._id %>">
+                                    <i class="fas fa-shopping-bag"></i> Add to Cart
+                                </button>
+                                <button class="find-store">
+                                    <i class="fas fa-map-marker-alt"></i> View 3D Model
+                                </button>
+                            </div>
+                            
+                            <div class="product-description">
+                                <p><%= item.product.description || 'No description available' %></p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="thumbnail-container" id="thumbnailContainer">
-                        <!-- Thumbnails will be populated here -->
-                    </div>
-                </div>
-            </section>
-            
-            <div class="product-info">
-                <div class="product-header">
-                    <h1 id="quickViewProductName"></h1>
-                    <div class="product-meta">
-                        <div class="price-qv" id="quickViewPrice"></div>
-                    </div>
-                </div>
-                
-                <div class="product-actions">
-                    <button class="wishlist-btn" id="quickViewWishlistBtn">
-                        <i class="far fa-heart"></i>
-                    </button>
-                    <button class="add-to-cart" id="quickViewAddToCart">
-                        <i class="fas fa-shopping-bag"></i> Add to Cart
-                    </button>
-                    <button class="find-store">
-                        <i class="fas fa-map-marker-alt"></i> View 3D Model
-                    </button>
-                </div>
-                
-                <div class="product-description">
-                    <p id="quickViewDescription"></p>
-                </div>
-            </div>
+                <% }); %>
+            <% } %>
         </div>
     </div>
     <div id="quickViewOverlay" class="quick-view-overlay"></div>
 
     <!-- Modals Section -->
-    <div id="modalsContainer" style="display: none;">
+    <div id="modalsContainer">
         <!-- Order Details Modal -->
         <div id="orderDetailsModal" class="modal-overlay">
             <div class="modal-container">
@@ -415,11 +436,49 @@
                     <button class="close-modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <!-- Content will be dynamically populated -->
+                    <% if (user?.orders && user.orders.length > 0) { %>
+                        <% user.orders.forEach(order => { %>
+                            <div class="order-details-content" id="orderDetails-<%= order.orderId %>" style="display: none;">
+                                <div class="order-info">
+                                    <h4>Order Information</h4>
+                                    <p><strong>Order Number:</strong> <%= order.orderNumber %></p>
+                                    <p><strong>Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
+                                    <p><strong>Status:</strong> <span class="status <%= order.status.toLowerCase() %>"><%= order.status %></span></p>
+                                    <p><strong>Total:</strong> $<%= order.total %></p>
+                                </div>
+                                
+                                <div class="shipping-info">
+                                    <h4>Shipping Information</h4>
+                                    <p><strong>Address:</strong> <%= order.shippingAddress?.street || 'N/A' %></p>
+                                    <p><strong>City:</strong> <%= order.shippingAddress?.city || 'N/A' %></p>
+                                    <p><strong>State:</strong> <%= order.shippingAddress?.state || 'N/A' %></p>
+                                    <p><strong>Country:</strong> <%= order.shippingAddress?.country || 'N/A' %></p>
+                                </div>
+                                
+                                <div class="order-items">
+                                    <h4>Order Items</h4>
+                                    <% if (order.items && order.items.length > 0) { %>
+                                        <% order.items.forEach(item => { %>
+                                            <div class="order-item">
+                                                <img src="<%= item.product && item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" 
+                                                     alt="<%= item.product && item.product.name ? item.product.name : 'Product' %>">
+                                                <div class="item-details">
+                                                    <h5><%= item.product && item.product.name %></h5>
+                                                    <p>Brand: <%= item.productDetails && item.productDetails.brand ? item.productDetails.brand : 'N/A' %></p>
+                                                    <p>Qty: <%= item.quantity %></p>
+                                                    <p>Price: $<%= item.price ? item.price.toFixed(2) : '0.00' %></p>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } %>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="cancel-btn">Close</button>
-                    <button type="button" class="track-order-btn">Track Order</button>
+                    <button type="button" class="track-order-btn" style="display: none;">Track Order</button>
                 </div>
             </div>
         </div>
@@ -452,691 +511,14 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="cancel-btn">Close</button>
-                    <button type="button" class="cancel-request-btn">Cancel Request</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Refund Request Modal -->
-        <div id="refundRequestModal" class="modal-overlay">
-            <div class="modal-container">
-                <div class="modal-header">
-                    <h3>Request Refund</h3>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <form id="refundRequestForm">
-                        <input type="hidden" id="refundOrderId" name="orderId">
-                        <div class="form-group">
-                            <label for="refundReason">Reason for Refund</label>
-                            <select id="refundReason" name="reason" required>
-                                <option value="">Select a reason</option>
-                                <option value="Product not as described">Product not as described</option>
-                                <option value="Product damaged">Product damaged</option>
-                                <option value="Wrong item received">Wrong item received</option>
-                                <option value="Quality issues">Quality issues</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="otherReasonGroup" style="display: none;">
-                            <label for="otherReason">Please specify</label>
-                            <textarea id="otherReason" name="otherReason" rows="3"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="refundDetails">Additional Details</label>
-                            <textarea id="refundDetails" name="details" rows="4" placeholder="Please provide any additional information that will help us process your refund"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="cancel-btn">Cancel</button>
-                    <button type="button" class="submit-refund-btn">Submit Request</button>
+                    <button type="button" class="cancel-request-btn" style="display: none;">Cancel Request</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize modal elements
-            const quickViewModal = document.getElementById('quickViewModal');
-            const quickViewOverlay = document.getElementById('quickViewOverlay');
-            const closeQuickViewBtn = document.getElementById('closeQuickView');
-            const wishlistGrid = document.getElementById('wishlistGrid');
-            const loadingSpinner = document.querySelector('.wishlist-loading');
-            const userData = JSON.parse(document.getElementById('userData').textContent);
-            const wishlistData = JSON.parse(document.getElementById('wishlistData').textContent);
-
-            console.log(userData);
-            console.log(wishlistData);
-
-            // Function to show modal
-            function showModal(modalId) {
-                console.log('Showing modal:', modalId);
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.classList.add('show');
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    console.error('Modal not found:', modalId);
-                }
-            }
-
-            // Function to hide modal
-            function hideModal(modalId) {
-                console.log('Hiding modal:', modalId);
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.classList.remove('show');
-                    document.body.style.overflow = '';
-                }
-            }
-
-            // Initialize modals container
-            const modalsContainer = document.getElementById('modalsContainer');
-            if (modalsContainer) {
-                modalsContainer.style.display = 'block';
-            }
-
-            // Close modal when clicking the close button
-            document.querySelectorAll('.close-modal, .cancel-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const modal = this.closest('.modal-overlay');
-                    if (modal) {
-                        hideModal(modal.id);
-                    }
-                });
-            });
-
-            // Close modal when clicking outside
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        hideModal(this.id);
-                    }
-                });
-            });
-
-            // Close modal when pressing Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    document.querySelectorAll('.modal-overlay.show').forEach(modal => {
-                        hideModal(modal.id);
-                    });
-                }
-            });
-
-            // Order Details button click handler
-            document.querySelectorAll('.order-details').forEach(button => {
-                button.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const orderCard = this.closest('.order-card');
-                    if (!orderCard) {
-                        console.error('Order card not found');
-                        return;
-                    }
-                    
-                    const orderId = orderCard.dataset.orderId;
-                    if (!orderId) {
-                        console.error('Order ID not found in data attributes');
-                        showNotification('Order ID is missing', 'error');
-                        return;
-                    }
-                    
-                    console.log('Order details button clicked for order:', orderId);
-                    
-                    try {
-                        const response = await fetch(`/user/orders/${orderId}`);
-                        if (!response.ok) {
-                            throw new Error('Failed to fetch order details');
-                        }
-                        
-                        const data = await response.json();
-                        if (!data.success) {
-                            throw new Error(data.message || 'Failed to load order details');
-                        }
-
-                        const order = data.data;
-                        if (!order) {
-                            throw new Error('Order not found');
-                        }
-
-                        // Create order details content
-                        const content = `
-                            <div class="order-info">
-                                <h4>Order #${order._id}</h4>
-                                <p><strong>Status:</strong> <span class="status-${order.status.toLowerCase()}">${order.status}</span></p>
-                                <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
-                                <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery || 'Not available'}</p>
-                            </div>
-                            
-                            <div class="order-summary">
-                                <h5>Order Summary</h5>
-                                <div class="summary-grid">
-                                    <div><strong>Subtotal:</strong></div>
-                                    <div>$${order.total.toFixed(2)}</div>
-                                    <div><strong>Shipping:</strong></div>
-                                    <div>$${order.shippingCost?.toFixed(2) || '0.00'}</div>
-                                    <div><strong>Tax:</strong></div>
-                                    <div>$${order.tax?.toFixed(2) || '0.00'}</div>
-                                    <div><strong>Total:</strong></div>
-                                    <div>$${order.total.toFixed(2)}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="order-products">
-                                <h5>Products</h5>
-                                ${order.items.map(item => `
-                                    <div class="order-product-detail">
-                                        <img src="${item.productDetails.image}" alt="${item.productDetails.name}">
-                                        <div>
-                                            <h5>${item.productDetails.name}</h5>
-                                            <p>Brand: ${item.productDetails.brand}</p>
-                                            <p>Movement: ${item.productDetails.movement}</p>
-                                            <p>Case Material: ${item.productDetails.caseMaterial}</p>
-                                            <p>Strap Material: ${item.productDetails.strapMaterial}</p>
-                                            <p>Water Resistance: ${item.productDetails.waterResistance}</p>
-                                            <p>Dial Color: ${item.productDetails.dialColor}</p>
-                                            <p>Gender: ${item.productDetails.gender}</p>
-                                            <p>Collection: ${item.productDetails.Vcollection}</p>
-                                            <p>Qty: ${item.quantity}</p>
-                                            <p>Price: $${item.price.toFixed(2)}</p>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            
-                            <div class="shipping-details">
-                                <h5>Shipping Details</h5>
-                                <p><strong>Name:</strong> ${order.shipping?.name || 'N/A'}</p>
-                                <p><strong>Address:</strong> ${order.shipping?.address || 'N/A'}</p>
-                                <p><strong>City:</strong> ${order.shipping?.city || 'N/A'}</p>
-                                <p><strong>State:</strong> ${order.shipping?.state || 'N/A'}</p>
-                                <p><strong>ZIP Code:</strong> ${order.shipping?.zipCode || 'N/A'}</p>
-                            </div>
-                            
-                            <div class="payment-details">
-                                <h5>Payment Details</h5>
-                                <p><strong>Payment Method:</strong> <span class="payment-method">
-                                    <i class="fab fa-cc-${order.payment?.bankName?.toLowerCase() || 'credit-card'}"></i> 
-                                    ${order.payment?.bankName || 'Credit Card'} ending in ${order.payment?.cardNumber || '****'}
-                                </span></p>
-                                <p><strong>Cardholder:</strong> ${order.payment?.name || 'N/A'}</p>
-                                <p><strong>Expiry:</strong> ${order.payment?.expiry || 'N/A'}</p>
-                            </div>
-                        `;
-
-                        // Update modal content and show it
-                        const modalBody = document.querySelector('#orderDetailsModal .modal-body');
-                        if (modalBody) {
-                            modalBody.innerHTML = content;
-                            showModal('orderDetailsModal');
-                        } else {
-                            console.error('Modal body not found');
-                        }
-                    } catch (error) {
-                        console.error('Error loading order details:', error);
-                        showNotification(error.message || 'Failed to load order details', 'error');
-                    }
-                });
-            });
-
-            // Track Order button click handler
-            document.querySelectorAll('.track-order').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const orderId = this.closest('.order-card').dataset.orderId;
-                    console.log('Track order button clicked for order:', orderId);
-                    
-                    // Find the order in the user's orders
-                    const order = userData.orders.find(o => o._id === orderId);
-                    if (!order) {
-                        console.error('Order not found:', orderId);
-                        return;
-                    }
-
-                    // Create tracking content
-                    const content = `
-                        <h4>Order #${order._id} - Tracking Information</h4>
-                        
-                        <div class="tracking-progress">
-                            <div class="tracking-step ${order.status === 'Placed' ? 'completed' : ''}">
-                                <div class="step-icon"><i class="fas fa-check"></i></div>
-                                <div class="step-label">Order Placed</div>
-                                <div class="step-date">${new Date(order.createdAt).toLocaleDateString()}</div>
-                            </div>
-                            <div class="tracking-step ${order.status === 'Processing' ? 'completed' : ''}">
-                                <div class="step-icon"><i class="fas fa-check"></i></div>
-                                <div class="step-label">Processing</div>
-                                <div class="step-date">${order.processingDate ? new Date(order.processingDate).toLocaleDateString() : ''}</div>
-                            </div>
-                            <div class="tracking-step ${order.status === 'Shipped' ? 'active' : ''}">
-                                <div class="step-icon"><i class="fas fa-truck"></i></div>
-                                <div class="step-label">Shipped</div>
-                                <div class="step-date">${order.shippingDate ? new Date(order.shippingDate).toLocaleDateString() : ''}</div>
-                            </div>
-                            <div class="tracking-step ${order.status === 'Delivered' ? 'completed' : ''}">
-                                <div class="step-icon"><i class="fas fa-home"></i></div>
-                                <div class="step-label">Delivered</div>
-                                <div class="step-date">${order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : ''}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="tracking-details">
-                            <h4>Shipping Details</h4>
-                            <div><strong>Carrier:</strong></div>
-                            <div>${order.shipping?.carrier || 'Standard Shipping'}</div>
-                            <div><strong>Tracking Number:</strong></div>
-                            <div>${order.shipping?.trackingNumber || 'Not available'}</div>
-                            <div><strong>Shipped From:</strong></div>
-                            <div>${order.shipping?.origin || 'Our Warehouse'}</div>
-                            <div><strong>Destination:</strong></div>
-                            <div>${order.shipping?.address}, ${order.shipping?.city}, ${order.shipping?.state} ${order.shipping?.zipCode}</div>
-                            <div><strong>Last Update:</strong></div>
-                            <div>${order.shipping?.lastUpdate ? new Date(order.shipping.lastUpdate).toLocaleDateString() : 'N/A'}</div>
-                            <div><strong>Status:</strong></div>
-                            <div>${order.shipping?.status || order.status}</div>
-                        </div>
-                    `;
-
-                    // Update modal content and show it
-                    const modalBody = document.querySelector('#trackingModal .modal-body');
-                    if (modalBody) {
-                        modalBody.innerHTML = content;
-                        showModal('trackingModal');
-                    } else {
-                        console.error('Modal body not found');
-                    }
-                });
-            });
-
-            // Refund Details button click handler
-            document.querySelectorAll('.view-details').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const refundId = this.closest('.refund-card').dataset.refundId;
-                    console.log('Refund details button clicked for refund:', refundId);
-                    
-                    // Find the refund in the user's refunds
-                    const refund = userData.refunds.find(r => r._id === refundId);
-                    if (!refund) {
-                        console.error('Refund not found:', refundId);
-                        return;
-                    }
-
-                    // Create refund details content
-                    const content = `
-                        <h4>Refund #${refund.refundId}</h4>
-                        <p><strong>Status:</strong> <span class="status-${refund.status.toLowerCase()}">${refund.status}</span></p>
-                        <p><strong>Order:</strong> #${refund.order?.orderId} - ${refund.order?.items?.[0]?.product?.name || 'Product'}</p>
-                        <p><strong>Request Date:</strong> ${new Date(refund.requestDate).toLocaleDateString()}</p>
-                        ${refund.status === 'Completed' ? `
-                            <p><strong>Processed Date:</strong> ${new Date(refund.processedDate).toLocaleDateString()}</p>
-                        ` : ''}
-                        
-                        <h5 style="margin-top: 20px;">Refund Summary</h5>
-                        <div class="refund-summary">
-                            <div><strong>Product Amount:</strong></div>
-                            <div>$${refund.amount?.toFixed(2) || '0.00'}</div>
-                            <div><strong>Shipping Fee:</strong></div>
-                            <div>$${refund.shippingFee?.toFixed(2) || '0.00'}</div>
-                            <div><strong>Tax:</strong></div>
-                            <div>$${refund.tax?.toFixed(2) || '0.00'}</div>
-                            <div><strong>Total Refund:</strong></div>
-                            <div>$${refund.total?.toFixed(2) || '0.00'}</div>
-                        </div>
-                        
-                        <h5 style="margin-top: 20px;">Reason</h5>
-                        <p>${refund.reason || 'No reason provided'}</p>
-                        
-                        <h5 style="margin-top: 20px;">Additional Notes</h5>
-                        <div class="refund-note">
-                            <i class="fas fa-info-circle"></i>
-                            <p>
-                                ${refund.status === 'Completed' 
-                                    ? 'Your refund has been processed and the amount has been credited back to your original payment method. Please allow 3-5 business days for the amount to reflect in your account.'
-                                    : 'Your refund request is being processed. We will notify you once it has been completed.'}
-                            </p>
-                        </div>
-                        
-                        ${refund.status !== 'Completed' ? `
-                            <h5 style="margin-top: 20px;">Next Steps</h5>
-                            <p>Please ship the item back to us using the provided return label. Once we receive the item, we will process your refund.</p>
-                        ` : ''}
-                    `;
-
-                    // Update modal content and show it
-                    const modalBody = document.querySelector('#refundDetailsModal .modal-body');
-                    if (modalBody) {
-                        modalBody.innerHTML = content;
-                        showModal('refundDetailsModal');
-                    } else {
-                        console.error('Modal body not found');
-                    }
-                });
-            });
-
-            // Function to show loading state
-            function showLoading() {
-                loadingSpinner.style.display = 'flex';
-            }
-
-            // Function to hide loading state
-            function hideLoading() {
-                loadingSpinner.style.display = 'none';
-            }
-
-            // Function to show notification
-            function showNotification(message, type = 'success') {
-                const notification = document.createElement('div');
-                notification.className = `notification ${type}`;
-                notification.textContent = message;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
-            }
-
-            // Handle remove from wishlist
-            document.querySelectorAll('.remove-item').forEach(button => {
-                button.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    const productId = this.dataset.productId;
-                    const productCard = this.closest('.product-card');
-
-                    if (!productId) {
-                        showNotification('Invalid product ID', 'error');
-                        return;
-                    }
-
-                    try {
-                        showLoading();
-                        const response = await fetch('/user/wishlist/toggle', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ productId })
-                        });
-
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-
-                        const data = await response.json();
-
-                        if (data.success) {
-                            // Add fade out animation
-                            productCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                            productCard.style.opacity = '0';
-                            productCard.style.transform = 'translateY(10px)';
-
-                            // Remove the card after animation
-                            setTimeout(() => {
-                                productCard.remove();
-                                showNotification('Product removed from wishlist', 'success');
-                                
-                                // If no items left, show empty state
-                                if (document.querySelectorAll('.product-card').length === 0) {
-                                    wishlistGrid.innerHTML = `
-                                        <div class="empty-wishlist">
-                                            <i class="far fa-heart"></i>
-                                            <h2>Your wishlist is empty</h2>
-                                            <p>Start adding products to your wishlist by clicking the heart icon on any product.</p>
-                                            <a href="/user/products" class="browse-products-btn">Browse Products</a>
-                                        </div>
-                                    `;
-                                }
-                            }, 300);
-                        } else {
-                            throw new Error(data.message || 'Failed to remove from wishlist');
-                        }
-                    } catch (error) {
-                        console.error('Error removing from wishlist:', error);
-                        showNotification(error.message || 'Failed to remove from wishlist', 'error');
-                    } finally {
-                        hideLoading();
-                    }
-                });
-            });
-
-            // Function to show the quick view modal
-            function showQuickView(product) {
-                // Populate modal content
-                document.getElementById('quickViewMainImage').src = product.image ? (product.image.startsWith('/') ? product.image : `/Assets/Images/Watches/${product.image}`) : '/Assets/Images/product-placeholder.jpg';
-                document.getElementById('quickViewMainImage').alt = product.name;
-                document.getElementById('quickViewProductName').textContent = product.name;
-                document.getElementById('quickViewPrice').textContent = `€${(product.price || 0).toLocaleString()}`;
-                document.getElementById('quickViewDescription').textContent = product.description || 'No description available';
-                document.getElementById('quickViewWishlistBtn').dataset.productId = product._id;
-                document.getElementById('quickViewAddToCart').dataset.productId = product._id;
-
-                // Handle gallery images
-                const thumbnailContainer = document.getElementById('thumbnailContainer');
-                thumbnailContainer.innerHTML = ''; // Clear existing thumbnails
-
-                // Add main image as first thumbnail
-                const mainThumbnail = document.createElement('div');
-                mainThumbnail.className = 'thumbnail active';
-                mainThumbnail.innerHTML = `<img src="${product.image ? (product.image.startsWith('/') ? product.image : `/Assets/Images/Watches/${product.image}`) : '/Assets/Images/product-placeholder.jpg'}" alt="${product.name}">`;
-                mainThumbnail.addEventListener('click', () => {
-                    document.getElementById('quickViewMainImage').src = product.image ? (product.image.startsWith('/') ? product.image : `/Assets/Images/Watches/${product.image}`) : '/Assets/Images/product-placeholder.jpg';
-                    document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
-                    mainThumbnail.classList.add('active');
-                });
-                thumbnailContainer.appendChild(mainThumbnail);
-
-                // Add gallery images as thumbnails
-                if (product.galleryImages && product.galleryImages.length > 0) {
-                    product.galleryImages.forEach((galleryImage, index) => {
-                        const thumbnail = document.createElement('div');
-                        thumbnail.className = 'thumbnail';
-                        thumbnail.innerHTML = `<img src="${galleryImage.startsWith('/') ? galleryImage : `/Assets/Images/Watches/${galleryImage}`}" alt="${product.name} - Image ${index + 1}">`;
-                        thumbnail.addEventListener('click', () => {
-                            document.getElementById('quickViewMainImage').src = galleryImage.startsWith('/') ? galleryImage : `/Assets/Images/Watches/${galleryImage}`;
-                            document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
-                            thumbnail.classList.add('active');
-                        });
-                        thumbnailContainer.appendChild(thumbnail);
-                    });
-                }
-
-                // Initialize zoom functionality
-                const mainImage = document.getElementById('quickViewMainImage');
-                const mainImageContainer = mainImage.parentElement;
-                let isZoomed = false;
-                let originalTransform = '';
-
-                // Reset zoom state
-                mainImage.style.transform = 'scale(1)';
-                mainImage.style.cursor = 'zoom-in';
-                isZoomed = false;
-
-                // Zoom functionality
-                mainImageContainer.addEventListener('click', function(e) {
-                    if (!isZoomed) {
-                        // Zoom in
-                        const rect = this.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        
-                        // Calculate zoom center point
-                        const centerX = (x / rect.width) * 100;
-                        const centerY = (y / rect.height) * 100;
-                        
-                        mainImage.style.transform = `scale(2)`;
-                        mainImage.style.transformOrigin = `${centerX}% ${centerY}%`;
-                        this.style.cursor = 'zoom-out';
-                        isZoomed = true;
-                    } else {
-                        // Zoom out
-                        mainImage.style.transform = 'scale(1)';
-                        mainImage.style.transformOrigin = 'center';
-                        this.style.cursor = 'zoom-in';
-                        isZoomed = false;
-                    }
-                });
-
-                // Pan functionality when zoomed
-                mainImageContainer.addEventListener('mousemove', function(e) {
-                    if (!isZoomed) return;
-
-                    const rect = this.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    // Calculate the maximum translation values
-                    const maxX = (mainImage.offsetWidth * 2 - mainImageContainer.offsetWidth) / 2;
-                    const maxY = (mainImage.offsetHeight * 2 - mainImageContainer.offsetHeight) / 2;
-
-                    // Calculate new translation values based on mouse position
-                    const translateX = Math.max(-maxX, Math.min(maxX, (x - rect.width / 2) * 2));
-                    const translateY = Math.max(-maxY, Math.min(maxY, (y - rect.height / 2) * 2));
-
-                    // Apply the translation
-                    mainImage.style.transform = `scale(2) translate(${translateX}px, ${translateY}px)`;
-                });
-
-                // Reset zoom on thumbnail click
-                document.querySelectorAll('.thumbnail').forEach(thumb => {
-                    thumb.addEventListener('click', () => {
-                        mainImage.style.transform = 'scale(1)';
-                        mainImage.style.transformOrigin = 'center';
-                        mainImageContainer.style.cursor = 'zoom-in';
-                        isZoomed = false;
-                    });
-                });
-
-                // Show modal and overlay
-                quickViewModal.style.display = 'block';
-                quickViewOverlay.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-
-                // Update wishlist button state
-                const wishlistBtn = document.getElementById('quickViewWishlistBtn');
-                if (wishlistBtn) {
-                    wishlistBtn.innerHTML = `<i class="${product.inWishlist ? 'fas' : 'far'} fa-heart"></i>`;
-                    wishlistBtn.classList.toggle('filled', product.inWishlist);
-                }
-            }
-
-            // Add click event listeners to all quick view buttons
-            document.querySelectorAll('.quick-view').forEach(button => {
-                button.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const productId = this.dataset.productId;
-                    
-                    try {
-                        showLoading();
-                        const response = await fetch(`/user/product?id=${productId}&format=json`);
-                        const data = await response.json();
-                        
-                        if (data.success && data.data.product) {
-                            showQuickView(data.data.product);
-                        } else {
-                            throw new Error('Failed to fetch product details');
-                        }
-                    } catch (error) {
-                        showNotification(error.message, 'error');
-                    } finally {
-                        hideLoading();
-                    }
-                });
-            });
-
-            // Close modal when clicking the close button or overlay
-            closeQuickViewBtn.addEventListener('click', function() {
-                quickViewModal.style.display = 'none';
-                quickViewOverlay.style.display = 'none';
-                document.body.style.overflow = '';
-            });
-
-            quickViewOverlay.addEventListener('click', function() {
-                quickViewModal.style.display = 'none';
-                quickViewOverlay.style.display = 'none';
-                document.body.style.overflow = '';
-            });
-
-            // Close modal when pressing Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && quickViewModal.style.display === 'block') {
-                    quickViewModal.style.display = 'none';
-                    quickViewOverlay.style.display = 'none';
-                    document.body.style.overflow = '';
-                }
-            });
-
-            // Handle add to cart in quick view
-            document.getElementById('quickViewAddToCart').addEventListener('click', async function() {
-                const productId = this.dataset.productId;
-                try {
-                    showLoading();
-                    const response = await fetch('/cart/add', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productId, quantity: 1 })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        showNotification('Product added to cart successfully');
-                        // Update cart count if element exists
-                        const cartCount = document.getElementById('cart-items-count');
-                        if (cartCount) {
-                            cartCount.textContent = data.cart.items.reduce((total, item) => total + (item.quantity || 1), 0);
-                        }
-                        quickViewModal.style.display = 'none';
-                        quickViewOverlay.style.display = 'none';
-                        document.body.style.overflow = '';
-                    } else {
-                        throw new Error(data.message || 'Failed to add to cart');
-                    }
-                } catch (error) {
-                    showNotification(error.message, 'error');
-                } finally {
-                    hideLoading();
-                }
-            });
-
-            // Handle wishlist toggle in quick view
-            document.getElementById('quickViewWishlistBtn').addEventListener('click', async function() {
-                const productId = this.dataset.productId;
-                try {
-                    showLoading();
-                    const response = await fetch('/user/wishlist/toggle', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productId })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        const isInWishlist = data.inWishlist;
-                        this.querySelector('i').className = isInWishlist ? 'fas fa-heart' : 'far fa-heart';
-                        this.classList.toggle('filled', isInWishlist);
-                        showNotification(isInWishlist ? 'Added to wishlist' : 'Removed from wishlist');
-                    } else {
-                        throw new Error(data.message || 'Failed to update wishlist');
-                    }
-                } catch (error) {
-                    showNotification(error.message, 'error');
-                } finally {
-                    hideLoading();
-                }
-            });
-        });
+        // All JavaScript functionality has been moved to Account-Details.js
     </script>
 
     <style>

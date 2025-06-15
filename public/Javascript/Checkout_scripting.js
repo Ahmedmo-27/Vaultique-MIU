@@ -198,6 +198,9 @@ function validatePaymentForm() {
   const cvvInput = document.getElementById('cvv');
   const expiryInput = document.getElementById('expiry');
 
+  if(isAuthenticated) return true;
+
+
   if (!nameInput || !cardNumberInput || !bankNameInput || !cvvInput || !expiryInput) {
     console.error('Required form elements not found');
     return false;
@@ -229,6 +232,17 @@ function validatePaymentForm() {
     return false;
   }
 
+  // Check if card is expired
+  const [month, year] = expiry.split('/').map(Number);
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear() % 100;
+  const currentMonth = currentDate.getMonth() + 1;
+
+  if (year < currentYear || (year === currentYear && month < currentMonth)) {
+    showErrorPopup('Card has expired');
+    return false;
+  }
+
   return true;
 }
 
@@ -241,7 +255,15 @@ async function handlePaymentSubmission(e) {
   }
 
   const nameInput = document.getElementById('name');
-  const cardNumberInput = document.getElementById('card-number');
+  let cardNumber = '';
+  // For authenticated users, get the hidden input by name
+  if (isAuthenticated) {
+    const hiddenCardInput = document.querySelector('input[name="card-number"]');
+    cardNumber = hiddenCardInput ? hiddenCardInput.value : '';
+  } else {
+    const cardNumberInput = document.getElementById('card-number');
+    cardNumber = cardNumberInput ? cardNumberInput.value.replace(/\s/g, '') : '';
+  }
   const bankNameInput = document.getElementById('bank-name');
   const cvvInput = document.getElementById('cvv');
   const expiryInput = document.getElementById('expiry');
@@ -254,14 +276,14 @@ async function handlePaymentSubmission(e) {
       submitButton.textContent = 'Processing...';
     }
 
-    const response = await fetch('/user/payment/process', {
+    const response = await fetch('/api/payment/process', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         name: nameInput.value.trim(),
-        card_number: cardNumberInput.value.replace(/\s/g, ''),
+        card_number: cardNumber,
         bank_name: bankNameInput.value.trim(),
         expiry: expiryInput.value.trim(),
         cvv: cvvInput.value.trim()

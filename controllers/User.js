@@ -8,6 +8,7 @@ const Order = require('../models/Orders');
 const { authenticateJWT } = require('../middleware/jwt');
 const Cart = require('../models/cart');
 const { generateOrderNumber } = require('../utils/orderUtils');
+const { sendOrderConfirmationEmail } = require('../utils/emailService');
 
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification') => {
@@ -19,7 +20,66 @@ const renderNotification = (res, type, message, title = 'Notification') => {
   });
 };
 
-//Collections Page
+// Public routes (no auth required)
+router.get('/product', async (req, res) => {
+  try {
+    const id = req.query.id;
+    if (!id) return res.redirect('/user/products');
+    res.redirect(`/user/products/${id}`);
+  } catch (error) {
+    console.error('Error redirecting to product:', error);
+    res.status(500).render('error', {
+      title: 'Error',
+      message: 'Failed to load product. Please try again later.',
+      type: 'error',
+      show: true
+    });
+  }
+});
+
+router.get('/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate('brand');
+    if (!product) {
+      return res.status(404).render('error', {
+        title: 'Product Not Found',
+        message: 'The requested product does not exist.',
+        type: 'error',
+        show: true
+      });
+    }
+
+    // Get wishlist status if user is logged in
+    let inWishlist = false;
+    if (req.user) {
+      const user = await User.findById(req.user._id).populate('wishlist');
+      inWishlist = user.wishlist.some(item => item.product && item.product._id.toString() === product._id.toString());
+    }
+
+    res.render('Product Page', {
+      title: product.name,
+      product: {
+        ...product.toObject(),
+        inWishlist
+      },
+      user: req.user || null
+    });
+  } catch (error) {
+    console.error('Error loading product detail:', error);
+    res.status(500).render('error', {
+      title: 'Error',
+      message: 'Failed to load product details. Please try again later.',
+      type: 'error',
+      show: true
+    });
+  }
+});
+
+// Protected routes (require auth)
+const protectedRoutes = express.Router();
+protectedRoutes.use(authenticateJWT);
+
+// Collections Page
 router.get('/Collections', async (req, res) => {
     try {
         // Get all collections
@@ -45,8 +105,6 @@ router.get('/Collections', async (req, res) => {
         renderNotification(res, 'error', 'Failed to load Collections Page. Please try again later.');
     }
 })
-
-
 
 // Brands Page Route with Custom Order
 router.get('/Brands', async (req, res) => {
@@ -230,7 +288,6 @@ router.get('/brands/:brandSlug', async (req, res) => {
     }
 });
 
-
 async function handleUserQuestion(userQuestion) {
   // 1. First check if it's a product-related question
   if (!isProductQuestion(userQuestion)) {
@@ -330,8 +387,6 @@ router.get('/Recommendation-System', async (req, res) => {
     renderNotification(res, 'error', 'Failed to load recommendation system page. Please try again later.');
   }
 });
-
-// Public routes (no auth required)
 
 // Login/Signup page
 router.get('/LoginSignup', (req, res) => {
@@ -685,163 +740,52 @@ router.get('/logout', (req, res) => {
   });
   
   // Redirect to login page
-  res.redirect('/LoginSignup');
+  res.redirect('/user/LoginSignup');
 });
 
-// Features that require authentication
-// Add a middleware for authenticated routes
-const authenticatedRoutes = express.Router();
-authenticatedRoutes.use(authenticateJWT);
-
-// GET /user/cart - View cart (robust, sync session to DB if needed)
+// Cart routes (public)
 router.get('/cart', async (req, res) => {
-  try {
-    console.log('Cart route - Initial session state:', {
-      hasSession: !!req.session,
-      sessionID: req.sessionID,
-      hasCart: !!req.session?.cart,
-      cartItems: req.session?.cart?.items,
-      itemsLength: req.session?.cart?.items?.length
-    });
-
-    // Initialize cart from DB if user is authenticated
-    if (req.user) {
-      console.log('User is authenticated, fetching cart from DB');
-      let userCart = await Cart.findOne({ userId: req.user._id });
-      
-      if (userCart) {
-        console.log('Found user cart in DB:', {
-          itemsLength: userCart.items.length,
-          subtotal: userCart.subtotal,
-          total: userCart.total
-        });
-        
-        // Update session cart with DB cart data
-        req.session.cart = {
-          items: userCart.items.map(item => ({
-            product: item.product.toString(),
-            productId: item.product.toString(),
-            name: item.name,
-            price: Number(item.price),
-            quantity: Number(item.quantity),
-            image: item.image
-          })),
-          shippingMethod: userCart.shippingMethod,
-          subtotal: userCart.subtotal,
-          shippingCost: userCart.shippingCost,
-          total: userCart.total,
-          lastUpdated: userCart.lastUpdated
-        };
-      } else {
-        console.log('No DB cart found, creating new cart');
-        // Create new cart in DB
-        userCart = new Cart({
-          userId: req.user._id,
-          items: [],
-          shippingMethod: 'standard',
-          subtotal: 0,
-          shippingCost: 20,
-          total: 20
-        });
-        await userCart.save();
-        
-        // Initialize session cart
-        req.session.cart = {
-          items: [],
-          shippingMethod: 'standard',
-          subtotal: 0,
-          shippingCost: 20,
-          total: 20,
-          lastUpdated: new Date()
-        };
-      }
-    } else {
-      // For non-authenticated users, initialize session cart if needed
-      if (!req.session.cart) {
-        console.log('No session cart found, creating new cart');
-        req.session.cart = {
-          items: [],
-          shippingMethod: 'standard',
-          subtotal: 0,
-          shippingCost: 20,
-          total: 20,
-          lastUpdated: new Date()
-        };
-      }
-    }
-
-    // Ensure cart items is an array
-    if (!Array.isArray(req.session.cart.items)) {
-      console.log('Cart items is not an array, resetting items');
-      req.session.cart.items = [];
-    }
-
-    // Ensure all items have proper structure
-    req.session.cart.items = req.session.cart.items.map(item => ({
-      ...item,
-      product: item.product || item.productId,
-      productId: item.productId || item.product,
-      price: Number(item.price),
-      quantity: Number(item.quantity)
-    }));
-
-    // Recalculate totals
-    req.session.cart.subtotal = req.session.cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    req.session.cart.shippingCost = req.session.cart.shippingMethod === 'fast' ? 40 : 20;
-    req.session.cart.total = req.session.cart.subtotal + req.session.cart.shippingCost;
-
-    // Save session
-    await new Promise((resolve, reject) => {
-      req.session.save((err) => {
-        if (err) {
-          console.error('Error saving session:', err);
-          reject(err);
-        } else {
-          console.log('Session saved successfully');
-          resolve();
+    try {
+        // Initialize cart from session
+        if (!req.session.cart) {
+            req.session.cart = {
+                items: [],
+                shippingMethod: 'standard',
+                subtotal: 0,
+                shippingCost: 20,
+                total: 20,
+                lastUpdated: new Date()
+            };
         }
-      });
-    });
 
-    // If user is authenticated, sync session cart to DB
-    if (req.user) {
-      console.log('Syncing session cart to DB');
-      await Cart.findOneAndUpdate(
-        { userId: req.user._id },
-        {
-          items: req.session.cart.items,
-          shippingMethod: req.session.cart.shippingMethod,
-          subtotal: req.session.cart.subtotal,
-          shippingCost: req.session.cart.shippingCost,
-          total: req.session.cart.total,
-          lastUpdated: new Date()
-        },
-        { upsert: true, new: true }
-      );
+        // If user is authenticated, sync with DB cart
+        if (req.user) {
+            let userCart = await Cart.findOne({ userId: req.user._id });
+            if (userCart) {
+                req.session.cart = {
+                    items: userCart.items,
+                    shippingMethod: userCart.shippingMethod,
+                    subtotal: userCart.subtotal,
+                    shippingCost: userCart.shippingCost,
+                    total: userCart.total,
+                    lastUpdated: userCart.lastUpdated
+                };
+            }
+        }
+
+        res.render('cart', {
+            cart: req.session.cart,
+            isEmpty: !req.session.cart.items || req.session.cart.items.length === 0,
+            error: null,
+            user: req.user || null
+        });
+    } catch (error) {
+        console.error('Error viewing cart:', error);
+        res.status(500).render('error', {
+            message: 'An error occurred while loading your cart.',
+            error: error.message
+        });
     }
-
-    // Verify final session state
-    console.log('Cart route - Final session state:', {
-      hasSession: !!req.session,
-      sessionID: req.sessionID,
-      hasCart: !!req.session?.cart,
-      itemsLength: req.session?.cart?.items?.length,
-      subtotal: req.session?.cart?.subtotal,
-      total: req.session?.cart?.total
-    });
-
-    res.render('cart', {
-      cart: req.session.cart,
-      isEmpty: !req.session.cart.items || req.session.cart.items.length === 0,
-      error: null
-    });
-  } catch (error) {
-    console.error('Error viewing cart:', error);
-    res.status(500).render('error', {
-      message: 'An error occurred while loading your cart.',
-      error: error.message
-    });
-  }
 });
 
 // POST /user/cart/add - Add item to cart (DB for logged in, session for guests)
@@ -1221,62 +1165,57 @@ router.post('/cart/update-shipping', async (req, res) => {
   }
 });
 
-// Wishlist routes require auth
-authenticatedRoutes.get('/wishlist', async (req, res) => {
-  if (!req.user) {
-    return res.redirect('/user/LoginSignup');
-  }
-
-  try {
-    // Fetch user with populated wishlist items
-    const user = await User.findById(req.user._id)
-      .populate({
-        path: 'wishlist.product',
-        populate: [
-          { path: 'brand', select: 'name' },
-          { path: 'Vcollection', select: 'name' }
-        ]
-      });
-
-    if (!user) {
-      return res.redirect('/user/LoginSignup');
+// Wishlist routes (public with auth check)
+router.get('/wishlist', async (req, res) => {
+    if (!req.user) {
+        return res.render('wishlist', {
+            title: 'My Wishlist',
+            wishlistItems: [],
+            user: null,
+            type: 'info',
+            message: 'Please login to view your wishlist',
+            show: true
+        });
     }
 
-    // Transform wishlist items to include all necessary product data
-    const wishlistItems = user.wishlist.map(item => {
-      if (!item.product) return null;
-      return {
-        ...item.product.toObject(),
-        inWishlist: true
-      };
-    }).filter(Boolean); // Remove any null items
+    try {
+        const user = await User.findById(req.user._id)
+            .populate({
+                path: 'wishlist.product',
+                populate: [
+                    { path: 'brand', select: 'name' },
+                    { path: 'Vcollection', select: 'name' }
+                ]
+            });
 
-    // If it's an API request or format=json, return JSON
-    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
-      return res.json({
-        success: true,
-        data: {
-          wishlistItems
+        if (!user) {
+            return res.redirect('/user/LoginSignup');
         }
-      });
-    }
 
-    res.render('wishlist', {
-      title: 'My Wishlist',
-      wishlistItems,
-      user: req.user,
-      type: 'info',
-      message: '',
-      show: false
-    });
-  } catch (error) {
-    console.error('Error fetching wishlist:', error);
-    renderNotification(res, 'error', 'Failed to retrieve wishlist. Please try again later.', 'Error');
-  }
+        const wishlistItems = user.wishlist.map(item => {
+            if (!item.product) return null;
+            return {
+                ...item.product.toObject(),
+                inWishlist: true
+            };
+        }).filter(Boolean);
+
+        res.render('wishlist', {
+            title: 'My Wishlist',
+            wishlistItems,
+            user: req.user,
+            type: 'info',
+            message: '',
+            show: false
+        });
+    } catch (error) {
+        console.error('Error fetching wishlist:', error);
+        renderNotification(res, 'error', 'Failed to retrieve wishlist. Please try again later.', 'Error');
+    }
 });
 
 // Add wishlist toggle endpoint
-authenticatedRoutes.post('/wishlist/toggle', async (req, res) => {
+protectedRoutes.post('/wishlist/toggle', async (req, res) => {
   try {
     const { productId } = req.body;
     const user = await User.findById(req.user._id);
@@ -1308,100 +1247,87 @@ authenticatedRoutes.post('/wishlist/toggle', async (req, res) => {
 });
 
 // Account details page (protected route)
-router.get('/account-details', authenticateJWT, async (req, res) => {
-  try {
-    // If no user is found in the request, redirect to login
-    if (!req.user) {
-      return res.redirect('/user/LoginSignup');
-    }
-
-    // Fetch fresh user data with populated wishlist items and orders
-    const user = await User.findById(req.user._id)
-      .select('-password +phone_number')
-      .populate({
-        path: 'wishlist.product',
-        populate: [
-          { path: 'brand', select: 'name' },
-          { path: 'Vcollection', select: 'name' }
-        ]
-      })
-      .populate({
-        path: 'orders.orderId',
-        model: 'Order',
-        populate: {
-          path: 'items.productId',
-          model: 'Product'
+protectedRoutes.get('/account-details', async (req, res) => {
+    try {
+        // If no user is found in the request, redirect to login
+        if (!req.user) {
+            return res.redirect('/user/LoginSignup');
         }
-      })
-      .lean();
 
-    if (!user) {
-      return res.redirect('/user/LoginSignup');
-    }
+        // Fetch fresh user data with populated wishlist items and orders
+        const user = await User.findById(req.user._id)
+            .select('-password +phone_number')
+            .populate({
+                path: 'wishlist.product',
+                populate: [
+                    { path: 'brand', select: 'name' },
+                    { path: 'Vcollection', select: 'name' }
+                ]
+            })
+            .populate({
+                path: 'orders.orderId',
+                model: 'Order',
+                populate: {
+                    path: 'items.productId',
+                    model: 'Product'
+                }
+            })
+            .lean();
 
-    // Remove sensitive payment info
-    if (user.Payment) {
-      delete user.Payment.cardNumber;
-      delete user.Payment.cvv;
-    }
+        if (!user) {
+            return res.redirect('/user/LoginSignup');
+        }
 
-    // Transform orders to include all necessary data
-    if (user.orders) {
-      user.orders = user.orders.map(order => {
-        if (!order.orderId) return null;
-        const orderData = order.orderId;
-        return {
-          orderId: orderData._id.toString(),
-          orderNumber: orderData.orderNumber,
-          status: orderData.status,
-          orderDate: orderData.createdAt,
-          total: orderData.total,
-          shippingCost: orderData.shippingCost,
-          tax: orderData.tax,
-          items: orderData.items.map(item => {
-            // Skip items with null productId
-            if (!item.productId) return null;
-            return {
-              product: {
-                _id: item.productId._id,
-                name: item.productId.name,
-                image: item.productId.image,
-                price: item.price
-              },
-              quantity: item.quantity
-            };
-          }).filter(Boolean), // Remove any null items
-          shipping: orderData.shipping,
-          payment: orderData.payment
-        };
-      }).filter(Boolean); // Remove any null orders
-    }
+        // Remove sensitive payment info
+        if (user.Payment) {
+            delete user.Payment.cardNumber;
+            delete user.Payment.cvv;
+        }
 
-    // If it's an API request or format=json, return JSON
-    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
-      return res.json({
-        success: true,
-        data: user
-      });
-    }
+        // Transform orders to include all necessary data
+        if (user.orders) {
+            user.orders = user.orders.map(order => {
+                if (!order.orderId) return null;
+                const orderData = order.orderId;
+                return {
+                    orderId: orderData._id.toString(),
+                    orderNumber: orderData.orderNumber,
+                    status: orderData.status,
+                    orderDate: orderData.createdAt,
+                    total: orderData.total,
+                    shippingCost: orderData.shippingCost,
+                    tax: orderData.tax,
+                    items: orderData.items.map(item => {
+                        if (!item.productId) return null;
+                        return {
+                            product: {
+                                _id: item.productId._id,
+                                name: item.productId.name,
+                                image: item.productId.image,
+                                price: item.price
+                            },
+                            productDetails: item.productDetails,
+                            quantity: item.quantity,
+                            price: item.price
+                        };
+                    }).filter(Boolean),
+                    shipping: orderData.shipping,
+                    payment: orderData.payment
+                };
+            }).filter(Boolean);
+        }
 
-    res.render('Account-Details', {
-      title: 'Account Details',
-      user: user,
-      type: req.query.type || 'info',
-      message: req.query.message || '',
-      show: req.query.show === 'true'
-    });
-  } catch (error) {
-    console.error('Error fetching account details:', error);
-    if (req.query.format === 'json' || req.xhr || req.headers.accept?.includes('application/json')) {
-      return res.status(500).json({
-        success: false,
-        message: 'Error fetching account details'
-      });
+        res.render('Account-Details', {
+            title: 'Account Details',
+            user: user,
+            type: req.query.type || 'info',
+            message: req.query.message || '',
+            show: req.query.show === 'true'
+        });
+    } catch (error) {
+        console.error('Error fetching account details:', error);
+        res.redirect('/user/LoginSignup');
     }
-    res.redirect('/user/LoginSignup');
-  }
 });
 
 // Get order details by ID
@@ -1674,9 +1600,17 @@ router.get('/shipping', async (req, res) => {
     }
 });
 
-// Update shipping process route
-router.post('/shipping/process', async (req, res) => {
+// Protected order creation routes
+protectedRoutes.post('/shipping/process', async (req, res) => {
     try {
+        // Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Please login to complete your order'
+            });
+        }
+
         console.log('Processing shipping request:', {
             hasUser: !!req.user,
             hasSession: !!req.session,
@@ -1862,49 +1796,16 @@ router.post('/shipping/process', async (req, res) => {
     }
 });
 
-// Add review page route
-router.get('/review', async (req, res) => {
+protectedRoutes.post('/order-confirmation', async (req, res) => {
     try {
-        // Check if order info exists in session
-        if (!req.session.orderInfo) {
-            return res.redirect('/user/shipping');
+        // Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Please login to confirm your order'
+            });
         }
 
-        // Get order details
-        const order = await Order.findById(req.session.orderInfo.orderId)
-            .populate('items.productId')
-            .populate('shipping')
-            .populate('payment');
-
-        if (!order) {
-            return res.redirect('/user/shipping');
-        }
-
-        // Calculate order summary
-        const orderSummary = {
-            subtotal: order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-            shippingCost: 10, // Fixed shipping cost
-            total: 0
-        };
-        orderSummary.total = orderSummary.subtotal + orderSummary.shippingCost;
-
-        res.render('review', {
-            order,
-            orderSummary,
-            user: req.session.user || null
-        });
-    } catch (error) {
-        console.error('Error in review page:', error);
-        res.status(500).json({
-            success: false,
-            message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred while loading the review page'
-        });
-    }
-});
-
-// Add order confirmation route
-router.post('/order-confirmation', async (req, res) => {
-    try {
         // Check if order info exists in session
         if (!req.session.orderInfo) {
             return res.status(400).json({
@@ -1925,6 +1826,25 @@ router.post('/order-confirmation', async (req, res) => {
         // Update order status to confirmed
         order.status = 'confirmed';
         await order.save();
+
+        // Send order confirmation email
+        try {
+            const user = await User.findById(req.user._id);
+            if (user) {
+                await sendOrderConfirmationEmail(user, {
+                    orderNumber: order.orderNumber,
+                    date: order.createdAt.toLocaleDateString(),
+                    total: order.total.toFixed(2),
+                    items: order.items.map(item => ({
+                        name: item.productDetails.name,
+                        quantity: item.quantity
+                    }))
+                });
+            }
+        } catch (emailError) {
+            console.error('Error sending order confirmation email:', emailError);
+            // Continue with order confirmation even if email fails
+        }
 
         // Keep order info in session for success page
         const orderInfo = req.session.orderInfo;
@@ -1947,8 +1867,8 @@ router.post('/order-confirmation', async (req, res) => {
     }
 });
 
-// Add the authenticated routes
-router.use(authenticatedRoutes);
+// Add the protected routes
+router.use(protectedRoutes);
 
 router.get('/order-success', async (req, res) => {
     try {
@@ -1983,41 +1903,6 @@ router.get('/order-success', async (req, res) => {
             message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred while loading the order success page'
         });
     }
-});
-
-// Redirect /user/product?id=... to /user/products/:id
-router.get('/product', (req, res) => {
-  const id = req.query.id;
-  if (!id) return res.redirect('/user/products');
-  res.redirect(`/user/products/${id}`);
-});
-
-// Product detail page
-router.get('/products/:id', async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id).populate('brand');
-    if (!product) {
-      return res.status(404).render('error', {
-        title: 'Product Not Found',
-        message: 'The requested product does not exist.',
-        type: 'error',
-        show: true
-      });
-    }
-    res.render('Product Page', {
-      title: product.name,
-      product: product,
-      user: req.user || null
-    });
-  } catch (error) {
-    console.error('Error loading product detail:', error);
-    res.status(500).render('error', {
-      title: 'Error',
-      message: 'Failed to load product details. Please try again later.',
-      type: 'error',
-      show: true
-    });
-  }
 });
 
 // FAQ page route
@@ -2309,46 +2194,46 @@ router.get('/for-her', async (req, res) => {
             show: true
         });
     }
+});
+
     // Contact Us page route
 router.get('/contact-us', async (req, res) => {
   try {
-    // Pass flash messages to the template
-    const success = req.flash('success');
-    const error = req.flash('error');
-    
-    res.render('Contact-Us', {
+    res.render('contact-us', {
       title: 'Vaultique | Contact Us',
       user: req.user || null,
-      formData: req.flash('formData')[0] || {},
       notification: {
-        hasSuccess: success.length > 0,
-        success: success[0],
-        hasError: error.length > 0,
-        error: error[0]
+        hasError: false,
+        hasSuccess: false
       }
     });
   } catch (error) {
     console.error('Error loading contact page:', error);
-    req.flash('error', 'Failed to load contact page. Please try again later.');
-    res.redirect('/contact-us');
   }
 });
 
 router.get('/about-us', async (req, res) => {
     try {
-        res.render('/about', {  // Renders the aboutus.ejs file
+        res.render('about', {
             title: 'Vaultique | About Us',
             user: req.user || null,
-            // Add any other data you want to pass to the template
+            notification: {
+                hasError: false,
+                hasSuccess: false
+            }
         });
     } catch (error) {
         console.error('Error loading about page:', error);
-        // Handle error with flash message
-        req.flash('error', 'Failed to load about page. Please try again later.');
-        res.redirect('/');
+        res.render('about', {
+            title: 'Vaultique | About Us',
+            user: req.user || null,
+            notification: {
+                hasError: true,
+                error: 'Failed to load about page. Please try again later.',
+                hasSuccess: false
+            }
+        });
     }
-    });     
-  
-});
+  });       
 
 module.exports = router;
