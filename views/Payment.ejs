@@ -84,7 +84,7 @@
             id="name"
             placeholder="Your name and surname"
             value="<%= paymentInfo ? paymentInfo.name : '' %>"
-            required
+            <%= isAuthenticated && paymentInfo && paymentInfo.name ? 'disabled' : 'required' %>
           />
         </div>
         <div class="input-line">
@@ -107,7 +107,6 @@
           <% } %>
         </div>
 
-
         <div class="input-line">
           <label for="bank-name">BANK NAME</label>
           <input
@@ -116,7 +115,7 @@
             id="bank-name"
             placeholder="Your bank name"
             value="<%= paymentInfo ? paymentInfo.bank_name : '' %>"
-            required
+            <%= isAuthenticated && paymentInfo && paymentInfo.bank_name ? 'disabled' : 'required' %>
           />
         </div>
 
@@ -148,7 +147,7 @@
               value="<%= paymentInfo ? paymentInfo.expiry : '' %>"
               maxlength="5"
               class="expiry-input"
-              <%= isAuthenticated ? 'disabled' : 'required' %>
+              <%= isAuthenticated && paymentInfo && paymentInfo.expiry ? 'disabled' : 'required' %>
             />
             <p class="error" id="expiryError">
               Please enter a valid expiry date in MM/YY format
