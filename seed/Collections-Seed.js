@@ -17,14 +17,14 @@ const Collections = [
     featuredItems: [
       {
         name: 'Cartier Tank',
-        image: '/Assets/Images/Watches/Cartier Tank.webp',
+        image: '/Assets/Images/Watches/Cartier Tank Must.png',
         tagline: 'Classic design meets modern precision',
         description:
           'The Cartier Tank combines classic design elements with modern mechanical innovation, creating a timepiece that bridges past and present.',
       },
       {
         name: 'Patek Philippe Golden Ellipse',
-        image: '/Assets/Images/Watches/Patek Philippe Golden Ellipse.png',
+        image: '/Assets/Images/Watches/Patek Philippe Golden Ellipse Rose Gold.png',
         tagline: 'Sophisticated simplicity',
         description:
           'With its clean lines and refined aesthetics, the Patek Philippe Golden Ellipse represents the essence of classic watchmaking with a modern touch.',
@@ -58,15 +58,15 @@ const Collections = [
           'The Urban Chronograph features a sleek design with practical chronograph functions, making it ideal for everyday wear.',
       },
       {
-        name: 'Omega Seamaster',
-        image: '/Assets/Images/Watches/Omega Seamaster.png',
+        name: 'Omega Speedmaster',
+        image: '/Assets/Images/Watches/Omega Speedmaster Moonwatch Steel-On-Steel.png',
         tagline: 'Relaxed sophistication',
         description:
           'The Weekend Automatic combines casual elegance with mechanical precision, perfect for both work and leisure.',
       },
       {
         name: 'Modern Classic',
-        image: '/Ahmed/Collections/Casual/Modern Classic.png',
+        image: '/Assets/Images/Watches/Rolex Date-Just 40.png',
         tagline: 'Contemporary comfort',
         description:
           'The Modern Classic offers a fresh take on traditional watchmaking, with a focus on comfort and versatility.',
@@ -86,21 +86,21 @@ const Collections = [
     featuredItems: [
       {
         name: 'Chronograph Master',
-        image: '/Ahmed/Collections/Sport/Chronograph Master.png',
+        image: '/Assets/Images/Watches/Rolex Submariner.png',
         tagline: 'Precision timing for every sport',
         description:
           'The Chronograph Master combines advanced timing functions with a robust design, making it the perfect companion for any sporting activity.',
       },
       {
         name: 'Diver Pro',
-        image: '/Ahmed/Collections/Sport/Diver Pro.png',
+        image: '/Assets/Images/Watches/Audemars Piguet Royal Oak Offshore Diver.png',
         tagline: 'Professional diving excellence',
         description:
           'Built to withstand extreme underwater conditions, the Diver Pro is certified for professional diving with its impressive water resistance and luminous display.',
       },
       {
         name: 'Racing Elite',
-        image: '/Ahmed/Collections/Sport/Racing Elite.png',
+        image: '/Assets/Images/Watches/Omega Seamaster Aqua Terra.png',
         tagline: 'Speed and precision in perfect harmony',
         description:
           'The Racing Elite features a tachymeter scale and high-precision chronograph functions, designed specifically for motorsport enthusiasts.',
@@ -127,14 +127,14 @@ const Collections = [
       },
       {
         name: 'GMT Master',
-        image: '/Ahmed/Collections/Aviation/GMT Master.png',
+        image: '/Assets/Images/Watches/Breitling Chronomat GMT.png',
         tagline: 'Precision navigation',
         description:
           'The GMT Master combines a dual time zone function with aviation-inspired design elements, perfect for frequent travelers.',
       },
       {
         name: 'Pilot Chronograph',
-        image: '/Ahmed/Collections/Aviation/Pilot Chronograph.png',
+        image: '/Assets/Images/Watches/Breitling Navitimer.png',
         tagline: 'Aviation heritage',
         description:
           'The Pilot Chronograph draws inspiration from classic aviation timepieces, featuring a chronograph function and clear, legible dial.',
@@ -154,27 +154,51 @@ const Collections = [
     featuredItems: [
       {
         name: 'Grand Complication',
-        image: '/Ahmed/Collections/Luxury/Grand Complication.png',
+        image: '/Assets/Images/Watches/Jacob & Co Astronomia Triple Axis Tourbillon.png',
         tagline: 'The art of complexity',
         description:
           'The Grand Complication combines multiple high-end complications in a single masterpiece, showcasing the highest level of watchmaking expertise.',
       },
       {
         name: 'Royal Tourbillon',
-        image: '/Ahmed/Collections/Luxury/Royal Tourbillon.png',
+        image: '/Assets/Images/Watches/Richard Mille RM 011 FM White Ghost.png',
         tagline: 'Mechanical poetry in motion',
         description:
           'The Royal Tourbillon features a mesmerizing tourbillon mechanism, visible through the dial, demonstrating the perfect balance of technical mastery and aesthetic beauty.',
       },
       {
         name: 'Diamond Masterpiece',
-        image: '/Ahmed/Collections/Luxury/Diamond Masterpiece.png',
+        image: '/Assets/Images/Watches/Richard Mille RM 035 Americas Limited Edition.png',
         tagline: 'Brilliance in every detail',
         description:
           'The Diamond Masterpiece combines exceptional gem-setting techniques with mechanical excellence, creating a timepiece of extraordinary beauty and precision.',
       },
     ],
   },
+
+  {
+    _id: 'Him_1',
+    name: 'For Him',
+    slug: 'him',
+    logo: 'Him',
+    coverImage: '/Assets/Images/Photos/Him Cover Image.jpg',
+    heroVideo: '/Assets/Videos/For both.mp4',
+    header: 'Timeless Masculinity',
+    description:
+      'The Him Collection is a celebration of masculine elegance and robust design. Each timepiece is crafted to reflect strength, sophistication, and timeless style.',
+    },
+
+    {
+    _id: 'Her_1',
+    name: 'For Her',
+    slug: 'her',
+    logo: 'Her',
+    coverImage: '/Assets/Images/Photos/Her Cover Image.jpg',
+    heroVideo: '/Assets/Videos/For both.mp4',
+    header: 'Elegance Redefined',
+    description:
+      'The Her Collection embodies feminine grace and exquisite craftsmanship. These timepieces are designed to complement the modern woman’s style, offering both beauty and functionality.',
+    },
 ];
 
 async function seedDatabase() {
@@ -196,5 +220,6 @@ async function seedDatabase() {
     process.exit(1);
   }
 }
+
 
 seedDatabase();

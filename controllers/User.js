@@ -1931,6 +1931,12 @@ router.get('/faq', async (req, res) => {
 // For Him Page Route
 router.get('/for-him', async (req, res) => {
     try {
+        // Fetch collection data for Him
+        const genderDoc = await GenderModel.findOne({ _id: 'Him_1' });
+        if (!genderDoc) {
+            throw new Error('For Him collection not found');
+        }
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
@@ -2042,6 +2048,7 @@ router.get('/for-him', async (req, res) => {
 
         res.render('For-Him', {
             title: 'For Him',
+            Gender: genderDoc,  // Passed as Gender to match EJS
             products: productsWithWishlist,
             featuredModels,
             pagination: {
@@ -2067,9 +2074,16 @@ router.get('/for-him', async (req, res) => {
     }
 });
 
+
 // For Her Page Route
 router.get('/for-her', async (req, res) => {
     try {
+        // Fetch collection data for Her
+        const genderDoc = await GenderModel.findOne({ _id: 'Her_1' });
+        if (!genderDoc) {
+            throw new Error('For Her collection not found');
+        }
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
@@ -2181,6 +2195,7 @@ router.get('/for-her', async (req, res) => {
 
         res.render('For-Her', {
             title: 'For Her',
+            Gender: genderDoc,  // Passed as Gender to match EJS
             products: productsWithWishlist,
             featuredModels,
             pagination: {
@@ -2196,7 +2211,7 @@ router.get('/for-her', async (req, res) => {
             user: req.user || null
         });
     } catch (error) {
-        console.error('Error loading For Her page:', error);
+        console.error('Detailed error loading For Her page:', error);
         res.status(500).render('error', {
             title: 'Error',
             message: 'An error occurred while loading the For Her page.',
@@ -2205,6 +2220,8 @@ router.get('/for-her', async (req, res) => {
         });
     }
 });
+
+
 
     // Contact Us page route
 router.get('/contact-us', async (req, res) => {

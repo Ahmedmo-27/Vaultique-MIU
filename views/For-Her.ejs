@@ -29,7 +29,7 @@
         <section class="section topic">
             <div class="video-container">
                 <video autoplay muted loop playsinline>
-                    <source src="/public/Assets/Videos/for-her.mp4" id="heroVideoSource">
+                    <source src="<%= Gender.heroVideo %>" id="brandVideoSource">
                 </video>
             </div>
         </section>
@@ -77,15 +77,15 @@
             </div>
         </div>
 
-        <!-- Page Information Section -->
+       <!-- Page Information Section -->
         <div class="image" style="margin-bottom: -90px;">
-            <img src="/public/Assets/Images/for-her-cover.jpg" alt="For Her Cover Image" id="pageCoverImage">
+            <img src="<%= Gender.coverImage %>" alt="For Her Cover Image" id="brandCoverImage">
             <div class="brand-logo">
-                <h1 id="pageTitle">For Her</h1>
+                <h1 id="pageTitle"><%= Gender.name %></h1>
             </div>
             <div class="text-overlay">
-                <h2 id="pageHeader">Elegant Timepieces for the Modern Woman</h2>
-                <p id="pageDescription">Discover our exquisite collection of sophisticated timepieces designed for the contemporary woman. From delicate dress watches to statement pieces, find the perfect expression of your unique style.</p>
+                <h2 id="pageHeader"><%= Gender.header %></h2>
+                <p id="pageDescription"><%= Gender.description %></p>
             </div>
         </div>
 
@@ -223,6 +223,7 @@
                 </div>
             </form>
         </div>
+
 
         <!-- Products Section -->
         <section class="product-container">

@@ -26,10 +26,10 @@
         <%- include('partials/navigation') %>
         
         <!-- Hero Section -->
-        <section class="section topic">
+       <section class="section topic">
             <div class="video-container">
                 <video autoplay muted loop playsinline>
-                    <source src="/public/Assets/Videos/for-him.mp4" id="heroVideoSource">
+                    <source src="<%= Gender.heroVideo %>" id="brandVideoSource">
                 </video>
             </div>
         </section>
@@ -79,16 +79,15 @@
 
         <!-- Page Information Section -->
         <div class="image" style="margin-bottom: -90px;">
-            <img src="/public/Assets/Images/for-him-cover.jpg" alt="For Him Cover Image" id="pageCoverImage">
+            <img src="<%= Gender.coverImage %>" alt="For Him Cover Image" id="brandCoverImage">
             <div class="brand-logo">
-                <h1 id="pageTitle">For Him</h1>
+                <h1 id="pageTitle"><%= Gender.name %></h1>
             </div>
             <div class="text-overlay">
-                <h2 id="pageHeader">Timeless Elegance for the Modern Gentleman</h2>
-                <p id="pageDescription">Discover our curated collection of sophisticated timepieces designed for the discerning gentleman. From classic dress watches to robust sports models, find the perfect expression of your style.</p>
+                <h2 id="pageHeader"><%= Gender.header %></h2>
+                <p id="pageDescription"><%= Gender.description %></p>
             </div>
         </div>
-
         <!-- Filter Button -->
         <button data-action="open-filter-panel" class="filter-btn">
             <span>Filters and Sorting</span>
@@ -197,6 +196,7 @@
                     <input type="number" id="priceRangeFrom" name="minPrice" class="priceRangeValue" placeholder="From" value="<%= filters.minPrice || '0' %>">
                     <input type="number" id="priceRangeTo" name="maxPrice" class="priceRangeValue" placeholder="To" value="<%= filters.maxPrice || '50000000' %>">
                 </div>
+
 
                 <div class="filter-options">
                     <h3>Dial Color</h3>
