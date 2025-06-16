@@ -697,7 +697,8 @@ exports.updateProduct = async (req, res) => {
             });
         }
 
-        res.status(200).json({
+        // Always return JSON response
+        return res.status(200).json({
             success: true,
             message: 'Product updated successfully',
             data: product
@@ -724,7 +725,7 @@ exports.updateProduct = async (req, res) => {
             });
         }
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: 'Error updating product',
             error: error.message

@@ -266,7 +266,7 @@
                 const formData = new FormData(this);
                 
                 try {
-                    const response = await fetch('/api/admin/products/<%= product._id %>', {
+                    const response = await fetch('/admin/products/<%= product._id %>', {
                         method: 'PUT',
                         body: formData,
                         credentials: 'include',
