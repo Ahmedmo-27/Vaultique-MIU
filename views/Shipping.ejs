@@ -65,7 +65,7 @@
             id="name"
             placeholder="Your name and surname"
             value="<%= user ? user.Name : '' %>"
-            required
+            <%= user && user.googleId ? 'readonly' : 'required' %>
           />
         </div>
         <div class="input-line">
@@ -76,7 +76,7 @@
             id="Email"
             placeholder="example@example.com"
             value="<%= user ? user.email : '' %>"
-            required
+            <%= user && user.googleId ? 'readonly' : 'required' %>
           />
         </div>
         <div class="input-line">
@@ -129,9 +129,16 @@
         <% if (isAuthenticated) { %>
           <div class="input-line">
             <label class="checkbox-label">
-              <input type="checkbox" name="saveAddress" value="true">
+              <input type="checkbox" name="saveAddress" value="true" <%= user && user.googleId ? 'checked' : '' %>>
               Save this address for future orders
             </label>
+          </div>
+        <% } %>
+
+        <% if (user && user.googleId) { %>
+          <div class="google-user-notice">
+            <i class="fas fa-info-circle"></i>
+            <p>You're signed in with Google. Your information is pre-filled and secured.</p>
           </div>
         <% } %>
 

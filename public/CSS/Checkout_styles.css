@@ -590,3 +590,25 @@ input[type="button"]:hover {
     width: 1rem;
     height: 1rem;
 }
+
+.google-user-notice {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 12px;
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.google-user-notice i {
+  color: #4285f4;
+  font-size: 1.2em;
+}
+
+.google-user-notice p {
+  margin: 0;
+  color: #5f6368;
+  font-size: 0.9em;
+}

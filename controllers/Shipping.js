@@ -47,9 +47,13 @@ exports.createShipping = async (req, res) => {
       });
     }
 
+    // Check if user is authenticated and if it's a Google user
+    const isGoogleUser = req.user && req.user.googleId;
+    const userId = req.user ? req.user._id : null;
+
     // Create shipping record
     const shipping = new Shipping({
-      userId: req.user ? req.user._id : null,
+      userId,
       orderId,
       fullName,
       email,
@@ -58,7 +62,8 @@ exports.createShipping = async (req, res) => {
       state,
       zipCode,
       trackingNumber: generateTrackingNumber(),
-      status: 'pending'
+      status: 'pending',
+      isGoogleUser // Add flag for Google users
     });
 
     await shipping.save();
@@ -74,7 +79,8 @@ exports.createShipping = async (req, res) => {
       message: 'Shipping information saved successfully',
       data: {
         shipping,
-        orderStatus: order.status
+        orderStatus: order.status,
+        isGoogleUser
       }
     });
   } catch (error) {
