@@ -55,49 +55,74 @@ const UserSchema = new mongoose.Schema({
     default: 'user',
     required: true,
   },
-  Address: {
+  Address: [{
     city: {
       type: String,
       trim: true,
-      required: [true, 'City is required'],
-      minlength: [2, 'City must be at least 2 characters long']
+      required: false,
+      minlength: [2, 'City must be at least 2 characters long'],
+      validate: {
+        validator: function(v) {
+          return !v || v.length >= 2;
+        },
+        message: 'City must be at least 2 characters long'
+      }
     },
     street: {
       type: String,
       trim: true,
-      required: [true, 'Street address is required'],
-      minlength: [5, 'Street address must be at least 5 characters long']
+      required: false,
+      minlength: [5, 'Street address must be at least 5 characters long'],
+      validate: {
+        validator: function(v) {
+          return !v || v.length >= 5;
+        },
+        message: 'Street address must be at least 5 characters long'
+      }
     },
     addressType: {
       type: String,
       enum: ['Home', 'Work', 'Other'],
       default: 'Home',
-      required: [true, 'Address type is required']
+      required: false
     },
     state: {
       type: String,
       trim: true,
-      required: [true, 'State is required'],
-      minlength: [2, 'State must be at least 2 characters long']
+      required: false,
+      minlength: [2, 'State must be at least 2 characters long'],
+      validate: {
+        validator: function(v) {
+          return !v || v.length >= 2;
+        },
+        message: 'State must be at least 2 characters long'
+      }
     },
     country: {
       type: String,
       trim: true,
-      minlength: [2, 'Country must be at least 2 characters long']
+      required: false,
+      minlength: [2, 'Country must be at least 2 characters long'],
+      validate: {
+        validator: function(v) {
+          return !v || v.length >= 2;
+        },
+        message: 'Country must be at least 2 characters long'
+      }
     },
     postalCode: {
       type: String,
       trim: true,
-      required: [true, 'Postal code is required'],
+      required: false,
       validate: {
         validator: function(v) {
-          return /^[a-zA-Z0-9\s-]{3,10}$/.test(v);
+          return !v || /^[a-zA-Z0-9\s-]{3,10}$/.test(v);
         },
         message: props => `${props.value} is not a valid postal code!`
       }
     }
-  },
-  Payment: {
+  }],
+  Payment: [{
     cardNumber: {
       type: String,
       trim: true,
@@ -139,7 +164,7 @@ const UserSchema = new mongoose.Schema({
       enum: ['Credit Card', 'Debit Card', 'PayPal', 'credit', 'debit'],
       default: 'Credit Card',
     },
-  },
+  }],
   orders: [
     {
       orderId: {

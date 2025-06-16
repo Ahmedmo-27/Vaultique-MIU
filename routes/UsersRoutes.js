@@ -230,23 +230,27 @@ router.post('/signup', async (req, res) => {
     } = req.body;
 
     // Basic validation
-    if (!Name || !username || !email || !password || !DOB || !phone_number || !language || !Address || !Payment) {
-      return res.status(400).json({ message: 'All fields are required' });
+    if (!Name || !username || !email || !password || !DOB || !phone_number || !language) {
+      return res.status(400).json({ message: 'Required fields are missing' });
     }
 
-    // Validate Address fields
-    const addressFields = ['city', 'street', 'addressType', 'state', 'country', 'postalCode'];
-    for (const field of addressFields) {
-      if (!Address[field]) {
-        return res.status(400).json({ message: `Address field '${field}' is required` });
+    // Validate Address fields if provided
+    if (Address) {
+      const addressFields = ['city', 'street', 'addressType', 'state', 'country', 'postalCode'];
+      for (const field of addressFields) {
+        if (Address[field] && typeof Address[field] !== 'string') {
+          return res.status(400).json({ message: `Address field '${field}' must be a string` });
+        }
       }
     }
 
-    // Validate Payment fields
-    const paymentFields = ['cardNumber', 'cardHolder', 'expiryDate', 'cvv', 'paymentType'];
-    for (const field of paymentFields) {
-      if (!Payment[field]) {
-        return res.status(400).json({ message: `Payment field '${field}' is required` });
+    // Validate Payment fields if provided
+    if (Payment) {
+      const paymentFields = ['cardNumber', 'cardHolder', 'expiryDate', 'cvv', 'paymentType'];
+      for (const field of paymentFields) {
+        if (Payment[field] && typeof Payment[field] !== 'string') {
+          return res.status(400).json({ message: `Payment field '${field}' must be a string` });
+        }
       }
     }
 
@@ -287,19 +291,19 @@ router.post('/signup', async (req, res) => {
       language,
       role: userRole,
       Address: {
-        city: Address.city,
-        street: Address.street,
-        addressType: Address.addressType,
-        state: Address.state,
-        country: Address.country,
-        postalCode: Address.postalCode,
+        city: Address?.city,
+        street: Address?.street,
+        addressType: Address?.addressType,
+        state: Address?.state,
+        country: Address?.country,
+        postalCode: Address?.postalCode,
       },
       Payment: {
-        cardNumber: Payment.cardNumber,
-        cardHolder: Payment.cardHolder,
-        expiryDate: Payment.expiryDate,
-        cvv: Payment.cvv,
-        paymentType: Payment.paymentType,
+        cardNumber: Payment?.cardNumber,
+        cardHolder: Payment?.cardHolder,
+        expiryDate: Payment?.expiryDate,
+        cvv: Payment?.cvv,
+        paymentType: Payment?.paymentType,
       },
     });
 

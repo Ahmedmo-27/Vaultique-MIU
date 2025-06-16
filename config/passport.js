@@ -1,9 +1,6 @@
-import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import UserModel from "../models/user.js";
-import { DOMAIN } from "./secrets.js";
-
-import { generateToken } from "../controllers/Auth.js";
+const passport = require('passport');
+const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
+const User = require('../models/Users');
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 
@@ -17,26 +14,27 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://vaultique.up.railway.app/api/auth/google/callback",
+      callbackURL: `https://vaultique.up.railway.app/api/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         // Check if user already exists
-        let user = await UserModel.findOne({ email: profile.emails[0].value });
+        let user = await User.findOne({ email: profile.emails[0].value });
 
         if (!user) {
           // Create new user if doesn't exist
-          user = await UserModel.create({
-            name: profile.displayName,
-            email: profile.emails[0].value,
+          user = await User.create({
+            Name: profile.displayName,
+            username: profile.emails[0].value.split('@')[0] + Math.random().toString(36).substring(2, 8),
+            email: profile.emails[0].value.toLowerCase(),
             password: Math.random().toString(36).slice(-8), // Generate random password
-            phone: "", // Default phone number
-            isVerified: true, // Google accounts are pre-verified
-            profilePic: profile.photos[0].value.includes(
-              "ACg8ocItOXyY60QacSybAdj-ux7cCNvJBW4kkTFdifz-tQXWLMUKtw"
-            )
-              ? /uploads/defaultProfilePic.png
-              : profile.photos[0].value,
+            phone_number: "", // Default phone number
+            isEmailVerified: true, // Google accounts are pre-verified
+            status: 'active',
+            role: 'user',
+            Address: [],
+            Payment: [],
+            orders: [],
           });
         }
 
@@ -54,11 +52,11 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await UserModel.findById(id);
+    const user = await User.findById(id);
     done(null, user);
   } catch (error) {
     done(error, null);
   }
 });
 
-export default passport;
+module.exports = passport;

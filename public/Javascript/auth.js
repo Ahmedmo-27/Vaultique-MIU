@@ -142,22 +142,42 @@ window.handleSignup = async (event) => {
     DOB: document.getElementById('dob').value,
     phone_number: document.getElementById('phone').value,
     language: document.getElementById('language').value,
-    Address: {
-      city: document.getElementById('city')?.value || '',
-      street: document.getElementById('street')?.value || '',
-      addressType: 'Home',
-      state: document.getElementById('state')?.value || '',
-      country: document.getElementById('country')?.value || '',
-      postalCode: document.getElementById('zip')?.value || '',
-    },
-    Payment: {
-      cardNumber: document.getElementById('card-number')?.value || '',
-      cardHolder: document.getElementById('card-name')?.value || '',
-      expiryDate: document.getElementById('expiry')?.value || '',
-      cvv: document.getElementById('cvv')?.value || '',
-      paymentType: document.getElementById('card-type')?.value || 'Credit Card',
-    },
   };
+
+  // Only include address if at least one field has a value
+  const city = document.getElementById('city')?.value?.trim();
+  const street = document.getElementById('street')?.value?.trim();
+  const state = document.getElementById('state')?.value?.trim();
+  const country = document.getElementById('country')?.value?.trim();
+  const postalCode = document.getElementById('zip')?.value?.trim();
+
+  if (city || street || state || country || postalCode) {
+    formData.Address = {
+      city: city || undefined,
+      street: street || undefined,
+      addressType: 'Home',
+      state: state || undefined,
+      country: country || undefined,
+      postalCode: postalCode || undefined
+    };
+  }
+
+  // Only include payment if at least one field has a value
+  const cardNumber = document.getElementById('card-number')?.value?.trim();
+  const cardHolder = document.getElementById('card-name')?.value?.trim();
+  const expiryDate = document.getElementById('expiry')?.value?.trim();
+  const cvv = document.getElementById('cvv')?.value?.trim();
+  const cardType = document.getElementById('card-type')?.value?.trim();
+
+  if (cardNumber || cardHolder || expiryDate || cvv || cardType) {
+    formData.Payment = {
+      cardNumber: cardNumber || undefined,
+      cardHolder: cardHolder || undefined,
+      expiryDate: expiryDate || undefined,
+      cvv: cvv || undefined,
+      paymentType: cardType || 'Credit Card'
+    };
+  }
 
   try {
     const response = await fetchWithTimeout('/api/auth/signup', {
