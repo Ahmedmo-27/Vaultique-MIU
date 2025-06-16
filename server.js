@@ -10,8 +10,6 @@ const session = require('express-session');
 const { optionalJWT, isAdmin } = require('./middleware/jwt');
 const config = require('./config/env');
 const { removeCookie } = require('./utils/cookieManager');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const { sessionMiddleware, sessionCleanup, sessionSecurity } = require('./config/session');
 const { errorHandler } = require('./utils/securityUtils');
 const rateLimit = require('express-rate-limit');
@@ -118,96 +116,6 @@ const connectDB = async () => {
 // Connect to MongoDB
 connectDB();
 
-// Middleware
-app.use(express.json({ limit: '10mb' })); // Add request size limit
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(compression({
-  // Performance optimization: Configure compression
-  level: 6, // Compression level (0-9)
-  threshold: 1024, // Only compress responses larger than 1KB
-  filter: (req, res) => {
-    if (req.headers['x-no-compression']) {
-      return false;
-    }
-    return compression.filter(req, res);
-  }
-}));
-app.use(cookieParser());
-app.use(cacheControl); // Add cache control middleware
-
-// Initialize session middleware with error handling
-app.use((req, res, next) => {
-  sessionMiddleware(req, res, (err) => {
-    if (err) {
-      console.error('Session middleware error:', err);
-      return next(err);
-    }
-    next();
-  });
-});
-
-// Add session debugging middleware
-app.use((req, res, next) => {
-  console.log('Session state:', {
-    hasSession: !!req.session,
-    sessionID: req.sessionID,
-    hasCart: !!req.session?.cart,
-    cartItems: req.session?.cart?.items?.length
-  });
-  next();
-});
-
-app.use(sessionCleanup);
-app.use(sessionSecurity);
-
-// Initialize Passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Configure Passport
-passport.use(new LocalStrategy(
-  { usernameField: 'email' },
-  async (email, password, done) => {
-    try {
-      const user = await User.findOne({ email: email.toLowerCase() })
-        .select('+password +failedLoginAttempts +lastFailedLogin +accountLockedUntil +status +role +isEmailVerified')
-        .exec();
-
-      if (!user) {
-        return done(null, false, { message: 'Incorrect email.' });
-      }
-
-      // Check if account is locked
-      if (user.accountLockedUntil && user.accountLockedUntil > Date.now()) {
-        return done(null, false, { message: 'Account is temporarily locked due to too many failed attempts. Please try again later.' });
-      }
-
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
-        await user.incrementFailedLoginAttempts();
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-
-      return done(null, user);
-    } catch (error) {
-      return done(error);
-    }
-  }
-));
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error);
-  }
-});
-
 // Global rate limiter
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -263,7 +171,8 @@ app.use(
           "https://accounts.google.com",
           "https://apis.google.com",
           "https://kit.fontawesome.com",
-          "https://cdn.jsdelivr.net"
+          "https://cdn.jsdelivr.net",
+          "https://ajax.googleapis.com"
         ],
         scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: [
@@ -387,6 +296,48 @@ app.use('/javascript', express.static(path.join(publicPath, 'Javascript')));
 app.use('/assets', express.static(path.join(publicPath, 'Assets')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')));
+
+// Middleware
+app.use(express.json({ limit: '10mb' })); // Add request size limit
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(compression({
+  // Performance optimization: Configure compression
+  level: 6, // Compression level (0-9)
+  threshold: 1024, // Only compress responses larger than 1KB
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
+app.use(cookieParser());
+app.use(cacheControl); // Add cache control middleware
+
+// Initialize session middleware with error handling
+app.use((req, res, next) => {
+  sessionMiddleware(req, res, (err) => {
+    if (err) {
+      console.error('Session middleware error:', err);
+      return next(err);
+    }
+    next();
+  });
+});
+
+// Add session debugging middleware
+app.use((req, res, next) => {
+  console.log('Session state:', {
+    hasSession: !!req.session,
+    sessionID: req.sessionID,
+    hasCart: !!req.session?.cart,
+    cartItems: req.session?.cart?.items?.length
+  });
+  next();
+});
+
+app.use(sessionCleanup);
+app.use(sessionSecurity);
 
 // Middleware to make user data available to all views
 app.use((req, res, next) => {

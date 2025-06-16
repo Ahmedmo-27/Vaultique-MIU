@@ -11,7 +11,6 @@ const { generateTokens } = require('../middleware/jwt');
 const { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail, sendOrderConfirmationEmail } = require('../utils/emailService');
 const { sendWelcomeSMS } = require('../utils/smsService');
 const { setSessionCookie, removeCookie } = require('../utils/cookieManager');
-const passport = require('passport');
 const { OAuth2Client } = require('google-auth-library');
 // Authentication security is handled by JWT middleware
 
@@ -113,72 +112,94 @@ const signupValidation = [
     .withMessage('Please enter a valid date of birth')
 ];
 
-// Login route using Passport
-router.post('/login', loginLimiter, loginValidation, (req, res, next) => {
-  passport.authenticate('local', async (err, user, info) => {
-    try {
-      if (err) {
-        return next(err);
-      }
+// Login route (modified to remove Passport)
+router.post('/login', loginLimiter, loginValidation, async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: errors.array()
+      });
+    }
 
-      if (!user) {
-        return res.status(401).json({
-          success: false,
-          message: info.message || 'Invalid email or password'
-        });
-      }
+    const { email, password } = req.body;
 
-      // Check if user is active
-      if (user.status !== 'active') {
-        return res.status(401).json({
-          success: false,
-          message: 'Your account is not active. Please verify your email or contact support.'
-        });
-      }
+    // Find user by email and explicitly select password field
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
 
-      // Check if email is verified
-      if (!user.isEmailVerified) {
-        return res.status(401).json({
-          success: false,
-          message: 'Please verify your email before logging in.'
-        });
-      }
+    // Check if password matches
+    const isMatch = await bcryptjs.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
 
-      // Update login history and reset failed attempts
-      await user.updateLoginHistory(req.ip, req.headers['user-agent']);
+    // Check if user is active
+    if (user.status !== 'active') {
+      return res.status(401).json({
+        success: false,
+        message: 'Your account is not active. Please verify your email or contact support.'
+      });
+    }
 
-      // Generate tokens
-      const { accessToken, refreshToken } = generateTokens(user);
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please verify your email before logging in.'
+      });
+    }
 
-      // Set session data
+    // Generate tokens
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // Set session data
+    if (req.session) {
       req.session.user = {
         id: user._id,
         email: user.email,
         role: user.role
       };
       req.session.isAuthenticated = true;
-
-      // Set tokens in HTTP-only cookies
-      setSessionCookie(res, 'token', accessToken);
-      setSessionCookie(res, 'refreshToken', refreshToken);
-
-      // Create safe user response object
-      const userResponse = {
-        _id: user._id,
-        Name: user.Name,
-        email: user.email,
-        role: user.role
-      };
-
-      res.json({
-        success: true,
-        message: 'Login successful',
-        user: userResponse
-      });
-    } catch (error) {
-      next(error);
     }
-  })(req, res, next);
+
+    // Set tokens in HTTP-only cookies
+    setSessionCookie(res, 'token', accessToken);
+    setSessionCookie(res, 'refreshToken', refreshToken);
+
+    // Create safe user response object
+    const userResponse = {
+      _id: user._id,
+      Name: user.Name,
+      email: user.email,
+      role: user.role
+    };
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      user: userResponse
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred during login',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
 });
 
 // Signup route
