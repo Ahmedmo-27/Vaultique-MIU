@@ -59,6 +59,12 @@ const validateCartState = (cart) => {
     };
 };
 
+// Add shipping cost configuration
+const SHIPPING_COSTS = {
+    standard: 20,
+    fast: 40
+};
+
 // Helper function to calculate totals
 const calculateTotals = (cart) => {
     console.log('Calculating totals for cart');
@@ -77,8 +83,8 @@ const calculateTotals = (cart) => {
         return sum + itemTotal;
     }, 0);
 
-    // Calculate shipping cost
-    cart.shippingCost = cart.shippingMethod === 'fast' ? 40 : 20;
+    // Calculate shipping cost based on method
+    cart.shippingCost = SHIPPING_COSTS[cart.shippingMethod] || SHIPPING_COSTS.standard;
     
     // Calculate total
     cart.total = cart.subtotal + cart.shippingCost;

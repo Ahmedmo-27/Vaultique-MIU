@@ -194,7 +194,13 @@ async function removeItem(productId) {
 
 // Function to update shipping method
 async function updateShipping(method) {
+    const shippingDropdown = document.getElementById('shipping');
+    if (!shippingDropdown) return;
+
     try {
+        // Show loading state
+        setLoading(true, shippingDropdown);
+        
         const response = await fetch('/user/cart/update-shipping', {
             method: 'POST',
             headers: {
@@ -206,6 +212,9 @@ async function updateShipping(method) {
         const data = await response.json();
         
         if (!response.ok) {
+            // Revert to previous value on error
+            shippingDropdown.value = shippingDropdown.dataset.previousValue;
+            
             let errorMessage = data.message || 'An error occurred while updating shipping';
             
             // Handle specific error cases
@@ -224,11 +233,18 @@ async function updateShipping(method) {
             throw new Error(errorMessage);
         }
 
+        // Update UI with new cart data
         updateCartUI(data.cart);
         showSuccess(data.message);
+        
+        // Update previous value after successful update
+        shippingDropdown.dataset.previousValue = method;
     } catch (error) {
         console.error('Error updating shipping:', error);
-        showError('Failed to update shipping method. Please try again.');
+        showError(error.message || 'Failed to update shipping method. Please try again.');
+    } finally {
+        // Hide loading state
+        setLoading(false, shippingDropdown);
     }
 }
 

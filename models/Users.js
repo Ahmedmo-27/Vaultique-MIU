@@ -83,7 +83,6 @@ const UserSchema = new mongoose.Schema({
     country: {
       type: String,
       trim: true,
-      required: [true, 'Country is required'],
       minlength: [2, 'Country must be at least 2 characters long']
     },
     postalCode: {
