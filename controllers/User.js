@@ -1175,43 +1175,50 @@ router.post('/cart/update-shipping', async (req, res) => {
 
 // Wishlist routes (public with auth check)
 router.get('/wishlist', async (req, res) => {
-    if (!req.user) {
-        return res.render('wishlist', {
-            title: 'My Wishlist',
-            wishlistItems: [],
-            user: null,
-            type: 'info',
-            message: 'Please login to view your wishlist',
-            show: true
-        });
-    }
-
     try {
-        const user = await User.findById(req.user._id)
-            .populate({
-                path: 'wishlist.product',
-                populate: [
-                    { path: 'brand', select: 'name' },
-                    { path: 'Vcollection', select: 'name' }
-                ]
-            });
+        let wishlistItems = [];
+        
+        if (req.user) {
+            // Handle authenticated user
+            const user = await User.findById(req.user._id)
+                .populate({
+                    path: 'wishlist.product',
+                    populate: [
+                        { path: 'brand', select: 'name' },
+                        { path: 'Vcollection', select: 'name' }
+                    ]
+                });
 
-        if (!user) {
-            return res.redirect('/user/LoginSignup');
+            if (!user) {
+                return res.redirect('/user/LoginSignup');
+            }
+
+            wishlistItems = user.wishlist.map(item => {
+                if (!item.product) return null;
+                return {
+                    ...item.product.toObject(),
+                    inWishlist: true
+                };
+            }).filter(Boolean);
+        } else {
+            // Handle non-authenticated user using session
+            if (req.session.wishlist) {
+                const productIds = req.session.wishlist.map(item => item.productId);
+                const products = await Product.find({ _id: { $in: productIds } })
+                    .populate('brand', 'name')
+                    .populate('Vcollection', 'name');
+                
+                wishlistItems = products.map(product => ({
+                    ...product.toObject(),
+                    inWishlist: true
+                }));
+            }
         }
-
-        const wishlistItems = user.wishlist.map(item => {
-            if (!item.product) return null;
-            return {
-                ...item.product.toObject(),
-                inWishlist: true
-            };
-        }).filter(Boolean);
 
         res.render('wishlist', {
             title: 'My Wishlist',
             wishlistItems,
-            user: req.user,
+            user: req.user || null,
             type: 'info',
             message: '',
             show: false
@@ -1223,35 +1230,82 @@ router.get('/wishlist', async (req, res) => {
 });
 
 // Add wishlist toggle endpoint
-protectedRoutes.post('/wishlist/toggle', async (req, res) => {
-  try {
-    const { productId } = req.body;
-    const user = await User.findById(req.user._id);
+router.post('/wishlist/toggle', async (req, res) => {
+    try {
+        const { productId } = req.body;
+        
+        if (!productId) {
+            return res.status(400).json({ success: false, message: 'Product ID is required' });
+        }
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+        // Validate product exists
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        if (req.user) {
+            // Handle authenticated user
+            const user = await User.findById(req.user._id);
+            if (!user) {
+                return res.status(404).json({ success: false, message: 'User not found' });
+            }
+
+            // Check if product exists in wishlist
+            const existingIndex = user.wishlist.findIndex(
+                item => item.product.toString() === productId
+            );
+
+            if (existingIndex > -1) {
+                // Remove from wishlist
+                user.wishlist.splice(existingIndex, 1);
+                await user.save();
+                return res.json({ success: true, message: 'Product removed from wishlist', inWishlist: false });
+            } else {
+                // Add to wishlist
+                user.wishlist.push({ product: productId });
+                await user.save();
+                return res.json({ success: true, message: 'Product added to wishlist', inWishlist: true });
+            }
+        } else {
+            // Handle non-authenticated user using session
+            if (!req.session.wishlist) {
+                req.session.wishlist = [];
+            }
+
+            const existingIndex = req.session.wishlist.findIndex(
+                item => item.productId === productId
+            );
+
+            if (existingIndex > -1) {
+                // Remove from wishlist
+                req.session.wishlist.splice(existingIndex, 1);
+                await new Promise((resolve, reject) => {
+                    req.session.save((err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                });
+                return res.json({ success: true, message: 'Product removed from wishlist', inWishlist: false });
+            } else {
+                // Add to wishlist
+                req.session.wishlist.push({
+                    productId,
+                    addedAt: new Date()
+                });
+                await new Promise((resolve, reject) => {
+                    req.session.save((err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                });
+                return res.json({ success: true, message: 'Product added to wishlist', inWishlist: true });
+            }
+        }
+    } catch (error) {
+        console.error('Error toggling wishlist:', error);
+        res.status(500).json({ success: false, message: 'Failed to update wishlist' });
     }
-
-    // Check if product exists in wishlist
-    const existingIndex = user.wishlist.findIndex(
-      item => item.product.toString() === productId
-    );
-
-    if (existingIndex > -1) {
-      // Remove from wishlist
-      user.wishlist.splice(existingIndex, 1);
-      await user.save();
-      return res.json({ success: true, message: 'Product removed from wishlist' });
-    } else {
-      // Add to wishlist
-      user.wishlist.push({ product: productId });
-      await user.save();
-      return res.json({ success: true, message: 'Product added to wishlist' });
-    }
-  } catch (error) {
-    console.error('Error toggling wishlist:', error);
-    res.status(500).json({ success: false, message: 'Failed to update wishlist' });
-  }
 });
 
 // Account details page (protected route)
@@ -1286,7 +1340,15 @@ protectedRoutes.get('/account-details', async (req, res) => {
             return res.redirect('/user/LoginSignup');
         }
 
-        // Remove sensitive payment info
+        // Remove sensitive payment info for multiple payment methods
+        if (user.Payments && Array.isArray(user.Payments)) {
+            user.Payments = user.Payments.map(payment => {
+                const { cardNumber, cvv, ...rest } = payment;
+                return rest;
+            });
+        }
+
+        // Remove sensitive payment info for legacy single payment
         if (user.Payment) {
             delete user.Payment.cardNumber;
             delete user.Payment.cvv;
