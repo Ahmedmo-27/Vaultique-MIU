@@ -50,20 +50,44 @@ app.use((req, res, next) => {
     next();
 });
 
-// Enhanced MongoDB Connection with better error handling
+// Performance optimization: Add cache control middleware
+const cacheControl = (req, res, next) => {
+  // Cache static assets for 1 day
+  if (req.url.match(/\.(css|js|jpg|jpeg|png|gif|ico|svg)$/)) {
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+  } else {
+    // Don't cache dynamic content
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  next();
+};
+
+// Enhanced MongoDB Connection with better error handling and performance settings
 const connectDB = async () => {
   try {
-    console.log('Attempting to connect to MongoDB...'); // Debug log
+    console.log('Attempting to connect to MongoDB...');
     const conn = await mongoose.connect(config.mongodbUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       family: 4,
-      dbName: 'test' // Explicitly set database name
+      dbName: 'test',
+      // Performance optimization: Add connection pool settings
+      maxPoolSize: 50,
+      minPoolSize: 10,
+      maxIdleTimeMS: 30000,
+      connectTimeoutMS: 10000,
+      // Performance optimization: Add write concern settings
+      w: 'majority',
+      wtimeout: 2500,
+      // Performance optimization: Add read preference
+      readPreference: 'secondaryPreferred'
     });
     console.log(`Connected to MongoDB at ${config.mongodbUri}`);
-    console.log('MongoDB connection state:', mongoose.connection.readyState); // Debug log
+    console.log('MongoDB connection state:', mongoose.connection.readyState);
 
     // Test session store connection
     const sessionStore = MongoStore.create({
@@ -95,10 +119,21 @@ const connectDB = async () => {
 connectDB();
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(compression());
+app.use(express.json({ limit: '10mb' })); // Add request size limit
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(compression({
+  // Performance optimization: Configure compression
+  level: 6, // Compression level (0-9)
+  threshold: 1024, // Only compress responses larger than 1KB
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
 app.use(cookieParser());
+app.use(cacheControl); // Add cache control middleware
 
 // Initialize session middleware with error handling
 app.use((req, res, next) => {
@@ -539,6 +574,16 @@ app.use((req, res, next) => {
 
 // Error handling middleware (should be last)
 app.use(errorHandler);
+
+// Performance optimization: Add response time monitoring
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`${req.method} ${req.url} - ${duration}ms`);
+  });
+  next();
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
