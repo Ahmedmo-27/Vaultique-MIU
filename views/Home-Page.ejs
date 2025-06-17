@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/CSS/masnory.css">
     <link rel="stylesheet" href="/CSS/google-reviews.css">
     <link rel="stylesheet" href="/CSS/about-quick.css">
+    <link rel="stylesheet" href="/CSS/Products.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="/Javascript/nav-bar.js"></script>
     <script src="/Javascript/Loading Screen.js"></script>
@@ -23,6 +24,7 @@
     <script src="/Javascript/Genders.js"></script>
     <script src="/Javascript/google-reviews.js"></script>
     <script src="/Javascript/Light-Mode.js"></script>
+    
 
     <title>Vaultique | Home</title>
 </head>
@@ -42,27 +44,27 @@
         </div>
     </section>
 
-    <!--Section For Him / For Her-->
-    <!-- <section>
+    <!--Section For Him / For Her--
+    <section class>
         <% if (typeof genders !== 'undefined' && genders && genders.length > 0) { %>
             <% genders.forEach((gender) => { %>
                 <section class="section hero">
                     <div class="video-container">
                         <video autoplay muted loop playsinline>
-                            <source src="<%= gender.heroVideo %>" type="video/mp4">
+                        <source src="/Assets/videos/for-both.mp4" type="video/mp4">
+                        
                         </video>
                     </div>
                     <div class="content hover-text">
                         <h2 data-translate="genderSection"><%= gender.name %></h2>
                         <br>
-                        <p data-translate="genderDesc">
-                            <%= gender.description %>
-                        </p>
+                        <br>
                         <br><br>
-                        <a class="button" href="/user/">
+                        <a class="button" href="/user/Gender/<%= gender.slug %>">
                             See <%= gender.name %> Collection
                         </a>
                     </div>
+                    
                 </section>
             <% }); %>
         <% } else { %>
@@ -70,7 +72,7 @@
                 <p>Gender collections are currently unavailable. Please try again later.</p>
             </div>
         <% } %>
-    </section> -->
+    </section>-->
     
     <!-- Popular Collections Section -->
     <section class="collections">
@@ -185,7 +187,7 @@
                         </svg>
                     </div>
                     <a href="/user/products/santos-de-cartier">
-                        <img src="/Ahmed/Watches/Santos de Cartier.png" alt="Cartier Santos de Cartier">
+                        <img src="/Assets/Images/Watches/Santos de Cartier.png" alt="Cartier Santos de Cartier">
                         <div class="hover-buttons">
                             <button class="quick-view">Quick View</button>
                             <button class="compare">Compare</button>
@@ -209,7 +211,7 @@
                         </svg>
                     </div>
                     <a href="#">
-                        <img src="/Ahmed/Watches/Cartier Tank Must.png" alt="Cartier Tank Must">
+                        <img src="/Assets/Images/Watches/Cartier Tank Must.png" alt="Cartier Tank Must">
                         <div class="hover-buttons">
                             <button class="quick-view">Quick View</button>
                             <button class="compare">Compare</button>
@@ -233,7 +235,7 @@
                         </svg>
                     </div>
                     <a href="#">
-                        <img src="/Ahmed/Watches/Panthère de Cartier.png" alt="Cartier Panthère de Cartier">
+                        <img src="/Assets/Images/Watches/Panthère de Cartier.png" alt="Cartier Panthère de Cartier">
                         <div class="hover-buttons">
                             <button class="quick-view">Quick View</button>
                             <button class="compare">Compare</button>
@@ -256,7 +258,7 @@
                         </svg>
                     </div>
                     <a href="#">
-                        <img src="/Ahmed/Watches/Tank Louis Cartier.png" alt="Cartier Tank Louis Cartier">
+                        <img src="/Assets/Images/Watches/Tank Louis Cartier.png" alt="Cartier Tank Louis Cartier">
                         <div class="hover-buttons">
                             <button class="quick-view">Quick View</button>
                             <button class="compare">Compare</button>
@@ -280,7 +282,7 @@
                         </svg>
                     </div>
                     <a href="#">
-                        <img src="/Ahmed/Watches/Santos de Cartier Skeleton.png"
+                        <img src="/Assets/Images/Watches/Santos de Cartier Skeleton.png"
                             alt="Cartier Santos de Cartier Skeleton">
                         <div class="hover-buttons">
                             <button class="quick-view">Quick View</button>
