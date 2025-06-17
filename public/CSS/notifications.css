@@ -47,4 +47,243 @@
 
 .notification.removing {
     animation: slideOut 0.3s ease-in forwards;
+}
+
+/* Notification Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.modal-overlay.show .modal-container {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notification-title h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.notification-icon {
+  font-size: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.notification-icon.success {
+  color: #10B981;
+  background-color: #D1FAE5;
+}
+
+.notification-icon.error {
+  color: #EF4444;
+  background-color: #FEE2E2;
+}
+
+.notification-icon.warning {
+  color: #F59E0B;
+  background-color: #FEF3C7;
+}
+
+.notification-icon.info {
+  color: #3B82F6;
+  background-color: #DBEAFE;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6B7280;
+  padding: 0.5rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-modal:hover {
+  background-color: #F3F4F6;
+  color: #1F2937;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.notification-message {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #374151;
+  white-space: pre-line;
+}
+
+.modal-footer {
+  padding: 1rem;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.notification-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.notification-btn.success {
+  background-color: #10B981;
+  color: white;
+}
+
+.notification-btn.success:hover {
+  background-color: #059669;
+}
+
+.notification-btn.error {
+  background-color: #EF4444;
+  color: white;
+}
+
+.notification-btn.error:hover {
+  background-color: #DC2626;
+}
+
+.notification-btn.warning {
+  background-color: #F59E0B;
+  color: white;
+}
+
+.notification-btn.warning:hover {
+  background-color: #D97706;
+}
+
+.notification-btn.info {
+  background-color: #3B82F6;
+  color: white;
+}
+
+.notification-btn.info:hover {
+  background-color: #2563EB;
+}
+
+.notification-btn.cancel {
+  background-color: #F3F4F6;
+  color: #374151;
+}
+
+.notification-btn.cancel:hover {
+  background-color: #E5E7EB;
+}
+
+.notification-btn.confirm {
+  background-color: #3B82F6;
+  color: white;
+}
+
+.notification-btn.confirm:hover {
+  background-color: #2563EB;
+}
+
+/* Type-specific notification styles */
+.notification-success {
+  border-top: 4px solid #10B981;
+}
+
+.notification-error {
+  border-top: 4px solid #EF4444;
+}
+
+.notification-warning {
+  border-top: 4px solid #F59E0B;
+}
+
+.notification-info {
+  border-top: 4px solid #3B82F6;
+}
+
+/* Confirmation dialog specific styles */
+.confirmation-dialog {
+  max-width: 400px;
+}
+
+.confirmation-dialog .modal-body {
+  text-align: center;
+}
+
+.confirmation-dialog .notification-message {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
 } 

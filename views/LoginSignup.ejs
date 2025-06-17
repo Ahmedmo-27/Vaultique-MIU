@@ -58,17 +58,6 @@
                     
                     <div class="social-login">
                         <div class="social-divider">or continue with</div>
-                        <div class="social-buttons"
-                            data-client_id="<%= process.env.GOOGLE_CLIENT_ID %>"
-                            data-context="signin"
-                            data-ux_mode="popup"
-                            data-callback="handleGoogleSignIn"
-                            data-auto_prompt="false"
-                            >
-                            <button class="social-btn btn-google" id="googleSignIn">
-                                <i class="fab fa-google"></i>
-                                <span>Google</span>
-                            </button>
                         </div>
 
                         <div id="g_id_onload"
@@ -78,6 +67,7 @@
                             data-callback="handleGoogleSignIn"
                             data-auto_prompt="false">
                         </div>
+
                         <div class="g_id_signin"
                             data-type="standard"
                             data-shape="rectangular"
@@ -85,9 +75,9 @@
                             data-text="signin_with"
                             data-size="large"
                             data-logo_alignment="left"
-                            data-width="250">
-                        </div>
-                    </div>
+                            data-width="300">
+                   </div>
+                </div>
                     <p>Don't have an account? <a href="#" id="register-link">Register</a></p>
                 </form>
             </div>
@@ -122,12 +112,12 @@
                             </div>
                         </div>
                         <div class="input-group">
-                            <label for="phone">Phone Number (Optional)</label>
-                            <input type="tel" id="phone" placeholder="Enter your phone number">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="Enter your phone number" required>
                         </div>
                         <div class="input-group">
-                            <label for="dob">Date of Birth (Optional)</label>
-                            <input type="date" id="dob">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" required>
                         </div>
                         <div class="input-group">
                             <label for="language-signup">Preferred Language</label>

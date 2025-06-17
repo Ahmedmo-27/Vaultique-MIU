@@ -369,3 +369,62 @@ password-container {
         flex: 1;
     }
     
+
+    .submit-btn {
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      
+      .submit-btn.loading {
+        color: transparent;
+        pointer-events: none;
+      }
+      
+      .submit-btn.loading::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin: -10px 0 0 -10px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: button-loading-spinner 0.8s linear infinite;
+      }
+      
+      @keyframes button-loading-spinner {
+        from {
+          transform: rotate(0turn);
+        }
+        to {
+          transform: rotate(1turn);
+        }
+      }
+      
+      /* Optional: Add a subtle pulse effect to the button while loading */
+      .submit-btn.loading::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: inherit;
+        animation: button-pulse 1.5s ease-in-out infinite;
+      }
+      
+      @keyframes button-pulse {
+        0% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.1;
+        }
+        100% {
+          opacity: 0.3;
+        }
+      }
+    

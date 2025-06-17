@@ -395,6 +395,84 @@ const cartAbandonmentTemplate = (userName, productDetails) => ({
   `
 });
 
+const watchConfigurationTemplate = (userName, configuration) => ({
+  subject: "Watch Customization Request - Vaultique 🕰️",
+  html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #2c3e50; margin-bottom: 10px;">Watch Customization Request</h1>
+        <p style="color: #7f8c8d; font-size: 18px;">Your custom watch request has been received</p>
+      </div>
+      
+      <div style="background-color: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Dear ${userName},</p>
+        <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Thank you for your interest in our custom watch service. We have received your customization request and will begin processing it shortly.</p>
+        
+        <div style="margin: 25px 0; padding: 20px; background-color: #f8f9fa; border-radius: 6px;">
+          <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 15px;">Your Requested Specifications:</h2>
+          <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Model: ${configuration.model}</p>
+          <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Strap Color: ${configuration.strap}</p>
+          <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Case Color: ${configuration.case}</p>
+          <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Bezel Color: ${configuration.bezel}</p>
+          <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Dial Color: ${configuration.dial}</p>
+          <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Estimated Price: $${configuration.price}</p>
+          ${configuration.message ? `<p style="color: #34495e; font-size: 16px; line-height: 1.6; margin-top: 15px;"><strong>Additional Notes:</strong><br>${configuration.message}</p>` : ''}
+        </div>
+
+        <div style="margin: 25px 0; padding: 20px; background-color: #f8f9fa; border-radius: 6px;">
+          <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 15px;">What's Next?</h2>
+          <ul style="color: #34495e; font-size: 16px; line-height: 1.6; padding-left: 20px;">
+            <li>Our team will review your customization request</li>
+            <li>We will contact you within 2-3 business days to discuss the details</li>
+            <li>Once approved, we will provide you with a final quote</li>
+            <li>You will be notified when your custom watch is ready for collection</li>
+          </ul>
+        </div>
+
+        <div style="margin: 25px 0; padding: 20px; background-color: #e8f4f8; border-radius: 6px; border-left: 4px solid #3498db;">
+          <p style="color: #2c3e50; font-size: 16px; line-height: 1.6; margin: 0;">
+            <strong>Important:</strong> We will keep you updated throughout the customization process. Please save this email for your reference.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 14px;">
+        <p>If you have any questions about your request, please contact our support team.</p>
+        <p>Best regards,<br>The Vaultique Team</p>
+      </div>
+    </div>
+  `,
+  text: `
+    Watch Customization Request
+
+    Dear ${userName},
+
+    Thank you for your interest in our custom watch service. We have received your customization request and will begin processing it shortly.
+
+    Your Requested Specifications:
+    Model: ${configuration.model}
+    Strap Color: ${configuration.strap}
+    Case Color: ${configuration.case}
+    Bezel Color: ${configuration.bezel}
+    Dial Color: ${configuration.dial}
+    Estimated Price: $${configuration.price}
+    ${configuration.message ? `\nAdditional Notes:\n${configuration.message}` : ''}
+
+    What's Next?
+    - Our team will review your customization request
+    - We will contact you within 2-3 business days to discuss the details
+    - Once approved, we will provide you with a final quote
+    - You will be notified when your custom watch is ready for collection
+
+    Important: We will keep you updated throughout the customization process. Please save this email for your reference.
+
+    If you have any questions about your request, please contact our support team.
+
+    Best regards,
+    The Vaultique Team
+  `
+});
+
 module.exports = {
   welcomeEmailTemplate,
   passwordResetTemplate,
@@ -402,5 +480,6 @@ module.exports = {
   orderConfirmationTemplate,
   newsletterTemplate,
   promotionalTemplate,
-  cartAbandonmentTemplate
+  cartAbandonmentTemplate,
+  watchConfigurationTemplate
 }; 

@@ -1,40 +1,77 @@
 // Notification utility functions
 if (typeof window.showNotification === 'undefined') {
-  const showNotification = (type, message, title = type === 'success' ? 'Success' : 'Error') => {
+  const showNotification = (type, message, title = null) => {
+    // Set default titles based on type
+    if (!title) {
+      switch (type) {
+        case 'success':
+          title = 'Success!';
+          break;
+        case 'error':
+          title = 'Error';
+          break;
+        case 'warning':
+          title = 'Warning';
+          break;
+        case 'info':
+          title = 'Information';
+          break;
+        default:
+          title = 'Notification';
+      }
+    }
+
     // Create modal overlay
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.id = 'notificationModal';
 
-    // Create modal container
+    // Create modal container with type-specific styling
     const modalContainer = document.createElement('div');
-    modalContainer.className = 'modal-container';
+    modalContainer.className = `modal-container notification-${type}`;
 
-    // Create modal header
+    // Create modal header with type-specific icon
     const modalHeader = document.createElement('div');
     modalHeader.className = 'modal-header';
+    let icon = '';
+    switch (type) {
+      case 'success':
+        icon = '✓';
+        break;
+      case 'error':
+        icon = '✕';
+        break;
+      case 'warning':
+        icon = '⚠';
+        break;
+      case 'info':
+        icon = 'ℹ';
+        break;
+      default:
+        icon = 'ℹ';
+    }
     modalHeader.innerHTML = `
-        <h3>${title}</h3>
+        <div class="notification-title">
+          <span class="notification-icon ${type}">${icon}</span>
+          <h3>${title}</h3>
+        </div>
         <button class="close-modal" onclick="closeNotification()">&times;</button>
     `;
 
-    // Create modal body
+    // Create modal body with formatted message
     const modalBody = document.createElement('div');
     modalBody.className = 'modal-body';
     modalBody.innerHTML = `
-        <div class="notification-icon ${type}">
-            ${type === 'success' ? '✓' : '✕'}
-        </div>
         <div class="notification-message">
             ${message}
         </div>
     `;
 
-    // Create modal footer
+    // Create modal footer with type-specific button
     const modalFooter = document.createElement('div');
     modalFooter.className = 'modal-footer';
     modalFooter.innerHTML = `
-        <button onclick="closeNotification()">Close</button>
+        <button class="notification-btn ${type}" onclick="closeNotification()">Close</button>
     `;
 
     // Assemble modal
@@ -51,10 +88,12 @@ if (typeof window.showNotification === 'undefined') {
       modal.classList.add('show');
     }, 50);
 
-    // Auto close after 5 seconds
-    setTimeout(() => {
-      closeNotification();
-    }, 5000);
+    // Auto close after 5 seconds for non-error notifications
+    if (type !== 'error') {
+      setTimeout(() => {
+        closeNotification();
+      }, 5000);
+    }
   };
 
   // Export showNotification to window
@@ -77,7 +116,7 @@ if (typeof window.closeNotification === 'undefined') {
   window.closeNotification = closeNotification;
 }
 
-// Confirmation dialog
+// Confirmation dialog with enhanced styling
 if (typeof window.showConfirmation === 'undefined') {
   const showConfirmation = (message, onConfirm, onCancel = () => {}) => {
     const modal = document.createElement('div');
@@ -85,12 +124,15 @@ if (typeof window.showConfirmation === 'undefined') {
     modal.id = 'confirmationModal';
 
     const modalContainer = document.createElement('div');
-    modalContainer.className = 'modal-container';
+    modalContainer.className = 'modal-container confirmation-dialog';
 
     const modalHeader = document.createElement('div');
     modalHeader.className = 'modal-header';
     modalHeader.innerHTML = `
-        <h3>Confirm Action</h3>
+        <div class="notification-title">
+          <span class="notification-icon warning">⚠</span>
+          <h3>Confirm Action</h3>
+        </div>
         <button class="close-modal" onclick="closeConfirmation()">&times;</button>
     `;
 
@@ -105,8 +147,8 @@ if (typeof window.showConfirmation === 'undefined') {
     const modalFooter = document.createElement('div');
     modalFooter.className = 'modal-footer';
     modalFooter.innerHTML = `
-        <button class="cancel-btn" onclick="closeConfirmation()">Cancel</button>
-        <button class="confirm-btn" onclick="confirmAction()">Confirm</button>
+        <button class="notification-btn cancel" onclick="closeConfirmation()">Cancel</button>
+        <button class="notification-btn confirm" onclick="confirmAction()">Confirm</button>
     `;
 
     modalContainer.appendChild(modalHeader);
@@ -119,33 +161,9 @@ if (typeof window.showConfirmation === 'undefined') {
     setTimeout(() => {
       modal.classList.add('show');
     }, 50);
-
-    // Close confirmation function
-    window.closeConfirmation = () => {
-      const modal = document.getElementById('confirmationModal');
-      if (modal) {
-        modal.classList.remove('show');
-        setTimeout(() => {
-          modal.remove();
-          onCancel();
-        }, 300);
-      }
-    };
-
-    // Confirm action function
-    window.confirmAction = () => {
-      const modal = document.getElementById('confirmationModal');
-      if (modal) {
-        modal.classList.remove('show');
-        setTimeout(() => {
-          modal.remove();
-          onConfirm();
-        }, 300);
-      }
-    };
   };
-
-  // Export to window
+  
+  // Export showConfirmation to window
   window.showConfirmation = showConfirmation;
 }
 

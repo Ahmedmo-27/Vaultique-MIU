@@ -49,8 +49,16 @@ body {
   align-items: flex-start;
 }
 
-.configurator-column,
-.customization-column {
+.configurator-column
+{
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+
+.customization-column
+{
   background: var(--card-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
@@ -133,7 +141,10 @@ body {
 }
 
 .customization-panel {
-  margin-bottom: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .customization-header h3 {
@@ -310,6 +321,160 @@ body {
     padding: 0.7rem 0.5rem;
   }
 }
+
+.share-form {
+  margin-top: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  background: #fafbfc;
+  transition: border-color var(--transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--secondary);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-title {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.form-info {
+  border-left: 4px solid #3498db;
+}
+
+.form-info p {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.form-info i {
+  margin-top: 0.2rem;
+}
+
+.request-form {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.request-form h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: var(--primary);
+}
+
+.share-form {
+  margin-top: 0;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  background: #fafbfc;
+  transition: border-color var(--transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--secondary);
+}
+
+.form-info {
+  border-left: 4px solid #3498db;
+}
+
+.form-info p {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.form-info i {
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 1024px) {
+  .request-form {
+    margin-top: 1rem;
+  }
+}
     </style>
 </head>
 
@@ -443,9 +608,8 @@ body {
                             <div class="price-display">
                                 Total: $<span id="total-price">8,500</span>
                             </div>
-                            <button class="add-to-cart">
-                                <i class="fas fa-shopping-cart"></i>
-                                Add to Cart
+                            <button id="share-config" class="btn" style="width: 100%; margin-top: 1rem;">
+                                <i class="fas fa-shopping-cart"></i> Request Order
                             </button>
                         </div>
                     </div>
@@ -489,6 +653,34 @@ body {
                                     </span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                        <!-- Request Form -->
+                        <div class="request-form">
+                            <h3>Request Custom Watch</h3>
+                            <form id="share-form" class="share-form">
+                                <div class="form-group">
+                                    <label for="share-name">Your Name:</label>
+                                    <input type="text" id="share-name" name="name" value="<%= locals.user?.Name || '' %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="share-email">Your Email:</label>
+                                    <input type="email" id="share-email" name="email" value="<%= locals.user?.email || '' %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="share-message">Special Requirements or Notes:</label>
+                                    <textarea id="share-message" name="message" rows="3" placeholder="Please let us know if you have any special requirements or preferences for your custom watch..."></textarea>
+                                </div>
+                                <div class="form-info" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: var(--border-radius);">
+                                    <p style="color: #34495e; font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                                        <i class="fas fa-info-circle" style="color: #3498db;"></i>
+                                        After submitting your request, our team will review it and contact you within 2-3 business days to discuss the details and provide a final quote.
+                                    </p>
+                                </div>
+                                <button type="submit" class="btn" style="width: 100%;">
+                                    <i class="fas fa-paper-plane"></i> Submit Customization Request
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -660,6 +852,7 @@ body {
                         option.classList.add('active');
                         const strap = option.dataset.strap;
                         updateModelStrap(strap);
+                        updateSummaryText('strap', strap);
                         updateTotalPrice();
                     });
                 });
@@ -893,6 +1086,19 @@ body {
                         }
                     }
                 });
+
+                // Update summary text
+                updateSummaryText(component, color);
+            }
+
+            // Add function to update summary text
+            function updateSummaryText(component, color) {
+                const summaryElement = document.getElementById(`summary-${component}`);
+                if (summaryElement) {
+                    // Capitalize first letter of color
+                    const formattedColor = color.charAt(0).toUpperCase() + color.slice(1);
+                    summaryElement.textContent = formattedColor;
+                }
             }
 
             // Modal setup
@@ -914,6 +1120,49 @@ body {
                 });
             }
 
+            // Share configuration functionality
+            function setupShareConfiguration() {
+                const shareForm = document.getElementById('share-form');
+
+                shareForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const formData = {
+                        name: document.getElementById('share-name').value,
+                        email: document.getElementById('share-email').value,
+                        message: document.getElementById('share-message').value,
+                        configuration: {
+                            model: state.currentModel,
+                            strap: state.currentColors.strap,
+                            case: state.currentColors.case,
+                            bezel: state.currentColors.bezel,
+                            dial: state.currentColors.dial,
+                            price: state.currentPrice
+                        }
+                    };
+
+                    try {
+                        const response = await fetch('/api/share-configuration', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(formData)
+                        });
+
+                        if (response.ok) {
+                            alert('Your customization request has been submitted successfully! We will contact you within 2-3 business days.');
+                            shareForm.reset();
+                        } else {
+                            throw new Error('Failed to submit customization request');
+                        }
+                    } catch (error) {
+                        console.error('Error submitting customization request:', error);
+                        alert('Failed to submit customization request. Please try again.');
+                    }
+                });
+            }
+
             // Initialize
             function init() {
                 setupModelViewer();
@@ -921,6 +1170,7 @@ body {
                 setupCustomizationHandlers();
                 setupModelSelection();
                 setupModal();
+                setupShareConfiguration();
             }
 
             // Start the application

@@ -196,6 +196,8 @@ app.use(
         ],
         connectSrc: [
           "'self'",
+          "blob:",
+          "data:",
           "https://accounts.google.com",
           "https://oauth2.googleapis.com"
         ],

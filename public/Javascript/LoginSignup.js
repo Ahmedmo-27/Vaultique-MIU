@@ -132,6 +132,10 @@ document.addEventListener("DOMContentLoaded", function () {
       e.preventDefault();
       console.log("Complete signup button clicked");
       
+      // Add loading state to button
+      completeSignupBtn.classList.add('loading');
+      completeSignupBtn.disabled = true;
+      
       // Get form data
       const username = document.getElementById("username").value;
       const Name = document.getElementById("Name").value;
@@ -150,56 +154,80 @@ document.addEventListener("DOMContentLoaded", function () {
       
       // Validate required fields
       if (!username || !Name || !email || !password || !language) {
-        window.showNotification('error', 'Please fill all required fields');
+        window.showNotification('error', 'Please fill in all required fields to create your account.');
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
         return;
       }
 
       // Validate username format
       if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        window.showNotification('error', 'Username can only contain letters, numbers and underscores');
+        window.showNotification('error', 'Username can only contain letters, numbers, and underscores. Please choose a different username.');
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
         return;
       }
 
       // Validate name length
       if (Name.length < 2) {
-        window.showNotification('error', 'Name must be at least 2 characters long');
+        window.showNotification('error', 'Your name must be at least 2 characters long. Please enter your full name.');
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
         return;
       }
 
       // Validate username length
       if (username.length < 3) {
-        window.showNotification('error', 'Username must be at least 3 characters long');
+        window.showNotification('error', 'Username must be at least 3 characters long. Please choose a longer username.');
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
         return;
       }
 
       // Validate email format
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        window.showNotification('error', 'Please enter a valid email address');
+        window.showNotification('error', 'Please enter a valid email address. This will be used for account verification and important updates.');
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
         return;
       }
 
       // Validate password strength
       const passwordErrors = [];
-      if (password.length < 8) passwordErrors.push("Password must be at least 8 characters long");
-      if (!/[A-Z]/.test(password)) passwordErrors.push("Password must contain at least one uppercase letter");
-      if (!/[a-z]/.test(password)) passwordErrors.push("Password must contain at least one lowercase letter");
-      if (!/[0-9]/.test(password)) passwordErrors.push("Password must contain at least one number");
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) passwordErrors.push("Password must contain at least one special character");
+      if (password.length < 8) passwordErrors.push("• Password must be at least 8 characters long");
+      if (!/[A-Z]/.test(password)) passwordErrors.push("• Password must contain at least one uppercase letter");
+      if (!/[a-z]/.test(password)) passwordErrors.push("• Password must contain at least one lowercase letter");
+      if (!/[0-9]/.test(password)) passwordErrors.push("• Password must contain at least one number");
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) passwordErrors.push("• Password must contain at least one special character");
       
       if (passwordErrors.length > 0) {
-        window.showNotification('error', "Password requirements:\n" + passwordErrors.join("\n"));
+        window.showNotification('warning', "Please strengthen your password:\n" + passwordErrors.join("\n"));
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
         return;
       }
       
       // Validate phone number format if provided
       if (phone && !/^\+?[1-9]\d{1,14}$/.test(phone)) {
-        window.showNotification('error', 'Please enter a valid phone number (e.g., +1234567890)');
+        window.showNotification('warning', 'Please enter a valid phone number (e.g., +1234567890). This will help us contact you if needed.');
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
         return;
       }
 
       // Validate DOB format if provided
       if (dob && !/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
-        window.showNotification('error', 'Please enter a valid date of birth (YYYY-MM-DD)');
+        window.showNotification('warning', 'Please enter a valid date of birth in the format YYYY-MM-DD.');
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
         return;
       }
       
@@ -244,19 +272,42 @@ document.addEventListener("DOMContentLoaded", function () {
           // Clear guest cart after successful signup
           localStorage.removeItem('guestCart');
           
-          // Show success message with verification instructions
-          showNotification('Signup successful! Please check your email to verify your account. You will not be able to login until you verify your email.', 'success');
+          // Show personalized success message
+          window.showNotification('success', 
+            `Welcome to our community, ${Name}! 🎉\n\n` +
+            'Your account has been created successfully. To get started:\n' +
+            '1. Please check your email for a verification link\n' +
+            '2. Click the link to verify your account\n' +
+            '3. Once verified, you can log in and start exploring\n\n' +
+            'We\'re excited to have you on board!'
+          );
           
           // Redirect to login page after a longer delay to ensure user reads the message
           setTimeout(() => {
             window.location.href = '/user/LoginSignup';
-          }, 5000);
+          }, 7000);
         } else {
-          showNotification(data.message || 'Signup failed. Please try again.', 'error');
+          // Handle specific error cases
+          let errorMessage = data.message || 'Signup failed. Please try again.';
+          if (data.message.includes('email')) {
+            errorMessage = 'This email address is already registered. Please use a different email or try logging in.';
+          } else if (data.message.includes('username')) {
+            errorMessage = 'This username is already taken. Please choose a different username.';
+          }
+          window.showNotification('error', errorMessage);
+          // Remove loading state
+          completeSignupBtn.classList.remove('loading');
+          completeSignupBtn.disabled = false;
         }
       } catch (error) {
         console.error('Error during signup:', error);
-        showNotification('An error occurred during signup. Please try again.', 'error');
+        window.showNotification('error', 
+          'We encountered an issue while creating your account.\n\n' +
+          'Please try again in a few moments. If the problem persists, contact our support team.'
+        );
+        // Remove loading state
+        completeSignupBtn.classList.remove('loading');
+        completeSignupBtn.disabled = false;
       }
     });
   } else {

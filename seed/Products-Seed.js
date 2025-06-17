@@ -153,6 +153,7 @@ const products = [
   {
     id: '116500LN',
     name: 'Rolex Cosmograph Daytona',
+    Model3d: '/Assets/3D Models/Rolex Cosmograph Daytona.glb',
     brand: 'ROL_1',
     strapMaterial: 'Metal',
     movement: 'Automatic',
@@ -640,6 +641,7 @@ const products = [
   {
     id: '22012412103001',
     name: 'Omega Seamaster Aqua Terra',
+    Model3d: '/Assets/3D Models/Omega Seamaster Aqua Terra.glb',
     brand: 'OMG_1',
     strapMaterial: 'Leather',
     movement: 'Automatic',
@@ -1102,6 +1104,7 @@ const products = [
   {
     id: 'WSSA0018',
     name: 'Cartier Santos de Cartier',
+    Model3d: '/Assets/3D Models/Cartier Santos de Cartier.glb',
     brand: 'CAR_1',
     strapMaterial: 'Metal',
     movement: 'Automatic',
@@ -1498,6 +1501,7 @@ const products = [
   {
     id: '26530ST.OO.1220ST.01',
     name: 'Audemars Piguet Royal Oak Flying Tourbillon',
+    Model3d: '/Assets/3D Models/Audemars Piguet Royal Oak Flying Tourbillon.glb',
     brand: 'APG_1',
     strapMaterial: 'White Gold',
     movement: 'Automatic',

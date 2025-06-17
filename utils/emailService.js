@@ -6,7 +6,8 @@ const {
   orderConfirmationTemplate,
   newsletterTemplate,
   promotionalTemplate,
-  cartAbandonmentTemplate 
+  cartAbandonmentTemplate,
+  watchConfigurationTemplate
 } = require('./emailTemplates');
 
 // Email queue for handling failed emails
@@ -240,6 +241,77 @@ const sendCartAbandonmentEmail = async (user, product) => {
   return sendEmail(mailOptions);
 };
 
+// Send watch configuration email
+const sendWatchConfigurationEmail = async (user, configuration) => {
+  const template = watchConfigurationTemplate(user.Name, configuration);
+  
+  // Send to user
+  const userMailOptions = {
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: template.subject,
+    html: template.html,
+    text: template.text
+  };
+
+  // Send to Vaultique
+  const vaultiqueMailOptions = {
+    from: user.email,
+    to: 'vaultique.watches@gmail.com',
+    subject: `New Watch Customization Request from ${user.Name}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2c3e50; margin-bottom: 10px;">New Customization Request</h1>
+          <p style="color: #7f8c8d; font-size: 18px;">From: ${user.Name} (${user.email})</p>
+        </div>
+        
+        <div style="background-color: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <div style="margin: 25px 0; padding: 20px; background-color: #f8f9fa; border-radius: 6px;">
+            <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 15px;">Requested Specifications:</h2>
+            <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Model: ${configuration.model}</p>
+            <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Strap Color: ${configuration.strap}</p>
+            <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Case Color: ${configuration.case}</p>
+            <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Bezel Color: ${configuration.bezel}</p>
+            <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Dial Color: ${configuration.dial}</p>
+            <p style="color: #34495e; font-size: 16px; line-height: 1.6;">Estimated Price: $${configuration.price}</p>
+            ${configuration.message ? `<p style="color: #34495e; font-size: 16px; line-height: 1.6; margin-top: 15px;"><strong>Additional Notes:</strong><br>${configuration.message}</p>` : ''}
+          </div>
+
+          <div style="margin: 25px 0; padding: 20px; background-color: #e8f4f8; border-radius: 6px; border-left: 4px solid #3498db;">
+            <p style="color: #2c3e50; font-size: 16px; line-height: 1.6; margin: 0;">
+              <strong>Action Required:</strong> Please review this request and contact the customer within 2-3 business days.
+            </p>
+          </div>
+        </div>
+      </div>
+    `,
+    text: `
+      New Customization Request
+      From: ${user.Name} (${user.email})
+
+      Requested Specifications:
+      Model: ${configuration.model}
+      Strap Color: ${configuration.strap}
+      Case Color: ${configuration.case}
+      Bezel Color: ${configuration.bezel}
+      Dial Color: ${configuration.dial}
+      Estimated Price: $${configuration.price}
+      ${configuration.message ? `\nAdditional Notes:\n${configuration.message}` : ''}
+
+      Action Required: Please review this request and contact the customer within 2-3 business days.
+    `
+  };
+
+  // Send both emails
+  const [userResult, vaultiqueResult] = await Promise.all([
+    sendEmail(userMailOptions),
+    sendEmail(vaultiqueMailOptions)
+  ]);
+
+  return userResult && vaultiqueResult;
+};
+
 // Test email configuration
 const testEmailConfig = async (testEmail) => {
   const mailOptions = {
@@ -268,5 +340,6 @@ module.exports = {
   sendNewsletterEmail,
   sendPromotionalEmail,
   sendCartAbandonmentEmail,
+  sendWatchConfigurationEmail,
   testEmailConfig
 }; 
