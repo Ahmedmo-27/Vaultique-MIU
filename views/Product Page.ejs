@@ -27,7 +27,7 @@
     <main class="product-container">
       <!-- Breadcrumb -->
       <div class="breadcrumb">
-        <a href="/">Home</a> / <a href="/shop">Shop All</a> /
+        <a href="/user/home">Home</a> / <a href="/user/products">Shop All</a> /
         <span><%= product.name %></span>
       </div>
 
@@ -287,7 +287,7 @@
         wishlistBtn.addEventListener('click', async function() {
           const productId = this.getAttribute('data-product-id');
           try {
-            const response = await fetch('/api/wishlist/toggle', {
+            const response = await fetch('/user/wishlist/toggle', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'

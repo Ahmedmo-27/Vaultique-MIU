@@ -8,6 +8,7 @@
 }
 
 body {
+  overflow-x: hidden;
   background-color:#e8d9c4 ;
   margin: 0;
   padding: 0;
@@ -574,6 +575,7 @@ img {
 
 /* Thumbnail Container Styles */
 .thumbnail-container {
+  justify-content: center;
   display: flex;
   gap: 10px;
   margin-top: 20px;
@@ -670,6 +672,7 @@ img {
   }
 
   .product-gallery {
+    width: 83%;
     order: 1;
   }
 

@@ -17,6 +17,7 @@
         <script src="/Javascript/Products.js" defer></script>
         <script src="/Javascript/Light-Mode.js"></script>
         <script src="/Javascript/compare.js" defer></script>
+        <script src="/Javascript/image-zoom.js"></script>
     </head>
     <body>
         
@@ -55,11 +56,11 @@
             
             <div class="sort-options">
                 <h3>Sort By</h3>
-                <a href="javascript:void(0)" onclick="updateSort('default')" class="<%= sort === 'default' ? 'active' : '' %>">Default</a>
-                <a href="javascript:void(0)" onclick="updateSort('new')" class="<%= sort === 'new' ? 'active' : '' %>">New</a>
-                <a href="javascript:void(0)" onclick="updateSort('price-asc')" class="<%= sort === 'price-asc' ? 'active' : '' %>">Price ↑</a>
-                <a href="javascript:void(0)" onclick="updateSort('price-desc')" class="<%= sort === 'price-desc' ? 'active' : '' %>">Price ↓</a>
-                <a href="javascript:void(0)" onclick="updateSort('popularity')" class="<%= sort === 'popularity' ? 'active' : '' %>">Popularity</a>
+                <a href="javascript:void(0)" onclick="updateSort('default')" class="tag <%= sort === 'default' ? 'active' : '' %>">Default</a>
+                <a href="javascript:void(0)" onclick="updateSort('new')" class="tag <%= sort === 'new' ? 'active' : '' %>">New</a>
+                <a href="javascript:void(0)" onclick="updateSort('price-asc')" class="tag <%= sort === 'price-asc' ? 'active' : '' %>">Price ↑</a>
+                <a href="javascript:void(0)" onclick="updateSort('price-desc')" class="tag <%= sort === 'price-desc' ? 'active' : '' %>">Price ↓</a>
+                <a href="javascript:void(0)" onclick="updateSort('popularity')" class="tag <%= sort === 'popularity' ? 'active' : '' %>">Popularity</a>
             </div>
         
             <div class="filters">

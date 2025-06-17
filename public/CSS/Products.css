@@ -80,6 +80,16 @@ body
 /* Sort Options */
 .sort-options {
     margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.sort-options h3
+{
+  margin-bottom: 10px;
+  width: 100%;
 }
 
 .sort-options button {
@@ -149,6 +159,26 @@ body
 .overlay.show 
 {
   display: block;
+}
+
+.filters
+{
+  margin-bottom: 15px;
+}
+
+.price-range
+{
+  margin-bottom: 15px;
+}
+
+.price-range input
+{
+  margin-right: 5px;
+  width: 100px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: #333 0px 0px 3px;  
 }
 
 .filter-options 

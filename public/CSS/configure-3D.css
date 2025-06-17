@@ -957,3 +957,200 @@ model-viewer {
 .hidden {
     display: none !important;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .model-container {
+    margin: 2rem auto;
+    width: 90%;
+    height: 400px;
+  }
+
+  .customization-panel {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .customization-section {
+    margin: 0 0 1rem 0;
+    width: 100%;
+  }
+
+  .price-display, .add-to-cart {
+    margin: 1rem 0 0 0;
+    width: 100%;
+  }
+
+  .watch-specs-horizontal {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .spec-item {
+    flex: 1 1 200px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding-top: 100px;
+  }
+
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .model-container {
+    height: 350px;
+    margin: 1rem auto;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .controls .btn {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 120px;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  .watch-details {
+    padding: 1rem;
+  }
+
+  .config-summary {
+    padding: 1rem;
+  }
+
+  .summary-row {
+    font-size: 0.8rem;
+  }
+
+  .color-options {
+    gap: 0.5rem;
+  }
+
+  .color-option {
+    width: 35px;
+    height: 35px;
+  }
+
+  .option-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding-top: 80px;
+  }
+
+  .model-container {
+    height: 300px;
+    width: 95%;
+  }
+
+  .controls .btn {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .watch-specs-horizontal {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .spec-item {
+    flex: 1 1 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .color-options {
+    justify-content: center;
+  }
+
+  .color-option {
+    width: 30px;
+    height: 30px;
+  }
+
+  .summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .summary-value {
+    width: 100%;
+  }
+
+  .request-form {
+    padding: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    padding: 0.6rem;
+  }
+}
+
+/* Additional Mobile Optimizations */
+@media (max-width: 360px) {
+  .model-container {
+    height: 250px;
+  }
+
+  .controls .btn {
+    font-size: 0.75rem;
+    padding: 0.4rem;
+  }
+
+  .color-option {
+    width: 25px;
+    height: 25px;
+  }
+
+  .summary-title {
+    font-size: 1rem;
+  }
+
+  .summary-row {
+    font-size: 0.75rem;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) {
+  .color-option:hover {
+    transform: none;
+  }
+
+  .option-item:hover {
+    transform: none;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+}
