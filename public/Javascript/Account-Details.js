@@ -1221,4 +1221,80 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
+
+  // Refund Request Button Click Handler
+    document.body.addEventListener('click', function(e) {
+        if (e.target.classList.contains('refund-request')) {
+            const orderId = e.target.dataset.orderId;
+            document.getElementById('refundOrderId').value = orderId;
+            showModal('refundRequestModal');
+        }
+    });
+
+    // Submit Refund Request
+    document.getElementById('submitRefundRequest').addEventListener('click', async function() {
+        const orderId = document.getElementById('refundOrderId').value;
+        const reason = document.getElementById('refundReason').value;
+        const details = document.getElementById('refundDetails').value;
+
+        if (!reason) {
+            showNotification('Please select a reason for refund', 'error');
+            return;
+        }
+
+        try {
+            showLoading();
+            const response = await fetch('/api/refunds/request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId, reason, details })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Refund request submitted successfully');
+                hideModal('refundRequestModal');
+                window.location.reload();
+            } else {
+                throw new Error(data.message || 'Failed to submit refund request');
+            }
+        } catch (error) {
+            showNotification(error.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    });
+
+    // Cancel Refund Request
+    document.body.addEventListener('click', function(e) {
+        if (e.target.classList.contains('cancel-request')) {
+            const refundId = e.target.dataset.refundId;
+            if (confirm('Are you sure you want to cancel this refund request?')) {
+                cancelRefundRequest(refundId);
+            }
+        }
+    });
+
+    async function cancelRefundRequest(refundId) {
+        try {
+            showLoading();
+            const response = await fetch(`/api/refunds/${refundId}/cancel`, {
+                method: 'POST'
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Refund request cancelled successfully');
+                window.location.reload();
+            } else {
+                throw new Error(data.message || 'Failed to cancel refund request');
+            }
+        } catch (error) {
+            showNotification(error.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
 });

@@ -1,11 +1,11 @@
+// refundRoutes.js
 const express = require('express');
 const router = express.Router();
 const refundController = require('../controllers/refundController');
 const { isAuthenticated } = require('../middleware/auth');
 
 
-// Start server
-const PORT = process.env.PORT || 3000;
+
 
 
 // Request a refund
@@ -15,7 +15,7 @@ router.post('/request', isAuthenticated, refundController.requestRefund);
 router.get('/user', isAuthenticated, refundController.getUserRefunds);
 
 // Cancel refund request
-router.delete('/:refundId', isAuthenticated, refundController.cancelRefund);
+router.post('/:refundId/cancel', isAuthenticated, refundController.cancelRefund);
 
 // In your account route handler
 router.get('/account', isAuthenticated, async (req, res) => {
@@ -36,17 +36,17 @@ router.get('/account', isAuthenticated, async (req, res) => {
   }
 
   // POST: /api/user/refunds/request
-router.post('/request', (req, res) => {
-    const { orderId, reason, details } = req.body;
-    // Process refund request
-    res.json({ success: true, message: 'Refund requested' });
-});
+    router.post('/request', (req, res) => { // REMOVE THIS
+        const { orderId, reason, details } = req.body;
+        // Process refund request
+        res.json({ success: true, message: 'Refund requested' });
+    });
 
 // POST: /api/user/refunds/:refundId/cancel
-router.post('/:refundId/cancel', (req, res) => {
-    const refundId = req.params.refundId;
-    // Process cancellation
-    res.json({ success: true, message: 'Refund cancelled' });
-});
+    router.post('/:refundId/cancel', (req, res) => { // REMOVE THIS
+        const refundId = req.params.refundId;
+        // Process cancellation
+        res.json({ success: true, message: 'Refund cancelled' });
+    });
 });
 module.exports = router;

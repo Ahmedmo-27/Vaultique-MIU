@@ -186,6 +186,7 @@
                                         <button class="buy-again">Buy Again</button>
                                     <% } %>
                                     <button class="order-details" data-order-id="<%= order.orderId %>">View Details</button>
+                                    <button class="write-review" data-order-id="<%= order.orderId %>">Review</button>
                                 </div>
                             </div>
                         <% }); %>
@@ -499,22 +500,39 @@
             </div>
         </div>
 
-        <!-- Refund Details Modal -->
-        <div id="refundDetailsModal" class="modal-overlay">
-            <div class="modal-container">
-                <div class="modal-header">
-                    <h3>Refund Details</h3>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <!-- Content will be dynamically populated -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="cancel-btn">Close</button>
-                    <button type="button" class="cancel-request-btn" style="display: none;">Cancel Request</button>
-                </div>
-            </div>
+       <!-- Refund Request Modal -->
+<div id="refundRequestModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3>Request Refund</h3>
+      <button class="close-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="refundRequestForm">
+        <input type="hidden" id="refundOrderId" name="orderId">
+        <div class="form-group">
+          <label for="refundReason">Reason for Refund</label>
+          <select id="refundReason" name="reason" required>
+            <option value="">Select a reason</option>
+            <option value="Not right product">Not the right product</option>
+            <option value="Low quality">Low quality</option>
+            <option value="Damaged">Damaged during shipping</option>
+            <option value="Wrong item">Wrong item received</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
+        <div class="form-group">
+          <label for="refundDetails">Additional Details (Optional)</label>
+          <textarea id="refundDetails" name="details" rows="4"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="cancel-btn">Cancel</button>
+      <button type="button" class="submit-btn" id="submitRefundRequest">Submit Request</button>
+    </div>
+  </div>
+</div>
     </div>
 
     <script>
@@ -1140,6 +1158,77 @@
             color: white;
             border: none;
         }
+
+        /* Refund Request Button */
+.refund-request {
+  background-color: #f8f9fa;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+/* Add to your CSS */
+.refund-request {
+  z-index: 10;
+  position: relative;
+  pointer-events: auto !important;
+}
+
+.modal-overlay {
+  z-index: 10000; /* Higher than other elements */
+}
+
+.refund-request:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Cancel Refund Button */
+.cancel-refund {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.cancel-refund:hover {
+  background-color: #5a6268;
+}
+
+/* Modal Form Styles */
+.modal-body .form-group {
+  margin-bottom: 20px;
+}
+
+.modal-body label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.modal-body select,
+.modal-body textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.modal-body textarea {
+  min-height: 100px;
+  resize: vertical;
+}
 
         /* Dark mode support */
         @media (prefers-color-scheme: dark) {

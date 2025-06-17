@@ -427,7 +427,7 @@ app.get('/configurator', configuratorController.renderConfigurator);
 app.use('/api/configurator', configuratorRoutes);
 
 // Refund routes
-app.use('/refunds', refundRoutes);
+app.use('/api/refunds', refundRoutes); // Add this line
 
 // Global logout route for client-side usage
 app.all('/logout', (req, res) => {

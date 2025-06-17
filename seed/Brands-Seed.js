@@ -282,7 +282,7 @@ const Brands = [
       },
     ],
   },
-
+  
   {
     _id: 'VAC_1',
     name: 'Vacheron Constantin',

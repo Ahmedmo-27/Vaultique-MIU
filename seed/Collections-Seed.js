@@ -176,29 +176,7 @@ const Collections = [
     ],
   },
 
-  {
-    _id: 'Him_1',
-    name: 'For Him',
-    slug: 'him',
-    logo: 'Him',
-    coverImage: '/Assets/Images/Photos/Him Cover Image.jpg',
-    heroVideo: '/Assets/Videos/For both.mp4',
-    header: 'Timeless Masculinity',
-    description:
-      'The Him Collection is a celebration of masculine elegance and robust design. Each timepiece is crafted to reflect strength, sophistication, and timeless style.',
-    },
-
-    {
-    _id: 'Her_1',
-    name: 'For Her',
-    slug: 'her',
-    logo: 'Her',
-    coverImage: '/Assets/Images/Photos/Her Cover Image.jpg',
-    heroVideo: '/Assets/Videos/For both.mp4',
-    header: 'Elegance Redefined',
-    description:
-      'The Her Collection embodies feminine grace and exquisite craftsmanship. These timepieces are designed to complement the modern woman’s style, offering both beauty and functionality.',
-    },
+  
 ];
 
 async function seedDatabase() {

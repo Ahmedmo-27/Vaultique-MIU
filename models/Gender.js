@@ -1,4 +1,6 @@
+// models/Gender.js
 const mongoose = require('mongoose');
+
 const genderSchema = new mongoose.Schema({
   _id: {
     type: String,
@@ -13,30 +15,11 @@ const genderSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  logo: {
-    type: String,
-    required: true
-  },
-  coverImage: {
-    type: String,
-    required: true
-  },
-  heroVideo: {
-    type: String,
-    required: true
-  },
-  header: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  featuredProducts: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product'
-  }]
+  logo: String,
+  coverImage: String,
+  heroVideo: String,
+  header: String,
+  description: String
 }, {
   timestamps: true
 });

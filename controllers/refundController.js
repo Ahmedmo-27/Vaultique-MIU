@@ -3,34 +3,30 @@ const Order = require('../models/Orders');
 const User = require('../models/Users');
 
 // Request a refund
+// Fix typo in requestRefund method
 exports.requestRefund = async (req, res) => {
     try {
         const { orderId, reason, details } = req.body;
         const userId = req.user._id;
 
-        // Find the order
         const order = await Order.findById(orderId);
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
 
-        // Check if order belongs to user
         if (order.userId.toString() !== userId.toString()) {
             return res.status(403).json({ success: false, message: 'Not authorized to refund this order' });
         }
 
-        // Check if order is delivered
         if (order.status !== 'Delivered') {
             return res.status(400).json({ success: false, message: 'Only delivered orders can be refunded' });
         }
 
-        // Check if refund already exists
         const existingRefund = await Refund.findOne({ orderId });
         if (existingRefund) {
             return res.status(400).json({ success: false, message: 'Refund request already exists for this order' });
         }
 
-        // Create refund request
         const refund = new Refund({
             orderId,
             userId,
@@ -41,23 +37,25 @@ exports.requestRefund = async (req, res) => {
 
         await refund.save();
 
-        // Update order status
         order.status = 'Refund Requested';
         await order.save();
 
-        // Update user's orders array
-       await User.findByIdAndUpdate(userId, {
-         $pull: { orders: order._Id },
-         $push: { refunds: refund._id }
+        // Fix typo: order._id (not order._Id)
+        await User.findByIdAndUpdate(userId, {
+            $pull: { orders: order._id },
+            $push: { refunds: refund._id }
         });
 
         res.json({ success: true, message: 'Refund request submitted successfully' });
     } catch (error) {
         console.error('Refund request error:', error);
-        res.status(500).json({ success: false, message: 'Error processing refund request' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error processing refund request',
+            error: error.message
+        });
     }
 };
-
 // Get user's refunds
 exports.getUserRefunds = async (req, res) => {
     try {
@@ -98,11 +96,24 @@ exports.cancelRefund = async (req, res) => {
         });
 
         // Delete the refund request
-        await refund.remove();
+        await refund.deleteOne();
 
         res.json({ success: true, message: 'Refund request cancelled successfully' });
     } catch (error) {
         console.error('Cancel refund error:', error);
         res.status(500).json({ success: false, message: 'Error cancelling refund request' });
     }
+
+    // In requestRefund controller
+console.log("Refund request received for order:", orderId);
+console.log("User ID:", userId);
+console.log("Order status:", order.status);
+
+// Add this error catch
+res.status(500).json({ 
+  success: false, 
+  message: 'Error processing refund request',
+  error: error.message // Include actual error
+});
+
 };

@@ -9,6 +9,9 @@ const { authenticateJWT } = require('../middleware/jwt');
 const Cart = require('../models/cart');
 const { generateOrderNumber } = require('../utils/orderUtils');
 const { sendOrderConfirmationEmail } = require('../utils/emailService');
+const { isAuthenticated } = require('../middleware/auth');
+const Refund = require('../models/Refund');
+const Gender = require('../models/Gender'); // Make sure to import
 
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification', status = 500) => {
@@ -1254,88 +1257,144 @@ protectedRoutes.post('/wishlist/toggle', async (req, res) => {
   }
 });
 
-// Account details page (protected route)
-protectedRoutes.get('/account-details', async (req, res) => {
-    try {
-        // If no user is found in the request, redirect to login
-        if (!req.user) {
-            return res.redirect('/user/LoginSignup');
-        }
-
-        // Fetch fresh user data with populated wishlist items and orders
-        const user = await User.findById(req.user._id)
-            .select('-password +phone_number')
-            .populate({
-                path: 'wishlist.product',
-                populate: [
-                    { path: 'brand', select: 'name' },
-                    { path: 'Vcollection', select: 'name' }
-                ]
-            })
-            .populate({
-                path: 'orders.orderId',
-                model: 'Order',
-                populate: {
-                    path: 'items.productId',
-                    model: 'Product'
-                }
-            })
-            .lean();
-
-        if (!user) {
-            return res.redirect('/user/LoginSignup');
-        }
-
-        // Remove sensitive payment info
-        if (user.Payment) {
-            delete user.Payment.cardNumber;
-            delete user.Payment.cvv;
-        }
-
-        // Transform orders to include all necessary data
-        if (user.orders) {
-            user.orders = user.orders.map(order => {
-                if (!order.orderId) return null;
-                const orderData = order.orderId;
-                return {
-                    orderId: orderData._id.toString(),
-                    orderNumber: orderData.orderNumber,
-                    status: orderData.status,
-                    orderDate: orderData.createdAt,
-                    total: orderData.total,
-                    shippingCost: orderData.shippingCost,
-                    tax: orderData.tax,
-                    items: orderData.items.map(item => {
-                        if (!item.productId) return null;
-                        return {
-                            product: {
-                                _id: item.productId._id,
-                                name: item.productId.name,
-                                image: item.productId.image,
-                                price: item.price
-                            },
-                            productDetails: item.productDetails,
-                            quantity: item.quantity,
-                            price: item.price
-                        };
-                    }).filter(Boolean),
-                    shipping: orderData.shipping,
-                    payment: orderData.payment
-                };
-            }).filter(Boolean);
-        }
-
-        res.render('Account-Details', {
-            title: 'Account Details',
-            user: user,
-            type: req.query.type || 'info',
-            message: req.query.message || '',
-            show: req.query.show === 'true'
-        });
-    } catch (error) {
-        console.error('Error fetching account details:', error);
-        res.redirect('/user/LoginSignup');
+router.get('/account-details', isAuthenticated, async (req, res) => {
+  try {
+    // If no user is found in the request, redirect to login
+    if (!req.user) {
+      return res.redirect('/user/LoginSignup');
     }
+
+    // Fetch fresh user data with populated wishlist items and orders
+    const user = await User.findById(req.user._id)
+      .select('-password +phone_number')
+      .populate({
+        path: 'wishlist.product',
+        populate: [
+          { path: 'brand', select: 'name' },
+          { path: 'Vcollection', select: 'name' }
+        ]
+      })
+      .populate({
+        path: 'orders.orderId',
+        model: 'Order',
+        populate: {
+          path: 'items.productId',
+          model: 'Product'
+        }
+      })
+      .populate({  // Add this to populate refunds
+        path: 'refunds',
+        populate: {
+          path: 'orderId',
+          model: 'Order'
+        }
+      })
+      .lean();
+
+    if (!user) {
+      return res.redirect('/user/LoginSignup');
+    }
+
+    // Remove sensitive payment info
+    if (user.Payment) {
+      delete user.Payment.cardNumber;
+      delete user.Payment.cvv;
+    }
+
+    // Transform orders to include all necessary data
+    if (user.orders) {
+      user.orders = user.orders.map(order => {
+        if (!order.orderId) return null;
+        const orderData = order.orderId;
+        return {
+          orderId: orderData._id.toString(),
+          orderNumber: orderData.orderNumber,
+          status: orderData.status,
+          orderDate: orderData.createdAt,
+          total: orderData.total,
+          shippingCost: orderData.shippingCost,
+          tax: orderData.tax,
+          items: orderData.items.map(item => {
+            if (!item.productId) return null;
+            return {
+              product: {
+                _id: item.productId._id,
+                name: item.productId.name,
+                image: item.productId.image,
+                price: item.price
+              },
+              productDetails: item.productDetails,
+              quantity: item.quantity,
+              price: item.price
+            };
+          }).filter(Boolean),
+          shipping: orderData.shipping,
+          payment: orderData.payment
+        };
+      }).filter(Boolean);
+    }
+
+    // Transform refunds data
+    if (user.refunds) {
+      user.refunds = user.refunds.map(refund => ({
+        _id: refund._id.toString(),
+        refundId: refund._id.toString().slice(-6).toUpperCase(), // Short ID for display
+        status: refund.status,
+        reason: refund.reason,
+        details: refund.details,
+        amount: refund.amount,
+        date: refund.date,
+        order: refund.orderId ? {
+          orderId: refund.orderId._id.toString(),
+          items: refund.orderId.items.map(item => ({
+            product: {
+              name: item.productId.name,
+              image: item.productId.image
+            }
+          }))
+        } : null
+      }));
+    }
+
+    res.render('Account-Details', {
+      title: 'Account Details',
+      user: user,
+      type: req.query.type || 'info',
+      message: req.query.message || '',
+      show: req.query.show === 'true'
+    });
+  } catch (error) {
+    console.error('Error fetching account details:', error);
+    
+    // More specific error handling
+    if (error.name === 'CastError') {
+      return res.status(400).render('error', {
+        title: 'Data Error',
+        message: 'Invalid data format. Please contact support.',
+        type: 'error',
+        show: true
+      });
+    }
+    
+    // Database connection errors
+    if (error.name === 'MongoNetworkError') {
+      return res.status(503).render('error', {
+        title: 'Service Unavailable',
+        message: 'Database connection failed. Please try again later.',
+        type: 'error',
+        show: true
+      });
+    }
+    
+    // Generic error fallback
+    res.status(500).render('error', {
+      title: 'Server Error',
+      message: 'An unexpected error occurred. Please try again later.',
+      type: 'error',
+      show: true,
+      error: process.env.NODE_ENV === 'development' ? error : null
+    });
+  }
 });
 
 // Get order details by ID
@@ -2486,6 +2545,38 @@ exports.removeAddress = async (req, res) => {
       error: error.message
     });
   }
+};
+
+exports.getHomePage = async (req, res) => {
+    try {
+        // Fetch genders and sort them
+        const allGenders = await Gender.find({});
+        const desiredOrder = ["For Him", "For Her"];
+        const genders = allGenders.sort((a, b) => 
+            desiredOrder.indexOf(a.name) - desiredOrder.indexOf(b.name)
+        );
+        
+        // Fetch other data
+        const featuredProducts = await Product.find({ featured: true }).limit(8);
+        const newArrivals = await Product.find().sort({ createdAt: -1 }).limit(4);
+        
+        // Add debug log
+        console.log("Passing to template:", {
+            genders: genders.map(g => g.name),
+            featuredCount: featuredProducts.length,
+            newArrivalsCount: newArrivals.length
+        });
+        
+        res.render('Home-Page', {
+            genders,  // MUST include this
+            featuredProducts,
+            newArrivals,
+            // ... other variables ...
+        });
+    } catch (error) {
+        console.error('Home page error:', error);
+        res.status(500).render('error-page', { error });
+    }
 };
 
 module.exports = router;

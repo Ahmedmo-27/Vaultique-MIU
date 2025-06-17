@@ -42,26 +42,35 @@
         </div>
     </section>
 
-    <!--Section For Him / For Her-->
-    <section class="him-her">
-        <div class="gender">
-            <div class="female">
-                <canvas id="female-fluid-canvas"></canvas>
-                <img id="female-img" src="/Assets/Models/Charlize Breitling.webp" alt="For Her Watches">
-                <div class="text-overlay">
-                    <button onclick="window.location.href='/user/for-her'">For Her</button>
+ <!-- In Home-Page.ejs, around line 48 -->
+<section>
+    <% if (typeof genders !== 'undefined' && genders && genders.length > 0) { %>
+        <% genders.forEach((gender) => { %>
+            <section class="section hero">
+                <div class="video-container">
+                    <video autoplay muted loop playsinline>
+                        <source src="<%= gender.heroVideo %>" type="video/mp4">
+                    </video>
                 </div>
-            </div>
-
-            <div class="male">  
-                <canvas id="male-fluid-canvas"></canvas>
-                <img id="male-img" src="/Assets/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt="For Him Watches">
-                <div class="text-overlay">
-                    <button onclick="window.location.href='/user/for-him'">For Him</button>
+                <div class="content hover-text">
+                    <h2 data-translate="genderSection"><%= gender.name %></h2>
+                    <br>
+                    <p data-translate="genderDesc">
+                        <%= gender.description %>
+                    </p>
+                    <br><br>
+                    <a class="button" href="/user/Gender/<%= gender.slug %>">
+                        See <%= gender.name %> Collection
+                    </a>
                 </div>
-            </div>
+            </section>
+        <% }); %>
+    <% } else { %>
+        <div class="error-message">
+            <p>Gender collections are currently unavailable. Please try again later.</p>
         </div>
-    </section>
+    <% } %>
+</section>
 
     <!-- Popular Collections Section -->
     <section class="collections">

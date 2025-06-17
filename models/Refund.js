@@ -1,3 +1,4 @@
+// Remove unnecessary fields
 const mongoose = require('mongoose');
 
 const refundSchema = new mongoose.Schema({
