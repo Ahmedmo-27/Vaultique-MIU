@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   const loadingScreen = document.querySelector('.loading-screen');
   const header = document.querySelector('header');
-  const progressBar = document.querySelector('.progress-bar');
+  const progressBar = document.querySelector('.progress-bar-loading');
   const progressText = document.querySelector('.progress-text');
   const spinner = document.querySelector('.spinner');
 

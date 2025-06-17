@@ -32,10 +32,10 @@ const questions = [
     {
         question: "What's your budget for a watch?",
         options: [
-            "Under $100",
-            "$100-$500",
-            "$500-$2000",
-            "Over $2000"
+            "Under $5,000",
+            "$5,000-$15,000",
+            "$15,000-$50,000",
+            "Over $50,000"
         ],
         weights: [1, 2, 3, 4]
     },
@@ -194,8 +194,6 @@ function showResults() {
         window.location.href = `/user/products?${params.toString()}`;
     });
 }
-
-
 
 function resetQuiz() {
     currentQuestion = 0;

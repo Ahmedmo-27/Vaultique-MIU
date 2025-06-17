@@ -4,29 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title><%= title || 'Discover Your Watch Personality' %></title>
-
-
-  <link rel="stylesheet" href="/CSS/Recommendation.css" /> 
-  <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg"> 
-
+  
+  <!-- Preconnect to external resources -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/CSS/nav-bar.css">
+  <link rel="stylesheet" href="/CSS/Recommendation.css" /> 
+  <link rel="stylesheet" href="/CSS/footer.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet"/>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  
+  <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg"> 
 </head>
-<body>    
+<body class="dark-mode">    
+
+  <%- include('partials/navigation') %>
 
   <div class="progress-container">
     <div class="progress-bar" id="progressBar"></div>
   </div>
-
-<div id="loading-screen" class="loading-screen">
-  <div class="loader"></div>
- 
-</div>
-
-  
-  
+    
   <main class="quiz-container animate__animated animate__fadeIn">
     <div class="quiz-header">
       <h1 class="question" id="question">What's your approach to wearing watches?</h1>
@@ -42,6 +43,11 @@
     <div id="quizResults"></div>
   </main>
 
+  <%- include('partials/footer') %>
+
+  <!-- Scripts -->
+  <script src="/Javascript/nav-bar.js"></script>
+  <script src="/Javascript/Light-Mode.js"></script>
   <script src="/Javascript/Recommendation.js"></script>
   
 </body>
