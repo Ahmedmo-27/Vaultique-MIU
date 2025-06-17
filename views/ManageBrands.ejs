@@ -103,8 +103,8 @@
                                 <% brands.forEach(brand => { %>
                                     <tr>
                                         <td>
-                                            <% if (brand.logo) { %>
-                                                <img src="<%= brand.logo %>" alt="<%= brand.name %>" class="brand-logo">
+                                            <% if (brand.coverImage) { %>
+                                                <img src="<%= brand.coverImage %>" alt="<%= brand.name %>" class="brand-logo">
                                             <% } else { %>
                                                 <div class="no-image">No Logo</div>
                                             <% } %>
