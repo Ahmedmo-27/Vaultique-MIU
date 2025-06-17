@@ -58,13 +58,15 @@ exports.processPayment = [
       // If user is logged in, save payment info to their account
       if (req.user) {
         await User.findByIdAndUpdate(req.user._id, {
-          $set: {
-            'Payment.cardHolder': name,
-            'Payment.cardNumber': card_number.startsWith('*') ? card_number : card_number.replace(/\s/g, '').slice(-4), // Handle masked numbers
-            'Payment.bankName': bank_name,
-            'Payment.expiryDate': expiry,
-            'Payment.paymentType': 'credit',
-            'Payment.lastUsed': new Date()
+          $push: {
+            Payment: {
+              cardHolder: name,
+              cardNumber: card_number.startsWith('*') ? card_number : card_number.replace(/\s/g, '').slice(-4), // Handle masked numbers
+              bankName: bank_name,
+              expiryDate: expiry,
+              paymentType: 'credit',
+              lastUsed: new Date()
+            }
           }
         });
         console.log('Payment info saved for user:', req.user._id);
