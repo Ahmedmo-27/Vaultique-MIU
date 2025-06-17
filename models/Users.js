@@ -60,24 +60,22 @@ const UserSchema = new mongoose.Schema({
       type: String,
       trim: true,
       required: false,
-      minlength: [2, 'City must be at least 2 characters long'],
       validate: {
         validator: function(v) {
-          return !v || v.length >= 2;
+          return !v || (v.length >= 2);
         },
-        message: 'City must be at least 2 characters long'
+        message: 'City must be at least 2 characters long if provided'
       }
     },
     street: {
       type: String,
       trim: true,
       required: false,
-      minlength: [5, 'Street address must be at least 5 characters long'],
       validate: {
         validator: function(v) {
-          return !v || v.length >= 5;
+          return !v || (v.length >= 5);
         },
-        message: 'Street address must be at least 5 characters long'
+        message: 'Street address must be at least 5 characters long if provided'
       }
     },
     addressType: {
@@ -90,24 +88,22 @@ const UserSchema = new mongoose.Schema({
       type: String,
       trim: true,
       required: false,
-      minlength: [2, 'State must be at least 2 characters long'],
       validate: {
         validator: function(v) {
-          return !v || v.length >= 2;
+          return !v || (v.length >= 2);
         },
-        message: 'State must be at least 2 characters long'
+        message: 'State must be at least 2 characters long if provided'
       }
     },
     country: {
       type: String,
       trim: true,
       required: false,
-      minlength: [2, 'Country must be at least 2 characters long'],
       validate: {
         validator: function(v) {
-          return !v || v.length >= 2;
+          return !v || (v.length >= 2);
         },
-        message: 'Country must be at least 2 characters long'
+        message: 'Country must be at least 2 characters long if provided'
       }
     },
     postalCode: {

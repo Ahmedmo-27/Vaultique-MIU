@@ -231,32 +231,49 @@ router.post('/signup', signupLimiter, signupValidation, async (req, res) => {
       });
     }
 
+    // Hash password
+    const salt = await bcryptjs.genSalt(12);
+    const hashedPassword = await bcryptjs.hash(password, salt);
+
     // Generate email verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const verificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
-    // Create new user
+    // Create new user with all required fields
     const user = new User({
       Name,
       username,
       email: email.toLowerCase(),
-      password,
-      DOB,
+      password: hashedPassword,
+      DOB: DOB ? new Date(DOB) : undefined,
       phone_number,
-      language,
-      Address,
+      language: language || 'English',
+      Address: Address || [],
+      status: 'inactive',
+      isEmailVerified: false,
       emailVerificationToken: verificationToken,
-      emailVerificationExpires: verificationExpires
+      emailVerificationExpires: verificationExpires,
+      role: 'user'
     });
 
     await user.save();
 
     // Send welcome email with verification link
-    await sendVerificationEmail(user, verificationToken);
+    try {
+      await sendVerificationEmail(user, verificationToken);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Continue with signup even if email fails
+    }
 
     // Send welcome SMS if phone number provided
     if (phone_number) {
-      await sendWelcomeSMS(phone_number, Name);
+      try {
+        await sendWelcomeSMS(phone_number, Name);
+      } catch (smsError) {
+        console.error('Failed to send welcome SMS:', smsError);
+        // Continue with signup even if SMS fails
+      }
     }
 
     res.status(201).json({
@@ -503,36 +520,119 @@ router.post('/test-email', async (req, res) => {
 router.get('/verify-email/:token', async (req, res) => {
   try {
     const { token } = req.params;
+    console.log('Attempting to verify token:', token);
 
+    if (!token) {
+      console.error('No token provided');
+      if (req.headers.accept?.includes('application/json')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Verification token is required'
+        });
+      }
+      return res.render('email-verification-error', {
+        message: 'Verification token is required'
+      });
+    }
+
+    // Find user with valid verification token
     const user = await User.findOne({
       emailVerificationToken: token,
       emailVerificationExpires: { $gt: Date.now() }
     });
 
     if (!user) {
+      console.error('No user found with token or token expired:', token);
+      if (req.headers.accept?.includes('application/json')) {
+        return res.status(400).json({
+          success: false,
+          message: 'The verification link is invalid or has expired.'
+        });
+      }
       return res.render('email-verification-error', {
         message: 'The verification link is invalid or has expired.'
       });
     }
 
+    console.log('Found user for verification:', {
+      userId: user._id,
+      email: user.email,
+      tokenExpires: user.emailVerificationExpires
+    });
+
+    // Update user status
     user.isEmailVerified = true;
     user.status = 'active';
     user.emailVerificationToken = undefined;
     user.emailVerificationExpires = undefined;
-    await user.save();
+    
+    try {
+      await user.save();
+      console.log('User verification status updated successfully');
+    } catch (saveError) {
+      console.error('Error saving user verification status:', saveError);
+      if (req.headers.accept?.includes('application/json')) {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to update verification status'
+        });
+      }
+      return res.render('email-verification-error', {
+        message: 'Failed to update verification status.'
+      });
+    }
+
+    // Generate tokens for automatic login
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // Set tokens in HTTP-only cookies
+    res.cookie('token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
 
     // Send welcome email after successful verification
     try {
       await sendWelcomeEmail(user);
+      console.log('Welcome email sent successfully');
     } catch (emailError) {
       console.error('Error sending welcome email:', emailError);
       // Continue with verification even if welcome email fails
     }
 
-    res.render('email-verification-success');
+    // Render success page for browser, JSON for API
+    if (req.headers.accept?.includes('application/json')) {
+      return res.json({
+        success: true,
+        message: 'Email verified successfully',
+        user: {
+          _id: user._id,
+          email: user.email,
+          isEmailVerified: true
+        }
+      });
+    }
+    return res.render('email-verification-success');
+
   } catch (error) {
     console.error('Email verification error:', error);
-    res.render('email-verification-error', {
+    if (req.headers.accept?.includes('application/json')) {
+      return res.status(500).json({
+        success: false,
+        message: 'An error occurred during email verification. Please try again later or contact support.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+    return res.render('email-verification-error', {
       message: 'An error occurred during email verification. Please try again later or contact support.'
     });
   }

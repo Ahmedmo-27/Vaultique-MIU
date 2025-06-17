@@ -308,8 +308,45 @@ setInterval(checkAuthState, 5 * 60 * 1000); // Check every 5 minutes
 // Initial check
 checkAuthState();
 
-// Add event listeners when the document is loaded
+// Check email verification status
+const checkEmailVerification = async (token) => {
+  try {
+    const response = await fetchWithTimeout(`/api/auth/verify-email/${token}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      },
+      credentials: 'include'
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      window.showNotification('success', 'Email verified successfully!');
+      // Store verification status
+      localStorage.setItem('emailVerified', 'true');
+      // Redirect to home page after a short delay
+      setTimeout(() => {
+        window.location.href = '/user/home';
+      }, 2000);
+    } else {
+      window.showNotification('error', data.message || 'Email verification failed');
+    }
+  } catch (error) {
+    console.error('Email verification error:', error);
+    window.showNotification('error', 'An error occurred during email verification');
+  }
+};
+
+// Add event listener for verification token in URL
 document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const verificationToken = urlParams.get('token');
+  
+  if (verificationToken) {
+    checkEmailVerification(verificationToken);
+  }
+
   const loginForm = document.getElementById('login-form-id');
   const signupForm = document.getElementById('signup-form-id');
 

@@ -244,13 +244,13 @@ document.addEventListener("DOMContentLoaded", function () {
           // Clear guest cart after successful signup
           localStorage.removeItem('guestCart');
           
-          // Show success message
-          showNotification('Signup successful! Please check your email to verify your account.', 'success');
+          // Show success message with verification instructions
+          showNotification('Signup successful! Please check your email to verify your account. You will not be able to login until you verify your email.', 'success');
           
-          // Redirect to login page after a short delay
+          // Redirect to login page after a longer delay to ensure user reads the message
           setTimeout(() => {
             window.location.href = '/user/LoginSignup';
-          }, 2000);
+          }, 5000);
         } else {
           showNotification(data.message || 'Signup failed. Please try again.', 'error');
         }
@@ -316,7 +316,41 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = data.user?.role === 'admin' ? '/admin/dashboard' : '/user/home';
           }, 1000);
         } else {
-          window.showNotification('error', data.message || 'Login failed');
+          // Enhanced error message handling
+          if (data.message === 'Please verify your email before logging in.') {
+            window.showNotification('error', 'Please verify your email before logging in. Check your inbox for the verification link.');
+            // Optionally, add a resend verification email button
+            const resendButton = document.createElement('button');
+            resendButton.textContent = 'Resend Verification Email';
+            resendButton.className = 'resend-verification-btn';
+            resendButton.onclick = async () => {
+              try {
+                const resendResponse = await fetch('/api/auth/resend-verification', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ email: document.getElementById("email").value }),
+                  credentials: 'include'
+                });
+                const resendData = await resendResponse.json();
+                if (resendResponse.ok) {
+                  window.showNotification('success', 'Verification email resent! Please check your inbox.');
+                } else {
+                  window.showNotification('error', resendData.message || 'Failed to resend verification email.');
+                }
+              } catch (error) {
+                window.showNotification('error', 'Failed to resend verification email. Please try again later.');
+              }
+            };
+            // Add the button to the login form
+            const loginForm = document.getElementById("login-form-id");
+            if (loginForm && !document.querySelector('.resend-verification-btn')) {
+              loginForm.appendChild(resendButton);
+            }
+          } else {
+            window.showNotification('error', data.message || 'Login failed');
+          }
           // Clear password field for security
           document.getElementById('password').value = '';
         }
@@ -483,4 +517,91 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+  // Add email verification handler
+  const handleEmailVerification = async (token) => {
+    try {
+      console.log('Attempting to verify email with token:', token);
+      
+      const response = await fetch(`/api/auth/verify-email/${token}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      console.log('Verification response:', data);
+
+      if (response.ok && data.success) {
+        window.showNotification('success', 'Email verified successfully! You can now log in.');
+        // Store verification status
+        localStorage.setItem('emailVerified', 'true');
+        // Redirect to login page after a short delay
+        setTimeout(() => {
+          window.location.href = '/user/LoginSignup';
+        }, 2000);
+      } else {
+        let errorMessage = data.message || 'Email verification failed';
+        
+        // Handle specific error cases
+        if (data.message.includes('expired')) {
+          errorMessage = 'Your verification link has expired. Please request a new verification email.';
+          // Add resend button
+          const resendButton = document.createElement('button');
+          resendButton.textContent = 'Resend Verification Email';
+          resendButton.className = 'resend-verification-btn';
+          resendButton.onclick = () => handleResendVerification();
+          document.body.appendChild(resendButton);
+        }
+        
+        window.showNotification('error', errorMessage);
+      }
+    } catch (error) {
+      console.error('Email verification error:', error);
+      window.showNotification('error', 'An error occurred during email verification. Please try again later.');
+    }
+  };
+
+  // Add resend verification handler
+  const handleResendVerification = async () => {
+    try {
+      const email = document.getElementById('email')?.value;
+      if (!email) {
+        window.showNotification('error', 'Please enter your email address');
+        return;
+      }
+
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        window.showNotification('success', 'Verification email sent! Please check your inbox.');
+      } else {
+        window.showNotification('error', data.message || 'Failed to resend verification email');
+      }
+    } catch (error) {
+      console.error('Resend verification error:', error);
+      window.showNotification('error', 'Failed to resend verification email. Please try again later.');
+    }
+  };
+
+  // Check for verification token in URL when page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const verificationToken = urlParams.get('token');
+    
+    if (verificationToken) {
+      handleEmailVerification(verificationToken);
+    }
+  });
 });
