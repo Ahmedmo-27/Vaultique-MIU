@@ -9,6 +9,7 @@ const { authenticateJWT } = require('../middleware/jwt');
 const Cart = require('../models/cart');
 const { generateOrderNumber } = require('../utils/orderUtils');
 const { sendOrderConfirmationEmail } = require('../utils/emailService');
+const Gender = require('../models/Gender');
 
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification', status = 500) => {
@@ -394,14 +395,30 @@ router.get('/LoginSignup', (req, res) => {
 // Home page
 router.get('/home', async (req, res) => {
   try {
-    // If user is logged in, we'll have req.user from the optional auth middleware
+    // Fetch genders and sort them
+    const genders = await Gender.find({}).sort({ name: 1 });
+    
     res.render('Home-Page', {
       title: 'Vaultique | Home',
       user: req.user || null,
+      genders, // Pass the genders data to the template
+      notification: {
+        hasError: false,
+        hasSuccess: false
+      }
     });
   } catch (error) {
     console.error('Error loading home page:', error);
-    renderNotification(res, 'error', 'Failed to load home page. Please try again later.');
+    res.render('Home-Page', {
+      title: 'Vaultique | Home',
+      user: req.user || null,
+      genders: [], // Pass empty array if there's an error
+      notification: {
+        hasError: true,
+        error: 'Failed to load home page. Please try again later.',
+        hasSuccess: false
+      }
+    });
   }
 });
 

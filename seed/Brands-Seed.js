@@ -83,28 +83,28 @@ const Brands = [
     featuredModels: [
       {
         name: 'Omega Seamaster',
-        image: '/Assets/Images/Watches/Omega Seamaster.png',
+        image: '/Assets/Images/Watches/Omega Seamaster Aqua Terra.png',
         tagline: 'Master of the seas',
         description:
           "The Seamaster has been OMEGA's iconic diver's watch since 1948. Today, it still remains one of the most recognized and respected watches in the world.",
       },
       {
         name: 'Omega Speedmaster',
-        image: '/Assets/Images/Watches/Omega Speedmaster.png',
+        image: '/Assets/Images/Watches/Omega Speedmaster Moonwatch Steel-On-Steel.png',
         tagline: 'The first watch on the moon',
         description:
           "The OMEGA Speedmaster is one of the world's most iconic timepieces, having been a part of all six lunar missions. The legendary chronograph was the first watch worn on the moon.",
       },
       {
         name: 'Omega Constellation',
-        image: '/Assets/Images/Watches/Omega Constellation.png',
+        image: '/Assets/Images/Watches/Omega Constellation Co-Axial Master Chronometer.png',
         tagline: 'Iconic design since 1952',
         description:
           "The Constellation has been OMEGA's symbol of precision and excellence since 1952. With its iconic claws and half-moons, the collection has evolved to become a true watchmaking icon.",
       },
       {
         name: 'Omega De Ville',
-        image: '/Assets/Images/Watches/Omega De Ville.png',
+        image: '/Assets/Images/Watches/De Ville Tresor.png',
         tagline: 'Classic elegance',
         description:
           "The De Ville collection was created in the 1960s with an elegant and classic design. Today, it continues to represent OMEGA's commitment to luxurious precision.",
@@ -225,14 +225,14 @@ const Brands = [
       },
       {
         name: 'Code 11.59',
-        image: '/Assets/Images/Watches/Audemars Piguet Code 11.59.png',
+        image: '/Assets/Images/Watches/code-1159.png',
         tagline: 'A new chapter begins',
         description:
           'Launched in 2019, Code 11.59 by Audemars Piguet represents a bold new direction for the brand. With its complex case architecture and avant-garde design, it combines traditional craftsmanship with contemporary aesthetics.',
       },
       {
         name: 'Millenary',
-        image: '/Assets/Images/Watches/Audemars Piguet Millenary.png',
+        image: '/Assets/Images/Watches/Millinerary.png',
         tagline: 'The art of asymmetry',
         description:
           "The Millenary collection features distinctive oval cases with off-centered dials, showcasing Audemars Piguet's mastery of unconventional designs. These timepieces reveal their intricate movements through open-worked dials.",
@@ -254,34 +254,35 @@ const Brands = [
     featuredModels: [
       {
         name: 'Lange 1',
-        image: '/Assets/Images/Watches/A.Lange & Söhne Lange 1.png',
+        image: '/Assets/Images/Watches/Lange 1.png',
         tagline: 'The icon of German watchmaking',
         description:
           'The Lange 1, introduced in 1994, is the flagship model of A. Lange & Söhne. Its asymmetric dial layout and outsize date display have become hallmarks of the brand. The watch embodies the perfect synthesis of traditional craftsmanship and innovative design.',
       },
       {
         name: 'Zeitwerk',
-        image: '/Assets/Images/Watches/A.Lange & Söhne Zeitwerk.png',
+        image: '/Assets/Images/Watches/A. Lange & Söhne Zeitwerk Striking Time.png',
         tagline: 'The mechanical digital watch',
         description:
           'The Zeitwerk, launched in 2009, is a groundbreaking timepiece that displays time digitally with jumping numerals while being entirely mechanical. Its innovative movement represents one of the most significant horological developments in recent decades.',
       },
       {
         name: 'Saxonia',
-        image: '/Assets/Images/Watches/A.Lange & Söhne Saxonia.png',
+        image: '/Assets/Images/Watches/Saxonia.png',
         tagline: 'Pure elegance',
         description:
           "The Saxonia collection embodies the essence of A. Lange & Söhne's watchmaking philosophy: understated elegance combined with technical perfection. These watches feature clean dials and exquisitely finished movements.",
       },
       {
         name: 'Datograph',
-        image: '/Assets/Images/Watches/A.Lange & Söhne Datograph.png',
+        image: '/Assets/Images/Watches/A. Lange & Söhne Datograph Flyback Limited Edition.png',
         tagline: "The chronograph connoisseur's choice",
         description:
           'The Datograph is widely regarded as one of the finest chronographs ever made. Its flawless design and exceptional movement finishing set new standards in chronograph construction and have earned it a cult following among watch enthusiasts.',
       },
     ],
   },
+  
   {
     _id: 'VAC_1',
     name: 'Vacheron Constantin',
@@ -296,28 +297,28 @@ const Brands = [
     featuredModels: [
       {
         name: 'Overseas',
-        image: '/Assets/Images/Watches/Vacheron Constantin Overseas.png',
+        image: '/Assets/Images/Watches/Overseas Vacheron.png',
         tagline: 'The spirit of travel',
         description:
           "The Overseas collection embodies Vacheron Constantin's interpretation of the luxury sports watch. With its distinctive Maltese cross-inspired bezel and interchangeable strap system, it combines elegance with functionality for the global traveler.",
       },
       {
         name: 'Patrimony',
-        image: '/Assets/Images/Watches/Vacheron Constantin Patrimony.png',
+        image: '/Assets/Images/Watches/Patrimony.png',
         tagline: 'The essence of classicism',
         description:
           "The Patrimony collection represents the purest expression of Vacheron Constantin's watchmaking art. With its clean lines and understated elegance, it exemplifies the brand's mastery of classical watchmaking.",
       },
       {
         name: 'Traditionnelle',
-        image: '/Assets/Images/Watches/Vacheron Constantin Traditionnelle.png',
+        image: '/Assets/Images/Watches/Vacheron Constantin Traditionnelle Tourbillon Chronograph.png',
         tagline: 'A tribute to heritage',
         description:
           "The Traditionnelle collection pays homage to Vacheron Constantin's rich heritage while incorporating contemporary watchmaking techniques. These timepieces feature traditional design codes such as stepped cases and fluted casebacks.",
       },
       {
         name: 'Historiques',
-        image: '/Assets/Images/Watches/Vacheron Constantin Historiques.png',
+        image: '/Assets/Images/Watches/Vacheron Constantin Historiques 222.png',
         tagline: 'Reinterpreting icons',
         description:
           "The Historiques collection revisits iconic models from Vacheron Constantin's extensive archives, reinterpreting them with modern watchmaking technology while preserving their original spirit and design essence.",
@@ -339,7 +340,7 @@ const Brands = [
       {
         name: 'Astronomia',
         image:
-          'https://jacobandco.com/media/catalog/product/cache/4b5d8b0c0f6b4cd3a3c6d4e2e8d7a3d5/a/s/astronomia-tourbillon-baguette-1.png',
+          '/Assets/Images/Watches/Jacob & Co Astronomia Triple Axis Tourbillon.png',
         tagline: 'A celestial ballet',
         description:
           "The Astronomia collection represents Jacob & Co.'s most iconic and complex timepieces. Featuring a four-arm rotating carriage that completes one revolution every 10 minutes, these watches display time in the most spectacular way imaginable.",
@@ -347,7 +348,7 @@ const Brands = [
       {
         name: 'Epic X',
         image:
-          'https://jacobandco.com/media/catalog/product/cache/4b5d8b0c0f6b4cd3a3c6d4e2e8d7a3d5/e/p/epic-x-chronograph-1.png',
+          '/Assets/Images/Watches/Epic X jacob.png',
         tagline: 'Bold and powerful',
         description:
           "The Epic X collection features bold, angular cases and skeletonized movements that showcase Jacob & Co.'s mechanical expertise. These timepieces combine sporty elegance with cutting-edge design.",
@@ -355,7 +356,7 @@ const Brands = [
       {
         name: 'Bugatti',
         image:
-          'https://jacobandco.com/media/catalog/product/cache/4b5d8b0c0f6b4cd3a3c6d4e2e8d7a3d5/b/u/bugatti-chiron-tourbillon-1.png',
+          '/Assets/Images/Watches/Bugatti Jacob.png',
         tagline: 'The fusion of automotive and horological excellence',
         description:
           "The Jacob & Co. x Bugatti collaboration represents the ultimate fusion of automotive engineering and watchmaking. These timepieces feature miniature W16 engines that replicate the movement of the actual Bugatti Chiron's engine.",
@@ -363,7 +364,7 @@ const Brands = [
       {
         name: 'Opera',
         image:
-          'https://jacobandco.com/media/catalog/product/cache/4b5d8b0c0f6b4cd3a3c6d4e2e8d7a3d5/o/p/opera-godfather-50th-anniversary-1.png',
+          '/Assets/Images/Watches/Jacob Opera.png',
         tagline: 'A symphony of complications',
         description:
           'The Opera collection combines high complications with musical automata, creating watches that are both technically impressive and entertaining. These timepieces feature minute repeaters and moving scenes that bring the dial to life.',
@@ -385,7 +386,7 @@ const Brands = [
       {
         name: 'RM 011',
         image:
-          'https://www.richardmille.com/sites/default/files/watch_asset/image/RM%20011%20Felipe%20Massa%20Flyback%20Chronograph%20AZ_0.png',
+          '/Assets/Images/Watches/Richard Mille RM 011 FM White Ghost.png',
         tagline: 'The iconic flyback chronograph',
         description:
           "The RM 011, originally developed for Formula 1 driver Felipe Massa, is Richard Mille's iconic flyback chronograph. Its skeletonized movement and use of high-tech materials make it a favorite among collectors and racing enthusiasts.",
@@ -393,7 +394,7 @@ const Brands = [
       {
         name: 'RM 035',
         image:
-          'https://www.richardmille.com/sites/default/files/watch_asset/image/RM%20035%20Rafael%20Nadal_0.png',
+          '/Assets/Images/Watches/Richard Mille RM 035 Americas Limited Edition.png',
         tagline: 'The ultimate sports watch',
         description:
           'The RM 035, created in collaboration with tennis champion Rafael Nadal, is one of the lightest mechanical watches ever made. Its ultra-resistant case and movement can withstand the extreme forces generated during a tennis match.',
@@ -401,7 +402,7 @@ const Brands = [
       {
         name: 'RM 027',
         image:
-          'https://www.richardmille.com/sites/default/files/watch_asset/image/RM%20027%20Rafael%20Nadal_0.png',
+          '/Assets/Images/Watches/Richard 027.png',
         tagline: 'Pushing the limits of lightness',
         description:
           "The RM 027 holds the record as one of the lightest tourbillon watches ever created. Weighing less than 20 grams including the strap, it represents Richard Mille's relentless pursuit of innovation in materials and watchmaking.",
@@ -409,7 +410,7 @@ const Brands = [
       {
         name: 'RM 056',
         image:
-          'https://www.richardmille.com/sites/default/files/watch_asset/image/RM%20056%20Felipe%20Massa%20Sapphire%20Tourbillon%20Chronograph_0.png',
+          '/Assets/Images/Watches/Richard 056.png',
         tagline: 'The sapphire masterpiece',
         description:
           "The RM 056 features a case entirely crafted from sapphire crystal, offering a completely transparent view of its complex movement. This technological marvel demonstrates Richard Mille's expertise in working with challenging materials.",
@@ -430,28 +431,28 @@ const Brands = [
     featuredModels: [
       {
         name: 'Navitimer',
-        image: 'https://www.breitling.com/media/image/2/variant/thumbnail/ab0139211b1p1_1.png',
+        image: '/Assets/Images/Watches/Breitling Navitimer.png',
         tagline: "The iconic pilot's chronograph",
         description:
           "Introduced in 1952, the Navitimer is Breitling's most iconic model, featuring a circular slide rule that allows pilots to perform all necessary flight calculations. Its distinctive design has made it a favorite among aviation professionals.",
       },
       {
         name: 'Chronomat',
-        image: 'https://www.breitling.com/media/image/2/variant/thumbnail/ub0137211c1a1_1.png',
+        image: '/Assets/Images/Watches/Breitling Chronomat GMT.png',
         tagline: 'The sports chronograph',
         description:
           "The Chronomat, originally developed for the Frecce Tricolori aerobatic team, is Breitling's flagship sports chronograph. With its rider tabs and robust construction, it embodies the brand's technical expertise and sporty elegance.",
       },
       {
         name: 'Superocean',
-        image: 'https://www.breitling.com/media/image/2/variant/thumbnail/a17369241b1s1_1.png',
+        image: '/Assets/Images/Watches/SuperOcean Breitling.png',
         tagline: "Professional diver's watch",
         description:
           "The Superocean is Breitling's professional diver's watch, offering exceptional water resistance and legibility. Designed for underwater exploration, it combines technical performance with distinctive Breitling style.",
       },
       {
         name: 'Premier',
-        image: 'https://www.breitling.com/media/image/2/variant/thumbnail/ab0118a61l1a1_1.png',
+        image: '/Assets/Images/Watches/Premier Breitling.png',
         tagline: 'Elegance meets performance',
         description:
           "The Premier collection represents Breitling's interpretation of the elegant chronograph. With its refined design and high-performance movements, it bridges the gap between dress watches and professional instruments.",
