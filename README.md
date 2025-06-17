@@ -4,30 +4,39 @@ Vaultique is a sophisticated e-commerce platform specializing in luxury watches,
 
 ## 🚀 Features
 
-- User authentication and authorization
+- User authentication and authorization with JWT
 - Admin dashboard for product and user management
-- Real-time chat functionality using Stream Chat
+- SMS notifications using Twilio (order confirmations, password resets, etc.)
+- Contact form with email notifications
 - Secure payment processing
-- Responsive design
-- Product catalog with filtering and search
+- Responsive design with modern UI
+- Advanced product catalog with filtering and search
 - User profile management
 - Order tracking and management
+- Google authentication integration
+- QR code generation for products
+- 3D product visualization using Three.js
 
 ## 🛠️ Tech Stack
 
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB with Mongoose
 - **Frontend**: EJS templating engine
-- **Authentication**: JWT (JSON Web Tokens)
-- **Real-time Chat**: Stream Chat
-- **Security**: Helmet, CORS, Rate Limiting
+- **Authentication**: JWT (JSON Web Tokens), Google OAuth
+- **Notifications**: Twilio SMS, Nodemailer
+- **Security**: Helmet, CORS, Rate Limiting, CSRF Protection
 - **Testing**: Jest, Supertest
+- **3D Visualization**: Three.js
+- **File Upload**: Multer
+- **Validation**: Express Validator
 
 ## 📋 Prerequisites
 
 - Node.js >= 18.0.0
 - MongoDB
 - npm or yarn
+- Twilio Account (for SMS features)
+- Google OAuth Credentials (for Google Sign-in)
 
 ## 🔧 Installation
 
@@ -47,8 +56,11 @@ npm install
 NODE_ENV=development
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-STREAM_CHAT_API_KEY=your_stream_chat_api_key
-STREAM_CHAT_API_SECRET=your_stream_chat_api_secret
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
 
 4. Seed the database (optional):
@@ -75,6 +87,7 @@ npm start
 - `npm run seed:all` - Seed all database collections
 - `npm test` - Run tests
 - `npm run format` - Format code using Prettier
+- `npm run fix-passwords` - Fix user passwords in database
 
 ## 🏗️ Project Structure
 
@@ -83,9 +96,10 @@ npm start
 ├── controllers/    # Route controllers
 ├── middleware/     # Custom middleware
 ├── models/         # Database models
-├── public/         # Static files
+├── public/         # Static files (CSS, JS, images)
 ├── routes/         # API routes
 ├── seed/          # Database seed files
+├── utils/         # Utility functions
 ├── views/         # EJS templates
 └── server.js      # Application entry point
 ```
@@ -99,6 +113,8 @@ npm start
 - Rate limiting
 - Input validation
 - XSS protection
+- CSRF protection
+- Secure session management
 
 ## 🧪 Testing
 
