@@ -145,6 +145,13 @@ const Brands = [
         description:
           'The Ballon Bleu de Cartier watch features a distinctive rounded case and a crown set with a sapphire cabochon. Its elegant design has made it a contemporary classic.',
       },
+      {
+        name: 'Panthère de Cartier',
+        image: '/Assets/Images/Watches/Panthère de Cartier.png',
+        tagline: 'The panther in motion',
+        description:
+          "The Panthère de Cartier is a luxurious women's watch with a white dial and stainless steel case. Its manual movement and square design exude sophistication. Inspired by the grace of a panther, the watch features a sleek, flexible bracelet and Roman numeral hour markers, creating a perfect balance of elegance and strength.",
+      }
     ],
     Model3d: '/Assets/3D Models/Santos.glb',
   },

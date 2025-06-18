@@ -99,6 +99,7 @@ body {
 
 /* Cell wrapper styles - matching Cleopatra Ceramics */
 .cell-wrapper {
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -109,6 +110,7 @@ body {
     color: #fff;
     text-decoration: none;
     transition: all 0.3s ease;
+    border-radius: 5px;
 }
 
 .cell-wrapper::before {
@@ -118,7 +120,6 @@ body {
     left: 0;
     width: 100%;
     height: 50%;
-    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
     z-index: 1;
 }
 
@@ -165,7 +166,6 @@ body {
     transform: scale(1.03);
 }
 
-/* Typography - matching Cleopatra Ceramics */
 h2 {
     font-size: 28px;
     font-weight: 300;

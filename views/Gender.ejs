@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Vaultique | For Her</title>
+        <title>Vaultique | <%= title %></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/CSS/Loading Screen.css">
@@ -9,8 +9,8 @@
         <link rel="stylesheet" href="/CSS/Slider.css">
         <link rel="stylesheet" href="/CSS/Products.css">
         <link rel="stylesheet" href="/CSS/footer.css">
-        <link rel="stylesheet" href="/CSS/notifications.css">
         <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
+        <link rel="stylesheet" href="/CSS/notifications.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <script src="/Javascript/Loading Screen.js"></script>
         <script src="/Javascript/nav-bar.js"></script>
@@ -29,16 +29,20 @@
         <section class="section topic">
             <div class="video-container">
                 <video autoplay muted loop playsinline>
-                    <source src="/public/Assets/Videos/for-her.mp4" id="heroVideoSource">
+                    <source src="<%= genderContent?.heroVideo %>" id="heroVideoSource">
                 </video>
+                <div class="fallback-content" style="display: none;">
+                    <h1><%= genderContent?.name || title %></h1>
+                    <p><%= genderContent?.description || "" %></p>
+                </div>
             </div>
         </section>
 
-        <!-- Featured Models Slider Section -->
+        <!-- Collection Slider Section -->
         <div class="slider-container">
             <div class="slides-wrapper" id="slidesWrapper">
-                <% if (featuredModels && featuredModels.length > 0) { %>
-                    <% featuredModels.forEach((model, index) => { %>
+                <% if (genderContent && genderContent.featuredItems && genderContent.featuredItems.length > 0) { %>
+                    <% genderContent.featuredItems.forEach((model, index) => { %>
                         <div class="slide" data-index="<%= index %>" data-model="<%= index + 1 %>">
                             <div class="slide-content">
                                 <div class="watch-info">
@@ -69,23 +73,22 @@
 
             <!-- Pagination Dots -->
             <div class="pagination-slider" id="paginationSlider">
-                <% if (featuredModels && featuredModels.length > 0) { %>
-                    <% featuredModels.forEach((_, index) => { %>
+                <% if (genderContent && genderContent.featuredItems && genderContent.featuredItems.length > 0) { %>
+                    <% genderContent.featuredItems.forEach((_, index) => { %>
                         <button class="dot <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>" aria-label="Go to slide <%= index + 1 %>" <%= index === 0 ? 'aria-current="true"' : '' %>></button>
                     <% }); %>
                 <% } %>
             </div>
         </div>
-
         <!-- Page Information Section -->
         <div class="image" style="margin-bottom: -90px;">
-            <img src="/public/Assets/Images/for-her-cover.jpg" alt="For Her Cover Image" id="pageCoverImage">
+            <img src="<%= genderContent?.coverImage %>" alt="Cover Image" id="pageCoverImage">
             <div class="brand-logo">
-                <h1 id="pageTitle">For Her</h1>
+                <h1 id="pageTitle"><%= genderContent?.name || title %></h1>
             </div>
             <div class="text-overlay">
-                <h2 id="pageHeader">Elegant Timepieces for the Modern Woman</h2>
-                <p id="pageDescription">Discover our exquisite collection of sophisticated timepieces designed for the contemporary woman. From delicate dress watches to statement pieces, find the perfect expression of your unique style.</p>
+                <h2 id="pageHeader"><%= genderContent?.header || "" %></h2>
+                <p id="pageDescription"><%= genderContent?.description || "" %></p>
             </div>
         </div>
 
@@ -113,12 +116,12 @@
                 </svg>
             </button>
             
-            <form id="filterForm" class="filter-form" method="GET" action="/user/for-her">
+            <form id="filterForm" class="filter-form" method="GET" action="/products/<%= title.toLowerCase().replace(' ', '-') %>">
                 <input type="hidden" name="sort" value="<%= sort %>">
                 <input type="hidden" name="page" value="1">
                 <input type="hidden" name="limit" value="10">
                 <input type="hidden" name="format" value="html">
-                <input type="hidden" name="gender" value="Female">
+                <input type="hidden" name="gender" value="<%= title === 'For Him' ? 'Male' : 'Female' %>">
                 
                 <div class="sort-options">
                     <h3>Sort By</h3>
@@ -531,6 +534,7 @@
                     }
                 });
 
+                window.featuredItems = JSON.stringify(genderContent?.featuredItems || []) ;
                 // Handle add to cart button click
                 addToCartBtn.addEventListener('click', async function() {
                     const productId = this.dataset.productId;
@@ -562,6 +566,19 @@
                         hideLoading();
                     }
                 });
+
+                // Handle video fallback
+                const videoSource = document.getElementById('heroVideoSource');
+                const fallbackContent = document.querySelector('.fallback-content');
+                
+                if (videoSource) {
+                    videoSource.addEventListener('error', function() {
+                        this.parentElement.style.display = 'none';
+                        if (fallbackContent) {
+                            fallbackContent.style.display = 'flex';
+                        }
+                    });
+                }
             });
         </script>
     </body>

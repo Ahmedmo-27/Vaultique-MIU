@@ -397,11 +397,13 @@ router.get('/home', async (req, res) => {
   try {
     // Fetch genders and sort them
     const genders = await Gender.find({}).sort({ name: 1 });
-    
+    const products = await Product.find({}).sort({ name: 1 });
+
     res.render('Home-Page', {
       title: 'Vaultique | Home',
       user: req.user || null,
-      genders, // Pass the genders data to the template
+      genders, 
+      products,
       notification: {
         hasError: false,
         hasSuccess: false
@@ -413,6 +415,7 @@ router.get('/home', async (req, res) => {
       title: 'Vaultique | Home',
       user: req.user || null,
       genders: [], // Pass empty array if there's an error
+      products: [],
       notification: {
         hasError: true,
         error: 'Failed to load home page. Please try again later.',
@@ -1916,6 +1919,13 @@ protectedRoutes.post('/order-confirmation', async (req, res) => {
         order.status = 'confirmed';
         await order.save();
 
+        // Increment popularity score for each product in the order
+        for (const item of order.items) {
+            await Product.findByIdAndUpdate(item.productId, {
+                $inc: { popularityScore: 1 }
+            });
+        }
+
         // Send order confirmation email
         try {
             const user = await User.findById(req.user._id);
@@ -2083,16 +2093,41 @@ router.get('/for-him', async (req, res) => {
             .limit(limit)
             .populate('brand', 'name');
 
-        // Get featured models for the slider
-        const featuredModels = await Product.find({ gender: 'Male', featured: true })
-            .limit(5)
-            .select('name tagline description image');
-
         // Get collections for filter
         const collections = await Collection.find().sort({ name: 1 });
 
         // Get brands for filter
         const brands = await Brand.find().sort({ name: 1 });
+
+        // Get gender content
+        const genderContent = await Gender.findOne({ slug: 'for-him' });
+        if (!genderContent) {
+            console.error('Gender content not found for for-him');
+        } else {
+            // Ensure paths are correct
+            if (genderContent.heroVideo && !genderContent.heroVideo.startsWith('/')) {
+                genderContent.heroVideo = `/${genderContent.heroVideo}`;
+            }
+            if (genderContent.coverImage && !genderContent.coverImage.startsWith('/')) {
+                genderContent.coverImage = `/${genderContent.coverImage}`;
+            }
+            // Ensure featured items paths are correct
+            if (genderContent.featuredItems) {
+                genderContent.featuredItems = genderContent.featuredItems.map(item => ({
+                    ...item,
+                    image: item.image ? (item.image.startsWith('/') ? item.image : `/${item.image}`) : ''
+                }));
+            }
+            console.log('Found gender content:', {
+                name: genderContent.name,
+                hasVideo: !!genderContent.heroVideo,
+                hasCoverImage: !!genderContent.coverImage,
+                hasHeader: !!genderContent.header,
+                hasDescription: !!genderContent.description,
+                featuredItemsCount: genderContent.featuredItems?.length || 0,
+                featuredItems: genderContent.featuredItems?.map(m => ({ name: m.name, image: m.image }))
+            });
+        }
 
         // Check wishlist status for each product if user is logged in
         let productsWithWishlist = products;
@@ -2119,10 +2154,10 @@ router.get('/for-him', async (req, res) => {
             inStock: req.query.inStock || 'false'
         };
 
-        res.render('For-Him', {
+        res.render('Gender', {
             title: 'For Him',
             products: productsWithWishlist,
-            featuredModels,
+            featuredModels: genderContent?.featuredItems || [], // Changed from featuredModels to featuredItems
             pagination: {
                 currentPage: page,
                 totalPages,
@@ -2133,7 +2168,8 @@ router.get('/for-him', async (req, res) => {
             sort: req.query.sort || 'default',
             collections,
             brands,
-            user: req.user || null
+            user: req.user || null,
+            genderContent
         });
     } catch (error) {
         console.error('Error loading For Him page:', error);
@@ -2222,16 +2258,41 @@ router.get('/for-her', async (req, res) => {
             .limit(limit)
             .populate('brand', 'name');
 
-        // Get featured models for the slider
-        const featuredModels = await Product.find({ gender: 'Female', featured: true })
-            .limit(5)
-            .select('name tagline description image');
-
         // Get collections for filter
         const collections = await Collection.find().sort({ name: 1 });
 
         // Get brands for filter
         const brands = await Brand.find().sort({ name: 1 });
+
+        // Get gender content
+        const genderContent = await Gender.findOne({ slug: 'for-her' });
+        if (!genderContent) {
+            console.error('Gender content not found for for-her');
+        } else {
+            // Ensure paths are correct
+            if (genderContent.heroVideo && !genderContent.heroVideo.startsWith('/')) {
+                genderContent.heroVideo = `/${genderContent.heroVideo}`;
+            }
+            if (genderContent.coverImage && !genderContent.coverImage.startsWith('/')) {
+                genderContent.coverImage = `/${genderContent.coverImage}`;
+            }
+            // Ensure featured models paths are correct
+            if (genderContent.featuredModels) {
+                genderContent.featuredModels = genderContent.featuredModels.map(model => ({
+                    ...model,
+                    image: model.image ? (model.image.startsWith('/') ? model.image : `/${model.image}`) : ''
+                }));
+            }
+            console.log('Found gender content:', {
+                name: genderContent.name,
+                hasVideo: !!genderContent.heroVideo,
+                hasCoverImage: !!genderContent.coverImage,
+                hasHeader: !!genderContent.header,
+                hasDescription: !!genderContent.description,
+                featuredModelsCount: genderContent.featuredModels?.length || 0,
+                featuredModels: genderContent.featuredModels?.map(m => ({ name: m.name, image: m.image }))
+            });
+        }
 
         // Check wishlist status for each product if user is logged in
         let productsWithWishlist = products;
@@ -2258,10 +2319,10 @@ router.get('/for-her', async (req, res) => {
             inStock: req.query.inStock || 'false'
         };
 
-        res.render('For-Her', {
+        res.render('Gender', {
             title: 'For Her',
             products: productsWithWishlist,
-            featuredModels,
+            featuredModels: genderContent?.featuredModels || [],
             pagination: {
                 currentPage: page,
                 totalPages,
@@ -2272,7 +2333,8 @@ router.get('/for-her', async (req, res) => {
             sort: req.query.sort || 'default',
             collections,
             brands,
-            user: req.user || null
+            user: req.user || null,
+            genderContent
         });
     } catch (error) {
         console.error('Error loading For Her page:', error);

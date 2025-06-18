@@ -7,6 +7,8 @@ const Collection = require('../models/Collections');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const { body, query, param, validationResult } = require('express-validator');
+const User = require('../models/Users');
+const { buildFilterQuery, getSortOptions, getCurrentFilters } = require('../controllers/User');
 
 // Rate limiting configuration
 const apiLimiter = rateLimit({
