@@ -435,6 +435,16 @@ router.get('/products', async (req, res) => {
     // Build filter query
     const filterQuery = {};
     
+    // Add search filter if search term is provided
+    if (req.query.search && req.query.search.trim() !== '') {
+      const searchRegex = new RegExp(req.query.search, 'i');
+      filterQuery.$or = [
+        { name: searchRegex },
+        { brand: searchRegex },
+        { description: searchRegex }
+      ];
+    }
+
     // Collection filter
     if (req.query.Vcollection && req.query.Vcollection !== 'All') {
       filterQuery.Vcollection = req.query.Vcollection;
@@ -569,6 +579,7 @@ router.get('/products', async (req, res) => {
       },
       filters: currentFilters,
       sort: sort,
+      search: req.query.search || '',  // Add search parameter
       user: req.user || null,
       collections: collections,
       brands: brands

@@ -296,7 +296,7 @@ router.get(['/', '/api/products'], productValidation.query, async (req, res) => 
       page: rawPage = 1,
       limit: rawLimit = 10,
       sort = 'default',
-      search,
+      search = '',  // Initialize search with empty string
       Vcollection = 'All',
       brand = 'All',
       strapMaterial = 'All',
@@ -458,13 +458,39 @@ router.get(['/', '/api/products'], productValidation.query, async (req, res) => 
       res.json(responseData);
     } else {
       res.render('products', {
-        title: 'Shop All',
+        title: search ? `Search Results for "${search}"` : 'Shop All',
         products,
-        pagination: responseData.data.pagination,
-        filters: responseData.data.filters,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: totalProducts,
+          hasNextPage: page < Math.ceil(totalProducts / limit),
+          hasPrevPage: page > 1
+        },
         sort,
+        limit,
+        search,
         collections,
         brands,
+        strapMaterials: strapMaterial,
+        movements: movement,
+        waterResistances: waterResistance,
+        caseMaterials: caseMaterial,
+        dialColors: dialColor,
+        genders: gender,
+        filters: {
+          collection: Vcollection,
+          brand: brand,
+          strapMaterial: strapMaterial,
+          movement: movement,
+          waterResistance: waterResistance,
+          caseMaterial: caseMaterial,
+          dialColor: dialColor,
+          gender: gender,
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+          inStock: inStock
+        },
         user: req.user || null
       });
     }

@@ -227,9 +227,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 7agat el search
   const searchButtonclick = document.getElementById('search');
+  const searchButtonclick2 = document.getElementById('search2');
   const searchField = document.getElementById('searchField');
+  const searchField2 = document.getElementById('searchField2');
   const searchDiv = document.getElementById('search-button');
+  const searchDiv2 = document.getElementById('search-button2');
   let buttonCount = 0;
+  let buttonCount2 = 0;
 
   const searchExtension = document.getElementById('search-extension');
   const searchResultsDiv = document.getElementById('search-results');
@@ -238,6 +242,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // search functionality
   if (searchButtonclick && searchField) {
     searchButtonclick.addEventListener('click', expandSearch);
+  }
+
+  if (searchButtonclick2 && searchField2) {
+    searchButtonclick2.addEventListener('click', expandSearch2);
   }
 
   function expandSearch() {
@@ -257,6 +265,27 @@ document.addEventListener('DOMContentLoaded', function () {
       searchField.style.width = '0px';
       searchDiv.style.width = '40px';
       buttonCount--;
+      resetSearchUI();
+    }
+  }
+
+  function expandSearch2() {
+    if (buttonCount2 === 0) {
+      if (window.innerWidth < 700) {
+        searchDiv2.style.width = '200px';
+        searchField2.style.width = '200px';
+      } else {
+        searchDiv2.style.width = '200px';
+        searchField2.style.width = '200px';
+      }
+      searchDiv2.style.border = '1px solid black';
+      buttonCount2++;
+      searchField2.focus();
+    } else if (buttonCount2 === 1 && searchField2.value === '') {
+      searchDiv2.style.border = 'none';
+      searchField2.style.width = '0px';
+      searchDiv2.style.width = '40px';
+      buttonCount2--;
       resetSearchUI();
     }
   }
@@ -504,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add a "View All Results" link
     const viewAllLink = document.createElement('a');
-    viewAllLink.href = `/products.html?search=${encodeURIComponent(query)}`;
+    viewAllLink.href = `/user/products?search=${encodeURIComponent(query)}`;
     viewAllLink.classList.add('view-all-results');
     viewAllLink.textContent = `View all results for "${query}"`;
     searchResultsDiv.appendChild(viewAllLink);
