@@ -716,4 +716,71 @@ router.post('/google', async (req, res) => {
   }
 });
 
+// Verify token route
+router.post('/verify-token', async (req, res) => {
+  try {
+    const token = req.cookies.token || 
+                 req.headers.authorization?.split(' ')[1] || 
+                 req.headers['x-access-token'];
+
+    if (!token) {
+      return res.json({
+        valid: false,
+        message: 'No token provided'
+      });
+    }
+
+    const { verifyToken } = require('../middleware/jwt');
+    const { valid, decoded, error } = verifyToken(token);
+    
+    if (!valid) {
+      return res.json({
+        valid: false,
+        message: error
+      });
+    }
+
+    // Verify token type
+    if (decoded.type !== 'ACCESS') {
+      return res.json({
+        valid: false,
+        message: 'Invalid token type'
+      });
+    }
+
+    // Fetch fresh user data
+    const user = await User.findById(decoded.id).select('-password');
+    
+    if (!user) {
+      return res.json({
+        valid: false,
+        message: 'User not found'
+      });
+    }
+
+    if (user.status !== 'active') {
+      return res.json({
+        valid: false,
+        message: 'Account is not active'
+      });
+    }
+
+    res.json({
+      valid: true,
+      user: {
+        _id: user._id,
+        Name: user.Name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.json({
+      valid: false,
+      message: 'Token verification failed'
+    });
+  }
+});
+
 module.exports = router;

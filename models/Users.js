@@ -326,7 +326,6 @@ const UserSchema = new mongoose.Schema({
 // Define indexes explicitly
 UserSchema.index({ email: 1 }, { unique: true });
 UserSchema.index({ username: 1 }, { unique: true });
-UserSchema.index({ googleId: 1 }, { unique: true });
 
 // Add a pre-save hook to hash passwords
 UserSchema.pre('save', async function (next) {

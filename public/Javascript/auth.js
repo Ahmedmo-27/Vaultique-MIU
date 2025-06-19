@@ -224,6 +224,7 @@ const checkAuthState = () => {
     return;
   }
   
+  // Only verify token if we have one
   if (token && user) {
     // Verify token is still valid
     fetch('/api/auth/verify-token', {
@@ -246,6 +247,7 @@ const checkAuthState = () => {
       refreshToken();
     });
   }
+  // If no token, do nothing - user is a guest
 };
 
 // Refresh token function

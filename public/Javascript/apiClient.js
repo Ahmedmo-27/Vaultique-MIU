@@ -47,10 +47,16 @@ const apiRequest = async (url, options = {}) => {
       // Get current path
       const currentPath = window.location.pathname;
       
-      // Only redirect if we're not already on auth-related pages
+      // Only redirect if we're not already on auth-related pages and we're not on a public page
       if (!currentPath.includes('/LoginSignup') && 
           !currentPath.includes('/api/auth/login') && 
-          !currentPath.includes('/api/auth/signup')) {
+          !currentPath.includes('/api/auth/signup') &&
+          !currentPath.includes('/user/home') &&
+          !currentPath.includes('/user/products') &&
+          !currentPath.includes('/user/Collections') &&
+          !currentPath.includes('/user/Brands') &&
+          !currentPath.includes('/user/for-her') &&
+          !currentPath.includes('/user/for-him')) {
         window.location.href = '/user/LoginSignup';
         return null;
       }

@@ -1677,360 +1677,6 @@ router.get('/compare/list', (req, res) => {
   }
 });
 
-// Add shipping page route
-router.get('/shipping', async (req, res) => {
-    try {
-        // Check if cart exists and has items
-        if (!req.session.cart?.items?.length) {
-            console.log('No cart found in session');
-            return res.redirect('/user/cart');
-        }
-
-        // Check if payment info exists
-        if (!req.session.paymentInfo) {
-            console.log('No payment info found in session');
-            return res.redirect('/user/payment');
-        }
-
-        // Get user's saved addresses if authenticated
-        let savedAddresses = [];
-        if (req.user) {
-            const user = await User.findById(req.user._id).select('Address');
-            if (user?.Address) {
-                savedAddresses = [user.Address];
-            }
-        }
-
-        res.render('Shipping', {
-            title: 'Shipping Information',
-            user: req.user || null,
-            savedAddresses,
-            isAuthenticated: !!req.user,
-            cart: req.session.cart
-        });
-    } catch (error) {
-        console.error('Error loading shipping page:', error);
-        res.status(500).render('error', {
-            title: 'Error',
-            message: 'An error occurred while loading the shipping page.',
-            type: 'error',
-            show: true
-        });
-    }
-});
-
-// Protected order creation routes
-protectedRoutes.post('/shipping/process', async (req, res) => {
-    try {
-        // Check if user is authenticated
-        if (!req.user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Please login to complete your order'
-            });
-        }
-
-        console.log('Processing shipping request:', {
-            hasUser: !!req.user,
-            hasSession: !!req.session,
-            hasCart: !!req.session?.cart,
-            hasPaymentInfo: !!req.session?.paymentInfo,
-            cartItems: req.session?.cart?.items?.length
-        });
-
-        const { fullName, email, address, city, state, zipCode, saveAddress } = req.body;
-
-        // Validate required fields
-        if (!fullName || !email || !address || !city || !state || !zipCode) {
-            return res.status(400).json({
-                success: false,
-                message: 'All shipping fields are required'
-            });
-        }
-
-        // Validate email format
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid email format'
-            });
-        }
-
-        // Check if cart exists and has items
-        if (!req.session.cart?.items?.length) {
-            return res.status(400).json({
-                success: false,
-                message: 'Cart is empty'
-            });
-        }
-
-        // Check if payment info exists
-        if (!req.session.paymentInfo) {
-            return res.status(400).json({
-                success: false,
-                message: 'Payment information is required'
-            });
-        }
-
-        // Save address if requested and user is authenticated
-        if (saveAddress && req.user) {
-            await User.findByIdAndUpdate(req.user._id, {
-                Address: {
-                    street: address,
-                    city,
-                    state,
-                    postalCode: zipCode
-                }
-            });
-        }
-
-        // Validate cart items and prices
-        const cartItems = req.session.cart.items;
-        for (const item of cartItems) {
-            const product = await Product.findById(item.product);
-            if (!product) {
-                throw new Error(`Product ${item.name} not found`);
-            }
-            
-            // Update stock count
-            product.stockCount -= item.quantity;
-            // Update stock status based on count
-            product.stock = product.stockCount > 0;
-            
-            await product.save();
-        }
-
-        // Create order number
-        const orderNumber = generateOrderNumber();
-
-        // Create new order with both shipping and payment info
-        const order = new Order({
-            userId: req.user ? req.user._id : null,
-            orderNumber,
-            items: await Promise.all(cartItems.map(async item => {
-                const product = await Product.findById(item.product);
-                // Fetch the full brand name
-                let brandName = product.brand;
-                if (product.brand) {
-                    const brandDoc = await Brand.findOne({ _id: product.brand });
-                    if (brandDoc && brandDoc.name) {
-                        brandName = brandDoc.name;
-                    }
-                }
-                return {
-                    productId: item.product,
-                    productDetails: {
-                        name: product.name,
-                        image: product.image,
-                        brand: brandName,
-                        price: product.price,
-                        strapMaterial: product.strapMaterial,
-                        movement: product.movement,
-                        waterResistance: product.waterResistance,
-                        caseMaterial: product.caseMaterial,
-                        dialColor: product.dialColor,
-                        gender: product.gender,
-                        Vcollection: product.Vcollection
-                    },
-                    quantity: item.quantity,
-                    price: item.price
-                };
-            })),
-            subtotal: req.session.cart.subtotal,
-            shippingCost: req.session.cart.shippingCost,
-            total: req.session.cart.total,
-            shipping: {
-                name: fullName,
-                email,
-                address,
-                city,
-                state,
-                zipCode
-            },
-            payment: {
-                name: req.session.paymentInfo.name,
-                cardNumber: req.session.paymentInfo.cardNumber,
-                bankName: req.session.paymentInfo.bankName,
-                expiry: req.session.paymentInfo.expiry
-            },
-            status: 'pending'
-        });
-
-        // Save the order
-        await order.save();
-
-        // Add order to user's orders array if authenticated
-        if (req.user && req.user._id) {
-            const user = await User.findById(req.user._id);
-            if (user) {
-                user.orders.push({
-                    orderId: order._id.toString(),
-                    orderDate: order.createdAt,
-                    status: 'Pending',
-                    total: order.total,
-                    items: order.items.map(item => ({
-                        product: item.productId,
-                        quantity: item.quantity
-                    }))
-                });
-                await user.save();
-            }
-        }
-
-        // Store order info in session
-        req.session.orderInfo = {
-            orderId: order._id,
-            orderNumber: order.orderNumber
-        };
-
-        // Clear cart and payment info from session
-        req.session.cart = null;
-        req.session.paymentInfo = null;
-
-        // Save session
-        await new Promise((resolve, reject) => {
-            req.session.save((err) => {
-                if (err) {
-                    console.error('Error saving session:', err);
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
-        });
-
-        res.json({
-            success: true,
-            message: 'Order created successfully',
-            redirect: '/user/review',
-            orderId: order._id
-        });
-    } catch (error) {
-        console.error('Error processing shipping:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to process shipping. Please try again.',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
-});
-
-protectedRoutes.post('/order-confirmation', async (req, res) => {
-    try {
-        // Check if user is authenticated
-        if (!req.user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Please login to confirm your order'
-            });
-        }
-
-        // Check if order info exists in session
-        if (!req.session.orderInfo) {
-            return res.status(400).json({
-                success: false,
-                message: 'No order information found'
-            });
-        }
-
-        // Get order details
-        const order = await Order.findById(req.session.orderInfo.orderId);
-        if (!order) {
-            return res.status(400).json({
-                success: false,
-                message: 'Order not found'
-            });
-        }
-
-        // Update order status to confirmed
-        order.status = 'confirmed';
-        await order.save();
-
-        // Increment popularity score for each product in the order
-        for (const item of order.items) {
-            await Product.findByIdAndUpdate(item.productId, {
-                $inc: { popularityScore: 1 }
-            });
-        }
-
-        // Send order confirmation email
-        try {
-            const user = await User.findById(req.user._id);
-            if (user) {
-                await sendOrderConfirmationEmail(user, {
-                    orderNumber: order.orderNumber,
-                    date: order.createdAt.toLocaleDateString(),
-                    total: order.total.toFixed(2),
-                    items: order.items.map(item => ({
-                        name: item.productDetails.name,
-                        quantity: item.quantity
-                    }))
-                });
-            }
-        } catch (emailError) {
-            console.error('Error sending order confirmation email:', emailError);
-            // Continue with order confirmation even if email fails
-        }
-
-        // Keep order info in session for success page
-        const orderInfo = req.session.orderInfo;
-        
-        // Clear other session data
-        delete req.session.cart;
-        delete req.session.paymentInfo;
-
-        res.json({
-            success: true,
-            message: 'Order confirmed successfully',
-            redirect: '/user/order-success'
-        });
-    } catch (error) {
-        console.error('Error confirming order:', error);
-        res.status(500).json({
-            success: false,
-            message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred while confirming your order'
-        });
-    }
-});
-
-// Add the protected routes
-router.use(protectedRoutes);
-
-router.get('/order-success', async (req, res) => {
-    try {
-        // Check if order info exists in session
-        if (!req.session.orderInfo) {
-            return res.redirect('/user/cart');
-        }
-
-        // Get order details
-        const order = await Order.findById(req.session.orderInfo.orderId)
-            .populate('items.productId')
-            .populate('shipping')
-            .populate('payment');
-
-        if (!order) {
-            return res.redirect('/user/cart');
-        }
-
-        // Clear session data
-        delete req.session.orderInfo;
-        delete req.session.cart;
-        delete req.session.paymentInfo;
-
-        res.render('order-success', {
-            order,
-            user: req.session.user || null
-        });
-    } catch (error) {
-        console.error('Error in order success page:', error);
-        res.status(500).json({
-            success: false,
-            message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred while loading the order success page'
-        });
-    }
-});
-
 // FAQ page route
 router.get('/faq', async (req, res) => {
   try {
@@ -2492,6 +2138,359 @@ const getCurrentFilters = (query, defaultGender = null) => {
     inStock: query.inStock || 'false'
   };
 };
+
+// Add shipping page route
+router.get('/shipping', async (req, res) => {
+    try {
+        // Check if cart exists and has items
+        if (!req.session.cart?.items?.length) {
+            console.log('No cart found in session');
+            return res.redirect('/user/cart');
+        }
+
+        // Check if payment info exists
+        if (!req.session.paymentInfo) {
+            console.log('No payment info found in session');
+            return res.redirect('/user/payment');
+        }
+
+        // Get user's saved addresses if authenticated
+        let savedAddresses = [];
+        if (req.user) {
+            const user = await User.findById(req.user._id).select('Address');
+            if (user?.Address) {
+                savedAddresses = [user.Address];
+            }
+        }
+
+        res.render('Shipping', {
+            title: 'Shipping Information',
+            user: req.user || null,
+            savedAddresses,
+            isAuthenticated: !!req.user,
+            cart: req.session.cart
+        });
+    } catch (error) {
+        console.error('Error loading shipping page:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'An error occurred while loading the shipping page.',
+            type: 'error',
+            show: true
+        });
+    }
+});
+
+router.use(protectedRoutes);
+
+// Protected order creation routes
+protectedRoutes.post('/shipping/process', async (req, res) => {
+    try {
+        // Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Please login to complete your order'
+            });
+        }
+
+        console.log('Processing shipping request:', {
+            hasUser: !!req.user,
+            hasSession: !!req.session,
+            hasCart: !!req.session?.cart,
+            hasPaymentInfo: !!req.session?.paymentInfo,
+            cartItems: req.session?.cart?.items?.length
+        });
+
+        const { fullName, email, address, city, state, zipCode, saveAddress } = req.body;
+
+        // Validate required fields
+        if (!fullName || !email || !address || !city || !state || !zipCode) {
+            return res.status(400).json({
+                success: false,
+                message: 'All shipping fields are required'
+            });
+        }
+
+        // Validate email format
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid email format'
+            });
+        }
+
+        // Check if cart exists and has items
+        if (!req.session.cart?.items?.length) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cart is empty'
+            });
+        }
+
+        // Check if payment info exists
+        if (!req.session.paymentInfo) {
+            return res.status(400).json({
+                success: false,
+                message: 'Payment information is required'
+            });
+        }
+
+        // Save address if requested and user is authenticated
+        if (saveAddress && req.user) {
+            await User.findByIdAndUpdate(req.user._id, {
+                Address: {
+                    street: address,
+                    city,
+                    state,
+                    postalCode: zipCode
+                }
+            });
+        }
+
+        // Validate cart items and prices
+        const cartItems = req.session.cart.items;
+        for (const item of cartItems) {
+            const product = await Product.findById(item.product);
+            if (!product) {
+                throw new Error(`Product ${item.name} not found`);
+            }
+            
+            // Update stock count
+            product.stockCount -= item.quantity;
+            // Update stock status based on count
+            product.stock = product.stockCount > 0;
+            
+            await product.save();
+        }
+
+        // Create order number
+        const orderNumber = generateOrderNumber();
+
+        // Create new order with both shipping and payment info
+        const order = new Order({
+            userId: req.user ? req.user._id : null,
+            orderNumber,
+            items: await Promise.all(cartItems.map(async item => {
+                const product = await Product.findById(item.product);
+                // Fetch the full brand name
+                let brandName = product.brand;
+                if (product.brand) {
+                    const brandDoc = await Brand.findOne({ _id: product.brand });
+                    if (brandDoc && brandDoc.name) {
+                        brandName = brandDoc.name;
+                    }
+                }
+                return {
+                    productId: item.product,
+                    productDetails: {
+                        name: product.name,
+                        image: product.image,
+                        brand: brandName,
+                        price: product.price,
+                        strapMaterial: product.strapMaterial,
+                        movement: product.movement,
+                        waterResistance: product.waterResistance,
+                        caseMaterial: product.caseMaterial,
+                        dialColor: product.dialColor,
+                        gender: product.gender,
+                        Vcollection: product.Vcollection
+                    },
+                    quantity: item.quantity,
+                    price: item.price
+                };
+            })),
+            subtotal: req.session.cart.subtotal,
+            shippingCost: req.session.cart.shippingCost,
+            total: req.session.cart.total,
+            shipping: {
+                name: fullName,
+                email,
+                address,
+                city,
+                state,
+                zipCode
+            },
+            payment: {
+                name: req.session.paymentInfo.name,
+                cardNumber: req.session.paymentInfo.cardNumber,
+                bankName: req.session.paymentInfo.bankName,
+                expiry: req.session.paymentInfo.expiry
+            },
+            status: 'pending'
+        });
+
+        // Save the order
+        await order.save();
+
+        // Add order to user's orders array if authenticated
+        if (req.user && req.user._id) {
+            const user = await User.findById(req.user._id);
+            if (user) {
+                user.orders.push({
+                    orderId: order._id.toString(),
+                    orderDate: order.createdAt,
+                    status: 'Pending',
+                    total: order.total,
+                    items: order.items.map(item => ({
+                        product: item.productId,
+                        quantity: item.quantity
+                    }))
+                });
+                await user.save();
+            }
+        }
+
+        // Store order info in session
+        req.session.orderInfo = {
+            orderId: order._id,
+            orderNumber: order.orderNumber
+        };
+
+        // Clear cart and payment info from session
+        req.session.cart = null;
+        req.session.paymentInfo = null;
+
+        // Save session
+        await new Promise((resolve, reject) => {
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Error saving session:', err);
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+
+        res.json({
+            success: true,
+            message: 'Order created successfully',
+            redirect: '/user/review',
+            orderId: order._id
+        });
+    } catch (error) {
+        console.error('Error processing shipping:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to process shipping. Please try again.',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+protectedRoutes.post('/order-confirmation', async (req, res) => {
+    try {
+        // Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Please login to confirm your order'
+            });
+        }
+
+        // Check if order info exists in session
+        if (!req.session.orderInfo) {
+            return res.status(400).json({
+                success: false,
+                message: 'No order information found'
+            });
+        }
+
+        // Get order details
+        const order = await Order.findById(req.session.orderInfo.orderId);
+        if (!order) {
+            return res.status(400).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        // Update order status to confirmed
+        order.status = 'confirmed';
+        await order.save();
+
+        // Increment popularity score for each product in the order
+        for (const item of order.items) {
+            await Product.findByIdAndUpdate(item.productId, {
+                $inc: { popularityScore: 1 }
+            });
+        }
+
+        // Send order confirmation email
+        try {
+            const user = await User.findById(req.user._id);
+            if (user) {
+                await sendOrderConfirmationEmail(user, {
+                    orderNumber: order.orderNumber,
+                    date: order.createdAt.toLocaleDateString(),
+                    total: order.total.toFixed(2),
+                    items: order.items.map(item => ({
+                        name: item.productDetails.name,
+                        quantity: item.quantity
+                    }))
+                });
+            }
+        } catch (emailError) {
+            console.error('Error sending order confirmation email:', emailError);
+            // Continue with order confirmation even if email fails
+        }
+
+        // Keep order info in session for success page
+        const orderInfo = req.session.orderInfo;
+        
+        // Clear other session data
+        delete req.session.cart;
+        delete req.session.paymentInfo;
+
+        res.json({
+            success: true,
+            message: 'Order confirmed successfully',
+            redirect: '/user/order-success'
+        });
+    } catch (error) {
+        console.error('Error confirming order:', error);
+        res.status(500).json({
+            success: false,
+            message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred while confirming your order'
+        });
+    }
+});
+
+protectedRoutes.get('/order-success', async (req, res) => {
+    try {
+        // Check if order info exists in session
+        if (!req.session.orderInfo) {
+            return res.redirect('/user/cart');
+        }
+
+        // Get order details
+        const order = await Order.findById(req.session.orderInfo.orderId)
+            .populate('items.productId')
+            .populate('shipping')
+            .populate('payment');
+
+        if (!order) {
+            return res.redirect('/user/cart');
+        }
+
+        // Clear session data
+        delete req.session.orderInfo;
+        delete req.session.cart;
+        delete req.session.paymentInfo;
+
+        res.render('order-success', {
+            order,
+            user: req.session.user || null
+        });
+    } catch (error) {
+        console.error('Error in order success page:', error);
+        res.status(500).json({
+            success: false,
+            message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred while loading the order success page'
+        });
+    }
+});
 
 // Review Order page route
 router.get('/review', async (req, res) => {

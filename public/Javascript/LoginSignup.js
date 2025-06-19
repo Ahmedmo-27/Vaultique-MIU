@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log('DOM Content Loaded - LoginSignup.js');
   
   // Existing variables
   const flipContainer = document.querySelector(".flip-container");
@@ -10,17 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeForgotPasswordButton = document.getElementById("close-forgot-password");
   const loginForm = document.getElementById("login-form-id");
   const signupForm = document.getElementById("signup-form-id");
-
-  // Debug element finding
-  console.log('Elements found:');
-  console.log('- flipContainer:', flipContainer);
-  console.log('- registerLink:', registerLink);
-  console.log('- loginLink:', loginLink);
-  console.log('- forgotPasswordLink:', forgotPasswordLink);
-  console.log('- forgotPasswordContainer:', forgotPasswordContainer);
-  console.log('- closeForgotPasswordButton:', closeForgotPasswordButton);
-  console.log('- loginForm:', loginForm);
-  console.log('- signupForm:', signupForm);
 
   // New variables for multi-step form
   const step1 = document.getElementById("step1");
@@ -166,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const country = document.getElementById("country")?.value || '';
       
       // Validate required fields
-      if (!username || !Name || !email || !password || !language) {
+      if (!username || !Name || !email || !password || !language || !phone || !dob) {
         window.showNotification('error', 'Please fill in all required fields to create your account.');
         // Remove loading state
         completeSignupBtn.classList.remove('loading');
