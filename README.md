@@ -11,15 +11,21 @@ Vaultique is a sophisticated e-commerce platform specializing in luxury watches,
 - **Shopping Cart**: Persistent cart with real-time calculations
 - **Order Management**: Complete order lifecycle tracking
 - **User Profiles**: Comprehensive user account management
+- **Wishlist & Compare**: Product comparison and wishlist functionality
+- **Product Reviews**: User review and rating system
 
 ### Advanced Features
 - **SMS Notifications**: Twilio integration for order confirmations and password resets
-- **Email System**: Contact form and automated email notifications
+- **Email System**: Contact form and automated email notifications with templates
 - **Google OAuth**: Seamless Google Sign-in integration
 - **QR Code Generation**: Product identification and sharing
 - **3D Product Visualization**: Interactive 3D models using Three.js
 - **Real-time Chat**: Stream Chat integration for customer support
 - **Payment Processing**: Secure payment gateway integration
+- **Shipping Management**: Comprehensive shipping and tracking system
+- **Refund System**: Automated refund processing
+- **Product Configurator**: Custom watch configuration tool
+- **Analytics Dashboard**: Sales, user, and product analytics
 
 ### Security & Performance
 - **Rate Limiting**: Protection against abuse and DDoS attacks
@@ -28,6 +34,8 @@ Vaultique is a sophisticated e-commerce platform specializing in luxury watches,
 - **CORS Configuration**: Proper cross-origin resource sharing
 - **Session Management**: Secure session handling with MongoDB store
 - **Password Security**: bcrypt hashing with salt rounds
+- **Request Compression**: Gzip compression for improved performance
+- **Cache Control**: Optimized caching for static assets
 
 ## 🛠️ Tech Stack
 
@@ -70,7 +78,7 @@ Vaultique is a sophisticated e-commerce platform specializing in luxury watches,
 
 1. **Clone the repository**:
 ```bash
-git clone [repository-url]
+git clone [https://github.com/Ahmedmo-27/Vaultique-MIU]
 cd vaultique
 ```
 
@@ -85,13 +93,15 @@ Create a `.env` file in the root directory:
 # Application
 NODE_ENV=development
 PORT=3000
+FRONTEND_URL=http://localhost:3000
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/vaultique
+MONGODB_URI=mongodb://localhost:27017/test
 
 # Authentication
 JWT_SECRET=your_super_secret_jwt_key_here
 JWT_EXPIRE=24h
+SESSION_SECRET=your_session_secret_here
 
 # Twilio (SMS)
 TWILIO_ACCOUNT_SID=your_twilio_account_sid
@@ -102,15 +112,18 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-# Stream Chat
-STREAM_API_KEY=your_stream_api_key
-STREAM_API_SECRET=your_stream_api_secret
-
 # Email (Optional)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_email_password
+
+# Stream Chat (Optional)
+STREAM_API_KEY=your_stream_api_key
+STREAM_API_SECRET=your_stream_api_secret
+
+# Cookie Domain (Optional)
+COOKIE_DOMAIN=localhost
 ```
 
 4. **Database Setup**:
@@ -192,18 +205,76 @@ vaultique/
 │   ├── server.test.js      # Server functionality tests
 │   ├── auth.test.js        # Authentication tests
 │   ├── products.test.js    # Product API tests
-│   ├── cart.test.js        # Cart functionality tests
-│   └── README.md           # Test documentation
+│   └── cart.test.js        # Cart functionality tests
 ├── config/                 # Configuration files
+│   ├── env.js             # Environment configuration
+│   ├── database.js        # Database configuration
+│   ├── cors.js            # CORS settings
+│   └── session.js         # Session configuration
 ├── controllers/            # Route controllers
+│   ├── Auth.js            # Authentication controller
+│   ├── User.js            # User management
+│   ├── Admin.js           # Admin dashboard
+│   ├── Payment.js         # Payment processing
+│   ├── Shipping.js        # Shipping management
+│   ├── Configurator.js    # Product configurator
+│   └── refundController.js # Refund processing
 ├── middleware/             # Custom middleware
+│   ├── auth.js            # Authentication middleware
+│   ├── jwt.js             # JWT handling
+│   └── errorHandler.js    # Error handling
 ├── models/                 # Database models
+│   ├── Users.js           # User model
+│   ├── Products.js        # Product model
+│   ├── Orders.js          # Order model
+│   ├── cart.js            # Cart model
+│   ├── Brands.js          # Brand model
+│   ├── Collections.js     # Collection model
+│   ├── Shipping.js        # Shipping model
+│   ├── Refund.js          # Refund model
+│   └── Sessions.js        # Session model
 ├── public/                 # Static assets
+│   ├── CSS/               # Stylesheets
+│   ├── Javascript/        # Client-side scripts
+│   └── Assets/            # Images, videos, 3D models
 ├── routes/                 # API routes
+│   ├── api.js             # Main API router
+│   ├── AdminRoutes.js     # Admin routes
+│   ├── ProductsRoutes.js  # Product routes
+│   ├── CartRoutes.js      # Cart routes
+│   ├── UsersRoutes.js     # User routes
+│   ├── BrandsRoutes.js    # Brand routes
+│   ├── CollectionsRoutes.js # Collection routes
+│   ├── PaymentRoutes.js   # Payment routes
+│   ├── ShippingRoutes.js  # Shipping routes
+│   ├── ConfiguratorRoutes.js # Configurator routes
+│   └── refundRoutes.js    # Refund routes
 ├── seed/                   # Database seeding
+│   ├── Users-Seed.js      # User seed data
+│   ├── Brands-Seed.js     # Brand seed data
+│   ├── Collections-Seed.js # Collection seed data
+│   └── Products-Seed.js   # Product seed data
 ├── utils/                  # Utility functions
+│   ├── emailService.js    # Email functionality
+│   ├── emailTemplates.js  # Email templates
+│   ├── smsService.js      # SMS functionality
+│   ├── smsTemplates.js    # SMS templates
+│   ├── securityUtils.js   # Security utilities
+│   ├── cookieManager.js   # Cookie management
+│   ├── orderUtils.js      # Order utilities
+│   └── shippingUtils.js   # Shipping utilities
 ├── views/                  # EJS templates
+│   ├── partials/          # Reusable template parts
+│   ├── Home-Page.ejs      # Home page
+│   ├── products.ejs       # Product listing
+│   ├── cart.ejs           # Shopping cart
+│   ├── Account-Details.ejs # User profile
+│   ├── AdminHubHomePage.ejs # Admin dashboard
+│   └── [other views]      # Additional pages
 ├── scripts/                # Utility scripts
+│   ├── cleanup.js         # Database cleanup
+│   ├── fix-passwords.js   # Password fixing utility
+│   └── fixUserStatus.js   # User status utility
 ├── .env                    # Environment variables
 ├── jest.config.js         # Jest configuration
 ├── package.json           # Dependencies and scripts
@@ -214,9 +285,9 @@ vaultique/
 ## 🧪 Testing Infrastructure
 
 ### Test Coverage
-The project includes a comprehensive test suite with **93 tests** covering:
+The project includes a comprehensive test suite covering:
 
-#### Server Tests (25 tests)
+#### Server Tests
 - Server initialization and middleware
 - Basic routing and redirects
 - API health checks and error handling
@@ -224,7 +295,7 @@ The project includes a comprehensive test suite with **93 tests** covering:
 - Database connections
 - Performance metrics
 
-#### Authentication Tests (18 tests)
+#### Authentication Tests
 - User registration with validation
 - Login with credentials
 - JWT token authentication
@@ -233,14 +304,14 @@ The project includes a comprehensive test suite with **93 tests** covering:
 - Admin role verification
 - Email verification
 
-#### Products Tests (15 tests)
+#### Products Tests
 - Product listing with filters
 - Individual product retrieval
 - Admin-only operations (create, update, delete)
 - Product search functionality
 - Category and statistics endpoints
 
-#### Cart Tests (17 tests)
+#### Cart Tests
 - Cart item management (add, update, remove)
 - Cart calculations and totals
 - Stock validation
@@ -252,7 +323,7 @@ The project includes a comprehensive test suite with **93 tests** covering:
 - **Mock Server**: Prevents port conflicts and external dependencies
 - **Schema Validation**: All test data follows model requirements
 - **Error Handling**: Tests handle both success and failure scenarios
-- **Performance**: Optimized test execution (~49 seconds for full suite)
+- **Performance**: Optimized test execution
 
 ### Running Tests
 ```bash
@@ -311,6 +382,20 @@ npm run test:watch
 - `PUT /cart/update` - Update cart item
 - `DELETE /cart/remove` - Remove item from cart
 - `DELETE /cart/clear` - Clear entire cart
+
+### Admin Endpoints
+- `GET /admin/dashboard` - Admin dashboard
+- `GET /admin/users` - User management
+- `GET /admin/products` - Product management
+- `GET /admin/orders` - Order management
+- `GET /admin/analytics` - Analytics dashboard
+
+### Additional Endpoints
+- `GET /configurator` - Product configurator
+- `POST /api/configurator/share` - Share configuration
+- `GET /api/shipping/rates` - Shipping rates
+- `POST /api/payment/process` - Process payment
+- `POST /refunds/request` - Request refund
 
 ## 🤝 Contributing
 
