@@ -9,7 +9,7 @@
     <title>Vaultique | Order Success</title>
   </head>
   <body>
-    <a href="/" class="logo" id="logo">Vaultique</a>
+    <a href="/user/home" class="logo" id="logo">Vaultique</a>
     <br />
     <div class="progress-container">
       <div class="progress-bar">
@@ -36,7 +36,7 @@
         <i class="fa-solid fa-circle-check"></i>
         <h2>Order Confirmed!</h2>
         <p>Thank you for your purchase. Your order has been successfully placed.</p>
-        <p class="order-number">Order #<%= order._id %></p>
+        <p class="order-number">Order #<%= order.orderNumber %></p>
       </div>
 
       <div class="order-details">
@@ -102,10 +102,8 @@
         </div>
 
         <div class="action-buttons">
-          <a href="/" class="btn primary">Continue Shopping</a>
-          <% if (user) { %>
-            <a href="/user/orders" class="btn secondary">View Orders</a>
-          <% } %>
+          <a href="/user/products" class="btn primary">Continue Shopping</a>
+          <a href="/user/account-details" class="btn secondary">View Orders</a>
         </div>
       </div>
     </div>

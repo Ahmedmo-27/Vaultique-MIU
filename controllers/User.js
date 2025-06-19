@@ -392,6 +392,22 @@ router.get('/LoginSignup', (req, res) => {
   });
 });
 
+// Reset Password page - explicit route without auth requirements
+router.get('/reset-password', (req, res, next) => {
+  console.log('Reset password page route accessed');
+  console.log('Query parameters:', req.query);
+  console.log('User:', req.user);
+  console.log('Request headers:', req.headers.accept);
+  
+  // Force render the page regardless of authentication status
+  console.log('Rendering reset password page');
+  res.render('reset-password', {
+    title: 'Reset Password',
+    user: null, // Force user to null for reset password page
+    token: req.query.token
+  });
+});
+
 // Home page
 router.get('/home', async (req, res) => {
   try {

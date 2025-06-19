@@ -157,7 +157,7 @@ const sendWelcomeEmail = async (user) => {
 
 // Send password reset email
 const sendPasswordResetEmail = async (user, resetToken) => {
-  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+  const resetLink = `https://vaultique.up.railway.app/reset-password?token=${resetToken}`;
   const template = passwordResetTemplate(user.Name, resetLink);
   const mailOptions = {
     from: process.env.EMAIL_USER,

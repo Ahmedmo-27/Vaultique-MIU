@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
+  console.log('DOM Content Loaded - LoginSignup.js');
+  
   // Existing variables
   const flipContainer = document.querySelector(".flip-container");
   const registerLink = document.getElementById("register-link");
@@ -8,6 +10,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeForgotPasswordButton = document.getElementById("close-forgot-password");
   const loginForm = document.getElementById("login-form-id");
   const signupForm = document.getElementById("signup-form-id");
+
+  // Debug element finding
+  console.log('Elements found:');
+  console.log('- flipContainer:', flipContainer);
+  console.log('- registerLink:', registerLink);
+  console.log('- loginLink:', loginLink);
+  console.log('- forgotPasswordLink:', forgotPasswordLink);
+  console.log('- forgotPasswordContainer:', forgotPasswordContainer);
+  console.log('- closeForgotPasswordButton:', closeForgotPasswordButton);
+  console.log('- loginForm:', loginForm);
+  console.log('- signupForm:', signupForm);
 
   // New variables for multi-step form
   const step1 = document.getElementById("step1");
@@ -425,13 +438,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Social login buttons (placeholder functionality)
-  document.querySelectorAll(".btn-google, .btn-facebook").forEach(btn => {
-      btn.addEventListener("click", function() {
-          window.showNotification('info', `${this.textContent.trim()} login would be implemented here`);
-      });
-  });
-
   // Keep all your existing event listeners
   registerLink.addEventListener("click", function (event) {
       event.preventDefault();
@@ -447,127 +453,102 @@ document.addEventListener("DOMContentLoaded", function () {
       flipContainer.classList.remove("flipped");
   });
 
-  forgotPasswordLink.addEventListener("click", function (event) {
-      event.preventDefault();
-      forgotPasswordContainer.style.display = "flex";
-  });
+  // Add multiple event listener approaches for forgot password
+  if (forgotPasswordLink) {
+    console.log('Adding event listener to forgot password link');
+    
+    // Method 1: Direct addEventListener
+    forgotPasswordLink.addEventListener("click", function (e) {
+      console.log('Forgot password link clicked! (Method 1)');
+      e.preventDefault();
+      console.log('Forgot password container:', forgotPasswordContainer);
+      if (forgotPasswordContainer) {
+        forgotPasswordContainer.style.display = "flex";
+        console.log('Container display set to flex');
+      } else {
+        console.error('Forgot password container not found!');
+      }
+    });
+
+    // Method 2: onclick attribute (fallback)
+    forgotPasswordLink.onclick = function(e) {
+      console.log('Forgot password link clicked! (Method 2)');
+      e.preventDefault();
+      if (forgotPasswordContainer) {
+        forgotPasswordContainer.style.display = "flex";
+        console.log('Container display set to flex (Method 2)');
+      }
+    };
+
+    // Method 3: Event delegation
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.id === 'forgot-password') {
+        console.log('Forgot password link clicked! (Method 3 - Event delegation)');
+        e.preventDefault();
+        if (forgotPasswordContainer) {
+          forgotPasswordContainer.style.display = "flex";
+          console.log('Container display set to flex (Method 3)');
+        }
+      }
+    });
+
+  } else {
+    console.error('Forgot password link not found!');
+  }
 
   closeForgotPasswordButton.addEventListener("click", function () {
-      forgotPasswordContainer.style.display = "none";
+    forgotPasswordContainer.style.display = "none";
   });
 
-  document.getElementById("send-reset-link").addEventListener("click", function () {
-      let email = document.getElementById("forgot-email").value;
-      if (email) {
-          alert(`A reset link has been sent to ${email}`);
-          forgotPasswordContainer.style.display = "none";
-      } else {
-          alert("Please enter your email address.");
-      }
-  });
+  document.getElementById("send-reset-link").addEventListener("click", async function () {
+    const email = document.getElementById("forgot-email").value;
+    
+    if (!email) {
+      window.showNotification('error', 'Please enter your email address.');
+      return;
+    }
 
-  // Google Sign-in Handler
-  window.handleGoogleSignIn = async function(response) {
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      window.showNotification('error', 'Please enter a valid email address.');
+      return;
+    }
+
+    // Add loading state
+    const button = this;
+    const originalText = button.textContent;
+    button.textContent = 'Sending...';
+    button.disabled = true;
+
     try {
-      const result = await fetch('/api/auth/google', {
+      const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          credential: response.credential
-        }),
+        body: JSON.stringify({ email }),
         credentials: 'include'
       });
 
-      const data = await result.json();
+      const data = await response.json();
 
-      if (result.ok && data.success) {
-        window.showNotification('success', 'Login successful!');
-        
-        // Store user data
-        if (data.user) {
-          localStorage.setItem('user', JSON.stringify(data.user));
-        }
-        
-        // Redirect based on user role
-        setTimeout(() => {
-          window.location.href = data.user?.role === 'admin' ? '/admin/dashboard' : '/user/home';
-        }, 1000);
+      if (response.ok && data.success) {
+        window.showNotification('success', 'If an account exists with this email, you will receive a password reset link shortly.');
+        forgotPasswordContainer.style.display = "none";
+        document.getElementById("forgot-email").value = '';
       } else {
-        window.showNotification('error', data.message || 'Google login failed');
+        window.showNotification('error', data.message || 'Failed to send reset email. Please try again.');
       }
     } catch (error) {
-      console.error('Google login error:', error);
-      window.showNotification('error', 'An error occurred during Google login');
+      console.error('Forgot password error:', error);
+      window.showNotification('error', 'An error occurred while sending the reset email. Please try again later.');
+    } finally {
+      // Restore button state
+      button.textContent = originalText;
+      button.disabled = false;
     }
-  };
-
-  // Check if Google API is loaded
-  function checkGoogleAPI() {
-    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
-      console.error('Google Sign-In API not loaded');
-      window.showNotification('error', 'Google Sign-In is not available. Please try again later.');
-      return false;
-    }
-    return true;
-  }
-
-  // Add error handling for Google API loading
-  window.onerror = function(msg, url, lineNo, columnNo, error) {
-    if (msg.includes('google') || msg.includes('Google')) {
-      console.error('Google API error:', msg);
-      window.showNotification('error', 'Google Sign-In is not available. Please try again later.');
-      return false;
-    }
-    return false;
-  };
-
-  // Add click handler for custom Google button
-  const googleSignInButton = document.getElementById('google-signin-button');
-  if (googleSignInButton) {
-    googleSignInButton.addEventListener('click', function() {
-      // Check if Google API is loaded and initialized
-      if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-        // Try to use FedCM first
-        try {
-          google.accounts.id.prompt((notification) => {
-            if (notification.isDisplayed()) {
-              console.log('Google Sign-In prompt is displayed');
-            } else if (notification.isDisplayMoment()) {
-              console.log('Google Sign-In prompt is being displayed');
-            } else if (notification.isNotDisplayed()) {
-              // Fall back to traditional sign-in if FedCM is disabled
-              window.showNotification('info', 'Opening Google Sign-In in a new window...');
-              const client = google.accounts.oauth2.initTokenClient({
-                client_id: '<%= process.env.GOOGLE_CLIENT_ID %>',
-                scope: 'email profile',
-                callback: handleGoogleSignIn
-              });
-              client.requestAccessToken();
-            } else if (notification.isSkippedMoment()) {
-              window.showNotification('error', 'Google Sign-In was skipped. Please try again.');
-            } else if (notification.isDismissedMoment()) {
-              window.showNotification('error', 'Google Sign-In was dismissed. Please try again.');
-            }
-          });
-        } catch (error) {
-          console.error('FedCM error:', error);
-          // Fall back to traditional sign-in
-          window.showNotification('info', 'Opening Google Sign-In in a new window...');
-          const client = google.accounts.oauth2.initTokenClient({
-            client_id: '<%= process.env.GOOGLE_CLIENT_ID %>',
-            scope: 'email profile',
-            callback: handleGoogleSignIn
-          });
-          client.requestAccessToken();
-        }
-      } else {
-        window.showNotification('error', 'Google Sign-In is not available. Please try again later.');
-        console.error('Google Sign-In API not loaded');
-      }
-    });
-  }
+  });
 
   // Add email verification handler
   const handleEmailVerification = async (token) => {
@@ -655,4 +636,30 @@ document.addEventListener("DOMContentLoaded", function () {
       handleEmailVerification(verificationToken);
     }
   });
+
+  // Global function for inline onclick handler
+  window.showForgotPassword = function() {
+    console.log('showForgotPassword function called!');
+    const container = document.getElementById("forgot-password-container");
+    if (container) {
+      container.style.display = "flex";
+      console.log('Forgot password container shown via global function');
+    } else {
+      console.error('Forgot password container not found in global function!');
+    }
+    return false; // Prevent default link behavior
+  };
+
+  // Global function for closing forgot password modal
+  window.closeForgotPassword = function() {
+    const container = document.getElementById("forgot-password-container");
+    if (container) {
+      container.style.display = "none";
+      // Clear the email input
+      const emailInput = document.getElementById("forgot-email");
+      if (emailInput) {
+        emailInput.value = '';
+      }
+    }
+  };
 });

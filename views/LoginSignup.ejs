@@ -15,10 +15,10 @@
     <script src="/Javascript/nav-bar.js"></script>
     <script src="/Javascript/notifications.js"></script>
     <script src="/Javascript/auth.js"></script>
-    <script defer src="/Javascript/LoginSignup.js"></script>
     <script src="/Javascript/Light-Mode.js"></script>
-    <script src="/Javascript/google-auth.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+     <script defer src="/Javascript/LoginSignup.js"></script>
+    <script src="/Javascript/google-auth.js"></script>
 </head>
 
 <body>
@@ -205,10 +205,12 @@
             <!-- Forgot Password Container -->
             <div id="forgot-password-container" class="forgot-password-container">
                 <div class="forgot-password-box">
-                    <h3>Enter your email</h3>
-                    <input type="email" id="forgot-email" placeholder="Your email">
+                    <div class="close-icon" onclick="closeForgotPassword()">×</div>
+                    <h3>Reset Your Password</h3>
+                    <p>Enter your email address and we'll send you a link to reset your password.</p>
+                    <input type="email" id="forgot-email" placeholder="Enter your email address">
                     <button id="send-reset-link">Send Reset Link</button>
-                    <button id="close-forgot-password">Close</button>
+                    <button id="close-forgot-password">Cancel</button>
                 </div>
             </div>
         </div>

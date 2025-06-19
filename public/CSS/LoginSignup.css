@@ -44,7 +44,6 @@ body {
 /* Login & Signup Forms */
 .form-container {
     width: 100%;
-    min-height: 600px;
     position: absolute;
     backface-visibility: hidden;
     background: rgba(255, 255, 255, 0.1);
@@ -96,6 +95,26 @@ body {
 
 .input-group input::placeholder {
     color: rgba(255, 255, 255, 0.7);
+}
+
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    flex: 1;
+    padding-right: 40px; 
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.7);
+    z-index: 2;
+    font-size: 18px;
 }
 
 /* Remember Me & Forgot Password */
@@ -153,64 +172,226 @@ p a:hover {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 125%;
+    border-radius: 10px;
     display: none;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.8);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
 }
 
 .forgot-password-box {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
     text-align: center;
     color: white;
-    width: 300px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: slideIn 0.4s ease-out;
+    transform-origin: center;
+}
+
+.forgot-password-box h3 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, #fff, #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.forgot-password-box p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    margin-bottom: 30px;
+    line-height: 1.5;
 }
 
 .forgot-password-box input {
     width: 100%;
-    padding: 10px;
-    border: none;
-    border-bottom: 2px solid white;
-    background: transparent;
+    padding: 15px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
     color: white;
     outline: none;
     font-size: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.forgot-password-box input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.forgot-password-box input:focus {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .forgot-password-box button {
     width: 100%;
-    padding: 10px;
+    padding: 15px 20px;
     border: none;
-    background: rgba(255, 255, 255, 0.3);
-    color: white;
+    border-radius: 12px;
     font-size: 16px;
-    font-weight: bold;
-}
-
-.forgot-password-box button:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-.password-container {
-    position: relative;
-}
-
-.password-input-wrapper {
-    position: relative;
-}
-
-.toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    font-weight: 600;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.forgot-password-box button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.forgot-password-box button:hover::before {
+    left: 100%;
+}
+
+#send-reset-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+#send-reset-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+}
+
+#send-reset-link:active {
+    transform: translateY(-1px);
+}
+
+#close-forgot-password {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+#close-forgot-password:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+}
+
+/* Loading state for send button */
+#send-reset-link:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#send-reset-link:disabled::before {
+    display: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .forgot-password-box {
+        width: 95%;
+        padding: 30px 20px;
+        margin: 20px;
+    }
+    
+    .forgot-password-box h3 {
+        font-size: 24px;
+    }
+    
+    .forgot-password-box input,
+    .forgot-password-box button {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+}
+
+/* Close button with X icon */
+.forgot-password-box .close-icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.forgot-password-box .close-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+/* Success/Error states */
+.forgot-password-box.success {
+    border-color: rgba(76, 175, 80, 0.5);
+    box-shadow: 0 25px 50px rgba(76, 175, 80, 0.2);
+}
+
+.forgot-password-box.error {
+    border-color: rgba(244, 67, 54, 0.5);
+    box-shadow: 0 25px 50px rgba(244, 67, 54, 0.2);
 }
 
 /* Social Login Buttons */
@@ -266,15 +447,184 @@ p a:hover {
     color: white;
   }
   
-  .btn-facebook {
-    background: #4267B2;
-    color: white;
-  }
-  
   .social-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
+
+/* Google Sign-In Button: Google Style */
+.g_id_signin > div {
+    background: #4285f4 !important; /* Google blue */
+    border: 2px solid #fff !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 350px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: box-shadow 0.2s;
+}
+
+.g_id_signin > div:hover {
+    box-shadow: 0 2px 8px rgba(66,133,244,0.15) !important;
+}
+
+.g_id_signin > div > div {
+    background: transparent !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 12px 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.g_id_signin img {
+    margin-right: 16px !important;
+    background: #fff !important;
+    border-radius: 4px !important;
+    padding: 4px !important;
+    width: 32px !important;
+    height: 32px !important;
+}
+
+/* Google Sign-In Button Styling */
+#g_id_onload {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.g_id_signin {
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+}
+
+/* Override Google's default button styling */
+.g_id_signin > div {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+.g_id_signin > div:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.g_id_signin > div:active {
+    transform: translateY(0) !important;
+}
+
+/* Add a subtle glow effect on hover */
+.g_id_signin > div::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s;
+    pointer-events: none;
+}
+
+.g_id_signin > div:hover::before {
+    left: 100%;
+}
+
+/* Style the button content */
+.g_id_signin > div > div {
+    background: transparent !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    padding: 12px 24px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    min-height: 44px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Style the Google logo */
+.g_id_signin img {
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.9 !important;
+    transition: opacity 0.3s ease !important;
+}
+
+.g_id_signin > div:hover img {
+    opacity: 1 !important;
+}
+
+/* Responsive adjustments for Google Sign-In button */
+@media (max-width: 480px) {
+    .g_id_signin > div {
+        width: 100% !important;
+        max-width: 300px !important;
+    }
+    
+    .g_id_signin > div > div {
+        padding: 10px 16px !important;
+        font-size: 13px !important;
+        min-height: 40px !important;
+    }
+}
+
+/* Ensure the button doesn't conflict with other elements */
+.g_id_signin {
+    z-index: 1 !important;
+    position: relative !important;
+}
+
+/* Loading state for Google Sign-In */
+.g_id_signin.loading > div {
+    opacity: 0.7 !important;
+    pointer-events: none !important;
+}
+
+.g_id_signin.loading > div::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin: -8px 0 0 -8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: google-button-loading 0.8s linear infinite;
+}
+
+@keyframes google-button-loading {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}
 
 /* Multi-step Form */
 .signup-step {
@@ -343,96 +693,97 @@ p a:hover {
 .strength-text {
     font-size: 12px;
     margin-top: 5px;
-    color: rgba(255, 255, 255, 0.7);}
-    select {
-        color: rgba(255, 255, 255, 0.7);
-        width: 100%;
-        border: none;
-        border-bottom: 2px solid white;
-        background: transparent;
-        color: white;
-        outline: none;
-        font-size: 16px;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 15px;
-    }
-    
-    select option {
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-    }
-    
-    /* Row layout for card details */
-    .input-group-row {
-        display: flex;
-        gap: 15px;
-    }
-    
-    .input-group-row .input-group {
-        flex: 1;
-    }
-    
+    color: rgba(255, 255, 255, 0.7);
+}
 
-    .submit-btn {
-        position: relative;
-        transition: all 0.3s ease;
-      }
-      
-      .submit-btn.loading {
-        color: transparent;
-        pointer-events: none;
-      }
-      
-      .submit-btn.loading::after {
-        content: "";
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        top: 50%;
-        left: 50%;
-        margin: -10px 0 0 -10px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: #fff;
-        border-radius: 50%;
-        animation: button-loading-spinner 0.8s linear infinite;
-      }
-      
-      @keyframes button-loading-spinner {
-        from {
-          transform: rotate(0turn);
-        }
-        to {
-          transform: rotate(1turn);
-        }
-      }
-      
-      /* Optional: Add a subtle pulse effect to the button while loading */
-      .submit-btn.loading::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: inherit;
-        animation: button-pulse 1.5s ease-in-out infinite;
-      }
-      
-      @keyframes button-pulse {
-        0% {
-          opacity: 0.3;
-        }
-        50% {
-          opacity: 0.1;
-        }
-        100% {
-          opacity: 0.3;
-        }
-      }
+select {
+    color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid white;
+    background: transparent;
+    color: white;
+    outline: none;
+    font-size: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 15px;
+}
+
+select option {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+}
+
+/* Row layout for card details */
+.input-group-row {
+    display: flex;
+    gap: 15px;
+}
+
+.input-group-row .input-group {
+    flex: 1;
+}
+
+.submit-btn {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .submit-btn.loading {
+    color: transparent;
+    pointer-events: none;
+  }
+  
+  .submit-btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: button-loading-spinner 0.8s linear infinite;
+  }
+  
+  @keyframes button-loading-spinner {
+    from {
+      transform: rotate(0turn);
+    }
+    to {
+      transform: rotate(1turn);
+    }
+  }
+  
+  /* Optional: Add a subtle pulse effect to the button while loading */
+  .submit-btn.loading::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: inherit;
+    animation: button-pulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes button-pulse {
+    0% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.1;
+    }
+    100% {
+      opacity: 0.3;
+    }
+  }
     
