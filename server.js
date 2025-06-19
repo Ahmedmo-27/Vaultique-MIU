@@ -67,8 +67,6 @@ const connectDB = async () => {
   try {
     console.log('Attempting to connect to MongoDB...');
     const conn = await mongoose.connect(config.mongodbUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       family: 4,
@@ -80,7 +78,7 @@ const connectDB = async () => {
       connectTimeoutMS: 10000,
       // Performance optimization: Add write concern settings
       w: 'majority',
-      wtimeout: 2500,
+      wtimeoutMS: 2500,
       // Performance optimization: Add read preference
       readPreference: 'secondaryPreferred'
     });

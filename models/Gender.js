@@ -34,7 +34,6 @@ const genderSchema = new mongoose.Schema({
 });
 
 // Index for faster queries
-genderSchema.index({ slug: 1 });
 genderSchema.index({ active: 1 });
 
 const Gender = mongoose.model('Gender', genderSchema);

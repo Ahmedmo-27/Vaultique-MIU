@@ -116,7 +116,7 @@
                 </svg>
             </button>
             
-            <form id="filterForm" class="filter-form" method="GET" action="/products/<%= title.toLowerCase().replace(' ', '-') %>">
+            <form id="filterForm" class="filter-form" method="GET" action="/user/<%= title.toLowerCase().replace(' ', '-') %>">
                 <input type="hidden" name="sort" value="<%= sort %>">
                 <input type="hidden" name="page" value="1">
                 <input type="hidden" name="limit" value="10">
@@ -458,7 +458,7 @@
                         
                         try {
                             showLoading();
-                            const response = await fetch(`/products/${productId}?format=json`);
+                            const response = await fetch(`/api/products/${productId}?format=json`);
                             const data = await response.json();
                             
                             if (data.success && data.data) {
@@ -511,7 +511,7 @@
                     const productId = this.dataset.productId;
                     try {
                         showLoading();
-                        const response = await fetch('/wishlist/toggle', {
+                        const response = await fetch('/user/wishlist/toggle', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -533,14 +533,12 @@
                         hideLoading();
                     }
                 });
-
-                window.featuredItems = JSON.stringify(genderContent?.featuredItems || []) ;
                 // Handle add to cart button click
                 addToCartBtn.addEventListener('click', async function() {
                     const productId = this.dataset.productId;
                     try {
                         showLoading();
-                        const response = await fetch('/cart/add', {
+                        const response = await fetch('/user/cart/add', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
