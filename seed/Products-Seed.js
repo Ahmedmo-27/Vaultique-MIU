@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Product = require('../models/Products');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
-
 const products = [
   {
     id: '126610LN',
@@ -153,7 +152,6 @@ const products = [
   {
     id: '116500LN',
     name: 'Rolex Cosmograph Daytona',
-    Model3d: '/Assets/3D Models/Rolex Cosmograph Daytona.glb',
     brand: 'ROL_1',
     strapMaterial: 'Metal',
     movement: 'Automatic',
@@ -641,7 +639,6 @@ const products = [
   {
     id: '22012412103001',
     name: 'Omega Seamaster Aqua Terra',
-    Model3d: '/Assets/3D Models/Omega Seamaster Aqua Terra.glb',
     brand: 'OMG_1',
     strapMaterial: 'Leather',
     movement: 'Automatic',
@@ -771,340 +768,10 @@ const products = [
       },
     ],
   },
-  {
-    id: 'T1166171604700',
-    name: 'Tissot Chrono XL Classic',
-    brand: 'TIS_1',
-    strapMaterial: 'Metal',
-    movement: 'Quartz',
-    waterResistance: '100m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'Silver',
-    stock: true,
-    stockCount: 10,
-    Vcollection: 'Casual & Everyday',
-    gender: 'Male',
-    price: 415,
-    image: '/Assets/Images/Watches/Tissot Chrono XL Classic.png',
-    description:
-      'The Tissot Chrono XL Classic is a reliable quartz chronograph with a silver dial and stainless steel case. Its large size and sporty design make it a standout choice. The three sub-dials provide stopwatch functionality, while the tachymeter scale on the bezel allows for speed calculations, making it both stylish and functional.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '45.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '12.50 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '52.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'Silver',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'CHRONOGRAPH FUNCTION',
-        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
-      },
-      {
-        featureName: 'TACHYMETRIC SCALE',
-        featureDesc: 'Bezel scale for calculating speed based on time measurement',
-      },
-      {
-        featureName: 'QUARTZ MOVEMENT',
-        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '100m water resistance for swimming and water sports',
-      },
-      {
-        featureName: 'METAL BRACELET',
-        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-    ],
-  },
-  {
-    id: 'T1014101603100',
-    name: 'Tissot PR 100',
-    brand: 'TIS_1',
-    strapMaterial: 'Leather',
-    movement: 'Quartz',
-    waterResistance: '100m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'Grey',
-    stock: true,
-    stockCount: 12,
-    Vcollection: 'Classic & Dress',
-    gender: 'Male',
-    price: 415,
-    image: '/Assets/Images/Watches/Tissot PR 100.png',
-    description:
-      'The Tissot PR 100 is a classic quartz watch with a grey dial and leather strap. Its timeless design and durability make it perfect for everyday wear. The slim case profile and clean dial design with applied hour markers create a sophisticated look suitable for both business and casual occasions.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '40.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '9.50 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '46.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'Grey',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'SLIM PROFILE',
-        featureDesc: 'Ultra-thin case design for comfortable everyday wear',
-      },
-      {
-        featureName: 'QUARTZ MOVEMENT',
-        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '100m water resistance for swimming and water sports',
-      },
-      {
-        featureName: 'LEATHER STRAP',
-        featureDesc: 'Premium leather strap with deployant clasp for comfort and style',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-      {
-        featureName: 'APPLIED HOUR MARKERS',
-        featureDesc: 'Elegant applied markers for enhanced readability and style',
-      },
-    ],
-  },
-  {
-    id: 'T1374271104100',
-    name: 'Tissot PRX Automatic Chronograph 42mm',
-    brand: 'TIS_1',
-    strapMaterial: 'Metal',
-    movement: 'Automatic',
-    waterResistance: '100m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'White',
-    stock: true,
-    stockCount: 8,
-    Vcollection: 'Casual & Everyday',
-    gender: 'Male',
-    price: 2150,
-    image: '/Assets/Images/Watches/Tissot PRX Automatic Chronograph 42mm.png',
-    description:
-      'The Tissot PRX Automatic Chronograph 42mm is a modern timepiece with a white dial and stainless steel case. Its automatic movement ensures precision and style. Inspired by 1970s design, the integrated bracelet and angular case create a distinctive look, while the chronograph function adds practical utility.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '42.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '14.50 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '48.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'White',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'CHRONOGRAPH FUNCTION',
-        featureDesc: 'Precise timing with three sub-dials for hours, minutes, and seconds',
-      },
-      {
-        featureName: 'AUTOMATIC MOVEMENT',
-        featureDesc: 'Self-winding mechanical movement with exceptional precision',
-      },
-      {
-        featureName: 'INTEGRATED BRACELET',
-        featureDesc: 'Seamlessly integrated bracelet design inspired by 1970s aesthetics',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '100m water resistance for swimming and water sports',
-      },
-      {
-        featureName: 'METAL BRACELET',
-        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-    ],
-  },
-  {
-    id: 'T1374071104100',
-    name: 'Tissot PRX Powermatic 80',
-    brand: 'TIS_1',
-    strapMaterial: 'Metal',
-    movement: 'Automatic',
-    waterResistance: '100m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'Blue',
-    stock: true,
-    stockCount: 9,
-    Vcollection: 'Casual & Everyday',
-    gender: 'Male',
-    price: 1100,
-    image: '/Assets/Images/Watches/Tissot PRX Powermatic 80.png',
-    description:
-      'The Tissot PRX Powermatic 80 is a sleek automatic watch with a blue dial and stainless steel case. Its 80-hour power reserve makes it a practical choice. The integrated bracelet design and waffle-patterned dial pay homage to 1970s watch aesthetics while offering modern reliability and comfort.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '40.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '10.90 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '46.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'Blue',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'WAFFLE DIAL',
-        featureDesc: 'Distinctive textured dial pattern inspired by 1970s design',
-      },
-      {
-        featureName: 'AUTOMATIC MOVEMENT',
-        featureDesc: 'Self-winding mechanical movement with 80-hour power reserve',
-      },
-      {
-        featureName: 'INTEGRATED BRACELET',
-        featureDesc: 'Seamlessly integrated bracelet design for modern aesthetics',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '100m water resistance for swimming and water sports',
-      },
-      {
-        featureName: 'METAL BRACELET',
-        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-    ],
-  },
-  {
-    id: 'T1096101107700',
-    name: 'Tissot Everytime 40mm',
-    brand: 'TIS_1',
-    strapMaterial: 'Metal',
-    movement: 'Quartz',
-    waterResistance: '30m',
-    caseMaterial: 'Stainless Steel',
-    dialColor: 'Green',
-    stock: true,
-    stockCount: 15,
-    Vcollection: 'Casual & Everyday',
-    gender: 'Male',
-    price: 255,
-    image: '/Assets/Images/Watches/Tissot Everytime 40mm.png',
-    description:
-      'The Tissot Everytime 40mm is a minimalist quartz watch with a green dial and stainless steel case. Its clean design makes it a versatile accessory. The simple baton hour markers and slim profile create an understated elegance that works equally well with business attire or casual wear.',
-    specifications: [
-      {
-        specName: 'Diameter',
-        specValue: '40.00 mm',
-      },
-      {
-        specName: 'Case Height',
-        specValue: '8.50 mm',
-      },
-      {
-        specName: 'Lug-to-Lug',
-        specValue: '45.00 mm',
-      },
-      {
-        specName: 'Material',
-        specValue: 'Stainless Steel',
-      },
-      {
-        specName: 'Color',
-        specValue: 'Green',
-      },
-    ],
-    specialFeatures: [
-      {
-        featureName: 'MINIMALIST DESIGN',
-        featureDesc: 'Clean, uncluttered dial for timeless elegance',
-      },
-      {
-        featureName: 'QUARTZ MOVEMENT',
-        featureDesc: 'High-precision Swiss quartz movement for accurate timekeeping',
-      },
-      {
-        featureName: 'WATER RESISTANCE',
-        featureDesc: '30m water resistance for everyday wear',
-      },
-      {
-        featureName: 'METAL BRACELET',
-        featureDesc: 'Stainless steel bracelet with deployant clasp for durability and comfort',
-      },
-      {
-        featureName: 'SAPPHIRE CRYSTAL',
-        featureDesc: 'Scratch-resistant sapphire crystal with anti-reflective coating',
-      },
-      {
-        featureName: 'BATON HOUR MARKERS',
-        featureDesc: 'Slim, elegant hour markers for enhanced readability',
-      },
-    ],
-  },
+  
   {
     id: 'WSSA0018',
     name: 'Cartier Santos de Cartier',
-    Model3d: '/Assets/3D Models/Cartier Santos de Cartier.glb',
     brand: 'CAR_1',
     strapMaterial: 'Metal',
     movement: 'Automatic',
@@ -1501,7 +1168,6 @@ const products = [
   {
     id: '26530ST.OO.1220ST.01',
     name: 'Audemars Piguet Royal Oak Flying Tourbillon',
-    Model3d: '/Assets/3D Models/Audemars Piguet Royal Oak Flying Tourbillon.glb',
     brand: 'APG_1',
     strapMaterial: 'White Gold',
     movement: 'Automatic',
@@ -2101,6 +1767,304 @@ const products = [
       },
     ],
   },
+
+  {
+  id: '145.029',
+  name: 'A. Lange & Söhne Zeitwerk Striking Time',
+  brand: 'ALS_1',
+  strapMaterial: 'Leather',
+  movement: 'Manual',
+  waterResistance: '30m',
+  caseMaterial: 'White Gold',
+  dialColor: 'Black',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Luxury & Heritage',
+  gender: 'Male',
+  price: 125000,
+  image: '/Assets/Images/Watches/A. Lange & Söhne Zeitwerk Striking Time.png',
+  description: "The A. Lange & Söhne Zeitwerk Striking Time combines a jumping digital display with a mechanical striking mechanism. Its white gold case and black dial showcase the iconic Zeitwerk design with cathedral gongs that chime hours and quarter-hours. The manually wound movement features German silver components and hand-engraved balance cock.",
+  specifications: [
+    { specName: 'Diameter', specValue: '44.2 mm' },
+    { specName: 'Case Height', specValue: '12.6 mm' },
+    { specName: 'Lug Width', specValue: '21 mm' },
+    { specName: 'Material', specValue: 'White Gold' },
+    { specName: 'Dial Color', specValue: 'Black' }
+  ],
+  specialFeatures: [
+    { featureName: 'JUMPING NUMERALS', featureDesc: 'Digital display with instantaneous jumps for hours and minutes' },
+    { featureName: 'STRIKING MECHANISM', featureDesc: 'Two cathedral gongs chime hours and quarter-hours' },
+    { featureName: 'MANUAL WINDING', featureDesc: 'L043.2 manufacture caliber with 36-hour power reserve' },
+    { featureName: 'SAXON CRAFTSMANSHIP', featureDesc: 'Hand-engraved balance cock and screwed gold chatons' },
+    { featureName: 'WHITE GOLD CASE', featureDesc: 'Prestigious 18k white gold case construction' },
+    { featureName: 'PATENTED DESIGN', featureDesc: 'Unique constant-force escapement for precise jumps' }
+  ]
+},
+
+{
+  id: '405.831',
+  name: 'A. Lange & Söhne Datograph Flyback Limited Edition',
+  brand: 'ALS_1',
+  strapMaterial: 'Leather',
+  movement: 'Manual',
+  waterResistance: '30m',
+  caseMaterial: 'Rose Gold',
+  dialColor: 'Black',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Luxury & Heritage',
+  gender: 'Male',
+  price: 150000,
+  image: '/Assets/Images/Watches/A. Lange & Söhne Datograph Flyback Limited Edition.png',
+  description: "This limited edition Datograph Flyback features a rose gold case with a baguette diamond bezel and inky black dial. The legendary flyback chronograph movement offers instantaneous reset-and-restart functionality. The manually wound L951.6 caliber showcases traditional Glashütte craftsmanship with column-wheel control and precisely jumping minute counter.",
+  specifications: [
+    { specName: 'Diameter', specValue: '41 mm' },
+    { specName: 'Case Height', specValue: '13.1 mm' },
+    { specName: 'Lug Width', specValue: '20 mm' },
+    { specName: 'Material', specValue: 'Rose Gold' },
+    { specName: 'Bezel', specValue: 'Baguette Diamond' }
+  ],
+  specialFeatures: [
+    { featureName: 'FLYBACK CHRONOGRAPH', featureDesc: 'Column-wheel chronograph with instantaneous reset function' },
+    { featureName: 'LIMITED EDITION', featureDesc: 'Exclusive production with numbered certification' },
+    { featureName: 'BAGUETTE BEZEL', featureDesc: '36 hand-set baguette diamonds (approx 2.5 ct)' },
+    { featureName: 'JUMPING MINUTE COUNTER', featureDesc: 'Precise minute tracking without interim movements' },
+    { featureName: 'UP/DOWN POWER RESERVE', featureDesc: 'Integrated power reserve indicator at 12 o\'clock' },
+    { featureName: 'MANUAL WINDING', featureDesc: 'L951.6 manufacture movement with 60-hour power reserve' }
+  ]
+},
+
+{
+  id: '4200X/000R-B643',
+  name: 'Vacheron Constantin Historiques 222',
+  brand: 'VAC_1',
+  strapMaterial: 'Yellow Gold',
+  movement: 'Automatic',
+  waterResistance: '50m',
+  caseMaterial: 'Yellow Gold',
+  dialColor: 'Else',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Luxury & Heritage',
+  gender: 'Male',
+  price: 120000,
+  image: '/Assets/Images/Watches/Vacheron Constantin Historiques 222.png',
+  description: "The Historiques 222 faithfully recreates Vacheron Constantin's iconic 1977 design with a champagne dial and integrated yellow gold bracelet. This reissue features the original 'jumbo' 37mm case size with signature notched bezel and Maltese cross crown. The automatic movement powers the distinctive geometric hour markers and integrated bracelet that seamlessly merges with the case.",
+  specifications: [
+    { specName: 'Diameter', specValue: '37mm' },
+    { specName: 'Thickness', specValue: '7.95mm' },
+    { specName: 'Case Material', specValue: '18K Yellow Gold' },
+    { specName: 'Bracelet', specValue: 'Integrated Yellow Gold' },
+    { specName: 'Crystal', specValue: 'Sapphire Box Glass' }
+  ],
+  specialFeatures: [
+    { featureName: 'ICONIC REISSUE', featureDesc: 'Faithful reproduction of 1977 luxury sports watch' },
+    { featureName: 'INTEGRATED BRACELET', featureDesc: 'Seamless gold bracelet integration with case' },
+    { specName: 'MALTESE CROSS CROWN', specValue: 'Signature Vacheron emblem at 4 o\'clock' },
+    { featureName: 'AUTOMATIC CALIBER 2455/2', featureDesc: 'Self-winding movement with 40-hour reserve' },
+    { featureName: 'CHAMPAGNE DIAL', featureDesc: 'Sunburst finish with geometric hour markers' },
+    { featureName: 'HERITAGE DESIGN', featureDesc: 'Notched bezel and hexagonal case architecture' }
+  ]
+},
+
+{
+  id: '5100T/000R-B623',
+  name: 'Vacheron Constantin Tourbillon Chronograph',
+  brand: 'VAC_1',
+  strapMaterial: 'Leather',
+  movement: 'Manual',
+  waterResistance: '30m',
+  caseMaterial: 'Else',
+  dialColor: 'Else',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Luxury & Heritage',
+  gender: 'Male',
+  price: 275000,
+  image: '/Assets/Images/Watches/Vacheron Constantin Traditionnelle Tourbillon Chronograph.png',
+  description: "This exceptional Traditionnelle combines a monopusher chronograph with a tourbillon regulator in an 18K pink gold case. The silver opaline dial features snailed subdials, Breguet numerals, and the signature tourbillon aperture at 6 o'clock. Powered by the manually-wound Caliber 3200, it showcases Vacheron's highest watchmaking artistry through its sapphire caseback.",
+  specifications: [
+    { specName: 'Diameter', specValue: '45mm' },
+    { specName: 'Thickness', specValue: '13.07mm' },
+    { specName: 'Material', specValue: '18K Pink Gold' },
+    { specName: 'Chronograph', specValue: 'Monopusher Column-Wheel' },
+    { specName: 'Power Reserve', specValue: '65 hours' }
+  ],
+  specialFeatures: [
+    { featureName: 'TOURBILLON REGULATOR', featureDesc: 'One-minute flying tourbillon at 6 o\'clock' },
+    { featureName: 'MONOPUSHER CHRONOGRAPH', featureDesc: 'Column-wheel controlled single-button timing' },
+    { featureName: 'CALIBER 3200', featureDesc: 'Hand-finished movement with Côtes de Genève' },
+    { featureName: 'BREGUET NUMERALS', featureDesc: 'Elegant typography on silver opaline dial' },
+    { featureName: 'PINK GOLD CASE', featureDesc: '45mm 18K pink gold construction' },
+    { featureName: 'TACHYMETER SCALE', featureDesc: 'Integrated base 1000 scale for speed calculation' }
+  ]
+},
+
+{
+  id: 'RM035-02',
+  name: 'Richard Mille RM Americas Limited Edition',
+  brand: 'RMI_1',
+  strapMaterial: 'Rubber',
+  movement: 'Automatic',
+  waterResistance: '50m',
+  caseMaterial: 'Rose Gold',
+  dialColor: 'Else',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Luxury & Heritage',
+  gender: 'Unisex',
+  price: 250000,
+  image: '/Assets/Images/Watches/Richard Mille RM 035 Americas Limited Edition.png',
+  description: "This Americas Limited Edition features a rose gold case with a skeletonized dial showcasing Richard Mille's signature technical architecture. The Toro motif and red/blue accents pay homage to American heritage. Engineered for extreme conditions, it features a baseplate and bridges in grade 5 titanium, with a variable geometry rotor for personalized winding.",
+  specifications: [
+    { specName: 'Diameter', specValue: '48mm x 39.70mm' },
+    { specName: 'Thickness', specValue: '12.05mm' },
+    { specName: 'Material', specValue: 'Rose Gold' },
+    { specName: 'Movement', specValue: 'RMAL1 Automatic' },
+    { specName: 'Power Reserve', specValue: '55 hours' }
+  ],
+  specialFeatures: [
+    { featureName: 'AMERICAS LIMITED EDITION', featureDesc: 'Exclusive production with Toro motif and continent engraving' },
+    { featureName: 'TORO DESIGN', featureDesc: 'Bull-inspired architecture with red/blue accents' },
+    { featureName: 'SKELETONIZED DIAL', featureDesc: 'Full view of the mechanical architecture' },
+    { featureName: 'VARIABLE GEOMETRY ROTOR', featureDesc: 'Adjustable winding mechanism for personalized efficiency' },
+    { featureName: 'SHOCK RESISTANCE', featureDesc: 'Designed to withstand 5000g impacts' },
+    { featureName: 'GRADE 5 TITANIUM', featureDesc: 'Aerospace-grade movement baseplate and bridges' }
+  ]
+},
+
+{
+  id: 'RM011-WG',
+  name: 'Richard Mille FM White Ghost',
+  brand: 'RMI_1',
+  strapMaterial: 'Rubber',
+  movement: 'Automatic',
+  waterResistance: '50m',
+  caseMaterial: 'Ceramic',
+  dialColor: 'Else',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Luxury & Heritage',
+  gender: 'Unisex',
+  price: 295000,
+  image: '/Assets/Images/Watches/Richard Mille RM 011 FM White Ghost.png',
+  description: "The White Ghost Limited Edition features an avant-garde white ceramic case with a ghosted skeleton dial. Developed with racing driver Felipe Massa (FM designation), this flyback chronograph includes annual calendar and UTC functions. The movement features a skeletonized, variable inertia balance wheel for extreme precision and shock resistance.",
+  specifications: [
+    { specName: 'Diameter', specValue: '50mm x 42.70mm' },
+    { specName: 'Thickness', specValue: '16.15mm' },
+    { specName: 'Material', specValue: 'White Ceramic' },
+    { specName: 'Movement', specValue: 'RMAC1 Automatic' },
+    { specName: 'Functions', specValue: 'Flyback Chronograph, Annual Calendar, UTC' }
+  ],
+  specialFeatures: [
+    { featureName: 'WHITE CERAMIC CASE', featureDesc: 'High-tech TZP ceramic for extreme scratch resistance' },
+    { featureName: 'GHOSTED SKELETON', featureDesc: 'Monochromatic movement finishing for ethereal appearance' },
+    { featureName: 'FLYBACK CHRONOGRAPH', featureDesc: 'Instantaneous reset-and-restart timing function' },
+    { featureName: 'FELIPE MASSA EDITION', featureDesc: 'Developed with F1 driver Felipe Massa (FM designation)' },
+    { featureName: 'ANNUAL CALENDAR', featureDesc: 'Mechanical month recognition requiring adjustment only once yearly' },
+    { featureName: 'VARIABLE INERTIA BALANCE', featureDesc: 'Fine-tuned regulation system for extreme precision' }
+  ]
+},
+
+{
+  id: 'AT150.40.AC.SD.A',
+  name: 'Jacob & Co. Astronomia Triple Axis Tourbillon',
+  brand: 'JAC_1',
+  strapMaterial: 'Leather',
+  movement: 'Automatic',
+  waterResistance: '30m',
+  caseMaterial: 'Rose Gold',
+  dialColor: 'Else',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Luxury & Heritage',
+  gender: 'Unisex',
+  price: 980000,
+  image: '/Assets/Images/Watches/Jacob & Co Astronomia Triple Axis Tourbillon.png',
+  description: "The Astronomia Triple Axis Tourbillon is a horological masterpiece featuring a gravitational triple-axis tourbillon orbiting the dial every 10 minutes. This 2018 unique piece showcases a celestial ballet with a miniature earth globe, a 1-carat diamond, and a hand-painted magnesium lacquer moon. The automatic movement powers this cosmic spectacle visible through the domed sapphire crystal.",
+  specifications: [
+    { specName: 'Diameter', specValue: '50mm' },
+    { specName: 'Case Height', specValue: '25mm' },
+    { specName: 'Material', specValue: '18K Rose Gold' },
+    { specName: 'Crystal', specValue: 'Domed Sapphire' },
+    { specName: 'Power Reserve', specValue: '60 hours' }
+  ],
+  specialFeatures: [
+    { featureName: 'TRIPLE AXIS TOURBILLON', featureDesc: 'Gravitational tourbillon rotating on three axes' },
+    { featureName: 'CELESTIAL DISPLAY', featureDesc: 'Miniature earth, diamond, and moon orbiting the dial' },
+    { featureName: 'PIECE UNIQUE', featureDesc: 'One-of-a-kind creation with unique artistic elements' },
+    { featureName: 'AUTOMATIC MOVEMENT', featureDesc: 'Jacob & Co. Caliber JCAM39 with central rotor' },
+    { featureName: 'SKELETONIZED DIAL', featureDesc: 'Full view of the mechanical ballet' },
+    { featureName: 'ROSE GOLD CASE', featureDesc: '18K rose gold case with distinctive Astronomia architecture' }
+  ]
+},
+
+{
+  id: 'AB0141',
+  name: 'Breitling Chronomat GMT',
+  brand: 'BRE_1',
+  strapMaterial: 'Stainless Steel',
+  movement: 'Automatic',
+  waterResistance: '200m',
+  caseMaterial: 'Stainless Steel',
+  dialColor: 'Black',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Aviation & Travel',
+  gender: 'Male',
+  price: 8500,
+  image: '/Assets/Images/Watches/Breitling Chronomat GMT.png',
+  description: "The Breitling Chronomat GMT combines a chronograph with dual time zone functionality in a robust stainless steel case. Featuring the iconic rider tabs on the bezel, this COSC-certified chronometer displays a 24-hour GMT hand and 30-minute chronograph counter. The black dial with luminous markers ensures optimal legibility for professional use.",
+  specifications: [
+    { specName: 'Diameter', specValue: '44mm' },
+    { specName: 'Thickness', specValue: '16.5mm' },
+    { specName: 'Lug Width', specValue: '22mm' },
+    { specName: 'Material', specValue: 'Stainless Steel' },
+    { specName: 'Caliber', specValue: 'Breitling 32 (ETA 2893-2 base)' }
+  ],
+  specialFeatures: [
+    { featureName: 'GMT FUNCTION', featureDesc: '24-hour hand for tracking second time zone' },
+    { featureName: 'CHRONOMETER CERTIFIED', featureDesc: 'COSC-certified precision' },
+    { featureName: 'CHRONOGRAPH', featureDesc: '30-minute counter and 1/4th second timing' },
+    { featureName: 'RIDER TAB BEZEL', featureDesc: 'Iconic Chronomat design element for grip' },
+    { featureName: 'LUMINOUS MARKERS', featureDesc: 'Super-LumiNova coated hands and indices' },
+    { featureName: 'SCREW-DOWN CROWN', featureDesc: 'Enhanced water resistance to 200 meters' }
+  ]
+},
+
+  {
+  id: 'AB0142',
+  name: 'Breitling Navitimer',
+  brand: 'BRE_1',
+  strapMaterial: 'Stainless Steel',
+  movement: 'Automatic',
+  waterResistance: '30m',
+  caseMaterial: 'Stainless Steel',
+  dialColor: 'Black',
+  stock: true,
+  stockCount: 1,
+  Vcollection: 'Aviation & Travel',
+  gender: 'Male',
+  price: 8900,
+  image: '/Assets/Images/Watches/Breitling Navitimer.png',
+  description: "The iconic Breitling Navitimer is the definitive pilot's watch featuring a patented circular slide rule bezel for aviation calculations. This COSC-certified chronometer houses an in-house automatic movement with chronograph functionality. The signature black dial with contrasting white subdials and aircraft-inspired design ensures optimal cockpit readability.",
+  specifications: [
+    { specName: 'Diameter', specValue: '43mm' },
+    { specName: 'Thickness', specValue: '13.7mm' },
+    { specName: 'Lug Width', specValue: '22mm' },
+    { specName: 'Material', specValue: 'Stainless Steel' },
+    { specName: 'Caliber', specValue: 'Breitling B01' }
+  ],
+  specialFeatures: [
+    { featureName: 'SLIDE RULE BEZEL', featureDesc: 'Patented circular slide rule for aviation calculations' },
+    { featureName: 'CHRONOMETER CERTIFIED', featureDesc: 'COSC-certified precision' },
+    { featureName: 'CHRONOGRAPH', featureDesc: '30-minute and 12-hour counters with small seconds' },
+    { featureName: 'TRIPLE SUB-DIALS', featureDesc: 'Signature three-register cockpit instrument layout' },
+    { featureName: 'LUMINOUS MARKERS', featureDesc: 'Super-LumiNova coated hands and pearl indices' },
+    { featureName: 'IN-HOUSE MOVEMENT', featureDesc: 'Manufacture Caliber B01 with 70-hour power reserve' }
+  ]
+},
+
 ];
 
 async function seedDatabase() {
