@@ -124,9 +124,6 @@
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-    .hero {
-        padding: 0 2rem;
-    }
     
     .button {
         padding: 0.5rem 1.25rem;

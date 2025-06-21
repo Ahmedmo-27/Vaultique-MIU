@@ -145,11 +145,6 @@
         padding: 0.5rem 1.5rem;
     }
     
-    #video-background
-    {
-        margin-left: 1px;
-    }
-
     .main-text {
         margin-top: 450px;
     }
@@ -481,7 +476,7 @@ p::-webkit-scrollbar {
 
 @media screen and (max-width: 480px) {
     .main-text h1 {
-        font-size: 2rem;
+        font-size: 1.3rem;
     }
 
     .button {
