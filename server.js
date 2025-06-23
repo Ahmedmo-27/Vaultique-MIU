@@ -36,6 +36,9 @@ const refundRoutes = require('./routes/refundRoutes');
 const app = express();
 const qr = require('qrcode');
 
+// Trust proxy for Railway deployment
+app.set('trust proxy', true);
+
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
