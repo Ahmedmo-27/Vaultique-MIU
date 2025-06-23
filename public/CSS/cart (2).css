@@ -354,6 +354,7 @@ a:hover {
   color: var(--text-color);
   border: 1px solid var(--accent-color);
   font-size: 16px;
+  color: #1C2E4A;
 }
 
 /* Cart Actions Styling */
