@@ -531,6 +531,9 @@ body {
                                 shadow-intensity="1"
                                 exposure="1"
                                 environment-image="neutral"
+                                loading="lazy"
+                                reveal="auto"
+                                preload="metadata"
                                 style="width: 100%; height: 100%;"
                             >
                                 <div class="progress-bar" slot="progress-bar"></div>
@@ -797,8 +800,52 @@ body {
                     dial: 'black'
                 },
                 currentModel: null,
-                currentPrice: CONFIG.basePrice
+                currentPrice: CONFIG.basePrice,
+                modelCache: new Map(), // Cache for preloaded models
+                isLoading: false
             };
+
+            // Model preloading and caching
+            function preloadModel(modelPath) {
+                if (state.modelCache.has(modelPath)) {
+                    return Promise.resolve(state.modelCache.get(modelPath));
+                }
+
+                return new Promise((resolve, reject) => {
+                    const link = document.createElement('link');
+                    link.rel = 'preload';
+                    link.as = 'fetch';
+                    link.href = modelPath;
+                    link.crossOrigin = 'anonymous';
+                    
+                    link.onload = () => {
+                        state.modelCache.set(modelPath, true);
+                        resolve(true);
+                    };
+                    
+                    link.onerror = () => {
+                        reject(new Error(`Failed to preload model: ${modelPath}`));
+                    };
+                    
+                    document.head.appendChild(link);
+                });
+            }
+
+            // Preload all models in background
+            function preloadAllModels() {
+                const modelPaths = [
+                    '/Assets/3D Models/Omega Sea Master.glb',
+                    '/Assets/3D Models/Rolex Daytona.glb',
+                    '/Assets/3D Models/Santos.glb',
+                    '/Assets/3D Models/Audemars Piguet Royal Oak.gltf'
+                ];
+
+                modelPaths.forEach(path => {
+                    preloadModel(path).catch(error => {
+                        console.warn('Failed to preload model:', path, error);
+                    });
+                });
+            }
 
             // Model viewer setup
             function setupModelViewer() {
@@ -878,15 +925,42 @@ body {
             function setupModelSelection() {
                 if (!elements.modelSelect) return;
 
-                elements.modelSelect.addEventListener('change', function() {
+                elements.modelSelect.addEventListener('change', async function() {
+                    if (state.isLoading) return; // Prevent multiple simultaneous loads
+                    
                     const selectedModel = this.value;
                     const modelName = this.options[this.selectedIndex].text;
                     const modelInfo = CONFIG.watchData[modelName];
                     
                     if (modelInfo) {
+                        state.isLoading = true;
                         state.currentModel = modelName;
-                        updateModelViewer(selectedModel, modelInfo);
-                        updateWatchDetails(modelInfo);
+                        
+                        // Show loading state
+                        const modelContainer = document.querySelector('.model-container');
+                        if (modelContainer) {
+                            modelContainer.style.opacity = '0.7';
+                        }
+                        
+                        try {
+                            // Check if model is cached
+                            if (!state.modelCache.has(selectedModel)) {
+                                await preloadModel(selectedModel);
+                            }
+                            
+                            updateModelViewer(selectedModel, modelInfo);
+                            updateWatchDetails(modelInfo);
+                        } catch (error) {
+                            console.error('Error loading model:', error);
+                            // Fallback to direct loading
+                            updateModelViewer(selectedModel, modelInfo);
+                            updateWatchDetails(modelInfo);
+                        } finally {
+                            state.isLoading = false;
+                            if (modelContainer) {
+                                modelContainer.style.opacity = '1';
+                            }
+                        }
                     }
                 });
 
@@ -1171,6 +1245,19 @@ body {
                 setupModelSelection();
                 setupModal();
                 setupShareConfiguration();
+                
+                // Start preloading models after initial setup
+                setTimeout(() => {
+                    preloadAllModels();
+                }, 1000); // Delay to prioritize initial page load
+                
+                // Add performance monitoring
+                if ('performance' in window) {
+                    window.addEventListener('load', () => {
+                        const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                        console.log(`Page load time: ${loadTime}ms`);
+                    });
+                }
             }
 
             // Start the application

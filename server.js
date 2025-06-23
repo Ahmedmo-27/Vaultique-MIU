@@ -251,10 +251,18 @@ app.get('/Assets/*', (req, res, next) => {
         '.webp': 'image/webp',
         '.mp4': 'video/mp4',
         '.webm': 'video/webm',
-        '.glb': 'model/gltf-binary'
+        '.glb': 'model/gltf-binary',
+        '.gltf': 'model/gltf+json'
     };
     
     res.set('Content-Type', mimeTypes[ext] || 'application/octet-stream');
+    
+    // Add specific caching for 3D models
+    if (ext === '.glb' || ext === '.gltf') {
+        res.set('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+        res.set('Access-Control-Allow-Origin', '*');
+        res.set('Access-Control-Allow-Methods', 'GET, HEAD');
+    }
     
     // Try multiple paths for the asset
     const tryPaths = [
