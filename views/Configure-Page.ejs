@@ -812,22 +812,22 @@ body {
                 }
 
                 return new Promise((resolve, reject) => {
-                    const link = document.createElement('link');
-                    link.rel = 'preload';
-                    link.as = 'fetch';
-                    link.href = modelPath;
-                    link.crossOrigin = 'anonymous';
-                    
-                    link.onload = () => {
-                        state.modelCache.set(modelPath, true);
-                        resolve(true);
-                    };
-                    
-                    link.onerror = () => {
-                        reject(new Error(`Failed to preload model: ${modelPath}`));
-                    };
-                    
-                    document.head.appendChild(link);
+                    // Use fetch instead of link preload for 3D models
+                    fetch(modelPath, { 
+                        method: 'HEAD',
+                        cache: 'force-cache'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            state.modelCache.set(modelPath, true);
+                            resolve(true);
+                        } else {
+                            reject(new Error(`Failed to preload model: ${modelPath}`));
+                        }
+                    })
+                    .catch(error => {
+                        reject(new Error(`Failed to preload model: ${modelPath} - ${error.message}`));
+                    });
                 });
             }
 
@@ -840,11 +840,35 @@ body {
                     '/Assets/3D Models/Audemars Piguet Royal Oak.gltf'
                 ];
 
-                modelPaths.forEach(path => {
-                    preloadModel(path).catch(error => {
-                        console.warn('Failed to preload model:', path, error);
+                console.log('🔄 Starting intelligent model preloading...');
+                
+                // Preload the first model immediately (current default)
+                preloadModel(modelPaths[0])
+                    .then(() => {
+                        console.log(`✅ Preloaded default model: ${modelPaths[0].split('/').pop()}`);
+                        
+                        // Preload the next most likely model (Rolex)
+                        return preloadModel(modelPaths[1]);
+                    })
+                    .then(() => {
+                        console.log(`✅ Preloaded secondary model: ${modelPaths[1].split('/').pop()}`);
+                    })
+                    .catch(error => {
+                        console.warn(`⚠️ Preload failed:`, error.message);
                     });
-                });
+                
+                // Preload remaining models with longer delays
+                setTimeout(() => {
+                    preloadModel(modelPaths[2])
+                        .then(() => console.log(`✅ Preloaded: ${modelPaths[2].split('/').pop()}`))
+                        .catch(error => console.warn(`⚠️ Failed to preload: ${modelPaths[2].split('/').pop()}`));
+                }, 2000);
+                
+                setTimeout(() => {
+                    preloadModel(modelPaths[3])
+                        .then(() => console.log(`✅ Preloaded: ${modelPaths[3].split('/').pop()}`))
+                        .catch(error => console.warn(`⚠️ Failed to preload: ${modelPaths[3].split('/').pop()}`));
+                }, 4000);
             }
 
             // Model viewer setup
@@ -854,17 +878,49 @@ body {
                 elements.modelViewer.addEventListener('progress', (event) => {
                     const progressBar = document.querySelector('.progress-bar');
                     if (progressBar) {
-                        progressBar.style.setProperty('--progress', event.detail.totalProgress * 100 + '%');
+                        const progress = event.detail.totalProgress * 100;
+                        progressBar.style.setProperty('--progress', progress + '%');
+                        console.log(`📊 Loading progress: ${progress.toFixed(1)}%`);
                     }
                 });
 
                 elements.modelViewer.addEventListener('load', () => {
-                    console.log('3D model loaded successfully');
+                    console.log('✅ 3D model loaded successfully');
                     updateModelStrap('Rubber');
+                    
+                    // Hide loading spinner
+                    const spinner = document.querySelector('.loading-spinner');
+                    if (spinner) {
+                        spinner.style.display = 'none';
+                    }
                 });
 
                 elements.modelViewer.addEventListener('error', (error) => {
-                    console.error('Error loading 3D model:', error);
+                    console.error('❌ Error loading 3D model:', error);
+                    
+                    // Show error message
+                    const modelContainer = document.querySelector('.model-container');
+                    if (modelContainer) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.style.cssText = `
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            background: rgba(255, 0, 0, 0.1);
+                            color: #d32f2f;
+                            padding: 1rem;
+                            border-radius: 8px;
+                            text-align: center;
+                            z-index: 10;
+                        `;
+                        errorDiv.innerHTML = `
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Failed to load 3D model</p>
+                            <small>Please try refreshing the page</small>
+                        `;
+                        modelContainer.appendChild(errorDiv);
+                    }
                 });
             }
 
@@ -975,6 +1031,14 @@ body {
             // Update functions
             function updateModelViewer(modelPath, modelInfo) {
                 if (!elements.modelViewer) return;
+                
+                // Check if model is already cached
+                if (state.modelCache.has(modelPath)) {
+                    console.log(`🚀 Using cached model: ${modelPath.split('/').pop()}`);
+                } else {
+                    console.log(`📥 Loading new model: ${modelPath.split('/').pop()}`);
+                }
+                
                 elements.modelViewer.src = modelPath;
             }
 
@@ -1254,8 +1318,22 @@ body {
                 // Add performance monitoring
                 if ('performance' in window) {
                     window.addEventListener('load', () => {
-                        const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
-                        console.log(`Page load time: ${loadTime}ms`);
+                        // Use modern Performance API
+                        const navigation = performance.getEntriesByType('navigation')[0];
+                        if (navigation) {
+                            const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
+                            const domContentLoaded = navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart;
+                            const totalLoadTime = navigation.loadEventEnd - navigation.fetchStart;
+                            
+                            console.log(`📊 Performance Metrics:`);
+                            console.log(`- DOM Content Loaded: ${domContentLoaded}ms`);
+                            console.log(`- Page Load Time: ${loadTime}ms`);
+                            console.log(`- Total Load Time: ${totalLoadTime}ms`);
+                        } else {
+                            // Fallback for older browsers
+                            const loadTime = performance.now();
+                            console.log(`📊 Page load time: ${loadTime.toFixed(2)}ms`);
+                        }
                     });
                 }
             }
