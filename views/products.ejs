@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Vaultique | Shop All</title>    
+        <title data-translate="shopall">Vaultique | Shop All</title>    
         <link rel="stylesheet" href="/CSS/Loading Screen.css">
         <link rel="stylesheet" href="/CSS/nav-bar.css">
         <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
@@ -28,7 +28,7 @@
 
     <!-- Filter Button -->
     <button data-action="open-filter-panel" class="filter-btn">
-        <span>Filters and Sorting</span>
+        <span data-translate="filtersAndSorting">Filters and Sorting</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="4" y1="6" x2="20" y2="6" />
             <line x1="12" y1="4" x2="12" y2="8" />
@@ -59,113 +59,113 @@
             <% } %>
             
             <div class="sort-options">
-                <h3>Sort By</h3>
-                <a href="javascript:void(0)" onclick="updateSort('default')" class="tag <%= sort === 'default' ? 'active' : '' %>">Default</a>
-                <a href="javascript:void(0)" onclick="updateSort('new')" class="tag <%= sort === 'new' ? 'active' : '' %>">New</a>
-                <a href="javascript:void(0)" onclick="updateSort('price-asc')" class="tag <%= sort === 'price-asc' ? 'active' : '' %>">Price ↑</a>
-                <a href="javascript:void(0)" onclick="updateSort('price-desc')" class="tag <%= sort === 'price-desc' ? 'active' : '' %>">Price ↓</a>
-                <a href="javascript:void(0)" onclick="updateSort('popularity')" class="tag <%= sort === 'popularity' ? 'active' : '' %>">Popularity</a>
+                <h3 data-translate="sortBy">Sort By</h3>
+                <a href="javascript:void(0)" onclick="updateSort('default')" class="tag <%= sort === 'default' ? 'active' : '' %>" data-translate="defaultSort">Default</a>
+                <a href="javascript:void(0)" onclick="updateSort('new')" class="tag <%= sort === 'new' ? 'active' : '' %>" data-translate="newSort">New</a>
+                <a href="javascript:void(0)" onclick="updateSort('price-asc')" class="tag <%= sort === 'price-asc' ? 'active' : '' %>" data-translate="priceAsc">Price ↑</a>
+                <a href="javascript:void(0)" onclick="updateSort('price-desc')" class="tag <%= sort === 'price-desc' ? 'active' : '' %>" data-translate="priceDesc">Price ↓</a>
+                <a href="javascript:void(0)" onclick="updateSort('popularity')" class="tag <%= sort === 'popularity' ? 'active' : '' %>" data-translate="popularity">Popularity</a>
             </div>
         
             <div class="filters">
-                <h3>Filters</h3>
+                <h3 data-translate="filters">Filters</h3>
 
-                <label>Collection:</label>
+                <label data-translate="collection">Collection:</label>
                 <select id="collection" name="Vcollection" class="tag">
-                    <option value="All" <%= filters.Vcollection === 'All' ? 'selected' : '' %>>All</option>
+                    <option value="All" <%= filters.Vcollection === 'All' ? 'selected' : '' %> data-translate="all">All</option>
                     <% collections.forEach(collection => { %>
                         <option value="<%= collection.name %>" <%= filters.Vcollection === collection.name ? 'selected' : '' %>><%= collection.name %></option>
                     <% }); %>
                 </select>
 
-                <label>Brand:</label>
+                <label data-translate="brand">Brand:</label>
                 <select id="brand" name="brand" class="tag">
-                    <option value="All" <%= filters.brand === 'All' ? 'selected' : '' %>>All</option>
+                    <option value="All" <%= filters.brand === 'All' ? 'selected' : '' %> data-translate="all">All</option>
                     <% brands.forEach(brand => { %>
                         <option value="<%= brand.name %>" <%= filters.brand === brand.name ? 'selected' : '' %>><%= brand.name %></option>
                     <% }); %>
                 </select>
         
-                <label>Gender:</label>
+                <label data-translate="gender">Gender:</label>
                 <select id="gender" name="gender" class="tag">
-                    <option value="All" <%= filters.gender === 'All' ? 'selected' : '' %>>All</option>
-                    <option value="Male" <%= filters.gender === 'Male' ? 'selected' : '' %>>Male</option>
-                    <option value="Female" <%= filters.gender === 'Female' ? 'selected' : '' %>>Female</option>
-                    <option value="Unisex" <%= filters.gender === 'Unisex' ? 'selected' : '' %>>Unisex</option>
+                    <option value="All" <%= filters.gender === 'All' ? 'selected' : '' %> data-translate="all">All</option>
+                    <option value="Male" <%= filters.gender === 'Male' ? 'selected' : '' %> data-translate="male">Male</option>
+                    <option value="Female" <%= filters.gender === 'Female' ? 'selected' : '' %> data-translate="female">Female</option>
+                    <option value="Unisex" <%= filters.gender === 'Unisex' ? 'selected' : '' %> data-translate="unisex">Unisex</option>
                 </select>
 
-                <label>Strap Material:</label>
+                <label data-translate="strapMaterial">Strap Material:</label>
                 <select id="Strap_Material" name="strapMaterial" class="tag">
-                    <option value="All" <%= filters.strapMaterial === 'All' ? 'selected' : '' %>>All</option>
-                    <option value="Leather" <%= filters.strapMaterial === 'Leather' ? 'selected' : '' %>>Leather</option>
-                    <option value="Metal" <%= filters.strapMaterial === 'Metal' ? 'selected' : '' %>>Metal</option>
-                    <option value="Rubber" <%= filters.strapMaterial === 'Rubber' ? 'selected' : '' %>>Rubber</option>
-                    <option value="Gold" <%= filters.strapMaterial === 'Gold' ? 'selected' : '' %>>Gold</option>
-                    <option value="Rose Gold" <%= filters.strapMaterial === 'Rose Gold' ? 'selected' : '' %>>Rose Gold</option>
-                    <option value="White Gold" <%= filters.strapMaterial === 'White Gold' ? 'selected' : '' %>>White Gold</option>
-                    <option value="Else" <%= filters.strapMaterial === 'Else' ? 'selected' : '' %>>Else</option>
+                    <option value="All" <%= filters.strapMaterial === 'All' ? 'selected' : '' %> data-translate="all">All</option>
+                    <option value="Leather" <%= filters.strapMaterial === 'Leather' ? 'selected' : '' %> data-translate="leather">Leather</option>
+                    <option value="Metal" <%= filters.strapMaterial === 'Metal' ? 'selected' : '' %> data-translate="metal">Metal</option>
+                    <option value="Rubber" <%= filters.strapMaterial === 'Rubber' ? 'selected' : '' %> data-translate="rubber">Rubber</option>
+                    <option value="Gold" <%= filters.strapMaterial === 'Gold' ? 'selected' : '' %> data-translate="gold">Gold</option>
+                    <option value="Rose Gold" <%= filters.strapMaterial === 'Rose Gold' ? 'selected' : '' %> data-translate="roseGold">Rose Gold</option>
+                    <option value="White Gold" <%= filters.strapMaterial === 'White Gold' ? 'selected' : '' %> data-translate="whiteGold">White Gold</option>
+                    <option value="Else" <%= filters.strapMaterial === 'Else' ? 'selected' : '' %> data-translate="else">Else</option>
                 </select>
         
-                <label>Movement:</label>
+                <label data-translate="movement">Movement:</label>
                 <select id="Movement" name="movement" class="tag">
-                    <option value="All" <%= filters.movement === 'All' ? 'selected' : '' %>>All</option>
-                    <option value="Automatic" <%= filters.movement === 'Automatic' ? 'selected' : '' %>>Automatic</option>
-                    <option value="Quartz" <%= filters.movement === 'Quartz' ? 'selected' : '' %>>Quartz</option>
-                    <option value="Manual" <%= filters.movement === 'Manual' ? 'selected' : '' %>>Manual</option>
+                    <option value="All" <%= filters.movement === 'All' ? 'selected' : '' %> data-translate="all">All</option>
+                    <option value="Automatic" <%= filters.movement === 'Automatic' ? 'selected' : '' %> data-translate="automatic">Automatic</option>
+                    <option value="Quartz" <%= filters.movement === 'Quartz' ? 'selected' : '' %> data-translate="quartz">Quartz</option>
+                    <option value="Manual" <%= filters.movement === 'Manual' ? 'selected' : '' %> data-translate="manual">Manual</option>
                 </select>
         
-                <label>Water Resistance:</label>
+                <label data-translate="waterResistance">Water Resistance:</label>
                 <select id="Water_Resistance" name="waterResistance" class="tag">
-                    <option value="All" <%= filters.waterResistance === 'All' ? 'selected' : '' %>>All</option>
-                    <option value="30m" <%= filters.waterResistance === '30m' ? 'selected' : '' %>>30m</option>
-                    <option value="50m" <%= filters.waterResistance === '50m' ? 'selected' : '' %>>50m</option>
-                    <option value="100m" <%= filters.waterResistance === '100m' ? 'selected' : '' %>>100m</option>
-                    <option value="200m" <%= filters.waterResistance === '200m' ? 'selected' : '' %>>200m</option>
+                    <option value="All" <%= filters.waterResistance === 'All' ? 'selected' : '' %> data-translate="all">All</option>
+                    <option value="30m" <%= filters.waterResistance === '30m' ? 'selected' : '' %> data-translate="30m">30m</option>
+                    <option value="50m" <%= filters.waterResistance === '50m' ? 'selected' : '' %> data-translate="50m">50m</option>
+                    <option value="100m" <%= filters.waterResistance === '100m' ? 'selected' : '' %> data-translate="100m">100m</option>
+                    <option value="200m" <%= filters.waterResistance === '200m' ? 'selected' : '' %> data-translate="200m">200m</option>
                 </select>
         
-                <label>Case Material:</label>
+                <label data-translate="caseMaterial">Case Material:</label>
                 <select id="Case_Material" name="caseMaterial" class="tag">
-                    <option value="All" <%= filters.caseMaterial === 'All' ? 'selected' : '' %>>All</option>
-                    <option value="Stainless Steel" <%= filters.caseMaterial === 'Stainless Steel' ? 'selected' : '' %>>Stainless Steel</option>
-                    <option value="Gold" <%= filters.caseMaterial === 'Gold' ? 'selected' : '' %>>Gold</option>
-                    <option value="Rose Gold" <%= filters.caseMaterial === 'Rose Gold' ? 'selected' : '' %>>Rose Gold</option>
-                    <option value="White Gold" <%= filters.caseMaterial === 'White Gold' ? 'selected' : '' %>>White Gold</option>
-                    <option value="Silver" <%= filters.caseMaterial === 'Silver' ? 'selected' : '' %>>Silver</option>
-                    <option value="Titanium" <%= filters.caseMaterial === 'Titanium' ? 'selected' : '' %>>Titanium</option>
-                    <option value="Platinum" <%= filters.caseMaterial === 'Platinum' ? 'selected' : '' %>>Platinum</option>
-                    <option value="Ceramic" <%= filters.caseMaterial === 'Ceramic' ? 'selected' : '' %>>Ceramic</option>
-                    <option value="Else" <%= filters.caseMaterial === 'Else' ? 'selected' : '' %>>Else</option>
+                    <option value="All" <%= filters.caseMaterial === 'All' ? 'selected' : '' %> data-translate="all">All</option>
+                    <option value="Stainless Steel" <%= filters.caseMaterial === 'Stainless Steel' ? 'selected' : '' %> data-translate="stainlessSteel">Stainless Steel</option>
+                    <option value="Gold" <%= filters.caseMaterial === 'Gold' ? 'selected' : '' %> data-translate="gold">Gold</option>
+                    <option value="Rose Gold" <%= filters.caseMaterial === 'Rose Gold' ? 'selected' : '' %> data-translate="roseGold">Rose Gold</option>
+                    <option value="White Gold" <%= filters.caseMaterial === 'White Gold' ? 'selected' : '' %> data-translate="whiteGold">White Gold</option>
+                    <option value="Silver" <%= filters.caseMaterial === 'Silver' ? 'selected' : '' %> data-translate="silver">Silver</option>
+                    <option value="Titanium" <%= filters.caseMaterial === 'Titanium' ? 'selected' : '' %> data-translate="titanium">Titanium</option>
+                    <option value="Platinum" <%= filters.caseMaterial === 'Platinum' ? 'selected' : '' %> data-translate="platinum">Platinum</option>
+                    <option value="Ceramic" <%= filters.caseMaterial === 'Ceramic' ? 'selected' : '' %> data-translate="ceramic">Ceramic</option>
+                    <option value="Else" <%= filters.caseMaterial === 'Else' ? 'selected' : '' %> data-translate="else">Else</option>
                 </select>
             </div>
         
             <div class="price-range">
-                <h3>Price Range</h3>
-                <input type="number" id="priceRangeFrom" name="minPrice" class="priceRangeValue" placeholder="From" value="<%= filters.minPrice || '0' %>">
-                <input type="number" id="priceRangeTo" name="maxPrice" class="priceRangeValue" placeholder="To" value="<%= filters.maxPrice || '50000000' %>">
+                <h3 data-translate="priceRange">Price Range</h3>
+                <input type="number" id="priceRangeFrom" name="minPrice" class="priceRangeValue" placeholder="From" value="<%= filters.minPrice || '0' %>" data-translate-placeholder="from">
+                <input type="number" id="priceRangeTo" name="maxPrice" class="priceRangeValue" placeholder="To" value="<%= filters.maxPrice || '50000000' %>" data-translate-placeholder="to">
             </div>
             
             <div class="filter-options">
-                <h3>Dial Color</h3>
+                <h3 data-translate="dialColor">Dial Color</h3>
                 <% const selectedColors = filters.dialColor ? filters.dialColor.split(',') : ['All']; %>
-                <label><input type="checkbox" name="dialColor" value="All" class="dial-color" <%= selectedColors.includes('All') ? 'checked' : '' %>> All</label>
-                <label><input type="checkbox" name="dialColor" value="Black" class="dial-color" <%= selectedColors.includes('Black') ? 'checked' : '' %>> Black</label>
-                <label><input type="checkbox" name="dialColor" value="Silver" class="dial-color" <%= selectedColors.includes('Silver') ? 'checked' : '' %>> Silver</label>
-                <label><input type="checkbox" name="dialColor" value="Gold" class="dial-color" <%= selectedColors.includes('Gold') ? 'checked' : '' %>> Gold</label>
-                <label><input type="checkbox" name="dialColor" value="Blue" class="dial-color" <%= selectedColors.includes('Blue') ? 'checked' : '' %>> Blue</label>
-                <label><input type="checkbox" name="dialColor" value="White" class="dial-color" <%= selectedColors.includes('White') ? 'checked' : '' %>> White</label>
-                <label><input type="checkbox" name="dialColor" value="Green" class="dial-color" <%= selectedColors.includes('Green') ? 'checked' : '' %>> Green</label>
-                <label><input type="checkbox" name="dialColor" value="Else" class="dial-color" <%= selectedColors.includes('Else') ? 'checked' : '' %>> Else</label>
+                <label><input type="checkbox" name="dialColor" value="All" class="dial-color" <%= selectedColors.includes('All') ? 'checked' : '' %>> <span data-translate="all">All</span></label>
+                <label><input type="checkbox" name="dialColor" value="Black" class="dial-color" <%= selectedColors.includes('Black') ? 'checked' : '' %>> <span data-translate="black">Black</span></label>
+                <label><input type="checkbox" name="dialColor" value="Silver" class="dial-color" <%= selectedColors.includes('Silver') ? 'checked' : '' %>> <span data-translate="silver">Silver</span></label>
+                <label><input type="checkbox" name="dialColor" value="Gold" class="dial-color" <%= selectedColors.includes('Gold') ? 'checked' : '' %>> <span data-translate="gold">Gold</span></label>
+                <label><input type="checkbox" name="dialColor" value="Blue" class="dial-color" <%= selectedColors.includes('Blue') ? 'checked' : '' %>> <span data-translate="blue">Blue</span></label>
+                <label><input type="checkbox" name="dialColor" value="White" class="dial-color" <%= selectedColors.includes('White') ? 'checked' : '' %>> <span data-translate="white">White</span></label>
+                <label><input type="checkbox" name="dialColor" value="Green" class="dial-color" <%= selectedColors.includes('Green') ? 'checked' : '' %>> <span data-translate="green">Green</span></label>
+                <label><input type="checkbox" name="dialColor" value="Else" class="dial-color" <%= selectedColors.includes('Else') ? 'checked' : '' %>> <span data-translate="else">Else</span></label>
             </div>
         
             <div class="stock-filter">
                 <label>
-                    <input type="checkbox" id="inStockFilter" name="inStock" value="true" <%= filters.inStock === 'true' ? 'checked' : '' %>> In Stock Only
+                    <input type="checkbox" id="inStockFilter" name="inStock" value="true" <%= filters.inStock === 'true' ? 'checked' : '' %>> <span data-translate="inStockOnly">In Stock Only</span>
                 </label>
             </div>
         
             <div class="filter-actions">
-                <button type="submit" class="submit">Apply Filters</button>
-                <button type="button" class="clear" onclick="clearFilters()">Clear All</button>
+                <button type="submit" class="submit" data-translate="applyFilters">Apply Filters</button>
+                <button type="button" class="clear" onclick="clearFilters()" data-translate="clearAll">Clear All</button>
             </div>
         </form>
     </div>
@@ -174,8 +174,8 @@
 <section class="product-container">
     <% if (search) { %>
         <div class="search-results-header">
-            <h2>Search Results for "<%= search %>"</h2>
-            <p><%= pagination.totalItems %> products found</p>
+            <h2 data-translate="searchResultsFor">Search Results for</h2> "<%= search %>"
+            <p><span data-translate="productsFound"><%= pagination.totalItems %> products found</span></p>
         </div>
     <% } %>
     <div class="product-grid" id="productGrid">
@@ -194,8 +194,8 @@
                             <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
                         </a>
                         <div class="hover-buttons">
-                            <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
-                            <button class="compare" data-product-id="<%= product._id %>">Compare</button>
+                            <button class="quick-view" data-product-id="<%= product._id %>" data-translate="quickView">Quick View</button>
+                            <button class="compare" data-product-id="<%= product._id %>" data-translate="compare">Compare</button>
                         </div>
                     </div>
                     <div class="product-details">
@@ -204,15 +204,15 @@
                         </a>
                         <p class="price">$<%= product.price.toLocaleString() %></p>
                         <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
-                            <p class="stock in-stock">In Stock</p>
+                            <p class="stock in-stock" data-translate="inStock">In Stock</p>
                         <% } else { %>
-                            <p class="stock out-of-stock">Out of Stock</p>
+                            <p class="stock out-of-stock" data-translate="outOfStock">Out of Stock</p>
                         <% } %>
                     </div>
                 </div>
             <% }); %>
         <% } else { %>
-            <div class="no-products">
+            <div class="no-products" data-translate="noProductsFound">
                 No products found matching your criteria.
             </div>
         <% } %>
@@ -223,18 +223,18 @@
         <div class="pagination">
             <% if (pagination.totalPages > 1) { %>
                 <% if (pagination.currentPage > 1) { %>
-                    <a href="?page=<%= pagination.currentPage - 1 %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" class="page-link">Previous</a>
+                    <a href="?page=<%= pagination.currentPage - 1 %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" class="page-link" data-translate="previous">Previous</a>
                 <% } %>
                 
                 <% for(let i = 1; i <= pagination.totalPages; i++) { %>
                     <a href="?page=<%= i %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" 
                        class="page-link <%= pagination.currentPage === i ? 'active' : '' %>">
-                        <%= i %>
+                        <span><%= i %></span>
                     </a>
                 <% } %>
                 
                 <% if (pagination.currentPage < pagination.totalPages) { %>
-                    <a href="?page=<%= pagination.currentPage + 1 %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" class="page-link">Next</a>
+                    <a href="?page=<%= pagination.currentPage + 1 %><%= Object.entries(filters).map(([key, value]) => `&${key}=${value}`).join('') %><%= sort ? `&sort=${sort}` : '' %>" class="page-link" data-translate="next">Next</a>
                 <% } %>
             <% } %>
         </div>
@@ -273,15 +273,15 @@
                     <i class="far fa-heart"></i>
                 </button>
                 <button class="add-to-cart" id="quickViewAddToCart">
-                    <i class="fas fa-shopping-bag"></i> Add to Cart
+                    <i class="fas fa-shopping-bag"></i> <span data-translate="addToCart">Add to Cart</span>
                 </button>
                 <button class="find-store" id="quickViewProductBtn">
-                    <i class="fas fa-eye"></i> View Product
+                    <i class="fas fa-eye"></i> <span data-translate="viewProduct">View Product</span>
                 </button>
             </div>
             
             <div class="product-description">
-                <p id="quickViewDescription"></p>
+                <p id="quickViewDescription" data-translate="noDescriptionAvailable">No description available</p>
             </div>
         </div>
     </div>
@@ -479,6 +479,8 @@
     `;
     document.head.appendChild(stockStatusStyles);
 </script>
-
+<!-- ملفات الترجمة -->
+<script src="/Javascript/translations.js"></script>
+<script src="/Javascript/language.js"></script>
 </body>
 </html>

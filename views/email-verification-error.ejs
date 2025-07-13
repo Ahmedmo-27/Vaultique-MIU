@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Email Verification Failed</title>
+  <title data-translate="emailVerificationFailedTitle">Email Verification Failed</title>
   <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
   <style>
     body { 
@@ -42,9 +42,12 @@
 </head>
 <body>
   <div class="container">
-    <h1 class="error">Verification Failed</h1>
-    <p class="message"><%= message %></p>
-    <a href="https://vaultique.up.railway.app/user/LoginSignup" class="button">Go to Login</a>
+    <h1 class="error" data-translate="verificationFailed">Verification Failed</h1>
+    <p class="message" data-translate="verificationFailedMessage"><%= message %></p>
+    <a href="https://vaultique.up.railway.app/user/LoginSignup" class="button" data-translate="goToLogin">Go to Login</a>
   </div>
+  <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
 </body>
-</html> 
+</html>

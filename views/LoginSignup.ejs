@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Signup Form</title>
+    <title data-translate="loginSignupTitle">Login & Signup Form</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
@@ -37,29 +37,29 @@
         <div class="inner-container">
             <!-- Login Form -->
             <div id="login-form" class="form-container">
-                <h2>Login</h2>
+                <h2 data-translate="login">Login</h2>
                 <form id="login-form-id" autocomplete="off">
                     <div class="input-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="Enter your email" autocomplete="new-email" required>
+                        <label for="email" data-translate="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" autocomplete="new-email" required data-translate="enterEmail">
                     </div>
                     <div class="input-group password-container">
-                        <label for="password">Password</label>
+                        <label for="password" data-translate="password">Password</label>
                         <div class="password-input-wrapper">
-                            <input type="password" id="password" placeholder="Enter your password" autocomplete="new-password" required>
+                            <input type="password" id="password" placeholder="Enter your password" autocomplete="new-password" required data-translate="enterPassword">
                             <span class="toggle-password"><i class="far fa-eye"></i></span>
                         </div>
                     </div>
                     <div class="options">
-                        <label><input type="checkbox"> Remember me</label>
-                        <a href="#" id="forgot-password">Forgot Password?</a>
+                        <label data-translate="rememberMe"><input type="checkbox"> Remember me</label>
+                        <a href="#" id="forgot-password" data-translate="forgotPassword">Forgot Password?</a>
                     </div>
-                    <button type="submit" class="button-login-signup">Login</button>
+                    <button type="submit" class="button-login-signup" data-translate="login">Login</button>
 
-                    <p>Don't have an account? <a href="#" id="register-link">Register</a></p>
+                    <p data-translate="noAccount">Don't have an account? <a href="#" id="register-link" data-translate="register">Register</a></p>
                     
                     <div class="social-login">
-                        <div class="social-divider">or continue with</div>
+                        <div class="social-divider" data-translate="orContinueWith">or continue with</div>
                         </div>
 
                         <div id="g_id_onload"
@@ -84,26 +84,26 @@
 
             <!-- Multi-step Signup Form -->
             <div id="signup-form" class="form-container">
-                <h2>Sign Up</h2>
+                <h2 data-translate="signup">Sign Up</h2>
                 <form id="signup-form-id">
                     <!-- Step 1 -->
                     <div class="signup-step" id="step1">
                         <div class="input-group">
-                            <label for="username">Username</label>
-                            <input type="text" id="username" placeholder="Enter your username" required>
+                            <label for="username" data-translate="username">Username</label>
+                            <input type="text" id="username" placeholder="Enter your username" required data-translate="enterUsername">
                         </div>
                         <div class="input-group">
-                            <label for="Name">Full Name</label>
-                            <input type="text" id="Name" placeholder="Enter your full name" required>
+                            <label for="Name" data-translate="fullName">Full Name</label>
+                            <input type="text" id="Name" placeholder="Enter your full name" required data-translate="enterFullName">
                         </div>
                         <div class="input-group">
-                            <label for="email-signup">Email</label>
-                            <input type="email" id="email-signup" placeholder="Enter your email" required>
+                            <label for="email-signup" data-translate="email">Email</label>
+                            <input type="email" id="email-signup" placeholder="Enter your email" required data-translate="enterEmail">
                         </div>
                         <div class="input-group password-container">
-                            <label for="password-signup">Password</label>
+                            <label for="password-signup" data-translate="password">Password</label>
                             <div class="password-input-wrapper">
-                                <input type="password" id="password-signup" placeholder="At least 8 characters with 1 capital letter and number" required>
+                                <input type="password" id="password-signup" placeholder="At least 8 characters with 1 capital letter and number" required data-translate="passwordHint">
                                 <span class="toggle-password"><i class="far fa-eye"></i></span>
                             </div>
                             <div class="password-strength">
@@ -112,109 +112,112 @@
                             </div>
                         </div>
                         <div class="input-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                            <label for="phone" data-translate="phoneNumber">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="Enter your phone number" required data-translate="enterPhoneNumber">
                         </div>
                         <div class="input-group">
-                            <label for="dob">Date of Birth</label>
+                            <label for="dob" data-translate="dob">Date of Birth</label>
                             <input type="date" id="dob" required>
                         </div>
                         <div class="input-group">
-                            <label for="language-signup">Preferred Language</label>
+                            <label for="language-signup" data-translate="preferredLanguage">Preferred Language</label>
                             <select class="select-option" id="language-signup">
-                                <option value="English">English</option>
-                                <option value="Arabic">Arabic</option>
+                                <option value="English" data-translate="english">English</option>
+                                <option value="Arabic" data-translate="arabic">Arabic</option>
                             </select>
                         </div>
-                        <button type="button" id="next-step1" class="next-btn">Next</button>
+                        <button type="button" id="next-step1" class="next-btn" data-translate="next">Next</button>
                     </div>
 
                     <!-- Step 2 - Address -->
                     <div class="signup-step" id="step2" style="display:none;">
-                        <h3>Address Information</h3>
+                        <h3 data-translate="addressInfo">Address Information</h3>
                         <div class="input-group">
-                            <label for="street">Street Address</label>
-                            <input type="text" id="street" placeholder="123 Main St">
+                            <label for="street" data-translate="streetAddress">Street Address</label>
+                            <input type="text" id="street" placeholder="123 Main St" data-translate="enterStreetAddress">
                         </div>
                         <div class="input-group">
-                            <label for="city">City</label>
-                            <input type="text" id="city" placeholder="City">
+                            <label for="city" data-translate="city">City</label>
+                            <input type="text" id="city" placeholder="City" data-translate="enterCity">
                         </div>
                         <div class="input-group">
-                            <label for="state">State/Province</label>
-                            <input type="text" id="state" placeholder="State/Province">
+                            <label for="state" data-translate="state">State/Province</label>
+                            <input type="text" id="state" placeholder="State/Province" data-translate="enterState">
                         </div>
                         <div class="input-group">
-                            <label for="zip">ZIP/Postal Code</label>
-                            <input type="text" id="zip" placeholder="ZIP/Postal Code">
+                            <label for="zip" data-translate="zip">ZIP/Postal Code</label>
+                            <input type="text" id="zip" placeholder="ZIP/Postal Code" data-translate="enterZip">
                         </div>
                         <div class="input-group">
-                            <label for="country">Country</label>
+                            <label for="country" data-translate="country">Country</label>
                             <select class="select-option" id="country">
-                                <option value="">Select country</option>
-                                <option value="US">United States</option>
-                                <option value="UK">United Kingdom</option>
-                                <option value="EG">Egypt</option>
+                                <option value="" data-translate="selectCountry">Select country</option>
+                                <option value="US" data-translate="unitedStates">United States</option>
+                                <option value="UK" data-translate="unitedKingdom">United Kingdom</option>
+                                <option value="EG" data-translate="egypt">Egypt</option>
                             </select>
                         </div>
                         <div class="step-buttons">
-                            <button type="button" id="prev-step2" class="prev-btn">Back</button>
-                            <button type="button" id="skip-step2" class="skip-btn">Skip for now</button>
-                            <button type="button" id="next-step2" class="next-btn">Next</button>
+                            <button type="button" id="prev-step2" class="prev-btn" data-translate="back">Back</button>
+                            <button type="button" id="skip-step2" class="skip-btn" data-translate="skip">Skip for now</button>
+                            <button type="button" id="next-step2" class="next-btn" data-translate="next">Next</button>
                         </div>
                     </div>
 
                     <!-- Step 3 - Payment -->
                     <div class="signup-step" id="step3" style="display:none;">
-                        <h3>Payment Information</h3>
+                        <h3 data-translate="paymentInfo">Payment Information</h3>
                         <div class="input-group">
-                            <label for="card-type">Card Type</label>
+                            <label for="card-type" data-translate="cardType">Card Type</label>
                             <select class="select-option" id="card-type">
-                                <option value="">Select card type</option>
-                                <option value="visa">Visa</option>
-                                <option value="mastercard">Mastercard</option>
-                                <option value="amex">American Express</option>
+                                <option value="" data-translate="selectCardType">Select card type</option>
+                                <option value="visa" data-translate="visa">Visa</option>
+                                <option value="mastercard" data-translate="mastercard">Mastercard</option>
+                                <option value="amex" data-translate="amex">American Express</option>
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="card-number">Card Number</label>
-                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456">
+                            <label for="card-number" data-translate="cardNumber">Card Number</label>
+                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" data-translate="enterCardNumber">
                         </div>
                         <div class="input-group-row">
                             <div class="input-group">
-                                <label for="expiry">Expiry Date</label>
-                                <input type="text" id="expiry" placeholder="MM/YY">
+                                <label for="expiry" data-translate="expiryDate">Expiry Date</label>
+                                <input type="text" id="expiry" placeholder="MM/YY" data-translate="enterExpiryDate">
                             </div>
                             <div class="input-group">
-                                <label for="cvv">CVV</label>
-                                <input type="text" id="cvv" placeholder="123">
+                                <label for="cvv" data-translate="cvv">CVV</label>
+                                <input type="text" id="cvv" placeholder="123" data-translate="enterCVV">
                             </div>
                         </div>
                         <div class="input-group">
-                            <label for="card-name">Name on Card</label>
-                            <input type="text" id="card-name" placeholder="John Doe">
+                            <label for="card-name" data-translate="nameOnCard">Name on Card</label>
+                            <input type="text" id="card-name" placeholder="John Doe" data-translate="enterNameOnCard">
                         </div>
                         <div class="step-buttons">
-                            <button type="button" id="prev-step3" class="prev-btn">Back</button>
-                            <button type="button" id="complete-signup" class="submit-btn">Complete Sign Up</button>
+                            <button type="button" id="prev-step3" class="prev-btn" data-translate="back">Back</button>
+                            <button type="button" id="complete-signup" class="submit-btn" data-translate="completeSignup">Complete Sign Up</button>
                         </div>
                     </div>
                 </form>
-                <p>Already have an account? <a href="#" id="login-link">Login</a></p>
+                <p data-translate="alreadyAccount">Already have an account? <a href="#" id="login-link" data-translate="login">Login</a></p>
             </div>
 
             <!-- Forgot Password Container -->
             <div id="forgot-password-container" class="forgot-password-container">
                 <div class="forgot-password-box">
                     <div class="close-icon" onclick="closeForgotPassword()">×</div>
-                    <h3>Reset Your Password</h3>
-                    <p>Enter your email address and we'll send you a link to reset your password.</p>
-                    <input type="email" id="forgot-email" placeholder="Enter your email address">
-                    <button id="send-reset-link">Send Reset Link</button>
-                    <button id="close-forgot-password">Cancel</button>
+                    <h3 data-translate="resetPassword">Reset Your Password</h3>
+                    <p data-translate="resetPasswordMsg">Enter your email address and we'll send you a link to reset your password.</p>
+                    <input type="email" id="forgot-email" placeholder="Enter your email address" data-translate="enterEmail">
+                    <button id="send-reset-link" data-translate="sendResetLink">Send Reset Link</button>
+                    <button id="close-forgot-password" data-translate="cancel">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
+              <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaultique | Collections</title>
+    <title data-translate="vaultiquetitle">Vaultique | Collections</title>
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/footer.css">
@@ -47,8 +47,8 @@
     <section class="main-section" id="main">
         <video src="/Assets/Videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop="" muted=""></video>
         <div class="main-text">
-            <h1>Your Signature in Time</h1>
-            <a class="button" href="/user/Recommendation-System">TAKE THE QUIZ</a>
+            <h1 data-translate="signatureInTime">Your Signature in Time</h1>
+            <a class="button" href="/user/Recommendation-System" data-translate="takeQuiz">TAKE THE QUIZ</a>
         </div>
     </section>
 
@@ -68,7 +68,7 @@
                     <%=collection.description%>
                 </p>
                 <br><br>
-                <a class="button" href="/user/collections/<%=collection.slug%>">See <%=collection.name%> Collection</a>
+                <a class="button" href="/user/collections/<%=collection.slug%>" data-translate="seeCollection">See <%=collection.name%> Collection</a>
             </div>
         </section>
     <%})}%>
@@ -178,7 +178,9 @@
         };
     </script>
 
-
+            <!-- ملفات الترجمة -->
+            <script src="/Javascript/translations.js"></script>
+            <script src="/Javascript/language.js"></script>
 </body>
 
 </html>

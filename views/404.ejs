@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <a href="/" class="logo">VAULTIQUE</a>
+        <a href="/" class="logo" data-translate="logo">VAULTIQUE</a>
     </header>
     
     <main class="error-container">
@@ -21,23 +21,26 @@
         </div>
         
         <h1 class="error-code">404</h1>
-        <h2 class="error-title">Time Seems to Have Stopped</h2>
-        <p class="error-message">
+        <h2 class="error-title" data-translate="404title">Time Seems to Have Stopped</h2>
+        <p class="error-message" data-translate="404message">
             <%= message %>
         </p>
         
         <div class="btn-group">
-            <a href="/" class="btn">
+            <a href="/" class="btn" data-translate="returnHome">
                 <i class="fas fa-home"></i> Return Home
             </a>
-            <a href="/collections" class="btn btn-secondary">
+            <a href="/collections" class="btn btn-secondary" data-translate="browseCollections">
                 <i class="fas fa-clock"></i> Browse Collections
             </a>
         </div>
     </main>
     
     <footer>
-        <p>&copy; <%= new Date().getFullYear() %> Vaultique Watches. All rights reserved.</p>
+        <p data-translate="copyright">&copy; <%= new Date().getFullYear() %> Vaultique Watches. All rights reserved.</p>
     </footer>
+    <!-- ملفات الترجمة -->
+<script src="/Javascript/translations.js"></script>
+<script src="/Javascript/language.js"></script>
 </body>
 </html> 

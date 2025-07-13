@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaultique | Configurator</title>
+    <title data-translate="configuratorTitle">Vaultique | Configurator</title>
     <link rel="stylesheet" href="/CSS/configure-3D.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/footer.css">
@@ -491,27 +491,27 @@ body {
                     <!-- Left Column - Configurator -->
                     <div class="configurator-column">
                         <div class="model-selector">
-                            <label for="model-selector">Select Watch Model:</label>
+                            <label for="model-selector" data-translate="selectWatchModel">Select Watch Model:</label>
                             <select id="model-selector" class="model-selector">
-                                <option value="/Assets/3D Models/Omega Sea Master.glb">Omega</option>
-                                <option value="/Assets/3D Models/Rolex Daytona.glb">Rolex</option>
-                                <option value="/Assets/3D Models/Santos.glb">Cartier</option>
-                                <option value="/Assets/3D Models/Audemars Piguet Royal Oak.gltf">Audemars</option>
+                                <option value="/Assets/3D Models/Omega Sea Master.glb" data-translate="omega">Omega</option>
+                                <option value="/Assets/3D Models/Rolex Daytona.glb" data-translate="rolex">Rolex</option>
+                                <option value="/Assets/3D Models/Santos.glb" data-translate="cartier">Cartier</option>
+                                <option value="/Assets/3D Models/Audemars Piguet Royal Oak.gltf" data-translate="audemars">Audemars</option>
                             </select>
                         </div>
 
                         <div class="watch-specs-horizontal">
                             <div class="spec-item">
                                 <i class="fas fa-clock" aria-hidden="true"></i>
-                                <span>3235 Calibre</span>
+                                <span data-translate="movement">3235 Calibre</span>
                             </div>
                             <div class="spec-item">
                                 <i class="fas fa-tint" aria-hidden="true"></i>
-                                <span>300m Water Resistant</span>
+                                <span data-translate="waterResistance">300m Water Resistant</span>
                             </div>
                             <div class="spec-item">
                                 <i class="fas fa-battery-full" aria-hidden="true"></i>
-                                <span>70h Power Reserve</span>
+                                <span data-translate="powerReserve">70h Power Reserve</span>
                             </div>
                         </div>
 
@@ -544,17 +544,17 @@ body {
                         </div>
 
                         <div class="controls">
-                            <button id="toggle-rotate" class="btn">
-                                <i class="fas fa-sync-alt"></i> Toggle Rotation
+                            <button id="toggle-rotate" class="btn" data-translate="toggleRotation">
+                                <i class="fas fa-sync-alt"></i> <span data-translate="toggleRotation">Toggle Rotation</span>
                             </button>
-                            <button id="reset-camera" class="btn">
-                                <i class="fas fa-undo"></i> Reset View
+                            <button id="reset-camera" class="btn" data-translate="resetView">
+                                <i class="fas fa-undo"></i> <span data-translate="resetView">Reset View</span>
                             </button>
-                            <button id="fullscreen" class="btn">
-                                <i class="fas fa-expand"></i> Fullscreen
+                            <button id="fullscreen" class="btn" data-translate="fullscreen">
+                                <i class="fas fa-expand"></i> <span data-translate="fullscreen">Fullscreen</span>
                             </button>
-                            <button id="virtual-try-on" class="btn">
-                                <i class="fas fa-vr-cardboard"></i> Virtual Try-On
+                            <button id="virtual-try-on" class="btn" data-translate="virtualTryOn">
+                                <i class="fas fa-vr-cardboard"></i> <span data-translate="virtualTryOn">Virtual Try-On</span>
                             </button>
                         </div>
                     </div>
@@ -563,7 +563,7 @@ body {
                         <div class="customization-sections">
                             <!-- Color Sections -->
                             <div class="customization-section">
-                                <h3>Strap Color</h3>
+                                <h3 data-translate="strapColor">Strap Color</h3>
                                 <div class="color-options">
                                     <div class="color-option" style="background-color: #1A1A1A;" data-color="black"></div>
                                     <div class="color-option" style="background-color: #8B4513;" data-color="brown"></div>
@@ -574,7 +574,7 @@ body {
                             </div>
 
                             <div class="customization-section">
-                                <h3>Case Color</h3>
+                                <h3 data-translate="caseColor">Case Color</h3>
                                 <div class="color-options">
                                     <div class="color-option" style="background-color: #1A1A1A;" data-color="black"></div>
                                     <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
@@ -585,7 +585,7 @@ body {
                             </div>
 
                             <div class="customization-section">
-                                <h3>Bezel Color</h3>
+                                <h3 data-translate="bezelColor">Bezel Color</h3>
                                 <div class="color-options">
                                     <div class="color-option" style="background-color: #1A1A1A;" data-color="black"></div>
                                     <div class="color-option" style="background-color: #C0C0C0;" data-color="silver"></div>
@@ -596,7 +596,7 @@ body {
                             </div>
 
                             <div class="customization-section">
-                                <h3>Dial Color</h3>
+                                <h3 data-translate="dialColor">Dial Color</h3>
                                 <div class="color-options">
                                     <div class="color-option" style="background-color: #1A1A1A;" data-color="black"></div>
                                     <div class="color-option" style="background-color: #FFFFFF;" data-color="white"></div>
@@ -609,10 +609,10 @@ body {
 
                         <div class="customization-footer">
                             <div class="price-display">
-                                Total: $<span id="total-price">8,500</span>
+                                <span data-translate="total">Total</span>: $<span id="total-price">8,500</span>
                             </div>
-                            <button id="share-config" class="btn" style="width: 100%; margin-top: 1rem;">
-                                <i class="fas fa-shopping-cart"></i> Request Order
+                            <button id="share-config" class="btn" style="width: 100%; margin-top: 1rem;" data-translate="requestOrder">
+                                <i class="fas fa-shopping-cart"></i> <span data-translate="requestOrder">Request Order</span>
                             </button>
                         </div>
                     </div>
@@ -620,37 +620,37 @@ body {
 
                     <div class="customization-column">
                         <div class="watch-details">
-                            <h2 id="details-heading">Daytona</h2>
-                            <p id="watch-description">
+                            <h2 id="details-heading" data-translate="modelName">Daytona</h2>
+                            <p id="watch-description" data-translate="modelDescription">
                                 <%= locals.watch?.description || 'The Cosmograph Daytona is designed for those with a passion for driving and speed. Introduced in 1963, this iconic chronograph allows drivers to measure elapsed time and read average speeds on its signature tachymetric bezel.' %>
                             </p>
                         </div>
 
                         <div class="config-summary">
-                            <h3>Your Configuration</h3>
+                            <h3 data-translate="yourConfiguration">Your Configuration</h3>
                             <div class="summary-details">
                                 <div class="summary-row">
-                                    <span class="summary-label">Model</span>
+                                    <span class="summary-label" data-translate="model">Model</span>
                                     <span class="summary-value" id="summary-model">Daytona</span>
                                 </div>
                                 <div class="summary-row">
-                                    <span class="summary-label">Strap</span>
+                                    <span class="summary-label" data-translate="strap">Strap</span>
                                     <span id="summary-strap" class="summary-value">Black</span>
                                 </div>
                                 <div class="summary-row">
-                                    <span class="summary-label">Case</span>
+                                    <span class="summary-label" data-translate="case">Case</span>
                                     <span id="summary-case" class="summary-value">Silver</span>
                                 </div>
                                 <div class="summary-row">
-                                    <span class="summary-label">Dial</span>
+                                    <span class="summary-label" data-translate="dial">Dial</span>
                                     <span id="summary-dial" class="summary-value">Black</span>
                                 </div>
                                 <div class="summary-row">
-                                    <span class="summary-label">Bezel</span>
+                                    <span class="summary-label" data-translate="bezel">Bezel</span>
                                     <span id="summary-bezel" class="summary-value">Black</span>
                                 </div>
                                 <div class="summary-row summary-total">
-                                    <span class="summary-label">Total Price</span>
+                                    <span class="summary-label" data-translate="totalPrice">Total Price</span>
                                     <span id="summary-price" class="summary-value price">
                                         $<%= (locals.watch?.basePrice || 8500).toLocaleString() %>
                                     </span>
@@ -660,28 +660,28 @@ body {
                     </div>
                         <!-- Request Form -->
                         <div class="request-form">
-                            <h3>Request Custom Watch</h3>
+                            <h3 data-translate="requestCustomWatch">Request Custom Watch</h3>
                             <form id="share-form" class="share-form">
                                 <div class="form-group">
-                                    <label for="share-name">Your Name:</label>
+                                    <label for="share-name" data-translate="yourName">Your Name:</label>
                                     <input type="text" id="share-name" name="name" value="<%= locals.user?.Name || '' %>" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="share-email">Your Email:</label>
+                                    <label for="share-email" data-translate="yourEmail">Your Email:</label>
                                     <input type="email" id="share-email" name="email" value="<%= locals.user?.email || '' %>" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="share-message">Special Requirements or Notes:</label>
-                                    <textarea id="share-message" name="message" rows="3" placeholder="Please let us know if you have any special requirements or preferences for your custom watch..."></textarea>
+                                    <label for="share-message" data-translate="specialRequirements">Special Requirements or Notes:</label>
+                                    <textarea id="share-message" name="message" rows="3" placeholder="Please let us know if you have any special requirements or preferences for your custom watch..." data-translate-placeholder="specialRequirementsPlaceholder"></textarea>
                                 </div>
                                 <div class="form-info" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: var(--border-radius);">
-                                    <p style="color: #34495e; font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                                    <p style="color: #34495e; font-size: 0.9rem; line-height: 1.5; margin: 0;" data-translate="afterSubmitting">
                                         <i class="fas fa-info-circle" style="color: #3498db;"></i>
                                         After submitting your request, our team will review it and contact you within 2-3 business days to discuss the details and provide a final quote.
                                     </p>
                                 </div>
-                                <button type="submit" class="btn" style="width: 100%;">
-                                    <i class="fas fa-paper-plane"></i> Submit Customization Request
+                                <button type="submit" class="btn" style="width: 100%;" data-translate="submitCustomizationRequest">
+                                    <i class="fas fa-paper-plane"></i> <span data-translate="submitCustomizationRequest">Submit Customization Request</span>
                                 </button>
                             </form>
                         </div>
@@ -696,12 +696,12 @@ body {
     <div id="qrModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3 class="modal-title">Scan to Try On</h3>
+            <h3 class="modal-title" data-translate="scanToTryOn">Scan to Try On</h3>
             <div id="qr-code-container" class="qr-code">
                 <img id="customImage" src="../Assets/Images/QR-Rolex.png" alt="QR-Rolex">
             </div>
-            <p class="modal-text">Scan this QR code with your smartphone camera to launch the virtual try-on experience.</p>
-            <p>Open your camera app, point it at the QR code, and follow the link to try our watches virtually!</p>
+            <p class="modal-text" data-translate="scanQrInstruction">Scan this QR code with your smartphone camera to launch the virtual try-on experience.</p>
+            <p data-translate="openCameraInstruction">Open your camera app, point it at the QR code, and follow the link to try our watches virtually!</p>
         </div>
     </div>
 
@@ -1342,6 +1342,9 @@ body {
             init();
         });
     </script>
+    <!-- ملفات الترجمة -->
+<script src="/Javascript/translations.js"></script>
+<script src="/Javascript/language.js"></script>
 </body>
 
 </html> 

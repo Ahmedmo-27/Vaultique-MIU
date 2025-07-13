@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaultique | Contact Us</title>
+    <title data-translate="contactUsTitle">Vaultique | Contact Us</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/footer.css">
@@ -25,19 +25,19 @@
     <%- include('partials/navigation') %>
 
     <main class="contact-container">
-        <h1>Contact Us</h1>
+        <h1 data-translate="contactUs">Contact Us</h1>
         
         <div class="contact-content">
             <div class="contact-info">
                 <div class="info-section">
-                    <h2>Get in Touch</h2>
-                    <p>We'd love to hear from you. Please fill out the form or use our contact information below.</p>
+                    <h2 data-translate="getInTouch">Get in Touch</h2>
+                    <p data-translate="contactIntro">We'd love to hear from you. Please fill out the form or use our contact information below.</p>
                     
                     <div class="contact-details">
                         <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
                             <div>
-                                <h3>Address</h3>
+                                <h3 data-translate="address">Address</h3>
                                 <p>15 New Cairo, Cairo, Egypt</p>
                             </div>
                         </div>
@@ -45,7 +45,7 @@
                         <div class="contact-item">
                             <i class="fas fa-phone"></i>
                             <div>
-                                <h3>Phone</h3>
+                                <h3 data-translate="phone">Phone</h3>
                                 <p>+20 109 123 4567</p>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                         <div class="contact-item">
                             <i class="fas fa-envelope"></i>
                             <div>
-                                <h3>Email</h3>
+                                <h3 data-translate="email">Email</h3>
                                 <p>vaultique.watches@gmail.com</p>
                             </div>
                         </div>
@@ -61,8 +61,8 @@
                         <div class="contact-item">
                             <i class="fas fa-clock"></i>
                             <div>
-                                <h3>Business Hours</h3>
-                                <p>Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM<br>Sunday: Closed</p>
+                                <h3 data-translate="businessHours">Business Hours</h3>
+                                <p data-translate="businessHoursDetails">Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM<br>Sunday: Closed</p>
                             </div>
                         </div>
                     </div>
@@ -70,46 +70,49 @@
             </div>
 
             <div class="contact-form">
-                <h2>Send us a Message</h2>
+                <h2 data-translate="sendMessage">Send us a Message</h2>
                 <form id="contactForm">
                     <div class="form-group">
-                        <label for="name">Full Name</label>
+                        <label for="name" data-translate="fullName">Full Name</label>
                         <input type="text" id="name" name="name" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="email">Email</label>
+                        <label for="email" data-translate="email">Email</label>
                         <input type="email" id="email" name="email" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="phone">Phone Number</label>
+                        <label for="phone" data-translate="phoneNumber">Phone Number</label>
                         <input type="tel" id="phone" name="phone" pattern="^\+?[1-9]\d{1,14}$">
                     </div>
 
                     <div class="form-group">
-                        <label for="subject">Subject</label>
+                        <label for="subject" data-translate="subject">Subject</label>
                         <select id="subject" name="subject" required>
-                            <option value="">Select a subject</option>
-                            <option value="general">General Inquiry</option>
-                            <option value="support">Technical Support</option>
-                            <option value="sales">Sales Question</option>
-                            <option value="warranty">Warranty Information</option>
-                            <option value="other">Other</option>
+                            <option value="" data-translate="selectSubject">Select a subject</option>
+                            <option value="general" data-translate="generalInquiry">General Inquiry</option>
+                            <option value="support" data-translate="technicalSupport">Technical Support</option>
+                            <option value="sales" data-translate="salesQuestion">Sales Question</option>
+                            <option value="warranty" data-translate="warrantyInformation">Warranty Information</option>
+                            <option value="other" data-translate="other">Other</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="message">Message</label>
+                        <label for="message" data-translate="message">Message</label>
                         <textarea id="message" name="message" rows="5" required></textarea>
                     </div>
 
-                    <button type="submit" class="submit-btn">Send Message</button>
+                    <button type="submit" class="submit-btn" data-translate="sendMessageBtn">Send Message</button>
                 </form>
             </div>
         </div>
     </main>
 
     <%- include('partials/footer') %>
+      <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
 </body>
 </html>

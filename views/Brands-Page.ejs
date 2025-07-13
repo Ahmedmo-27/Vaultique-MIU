@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaultique | Brands</title>
+    <title data-translate="brandsTitle">Vaultique | Brands</title>
       <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/footer.css">
@@ -48,8 +48,8 @@
     <section class="main" id="main">
         <video src="/Assets/Videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop="" muted=""></video>
         <div class="main-text">
-            <h1>Your Signature in Time</h1>
-            <a class="button" href="/Sobhi/Recommendation.html">TAKE THE QUIZ</a>
+            <h1 data-translate="signatureInTime">Your Signature in Time</h1>
+            <a class="button" href="/Sobhi/Recommendation.html" data-translate="takeQuiz">TAKE THE QUIZ</a>
         </div>
     </section>
 
@@ -70,7 +70,7 @@
               </div>
             </div>
             <div class="text-overlay">
-              <button onclick="window.location.href='/user/brands/<%= brands[i].slug %>'">Explore</button>
+              <button onclick="window.location.href='/user/brands/<%= brands[i].slug %>'" data-translate="explore">Explore</button>
             </div>
           </div>
         <% } %>
@@ -86,7 +86,7 @@
               </div>
             </div>
             <div class="text-overlay">
-              <button onclick="window.location.href='/brands/<%= brands[i+1].slug %>'">Explore</button>
+              <button onclick="window.location.href='/brands/<%= brands[i+1].slug %>'" data-translate="explore">Explore</button>
             </div>
           </div>
         <% } %>
@@ -95,7 +95,7 @@
   <% } %>
 <% } else { %>
   <section class="no-brands">
-    <p>No brands available at the moment</p>
+    <p data-translate="noBrandsAvailable">No brands available at the moment</p>
   </section>
 <% } %>
 
@@ -123,7 +123,9 @@
         };
     </script>
 
-
+  <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
 </body>
 
 </html>

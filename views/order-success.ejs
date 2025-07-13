@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/CSS/Checkout_styles.css" />
    <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
-    <title>Vaultique | Order Success</title>
+    <title data-translate="orderSuccessTitle">Vaultique | Order Success</title>
   </head>
   <body>
-    <a href="/user/home" class="logo" id="logo">Vaultique</a>
+    <a href="/user/home" class="logo" id="logo" data-translate="vaultique">Vaultique</a>
     <br />
     <div class="progress-container">
       <div class="progress-bar">
@@ -18,15 +18,15 @@
       <div class="progress-steps">
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Payment</span>
+          <span class="label" data-translate="payment">Payment</span>
         </div>
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Shipping</span>
+          <span class="label" data-translate="shipping">Shipping</span>
         </div>
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Review Order</span>
+          <span class="label" data-translate="reviewOrder">Review Order</span>
         </div>
       </div>
     </div>
@@ -34,48 +34,48 @@
     <div class="form-container">
       <div class="success-message">
         <i class="fa-solid fa-circle-check"></i>
-        <h2>Order Confirmed!</h2>
-        <p>Thank you for your purchase. Your order has been successfully placed.</p>
-        <p class="order-number">Order #<%= order.orderNumber %></p>
+        <h2 data-translate="orderConfirmed">Order Confirmed!</h2>
+        <p data-translate="thankYou">Thank you for your purchase. Your order has been successfully placed.</p>
+        <p class="order-number" data-translate="orderNumber">Order #<%= order.orderNumber %></p>
       </div>
 
       <div class="order-details">
-        <h3>Order Details</h3>
+        <h3 data-translate="orderDetails">Order Details</h3>
         
         <!-- Order Summary -->
         <div class="order-summary">
-          <h4>Order Summary</h4>
+          <h4 data-translate="orderSummary">Order Summary</h4>
           <div class="order-items">
             <% order.items.forEach(item => { %>
               <div class="order-item">
                 <img src="<%= item.productDetails.image %>" alt="<%= item.productDetails.name %>" class="item-image">
                 <div class="item-details">
                   <h5><%= item.productDetails.name %></h5>
-                  <p>Brand: <%= item.productDetails.brand %></p>
-                  <p>Movement: <%= item.productDetails.movement %></p>
-                  <p>Case Material: <%= item.productDetails.caseMaterial %></p>
-                  <p>Strap Material: <%= item.productDetails.strapMaterial %></p>
-                  <p>Water Resistance: <%= item.productDetails.waterResistance %></p>
-                  <p>Dial Color: <%= item.productDetails.dialColor %></p>
-                  <p>Gender: <%= item.productDetails.gender %></p>
-                  <p>Collection: <%= item.productDetails.Vcollection %></p>
-                  <p>Quantity: <%= item.quantity %></p>
-                  <p>Price: $<%= item.price.toFixed(2) %></p>
+                  <p data-translate="brand">Brand: <%= item.productDetails.brand %></p>
+                  <p data-translate="movement">Movement: <%= item.productDetails.movement %></p>
+                  <p data-translate="caseMaterial">Case Material: <%= item.productDetails.caseMaterial %></p>
+                  <p data-translate="strapMaterial">Strap Material: <%= item.productDetails.strapMaterial %></p>
+                  <p data-translate="waterResistance">Water Resistance: <%= item.productDetails.waterResistance %></p>
+                  <p data-translate="dialcolor">Dial Color: <%= item.productDetails.dialColor %></p>
+                  <p data-translate="gender">Gender: <%= item.productDetails.gender %></p>
+                  <p data-translate="collection">Collection: <%= item.productDetails.Vcollection %></p>
+                  <p data-translate="quantity">Quantity: <%= item.quantity %></p>
+                  <p data-translate="price">Price: $<%= item.price.toFixed(2) %></p>
                 </div>
               </div>
             <% }); %>
           </div>
           <div class="order-totals">
             <div class="total-line">
-              <span>Subtotal:</span>
+              <span data-translate="subtotal">Subtotal:</span>
               <span>$<%= order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2) %></span>
             </div>
             <div class="total-line">
-              <span>Shipping:</span>
+              <span data-translate="shipping">Shipping:</span>
               <span>$10.00</span>
             </div>
             <div class="total-line grand-total">
-              <span>Total:</span>
+              <span data-translate="total">Total:</span>
               <span>$<%= (order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 10).toFixed(2) %></span>
             </div>
           </div>
@@ -83,27 +83,27 @@
 
         <!-- Shipping Information -->
         <div class="shipping-info">
-          <h4>Shipping Information</h4>
-          <p><strong>Name:</strong> <%= order.shipping.name %></p>
-          <p><strong>Email:</strong> <%= order.shipping.email %></p>
-          <p><strong>Address:</strong> <%= order.shipping.address %></p>
-          <p><strong>City:</strong> <%= order.shipping.city %></p>
-          <p><strong>State:</strong> <%= order.shipping.state %></p>
-          <p><strong>Postal Code:</strong> <%= order.shipping.zipCode %></p>
+          <h4 data-translate="shippingInfo">Shipping Information</h4>
+          <p><strong data-translate="name">Name:</strong> <%= order.shipping.name %></p>
+          <p><strong data-translate="email">Email:</strong> <%= order.shipping.email %></p>
+          <p><strong data-translate="address">Address:</strong> <%= order.shipping.address %></p>
+          <p><strong data-translate="city">City:</strong> <%= order.shipping.city %></p>
+          <p><strong data-translate="state">State:</strong> <%= order.shipping.state %></p>
+          <p><strong data-translate="postalCode">Postal Code:</strong> <%= order.shipping.zipCode %></p>
         </div>
 
         <!-- Payment Information -->
         <div class="payment-info">
-          <h4>Payment Information</h4>
-          <p><strong>Card Holder:</strong> <%= order.payment.name %></p>
-          <p><strong>Card Number:</strong> **** **** **** <%= order.payment.cardNumber %></p>
-          <p><strong>Bank:</strong> <%= order.payment.bankName %></p>
-          <p><strong>Expiry Date:</strong> <%= order.payment.expiry %></p>
+          <h4 data-translate="paymentInfo">Payment Information</h4>
+          <p><strong data-translate="cardHolder">Card Holder:</strong> <%= order.payment.name %></p>
+          <p><strong data-translate="cardNumber">Card Number:</strong> **** **** **** <%= order.payment.cardNumber %></p>
+          <p><strong data-translate="bank">Bank:</strong> <%= order.payment.bankName %></p>
+          <p><strong data-translate="expiryDate">Expiry Date:</strong> <%= order.payment.expiry %></p>
         </div>
 
         <div class="action-buttons">
-          <a href="/user/products" class="btn primary">Continue Shopping</a>
-          <a href="/user/account-details" class="btn secondary">View Orders</a>
+          <a href="/user/products" class="btn primary" data-translate="continueShopping">Continue Shopping</a>
+          <a href="/user/account-details" class="btn secondary" data-translate="viewOrders">View Orders</a>
         </div>
       </div>
     </div>
@@ -234,5 +234,8 @@
         background-color: #545b62;
       }
     </style>
+                  <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
   </body>
 </html> 

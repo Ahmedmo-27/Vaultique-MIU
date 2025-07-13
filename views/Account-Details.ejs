@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= user?.Name || 'User' %> | Account Details</title>
+    <title><%= user?.Name || 'User' %> | <span data-translate="accountDetailsTitle">Account Details</span></title>
     <link rel="icon" type="image/x-icon" href="/Assets/Images/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
@@ -27,65 +27,65 @@
         <div class="sidebar">
             <div class="sidebar-item active" data-tab="personal-info">
                 <i class="fas fa-user"></i>
-                <span>Personal Information</span>
+                <span data-translate="personalInfo">Personal Information</span>
             </div>
             <div class="sidebar-item" data-tab="addresses">
                 <i class="fas fa-map-marker-alt"></i>
-                <span>My Addresses</span>
+                <span data-translate="myAddresses">My Addresses</span>
             </div>
             <div class="sidebar-item" data-tab="orders">
                 <i class="fas fa-box"></i>
-                <span>My Orders</span>
+                <span data-translate="myOrders">My Orders</span>
             </div>
             <div class="sidebar-item" data-tab="wishlist">
                 <i class="fas fa-heart"></i>
-                <span>My Wishlist</span>
+                <span data-translate="myWishlist">My Wishlist</span>
             </div>
             <div class="sidebar-item" data-tab="refunds">
                 <i class="fas fa-undo"></i>
-                <span>My Refunds</span>
+                <span data-translate="myRefunds">My Refunds</span>
             </div>
             <div class="sidebar-item" data-tab="payment-methods">
                 <i class="fas fa-credit-card"></i>
-                <span>Payment Methods</span>
+                <span data-translate="paymentMethods">Payment Methods</span>
             </div>
             <div class="sidebar-item" data-tab="reviews">
                 <i class="fas fa-star"></i>
-                <span>My Reviews</span>
+                <span data-translate="myReviews">My Reviews</span>
             </div>
             <div class="sidebar-item" data-tab="logout">
                 <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
+                <span data-translate="logout">Logout</span>
             </div>
         </div>
         
         <div class="main-content">
             <!-- Personal Information Tab (Default Active) -->
             <div class="tab-content active" id="personal-info">
-                <div class="section-title">Account Settings</div>
+                <div class="section-title" data-translate="accountSettings">Account Settings</div>
                 
                 <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <div class="form-value"><%= user?.Name || 'Not provided' %></div>
+                    <label class="form-label" data-translate="fullName">Full Name</label>
+                    <div class="form-value"><%= user?.Name || '<span data-translate="notProvided">Not provided</span>' %></div>
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <div class="form-value"><%= user?.email || 'Not provided' %></div>
+                    <label class="form-label" data-translate="email">Email</label>
+                    <div class="form-value"><%= user?.email || '<span data-translate="notProvided">Not provided</span>' %></div>
                 </div>
     
                 <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <div class="form-value">********** <a href="#" class="edit-link" id="changePasswordLink">Change Password</a></div>
+                    <label class="form-label" data-translate="password">Password</label>
+                    <div class="form-value">********** <a href="#" class="edit-link" id="changePasswordLink" data-translate="changePassword">Change Password</a></div>
                 </div>
     
                 <div class="form-group">
-                    <label class="form-label">Date of Birth</label>
-                    <div class="form-value"><%= user?.DOB ? new Date(user.DOB).toLocaleDateString() : 'Not provided' %></div>
+                    <label class="form-label" data-translate="dob">Date of Birth</label>
+                    <div class="form-value"><%= user?.DOB ? new Date(user.DOB).toLocaleDateString() : '<span data-translate="notProvided">Not provided</span>' %></div>
                 </div>
     
                 <div class="form-group">
-                    <label class="form-label">Phone Number</label>
+                    <label class="form-label" data-translate="phoneNumber">Phone Number</label>
                     <div class="phone-input-container">
                         <select id="countrySelect" class="country-select">
                             <option value="20">+20 (Egypt)</option>
@@ -99,7 +99,7 @@
                 </div>
     
                 <div class="form-group">
-                    <label class="form-label">Preferred Language</label>
+                    <label class="form-label" data-translate="preferredLanguage">Preferred Language</label>
                     <select id="languageSelect">
                         <option value="English" <%= user?.language === 'English' ? 'selected' : '' %>>English</option>
                         <option value="Arabic" <%= user?.language === 'Arabic' ? 'selected' : '' %>>Arabic</option>
@@ -109,30 +109,30 @@
             
             <!-- Addresses Tab -->
             <div class="tab-content" id="addresses">
-                <div class="section-title">My Addresses</div>
+                <div class="section-title" data-translate="myAddresses">My Addresses</div>
                 
                 <div class="address-list">
                     <% if (user?.Address) { %>
                         <div class="address-card default">
                             <div class="address-header">
-                                <h4><%= user.Address.addressType || 'Home' %> Address</h4>
-                                <span class="default-badge">Default</span>
+                                <h4 data-translate="addressType"><%= user.Address.addressType || 'Home' %> Address</h4>
+                                <span class="default-badge" data-translate="default">Default</span>
                             </div>
                             <p><%= user.Address.street || 'No street provided' %></p>
                             <p><%= user.Address.city || '' %><%= user.Address.city && user.Address.state ? ', ' : '' %><%= user.Address.state || '' %></p>
                             <p><%= user.Address.country || '' %></p>
                             <div class="address-actions">
-                                <button class="edit-address">Edit</button>
-                                <button class="remove-address">Remove</button>
+                                <button class="edit-address" data-translate="edit">Edit</button>
+                                <button class="remove-address" data-translate="remove">Remove</button>
                             </div>
                         </div>
                     <% } else { %>
                         <div class="no-addresses">
-                            <p>No addresses have been added yet.</p>
+                            <p data-translate="noAddresses">No addresses have been added yet.</p>
                         </div>
                     <% } %>
                     
-                    <button class="add-address-btn">
+                    <button class="add-address-btn" data-translate="addNewAddress">
                         <i class="fas fa-plus"></i> Add New Address
                     </button>
                 </div>
@@ -140,17 +140,17 @@
             
             <!-- Orders Tab -->
             <div class="tab-content" id="orders">
-                <div class="section-title">My Orders</div>
+                <div class="section-title" data-translate="myOrders">My Orders</div>
                 
                 <div class="order-filters">
                     <select id="orderFilter">
-                        <option value="all">All Orders</option>
-                        <option value="pending">Pending</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="all" data-translate="allOrders">All Orders</option>
+                        <option value="pending" data-translate="pending">Pending</option>
+                        <option value="shipped" data-translate="shipped">Shipped</option>
+                        <option value="delivered" data-translate="delivered">Delivered</option>
+                        <option value="cancelled" data-translate="cancelled">Cancelled</option>
                     </select>
-                    <input type="text" placeholder="Search orders..." id="orderSearch">
+                    <input type="text" placeholder="Search orders..." id="orderSearch" data-translate="searchOrdersPlaceholder">
                 </div>
                 
                 <div class="orders-list">
@@ -158,10 +158,10 @@
                         <% user.orders.forEach(order => { %>
                             <div class="order-card" data-order-id="<%= order.orderId %>">
                                 <div class="order-header">
-                                    <div class="order-id">Order #<%= order.orderNumber %></div>
-                                    <div class="order-date">Placed on <%= new Date(order.orderDate).toLocaleDateString() %></div>
-                                    <div class="order-status <%= order.status %>"><%= order.status %></div>
-                                    <div class="order-total">$<%= order.total %></div>
+                                    <div class="order-id" data-translate="orderNumber">Order #<%= order.orderNumber %></div>
+                                    <div class="order-date" data-translate="placedOn">Placed on <%= new Date(order.orderDate).toLocaleDateString() %></div>
+                                    <div class="order-status <%= order.status %>" data-translate="orderStatus"><%= order.status %></div>
+                                    <div class="order-total" data-translate="orderTotal">$<%= order.total %></div>
                                 </div>
                                 <div class="order-products">
                                     <% if (order.items && order.items.length > 0) { %>
@@ -171,9 +171,9 @@
                                                      alt="<%= item.product && item.product.name ? item.product.name : 'Product' %>">
                                                 <div>
                                                     <h5><%= item.product && item.product.name %></h5>
-                                                    <p>Brand: <%= item.productDetails && item.productDetails.brand ? item.productDetails.brand : 'N/A' %></p>
-                                                    <p>Qty: <%= item.quantity %></p>
-                                                    <p>Price: $<%= item.price ? item.price.toFixed(2) : '0.00' %></p>
+                                                    <p data-translate="brand">Brand: <%= item.productDetails && item.productDetails.brand ? item.productDetails.brand : 'N/A' %></p>
+                                                    <p data-translate="qty">Qty: <%= item.quantity %></p>
+                                                    <p data-translate="price">Price: $<%= item.price ? item.price.toFixed(2) : '0.00' %></p>
                                                 </div>
                                             </div>
                                         <% }); %>
@@ -181,17 +181,17 @@
                                 </div>
                                 <div class="order-actions">
                                     <% if (order.status === 'Shipped') { %>
-                                        <button class="track-order">Track Order</button>
+                                        <button class="track-order" data-translate="trackOrder">Track Order</button>
                                     <% } else if (order.status === 'Delivered') { %>
-                                        <button class="buy-again">Buy Again</button>
+                                        <button class="buy-again" data-translate="buyAgain">Buy Again</button>
                                     <% } %>
-                                    <button class="order-details" data-order-id="<%= order.orderId %>">View Details</button>
+                                    <button class="order-details" data-order-id="<%= order.orderId %>" data-translate="viewDetails">View Details</button>
                                 </div>
                             </div>
                         <% }); %>
                     <% } else { %>
                         <div class="no-orders">
-                            <p>You haven't placed any orders yet.</p>
+                            <p data-translate="noOrders">You haven't placed any orders yet.</p>
                         </div>
                     <% } %>
                 </div>
@@ -199,7 +199,7 @@
             
             <!-- Wishlist Tab -->
             <div class="tab-content" id="wishlist">
-                <div class="section-title">My Wishlist</div>
+                <div class="section-title" data-translate="myWishlist">My Wishlist</div>
                 <% const wishlistItems = user?.wishlist?.filter(item => item.product).map(item => item.product) || []; %>
                 <div class="wishlist-grid" id="wishlistGrid">
                     <% if (wishlistItems && wishlistItems.length > 0) { %>
@@ -252,7 +252,7 @@
             
             <!-- Refunds Tab -->
             <div class="tab-content" id="refunds">
-                <div class="section-title">My Refunds</div>
+                <div class="section-title" data-translate="myRefunds">My Refunds</div>
                 
                 <div class="refunds-list">
                     <% if (user?.refunds && user.refunds.length > 0) { %>
@@ -292,7 +292,7 @@
             
             <!-- Payment Methods Tab -->
             <div class="tab-content" id="payment-methods">
-                <div class="section-title">Payment Methods</div>
+                <div class="section-title" data-translate="paymentMethods">Payment Methods</div>
                 
                 <div class="payment-methods-list">
                     <% if (user?.Payment && user.Payment.cardNumber) { %>
@@ -327,7 +327,7 @@
             
             <!-- Reviews Tab -->
             <div class="tab-content" id="reviews">
-                <div class="section-title">My Reviews</div>
+                <div class="section-title" data-translate="myReviews">My Reviews</div>
                 
                 <div class="reviews-list">
                     <% if (user?.reviews && user.reviews.length > 0) { %>
@@ -464,9 +464,9 @@
                                                      alt="<%= item.product && item.product.name ? item.product.name : 'Product' %>">
                                                 <div class="item-details">
                                                     <h5><%= item.product && item.product.name %></h5>
-                                                    <p>Brand: <%= item.productDetails && item.productDetails.brand ? item.productDetails.brand : 'N/A' %></p>
-                                                    <p>Qty: <%= item.quantity %></p>
-                                                    <p>Price: $<%= item.price ? item.price.toFixed(2) : '0.00' %></p>
+                                                    <p data-translate="brand">Brand: <%= item.productDetails && item.productDetails.brand ? item.productDetails.brand : 'N/A' %></p>
+                                                    <p data-translate="qty">Qty: <%= item.quantity %></p>
+                                                    <p data-translate="price">Price: $<%= item.price ? item.price.toFixed(2) : '0.00' %></p>
                                                 </div>
                                             </div>
                                         <% }); %>
@@ -1163,6 +1163,8 @@
             }
         }
     </style>
-
+<!-- ملفات الترجمة -->
+<script src="/Javascript/translations.js"></script>
+<script src="/Javascript/language.js"></script>
 </body>
 </html>

@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/stylepayment.css" />
-    <title> Vaultique | Secure Checkout </title>
+    <title data-translate="paymentTitle"> Vaultique | Secure Checkout </title>
   </head>
   <body>
     <br />
-    <a href="/" class="logo" id="logo">Vaultique</a>
+    <a href="/" class="logo" id="logo" data-translate="vaultique">Vaultique</a>
     <br />
     <div class="progress-container">
       <div class="progress-bar">
@@ -19,53 +19,53 @@
       <div class="progress-steps">
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Payment</span>
+          <span class="label" data-translate="payment">Payment</span>
         </div>
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Shipping</span>
+          <span class="label" data-translate="shipping">Shipping</span>
         </div>
         <div class="step active">
           <span class="circle"></span>
-          <span class="label">Leave a review!</span>
+          <span class="label" data-translate="leaveReview">Leave a review!</span>
         </div>
       </div>
     </div>
 
     <div class="form-container">
-      <h2 class="form-title">Payment</h2>
+      <h2 class="form-title" data-translate="payment">Payment</h2>
 
       <!-- Guest Checkout Notice -->
       <% if (!isAuthenticated) { %>
         <div class="guest-notice">
           <i class="fas fa-info-circle"></i>
-          <p>You're checking out as a guest. <a href="/user/LoginSignup">Sign in</a> to save your payment information for future purchases.</p>
+          <p data-translate="guestNotice">You're checking out as a guest. <a href="/user/LoginSignup" data-translate="signIn">Sign in</a> to save your payment information for future purchases.</p>
         </div>
       <% } %>
 
       <!-- Cart Summary -->
       <div class="cart-summary">
-        <h3>Order Summary</h3>
+        <h3 data-translate="orderSummary">Order Summary</h3>
         <div class="cart-summary-item">
-          <span>Subtotal:</span>
+          <span data-translate="subtotal">Subtotal:</span>
           <span>$<%= cart.subtotal.toFixed(2) %></span>
         </div>
         <div class="cart-summary-item">
-          <span>Shipping:</span>
+          <span data-translate="shipping">Shipping:</span>
           <span>$<%= cart.shippingCost.toFixed(2) %></span>
         </div>
         <div class="cart-summary-item cart-summary-total">
-          <span>Total:</span>
+          <span data-translate="total">Total:</span>
           <span>$<%= cart.total.toFixed(2) %></span>
         </div>
       </div>
 
       <!-- Payment Methods -->
       <div class="payment-methods">
-        <h3>Select Payment Method</h3>
+        <h3 data-translate="selectPaymentMethod">Select Payment Method</h3>
         <div class="payment-method">
           <input type="radio" id="credit-card" name="payment-method" value="credit-card" checked>
-          <label for="credit-card">
+          <label for="credit-card" data-translate="creditCard">
             <i class="fas fa-credit-card"></i>
             Credit Card
           </label>
@@ -77,7 +77,7 @@
         <input type="hidden" id="isAuthenticated" value="<%= isAuthenticated %>">
         
         <div class="input-line">
-          <label for="name">FULL NAME</label>
+          <label for="name" data-translate="fullName">FULL NAME</label>
           <input
             type="text"
             name="name"
@@ -85,6 +85,7 @@
             placeholder="Your name and surname"
             value="<%= paymentInfo ? paymentInfo.name : '' %>"
             <%= isAuthenticated && paymentInfo && paymentInfo.name ? 'disabled' : 'required' %>
+            data-translate="enterFullName"
           />
         </div>
         <div class="input-line">
@@ -94,7 +95,7 @@
             </span>
             <input type="hidden" name="card-number" value="<%= paymentInfo.card_number %>">
           <% } else { %>
-            <label for="card-number">Credit Card Number</label>
+            <label for="card-number" data-translate="creditCardNumber">Credit Card Number</label>
             <input
               type="text"
               name="card-number"
@@ -103,12 +104,13 @@
               value="<%= paymentInfo && paymentInfo.card_number ? paymentInfo.card_number : '' %>"
               maxlength="19"
               required
+              data-translate="enterCardNumber"
             />
           <% } %>
         </div>
 
         <div class="input-line">
-          <label for="bank-name">BANK NAME</label>
+          <label for="bank-name" data-translate="bankName">BANK NAME</label>
           <input
             type="text"
             name="bank-name"
@@ -116,12 +118,13 @@
             placeholder="Your bank name"
             value="<%= paymentInfo ? paymentInfo.bank_name : '' %>"
             <%= isAuthenticated && paymentInfo && paymentInfo.bank_name ? 'disabled' : 'required' %>
+            data-translate="enterBankName"
           />
         </div>
 
         <div class="input-container">
           <div class="input-line">
-            <label for="cvv">CVV</label>
+            <label for="cvv" data-translate="cvv">CVV</label>
             <input
               type="text"
               name="cvv"
@@ -131,14 +134,15 @@
               maxlength="4"
               class="cvv-input"
               required
+              data-translate="enterCVV"
             />
-            <p class="error" id="cvvError">
+            <p class="error" id="cvvError" data-translate="cvvError">
               Please enter a valid 3 or 4 digit CVV
             </p>
           </div>
 
           <div class="input-line">
-            <label for="expiry">Expiry (MM/YY)</label>
+            <label for="expiry" data-translate="expiry">Expiry (MM/YY)</label>
             <input
               type="text"
               name="expiry"
@@ -148,14 +152,15 @@
               maxlength="5"
               class="expiry-input"
               <%= isAuthenticated && paymentInfo && paymentInfo.expiry ? 'disabled' : 'required' %>
+              data-translate="enterExpiry"
             />
-            <p class="error" id="expiryError">
+            <p class="error" id="expiryError" data-translate="expiryError">
               Please enter a valid expiry date in MM/YY format
             </p>
           </div>
         </div>
 
-        <button type="button" class="flip-card-btn" id="flip-card-btn">
+        <button type="button" class="flip-card-btn" id="flip-card-btn" data-translate="viewCardDetails">
           View Card Details
         </button>
 
@@ -164,8 +169,8 @@
           <div id="flip-card">
             <div id="flip-front">
               <div class="card-header">
-                <div class="bank-name" id="display-bank-name">BANK NAME</div>
-                <div class="card-holder" id="display-card-holder">
+                <div class="bank-name" id="display-bank-name" data-translate="bankName">BANK NAME</div>
+                <div class="card-holder" id="display-card-holder" data-translate="fullName">
                   FULL NAME
                 </div>
               </div>
@@ -178,19 +183,19 @@
             </div>
             <div id="flip-back">
               <div class="card-stripe"></div>
-              <div class="card-signature">Authorized Signature</div>
-              <div class="card-cvv" id="display-cvv">CVV</div>
+              <div class="card-signature" data-translate="authorizedSignature">Authorized Signature</div>
+              <div class="card-cvv" id="display-cvv" data-translate="cvv">CVV</div>
             </div>
           </div>
         </div>
 
         <!-- Complete Purchase Button -->
-        <button type="submit" class="complete-purchase-btn">
+        <button type="submit" class="complete-purchase-btn" data-translate="completePurchase">
           Complete purchase
         </button>
 
         <!-- Back to Cart Link -->
-        <a href="/cart" class="back-to-cart">
+        <a href="/cart" class="back-to-cart" data-translate="backToCart">
           <i class="fas fa-arrow-left"></i> Back to Cart
         </a>
       </form>
@@ -369,5 +374,8 @@
         }
       });
     </script>
+                  <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
   </body>
 </html>

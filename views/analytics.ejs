@@ -58,7 +58,7 @@
         <div class="row">
             <main class="col-md-12 ms-sm-auto px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Analytics Dashboard</h1>
+                    <h1 class="h2" data-translate="analyticsDashboard">Analytics Dashboard</h1>
                 </div>
 
                 <div id="error-container" class="alert alert-danger" style="display: none;" role="alert"></div>
@@ -68,7 +68,7 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Active Users</h5>
+                                <h5 class="card-title" data-translate="activeUsers">Active Users</h5>
                                 <p class="card-text"><%= activeUsers %></p>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Total Users</h5>
+                                <h5 class="card-title" data-translate="totalUsers">Total Users</h5>
                                 <p class="card-text"><%= totalUsers %></p>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Total Sessions</h5>
+                                <h5 class="card-title" data-translate="totalSessions">Total Sessions</h5>
                                 <p class="card-text"><%= totalSessions %></p>
                             </div>
                         </div>
@@ -96,7 +96,7 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Total Sales</h5>
+                                <h5 class="card-title" data-translate="totalSales">Total Sales</h5>
                                 <p class="card-text">$<%= totalSales.toFixed(2) %></p>
                             </div>
                         </div>
@@ -104,7 +104,7 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Average Order Value</h5>
+                                <h5 class="card-title" data-translate="averageOrderValue">Average Order Value</h5>
                                 <p class="card-text">$<%= averageOrderValue.toFixed(2) %></p>
                             </div>
                         </div>
@@ -112,7 +112,7 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Total Orders</h5>
+                                <h5 class="card-title" data-translate="totalOrders">Total Orders</h5>
                                 <p class="card-text"><%= totalOrders %></p>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                     <div class="col-md-8">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Sales Overview</h5>
+                                <h5 class="card-title" data-translate="salesOverview">Sales Overview</h5>
                                 <canvas id="salesChart"></canvas>
                             </div>
                         </div>
@@ -334,7 +334,9 @@
             });
         });
     </script>
-
+      <!-- ملفات الترجمة -->
+      <script src="/Javascript/translations.js"></script>
+      <script src="/Javascript/language.js"></script>
 </body>
 </html>
 

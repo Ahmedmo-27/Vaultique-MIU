@@ -13,7 +13,7 @@
         <div class="error-content">
             <h1><%= title %></h1>
             <p><%= message %></p>
-            <a href="/" class="btn">Return to Home</a>
+            <a href="/" class="btn" data-translate="returntohome">Return to Home</a>
         </div>
     </main>
 
@@ -24,5 +24,8 @@
     }) %>
     
     <%- include('partials/footer') %>
+      <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
 </body>
 </html>

@@ -342,4 +342,4 @@ module.exports = {
   sendCartAbandonmentEmail,
   sendWatchConfigurationEmail,
   testEmailConfig
-}; 
+};

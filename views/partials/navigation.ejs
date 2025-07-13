@@ -12,7 +12,7 @@
                 <nav class="navigation">    
                     <a href="#">
                         <i class="fa-solid fa-globe"></i>
-                        <p>Language</p>
+                        <p data-translate="language">Language</p>
                     </a>
                     <select id="language" class="tag-lang">
                         <option value="en">EN</option>
@@ -21,12 +21,12 @@
                     
                     <a href="/user/contact-us">
                         <i class='fas fa-phone-alt'></i>
-                        <p>Contact Us</p>
+                        <p data-translate="contactUs">Contact Us</p>
                     </a>
                 </nav>
 
                 <div class="search-button-unscrolled" id="search-button" style="display: none;">
-                    <input type="search" id="searchField" class="searchField" placeholder="Search">
+                    <input type="search" id="searchField" class="searchField" placeholder="Search" data-translate="searchPlaceholder">
                     <button id="search" class="search">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
@@ -38,23 +38,23 @@
                     <% if (typeof user !== 'undefined' && user && user._id) { %>
                         <a href="/user/account-details" class="user-account-link">
                             <i class='fas fa-user-alt'></i>
-                            <p>Account</p>
+                            <p data-translate="account">Account</p>
                         </a>
                     <% } else { %>
                         <a href="/user/LoginSignup" class="user-account-link">
                             <i class='fas fa-user-alt'></i>
-                            <p>Account</p>
+                            <p data-translate="account">Account</p>
                         </a>
                     <% } %>
 
                     <a href="/user/wishlist">
                         <i class='fas fa-heart'></i>
-                        <p>WishList</p>
+                        <p data-translate="wishlist">WishList</p>
                     </a>
 
                     <a href="/user/cart">
                         <i class='fas fa-shopping-cart'></i>
-                        <p>Cart</p>
+                        <p data-translate="cart">Cart</p>
                     </a>
                 </nav>
             </div>
@@ -67,12 +67,12 @@
                 </a>
             </div>
 
-            <a href="/user/home" class="logo-unscrolled" id="logo">Vaultique</a>
+            <a href="/user/home" class="logo-unscrolled" id="logo" data-translate="logo">Vaultique</a>
             
             <div id="top-move-on-scroll" style="display: flex;" class="middleDev">
             
                 <div class="search-button-unscrolled" id="search-button2" style="margin-left: 50px;">
-                    <input type="search" id="searchField2" class="searchField" placeholder="Search">
+                    <input type="search" id="searchField2" class="searchField" placeholder="Search" data-translate="searchPlaceholder">
                     <button id="search2" class="search">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
@@ -109,7 +109,7 @@
                     </a>
 
                     <a style="display: none;">
-                        <select id="language" class="tag-lang">
+                        <select id="language2" class="tag-lang">
                             <option value="en">EN</option>
                             <option value="ar">AR</option>
                         </select>
@@ -121,66 +121,66 @@
 
         <div class="header-bottom-unscrolled" id="header-bottom">
             <nav class="navigation">
-                <a href="/user/home">Home</a>
-                <a href="/user/products">Shop All</a>
-                <a href="/user/collections" id="collections-anchor-with-extension" class="extension">Collections</a>
-                <a href="/user/brands" data-category="Bracelets">Brands</a>
-                <a href="/user/compare">Compare</a>
-                <a href="/user/Configurator">Configure</a>
-                <a href="/user/Recommendation-System">Recommendation System</a>
+                <a href="/user/home" data-translate="home">Home</a>
+                <a href="/user/products" data-translate="shopall">Shop All</a>
+                <a href="/user/collections" id="collections-anchor-with-extension" class="extension" data-translate="collection">Collections</a>
+                <a href="/user/brands" data-category="Bracelets" data-translate="brands">Brands</a>
+                <a href="/user/compare" data-translate="compare">Compare</a>
+                <a href="/user/Configurator" data-translate="configure">Configure</a>
+                <a href="/user/Recommendation-System" data-translate="recommendationSystem">Recommendation System</a>
             </nav>
         </div>
 
         <div class="header-bottom-anchor-extension" id="header-bottom-anchor-extension" style="display: none;">
             <div id="collections-extension">
                 <div class="collection-anchors">
-                    <h4><b>Collections</b></h4>
+                    <h4><b data-translate="collections">Collections</b></h4>
                     <br>
-                    <a href="/user/collections/classic-and-dress"> Classic & <br>Dress </a>
+                    <a href="/user/collections/classic-and-dress" data-translate="classicDress"> Classic & <br>Dress </a>
                     <br>
-                    <a href="/user/collections/casual-and-everyday"> Casual & <br>Everyday </a>
+                    <a href="/user/collections/casual-and-everyday" data-translate="casualEveryday"> Casual & <br>Everyday </a>
                     <br>
-                    <a href="/user/collections/sports-and-adventure"> Sports & <br>Adventure </a>
+                    <a href="/user/collections/sports-and-adventure" data-translate="sportsAdventure"> Sports & <br>Adventure </a>
                     <br>
-                    <a href="/user/collections/aviation-and-travel"> Aviation & <br>Travel </a>
+                    <a href="/user/collections/aviation-and-travel" data-translate="aviationTravel"> Aviation & <br>Travel </a>
                     <br>
-                    <a href="/user/collections/luxury-and-heritgae"> Luxury & <br>Heritage </a>
+                    <a href="/user/collections/luxury-and-heritgae" data-translate="luxuryHeritage"> Luxury & <br>Heritage </a>
                     <br>
-                    <a href="/user/collections" style="margin-top: 10px; font-weight: 500; text-decoration:underline" >See All</a>
+                    <a href="/user/collections" style="margin-top: 10px; font-weight: 500; text-decoration:underline" data-translate="seeAll">See All</a>
                 </div>
         
                 <a class="extension-item" href="/user/collections/classic-and-dress">
                     <img src="/Assets/Models/Cartier Tank.jpg" alt="" class="category-img extension-img">
                     <div>
-                        <h4 class="extension-text">Classic & Dress</h4>
+                        <h4 class="extension-text" data-translate="classicDress">Classic & Dress</h4>
                     </div>
                 </a>
         
                 <a class="extension-item" href="/user/collections/casual-and-everyday">
                     <img src="/Assets/Models/John-Legends-Omega-Seamaster-300m-007-Edition.jpg" alt="" class="category-img extension-img">
                     <div>
-                        <h4 class="extension-text">Casual & Everyday</h4>
+                        <h4 class="extension-text" data-translate="casualEveryday">Casual & Everyday</h4>
                     </div>
                 </a>
         
                 <a class="extension-item" href="/user/collections/sports-and-adventure">
                     <img src="/Assets/Models/professional-watches-submariner-titouan-bernicot_pp_coralgardeners_22tm_2146.jpg" alt="" class="category-img extension-img">
                     <div>
-                        <h4 class="extension-text">Sports & Adventure</h4>
+                        <h4 class="extension-text" data-translate="sportsAdventure">Sports & Adventure</h4>
                     </div>
                 </a>
         
                 <a class="extension-item" href="/user/collections/aviation-and-travel">
                     <img src="/Assets/Models/Charlize Breitling.webp" alt="" class="category-img extension-img">
                     <div>
-                        <h4 class="extension-text">Aviation & Travel</h4>
+                        <h4 class="extension-text" data-translate="aviationTravel">Aviation & Travel</h4>
                     </div>
                 </a>
         
                 <a class="extension-item" href="/user/collections/luxury-and-heritage">
                     <img src="/Assets/Models/Patek Philippe Grand Master Chime Jay Z .jpg" alt="" class="category-img extension-img">
                     <div>
-                        <h4 class="extension-text">Luxury & Heritage</h4>
+                        <h4 class="extension-text" data-translate="luxuryHeritage">Luxury & Heritage</h4>
                     </div>
                 </a>
             </div>
@@ -189,19 +189,19 @@
         <div class="header-bottom-bracelets-extension" id="header-bottom-bracelets-extension" style="display: none;">
         <div id="bracelets-extension">
             <div class="bracelets-anchors">
-                <h4><b>Brands</b></h4>
+                <h4><b data-translate="brands">Brands</b></h4>
                 <br>
-                <a href="/user/brands/rolex" data-brand="Rolex">Rolex</a>
-                <a href="/user/brands/omega" data-brand="Omega">Omega</a>
-                <a href="/user/brands/cartier" data-brand="Cartier">Cartier</a>
-                <a href="/user/brands/patek-philippe" data-brand="Patek Philippe">Patek Philippe</a>
-                <a href="/user/brands/audemars-piguet" data-brand="Audemars Piguet">Audemars <br>Piguet</a>
-                <a href="/user/brands/a-lange-sohne" data-brand="A.Lange & Söhne">A.Lange & <br>Söhne</a>
-                <a href="/user/brands/vacheron-constantin" data-brand="Vacheron Constantin">Vacheron <br>Constantin</a>
-                <a href="/user/brands/jacob-co" data-brand="Jacob & Co">Jacob & Co</a>
-                <a href="/user/brands/richard-mille" data-brand="Richard Mille">Richard Mille</a>
-                <a href="/user/brands/breitling" data-brand="Breitling">Breitling</a>
-                <a href="/user/brands" style="margin-top: 10px; font-weight: 500; text-decoration:underline" >See All</a>
+                <a href="/user/brands/rolex" data-brand="Rolex" data-translate="rolex">Rolex</a>
+                <a href="/user/brands/omega" data-brand="Omega" data-translate="omega">Omega</a>
+                <a href="/user/brands/cartier" data-brand="Cartier" data-translate="cartier">Cartier</a>
+                <a href="/user/brands/patek-philippe" data-brand="Patek Philippe" data-translate="patekPhilippe">Patek Philippe</a>
+                <a href="/user/brands/audemars-piguet" data-brand="Audemars Piguet" data-translate="audemarsPiguet">Audemars <br>Piguet</a>
+                <a href="/user/brands/a-lange-sohne" data-brand="A.Lange & Söhne" data-translate="aLangeSohne">A.Lange & <br>Söhne</a>
+                <a href="/user/brands/vacheron-constantin" data-brand="Vacheron Constantin" data-translate="vacheronConstantin">Vacheron <br>Constantin</a>
+                <a href="/user/brands/jacob-co" data-brand="Jacob & Co" data-translate="jacobCo">Jacob & Co</a>
+                <a href="/user/brands/richard-mille" data-brand="Richard Mille" data-translate="richardMille">Richard Mille</a>
+                <a href="/user/brands/breitling" data-brand="Breitling" data-translate="breitling">Breitling</a>
+                <a href="/user/brands" style="margin-top: 10px; font-weight: 500; text-decoration:underline" data-translate="seeAll">See All</a>
             </div> 
             
             <div class="brands-logos">
@@ -210,7 +210,7 @@
                     <a class="extension-item" href="/user/brands/rolex" data-brand="Rolex">
                         <img src="/Assets/Brands Logos/Rolex - with name.png" alt="Rolex" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Rolex Collection</h4>
+                            <h4 class="extension-text" data-translate="rolexCollection">Rolex Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -220,7 +220,7 @@
                     <a class="extension-item" href="/user/brands/omega" data-brand="Omega">
                         <img src="/Assets/Brands Logos/Omega.png" alt="Omega" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Omega Collection</h4>
+                            <h4 class="extension-text" data-translate="omegaCollection">Omega Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -230,7 +230,7 @@
                     <a class="extension-item" href="/user/brands/cartier" data-brand="Cartier">
                         <img src="/Assets/Brands Logos/Cartier.png" alt="Cartier" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Cartier Collection</h4>
+                            <h4 class="extension-text" data-translate="cartierCollection">Cartier Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -240,7 +240,7 @@
                     <a class="extension-item" href="/user/brands/patek-philippe" data-brand="Patek Philippe">
                         <img src="/Assets/Brands Logos/Patek Philippe logo.png" alt="Patek Philippe" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Patek Philippe Collection</h4>
+                            <h4 class="extension-text" data-translate="patekPhilippeCollection">Patek Philippe Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -250,7 +250,7 @@
                     <a class="extension-item" href="/user/brands/audemars-piguet" data-brand="Audemars Piguet">
                         <img src="/Assets/Brands Logos/Audemars Piguet logo.png" alt="Audemars Piguet" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Audemars Piguet Collection</h4>
+                            <h4 class="extension-text" data-translate="audemarsPiguetCollection">Audemars Piguet Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -260,7 +260,7 @@
                     <a class="extension-item" href="/user/brands/a-lange-sohne" data-brand="A.Lange Sohne">
                         <img src="/Assets/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Söhne" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">A.Lange & Söhne Collection</h4>
+                            <h4 class="extension-text" data-translate="aLangeSohneCollection">A.Lange & Söhne Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -270,7 +270,7 @@
                     <a class="extension-item" href="/user/brands/vacheron-constantin" data-brand="Vacheron Constantin">
                         <img src="/Assets/Brands Logos/Vacheron Constantin logo.png" alt="Vacheron Constantin" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Vacheron Constantin Collection</h4>
+                            <h4 class="extension-text" data-translate="vacheronConstantinCollection">Vacheron Constantin Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -280,7 +280,7 @@
                     <a class="extension-item" href="/user/brands/jacob-co" data-brand="Jacob & Co">
                         <img src="/Assets/Brands Logos/Jacob & Co Logo.png" alt="Jacob & Co" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Jacob & Co Collection</h4>
+                            <h4 class="extension-text" data-translate="jacobCoCollection">Jacob & Co Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -290,7 +290,7 @@
                     <a class="extension-item" href="/user/brands/richard-mille" data-brand="Richard Mille">
                         <img src="/Assets/Brands Logos/Richard Mille Logo.png" alt="Richard Mille" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Richard Mille Collection</h4>
+                            <h4 class="extension-text" data-translate="richardMilleCollection">Richard Mille Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -300,7 +300,7 @@
                     <a class="extension-item" href="/user/brands/breitling" data-brand="Breitling">
                         <img src="/Assets/Brands Logos/Breitling Logo.png" alt="Breitling" class="category-img extension-img">
                         <div>
-                            <h4 class="extension-text">Breitling Collection</h4>
+                            <h4 class="extension-text" data-translate="breitlingCollection">Breitling Collection</h4>
                         </div>
                     </a>
                 </div>
@@ -310,7 +310,7 @@
         <!--Search-->
         <div class="search-extension" id="search-extension">
             <button id="exit-search-extension-button"><i class="fa-solid fa-x"></i></button>
-            <h3>Products</h3>
+            <h3 data-translate="products">Products</h3>
             <div id="search-results" class="search-results">
 
             </div>
@@ -320,52 +320,52 @@
     <!--Side-Panel-->
     <div id="mySidepanel" class="sidepanel" style="width: 0px;">
         <a href="javascript:void(0)" class="closebtn" id="closebtn">×</a>
-        <a href="/user/home">Home</a>
-        <a href="/user/contact-us">Contact Us</a>
+        <a href="/user/home" data-translate="home">Home</a>
+        <a href="/user/contact-us" data-translate="contactUs">Contact Us</a>
         <% if (typeof user !== 'undefined' && user && user._id) { %>
-            <a href="/user/account-details">Account</a>
+            <a href="/user/account-details" data-translate="account">Account</a>
         <% } else { %>
-            <a href="/user/LoginSignup">Account</a>
+            <a href="/user/LoginSignup" data-translate="account">Account</a>
         <% } %>
-        <a href="/user/wishlist">WishList</a>
-        <a href="/user/cart">Cart</a>
+        <a href="/user/wishlist" data-translate="wishlist">WishList</a>
+        <a href="/user/cart" data-translate="cart">Cart</a>
         <a href="/user/products" data-translate="shopall">Shop All</a>
 
         <div class="dropdown">
-            <a href="#" class="dropbtn">Collections</a>
+            <a href="#" class="dropbtn" data-translate="collection">Collections</a>
             <div class="dropdown-content">
-                <a href="/user/collections/classic-and-dress"> Classic & Dress</a>
-                <a href="/user/collections/casual-and-everyday"> Casual & Everyday</a>
-                <a href="/user/collections/sports-and-adventure"> Sports & Adventure</a>
-                <a href="/user/collections/aviation-and-travel"> Aviation & Travel</a>
-                <a href="/user/collections/luxury-and-heritage"> Luxury & Heritage</a>
-                <a href="/user/collections" style="margin-top: 10px; font-weight: 500; text-decoration:underline">See All</a>
+                <a href="/user/collections/classic-and-dress" data-translate="classicDress"> Classic & Dress</a>
+                <a href="/user/collections/casual-and-everyday" data-translate="casualEveryday"> Casual & Everyday</a>
+                <a href="/user/collections/sports-and-adventure" data-translate="sportsAdventure"> Sports & Adventure</a>
+                <a href="/user/collections/aviation-and-travel" data-translate="aviationTravel"> Aviation & Travel</a>
+                <a href="/user/collections/luxury-and-heritage" data-translate="luxuryHeritage"> Luxury & Heritage</a>
+                <a href="/user/collections" style="margin-top: 10px; font-weight: 500; text-decoration:underline" data-translate="seeAll">See All</a>
             </div>
         </div>
     
         <br>
         
         <div class="dropdown">
-            <a href="#" class="dropbtn">Brands</a>
+            <a href="#" class="dropbtn" data-translate="brands">Brands</a>
             <div class="dropdown-content">
-                <a href="/user/brands/rolex" data-brand="Rolex">Rolex</a>
-                <a href="/user/brands/omega" data-brand="Omega">Omega</a>
-                <a href="/user/brands/cartier" data-brand="Cartier">Cartier</a>
-                <a href="/user/brands/patek-philippe" data-brand="Patek Philippe">Patek Philippe</a>
-                <a href="/user/brands/audemars-piguet" data-brand="Audemars Piguet">Audemars Piguet</a>
-                <a href="/user/brands/a-lange-sohne" data-brand="A.Lange & Söhne">A.Lange & Söhne</a>
-                <a href="/user/brands/vacheron-constantin" data-brand="Vacheron Constantin">Vacheron Constantin</a>
-                <a href="/user/brands/jacob-co" data-brand="Jacob & Co">Jacob & Co</a>
-                <a href="/user/brands/richard-mille" data-brand="Richard Mille">Richard Mille</a>
-                <a href="/user/brands/breitling" data-brand="Breitling">Breitling</a>
-                <a href="/user/brands" style="margin-top: 10px; font-weight: 500; text-decoration:underline">See All</a>
+                <a href="/user/brands/rolex" data-brand="Rolex" data-translate="rolex">Rolex</a>
+                <a href="/user/brands/omega" data-brand="Omega" data-translate="omega">Omega</a>
+                <a href="/user/brands/cartier" data-brand="Cartier" data-translate="cartier">Cartier</a>
+                <a href="/user/brands/patek-philippe" data-brand="Patek Philippe" data-translate="patekPhilippe">Patek Philippe</a>
+                <a href="/user/brands/audemars-piguet" data-brand="Audemars Piguet" data-translate="audemarsPiguet">Audemars Piguet</a>
+                <a href="/user/brands/a-lange-sohne" data-brand="A.Lange & Söhne" data-translate="aLangeSohne">A.Lange & Söhne</a>
+                <a href="/user/brands/vacheron-constantin" data-brand="Vacheron Constantin" data-translate="vacheronConstantin">Vacheron Constantin</a>
+                <a href="/user/brands/jacob-co" data-brand="Jacob & Co" data-translate="jacobCo">Jacob & Co</a>
+                <a href="/user/brands/richard-mille" data-brand="Richard Mille" data-translate="richardMille">Richard Mille</a>
+                <a href="/user/brands/breitling" data-brand="Breitling" data-translate="breitling">Breitling</a>
+                <a href="/user/brands" style="margin-top: 10px; font-weight: 500; text-decoration:underline" data-translate="seeAll">See All</a>
             </div>
         </div>
         <br>
         
-        <a href="/user/compare">Compare</a>
-        <a href="/user/Configurator">Configure</a>
-        <a href="/user/Recommendation-System">Recommendation System</a>
+        <a href="/user/compare" data-translate="compare">Compare</a>
+        <a href="/user/Configurator" data-translate="configure">Configure</a>
+        <a href="/user/Recommendation-System" data-translate="recommendationSystem">Recommendation System</a>
 
         <a id="toggle-button-side" class="toggle-button" data-theme-toggle>
             <i class="fa-solid fa-sun"></i>

@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="/CSS/Checkout_styles.css" />
   <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
 
-    <title>Vaultique | Secure Checkout</title>
+    <title data-translate="paymentTitle">Vaultique | Secure Checkout</title>
   </head>
 
   <body>
-    <a href="/" class="logo" id="logo">Vaultique</a>
+    <a href="/" class="logo" id="logo" data-translate="vaultique">Vaultique</a>
     <br />
     <div class="progress-container">
       <div class="progress-bar">
@@ -22,25 +22,25 @@
       <div class="progress-steps">
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Payment</span>
+          <span class="label" data-translate="payment">Payment</span>
         </div>
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Shipping</span>
+          <span class="label" data-translate="shipping">Shipping</span>
         </div>
         <div class="step active">
           <span class="circle"></span>
-          <span class="label">Leave a review!</span>
+          <span class="label" data-translate="leaveReview">Leave a review!</span>
         </div>
       </div>
     </div>
 
     <div class="form-container">
-      <h2 class="form-title">SHIPPING ADDRESS</h2>
+      <h2 class="form-title" data-translate="shippingAddress">SHIPPING ADDRESS</h2>
 
       <% if (savedAddresses && savedAddresses.length > 0) { %>
         <div class="saved-addresses">
-          <h3>Saved Addresses</h3>
+          <h3 data-translate="savedAddresses">Saved Addresses</h3>
           <% savedAddresses.forEach((address, index) => { %>
             <div class="saved-address">
               <input type="radio" name="addressType" id="address<%= index %>" value="<%= index %>" <%= index === 0 ? 'checked' : '' %>>
@@ -51,14 +51,14 @@
           <% }); %>
           <div class="saved-address">
             <input type="radio" name="addressType" id="newAddress" value="new">
-            <label for="newAddress">Use a new address</label>
+            <label for="newAddress" data-translate="useNewAddress">Use a new address</label>
           </div>
         </div>
       <% } %>
 
       <form action="/user/shipping/process" class="checkout-form" method="post">
         <div class="input-line">
-          <label for="name">FULL NAME</label>
+          <label for="name" data-translate="fullName">FULL NAME</label>
           <input
             type="text"
             name="fullName"
@@ -69,7 +69,7 @@
           />
         </div>
         <div class="input-line">
-          <label for="Email">Email:</label>
+          <label for="Email" data-translate="email">Email:</label>
           <input
             type="email"
             name="email"
@@ -80,7 +80,7 @@
           />
         </div>
         <div class="input-line">
-          <label for="Address">Full Address:</label>
+          <label for="Address" data-translate="address">Full Address:</label>
           <input
             type="text"
             name="address"
@@ -91,7 +91,7 @@
           />
         </div>
         <div class="input-line">
-          <label for="City">City</label>
+          <label for="City" data-translate="city">City</label>
           <input
             type="text"
             name="city"
@@ -103,7 +103,7 @@
         </div>
         <div class="input-container">
           <div class="input-line">
-            <label for="State">State: </label>
+            <label for="State" data-translate="state">State: </label>
             <input
               type="text"
               name="state"
@@ -114,7 +114,7 @@
             />
           </div>
           <div class="input-line">
-            <label for="Zipcode">Postal Code: </label>
+            <label for="Zipcode" data-translate="postalCode">Postal Code: </label>
             <input
               type="text"
               name="zipCode"
@@ -128,26 +128,23 @@
 
         <% if (isAuthenticated) { %>
           <div class="input-line">
-            <label class="checkbox-label">
-              <input type="checkbox" name="saveAddress" value="true" <%= user && user.googleId ? 'checked' : '' %>>
-              Save this address for future orders
-            </label>
+            <label class="checkbox-label" data-translate="saveAddress">Save this address for future orders</label>
           </div>
         <% } %>
 
         <% if (user && user.googleId) { %>
           <div class="google-user-notice">
             <i class="fas fa-info-circle"></i>
-            <p>You're signed in with Google. Your information is pre-filled and secured.</p>
+            <p data-translate="googleUserNotice">You're signed in with Google. Your information is pre-filled and secured.</p>
           </div>
         <% } %>
 
-        <button type="submit" class="submit-btn">Complete Order</button>
+        <button type="submit" class="submit-btn" data-translate="completeOrder">Complete Order</button>
       </form>
     </div>
 
     <div class="login-message-popup" id="login-message-popup">
-      <h2>Login Successful</h2>
+      <h2 data-translate="loginSuccess">Login Successful</h2>
       <i class="fa-solid fa-circle-check"></i>
     </div>
     <div class="login-message-popup" id="login-message-error-popup">
@@ -252,5 +249,8 @@
         });
       });
     </script>
+                  <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
   </body>
 </html>

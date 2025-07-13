@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Vaultique | Cart</title>
+    <title data-translate="cartTitle">Vaultique | Cart</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/CSS/cart (2).css">
@@ -26,7 +26,7 @@
     <main class="main-content">
         <div class="container">
             <div class="cart-section">
-                <h2>Shopping Cart</h2>
+                <h2 data-translate="shoppingCart">Shopping Cart</h2>
                 
                 <% if (typeof error !== 'undefined' && error) { %>
                     <div class="error-message">
@@ -64,8 +64,8 @@
                     <% } else { %>
                         <div class="empty-cart">
                             <i class="fas fa-shopping-cart"></i>
-                            <p>Your cart is empty. Add items to your cart to see them here.</p>
-                            <a href="/products" class="continue-shopping">Continue Shopping</a>
+                            <p data-translate="cartEmpty">Your cart is empty. Add items to your cart to see them here.</p>
+                            <a href="/products" class="continue-shopping" data-translate="continueShopping">Continue Shopping</a>
                         </div>
                     <% } %>
                 </div>
@@ -73,34 +73,34 @@
                 <% if (cart && cart.items && cart.items.length > 0) { %>
                     <div class="cart-summary">
                         <div class="summary-section">
-                            <h3>Cart Summary</h3>
+                            <h3 data-translate="cartSummary">Cart Summary</h3>
                             <div class="summary-item">
-                                <span>Items (<%= cart.items.reduce(function(sum, item) { return sum + item.quantity; }, 0) %>)</span>
+                                <span data-translate="items">Items (<%= cart.items.reduce(function(sum, item) { return sum + item.quantity; }, 0) %>)</span>
                                 <span>$<%= cart.subtotal.toFixed(2) %></span>
                             </div>
                             <div class="summary-item">
-                                <span>Shipping</span>
+                                <span data-translate="shipping">Shipping</span>
                                 <select id="shipping" class="shipping-method">
-                                    <option value="standard" <%= cart.shippingMethod === 'standard' ? 'selected' : '' %>>Standard ($20)</option>
-                                    <option value="fast" <%= cart.shippingMethod === 'fast' ? 'selected' : '' %>>Fast ($40)</option>
+                                    <option value="standard" <%= cart.shippingMethod === 'standard' ? 'selected' : '' %> data-translate="standardShipping">Standard ($20)</option>
+                                    <option value="fast" <%= cart.shippingMethod === 'fast' ? 'selected' : '' %> data-translate="fastShipping">Fast ($40)</option>
                                 </select>
                                 <span>$<%= cart.shippingCost.toFixed(2) %></span>
                             </div>
                             <div class="summary-item total">
-                                <span>Total</span>
+                                <span data-translate="total">Total</span>
                                 <span>$<%= cart.total.toFixed(2) %></span>
                             </div>
                         </div>
                     </div>
 
                     <div class="cart-actions">
-                        <button class="btn clear-cart" onclick="clearCart()">
+                        <button class="btn clear-cart" onclick="clearCart()" data-translate="clearCart">
                             <i class="fas fa-trash"></i> Clear Cart
                         </button>
-                        <a href="/user/payment" class="btn checkout-btn">
+                        <a href="/user/payment" class="btn checkout-btn" data-translate="proceedToCheckout">
                             <i class="fas fa-lock"></i> Proceed to Checkout
                         </a>
-                        <a href="/products" class="btn continue-shopping-btn">
+                        <a href="/products" class="btn continue-shopping-btn" data-translate="continueShopping">
                             <i class="fas fa-arrow-left"></i> Continue Shopping
                         </a>
                     </div>
@@ -111,5 +111,8 @@
 
     <%- include('partials/footer') %>
     <%- include('partials/notification') %>
+    <!-- ملفات الترجمة -->
+<script src="/Javascript/translations.js"></script>
+<script src="/Javascript/language.js"></script>
 </body>
 </html>

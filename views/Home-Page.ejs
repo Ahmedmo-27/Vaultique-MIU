@@ -18,13 +18,13 @@
     <link rel="stylesheet" href="/CSS/about-quick.css">
     <link rel="stylesheet" href="/CSS/common.css">
     <link rel="stylesheet" href="/CSS/QuickView.css">
+    <link rel="stylesheet" href="/CSS/chatbot.css">  <!-- chatbot -->
     
     <!-- Third Party Styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
-
     <!-- Scripts -->
     <script src="/Javascript/nav-bar.js"></script>
     <script src="/Javascript/Loading Screen.js"></script>
@@ -36,8 +36,9 @@
     <script src="/Javascript/Light-Mode.js"></script>
     <script src="/Javascript/quick-view.js"></script>
     <script src="/Javascript/compare.js"></script>
+    <script src="/Javascript/chatbot.js"></script>   <!-- chatbot -->
 
-    <title>Vaultique | Home</title>
+    <title data-translate="hometitle">Vaultique | Home</title>
 </head>
 <body>
 
@@ -49,8 +50,8 @@
         <video src="/Assets/Videos/Rolex Datejust - Timeless style.webm" id="video-background" autoplay="" loop=""
             muted=""></video>
         <div class="main-text">
-            <h1>Your Signature in Time</h1>
-            <a class="button" href="/user/Recommendation-System">TAKE THE QUIZ</a>
+            <h1 data-translate="signatureInTime">Your Signature in Time</h1>
+            <a class="button" href="/user/Recommendation-System" data-translate="takeQuiz">TAKE THE QUIZ</a>
         </div>
     </section>
 
@@ -70,7 +71,7 @@
                             <%=gender.description%>
                         </p>        
                         <br>
-                        <a class="button" href="/user/<%= gender.slug %>">
+                        <a class="button" href="/user/<%= gender.slug %>" data-translate="seeCollection">
                             See <%= gender.name %> Collection
                         </a>
                     </div>
@@ -79,14 +80,14 @@
             <% }); %>
         <% } else { %>
             <div class="error-message">
-                <p>Gender collections are currently unavailable. Please try again later.</p>
+                <p data-translate="genderUnavailable">Gender collections are currently unavailable. Please try again later.</p>
             </div>
         <% } %>
     </div>
     
     <!-- Popular Collections Section -->
     <section class="collections">
-        <h2>Collections</h2>
+        <h2 data-translate="collections">Collections</h2>
 
         <section class="slider-container">
             <div class="slider-wrapper">
@@ -99,9 +100,9 @@
                                     <img src="/Assets/Models/Cartier Tank.jpg" alt="Cartier Tank Watch">
                                 </div>
                                 <div class="collection-info">
-                                    <h3>Classic & Dress Collection</h3>
-                                    <p>Timeless elegance for formal occasions</p>
-                                    <a href="/user/collections/classic-and-dress" class="explore-btn">Explore</a>
+                                    <h3 data-translate="classicDress">Classic & Dress Collection</h3>
+                                    <p data-translate="classicDressDesc">Timeless elegance for formal occasions</p>
+                                    <a href="/user/collections/classic-and-dress" class="explore-btn" data-translate="explore">Explore</a>
                                 </div>
                             </div>
 
@@ -111,9 +112,9 @@
                                         alt="Patek Philippe Watch">
                                 </div>
                                 <div class="collection-info">
-                                    <h3>Casual & Everyday Collection</h3>
-                                    <p>Sophisticated timepieces for daily wear</p>
-                                    <a href="/user/collections/casual-and-everyday" class="explore-btn">Explore</a>
+                                    <h3 data-translate="casualEveryday">Casual & Everyday Collection</h3>
+                                    <p data-translate="casualEverydayDesc">Sophisticated timepieces for daily wear</p>
+                                    <a href="/user/collections/casual-and-everyday" class="explore-btn" data-translate="explore">Explore</a>
                                 </div>
                             </div>
 
@@ -123,9 +124,9 @@
                                         alt="Omega Seamaster Watch">
                                 </div>
                                 <div class="collection-info">
-                                    <h3>Sports & Adventure Collection</h3>
-                                    <p>Robust watches for active lifestyles</p>
-                                    <a href="/user/collections/sports-and-adventure" class="explore-btn">Explore</a>
+                                    <h3 data-translate="sportsAdventure">Sports & Adventure Collection</h3>
+                                    <p data-translate="sportsAdventureDesc">Robust watches for active lifestyles</p>
+                                    <a href="/user/collections/sports-and-adventure" class="explore-btn" data-translate="explore">Explore</a>
                                 </div>
                             </div>
                         </div>
@@ -139,9 +140,9 @@
                                     <img src="/Assets/Models/Charlize Breitling.webp" alt="Breitling Watch">
                                 </div>
                                 <div class="collection-info">
-                                    <h3>Aviation & Travel Collection</h3>
-                                    <p>Precision timepieces for global explorers</p>
-                                    <a href="/user/collections/aviation-and-travel" class="explore-btn">Explore</a>
+                                    <h3 data-translate="aviationTravel">Aviation & Travel Collection</h3>
+                                    <p data-translate="aviationTravelDesc">Precision timepieces for global explorers</p>
+                                    <a href="/user/collections/aviation-and-travel" class="explore-btn" data-translate="explore">Explore</a>
                                 </div>
                             </div>
 
@@ -151,9 +152,9 @@
                                         alt="Luxury Watch">
                                 </div>
                                 <div class="collection-info">
-                                    <h3>Luxury & Heritage Collection</h3>
-                                    <p>Prestigious timepieces with rich history</p>
-                                    <a href="/user/collections/luxury-and-heritage" class="explore-btn">Explore</a>
+                                    <h3 data-translate="luxuryHeritage">Luxury & Heritage </h3>
+                                    <p data-translate="luxuryHeritageDesc">Prestigious timepieces with rich history</p>
+                                    <a href="/user/collections/luxury-and-heritage" class="explore-btn" data-translate="explore">Explore</a>
                                 </div>
                             </div>
                         </div>
@@ -180,7 +181,7 @@
 
     <section class="product-container">
         <h2 class="hometitle">
-            <span class="has-paging__title">Most Popular Products</span>
+            <span class="has-paging__title" data-translate="mostPopularProducts">Most Popular Products</span>
         </h2>
         <div class="product-grid" id="productGrid">
             <% if (products && products.length > 0) { 
@@ -203,8 +204,8 @@
                                 <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
                             </a>
                             <div class="hover-buttons">
-                                <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
-                                <button class="compare" data-product-id="<%= product._id %>">Compare</button>
+                                <button class="quick-view" data-product-id="<%= product._id %>" data-translate="quickView">Quick View</button>
+                                <button class="compare" data-product-id="<%= product._id %>" data-translate="compare">Compare</button>
                             </div>
                         </div>
                         <div class="product-details">
@@ -213,22 +214,22 @@
                             </a>
                             <p class="price">$<%= product.price.toLocaleString() %></p>
                             <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
-                                <p class="stock in-stock">In Stock</p>
+                                <p class="stock in-stock" data-translate="inStock">In Stock</p>
                             <% } else { %>
-                                <p class="stock out-of-stock">Out of Stock</p>
+                                <p class="stock out-of-stock" data-translate="outOfStock">Out of Stock</p>
                             <% } %>
                         </div>
                     </div>
                 <% }); %>
             <% } else { %>
                 <div class="no-products">
-                    No products found matching your criteria.
+                    <p data-translate="noProductsFound">No products found matching your criteria.</p>
                 </div>
             <% } %>
         </div>
         <!-- Shop All Button -->
         <div class="button-container">
-            <a href="/user/products" class="button">Shop All</a>
+            <a href="/user/products" class="button" data-translate="shopall">Shop All</a>
         </div>
     </section>
 
@@ -260,10 +261,10 @@
                     <i class="far fa-heart"></i>
                 </button>
                 <button class="add-to-cart" id="quickViewAddToCart">
-                    <i class="fas fa-shopping-bag"></i> Add to Cart
+                    <i class="fas fa-shopping-bag"></i> <span data-translate="addToCart">Add to Cart</span>
                 </button>
                 <button class="find-store" id="quickViewProductBtn">
-                    <i class="fas fa-eye"></i> View Product
+                    <i class="fas fa-eye"></i> <span data-translate="viewProduct">View Product</span>
                 </button>
             </div>
             
@@ -278,7 +279,7 @@
 
     <section class="container section-padding masonry-section">
         <div class="section-padding pt-0">
-            <h2 class="text-center no-bold mb-0">Brands</h2>
+            <h2 class="text-center no-bold mb-0" data-translate="brands">Brands</h2>
         </div>
 
         <div class="masonry-grid">
@@ -291,7 +292,7 @@
                             <div class="img-container">
                                 <img src="/Assets/Brands Logos/Rolex.png" alt="Rolex" class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Rolex</h3>
+                            <h3 class="mt-auto" data-translate="rolex">Rolex</h3>
                         </a>
                     </div>
 
@@ -300,7 +301,7 @@
                             <div class="img-container">
                                 <img src="/Assets/Brands Logos/Omega.png" alt="Omega" class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Omega</h3>
+                            <h3 class="mt-auto" data-translate="omega">Omega</h3>
                         </a>
                     </div>
                 </div>
@@ -312,7 +313,7 @@
                             <div class="img-container">
                                 <img src="/Assets/Brands Logos/Cartier.png" alt="Cartier" class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Cartier</h3>
+                            <h3 class="mt-auto" data-translate="cartier">Cartier</h3>
                         </a>
                     </div>
 
@@ -322,7 +323,7 @@
                                 <img src="/Assets/Brands Logos/Patek Philippe logo.png" alt="Patek Philippe"
                                     class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Patek Philippe</h3>
+                            <h3 class="mt-auto" data-translate="patekPhilippe">Patek Philippe</h3>
                         </a>
                     </div>
                 </div>
@@ -335,7 +336,7 @@
                                 <img src="/Assets/Brands Logos/Audemars Piguet logo.png" alt="Audemars Piguet"
                                     class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">Audemars Piguet</h3>
+                            <h3 class="mt-auto" data-translate="audemarsPiguet">Audemars Piguet</h3>
                         </a>
                     </div>
 
@@ -345,7 +346,7 @@
                                 <img src="/Assets/Brands Logos/A.Lange & Sohne Logo.jpeg" alt="A.Lange & Söhne Logo"
                                     class="brand-logo">
                             </div>
-                            <h3 class="mt-auto">A Lange & Söhne</h3>
+                            <h3 class="mt-auto" data-translate="aLangeSohne">A Lange & Söhne</h3>
                         </a>
                     </div>
                 </div>
@@ -359,7 +360,7 @@
                         <div class="img-container">
                             <img src="/Assets/Brands Logos/Jacob & Co Logo.png" alt="Jacob & Co Logo" class="brand-logo">
                         </div>
-                        <h3 class="mt-auto">Jacob & Co</h3>
+                        <h3 class="mt-auto" data-translate="jacobCo">Jacob & Co</h3>
                     </a>
                 </div>
 
@@ -370,7 +371,7 @@
                             <img src="/Assets/Brands Logos/Richard Mille Logo.png" alt="Richard Mille"
                                 class="brand-logo">
                         </div>
-                        <h3 class="mt-auto">Richard Mille</h3>
+                        <h3 class="mt-auto" data-translate="richardMille">Richard Mille</h3>
                     </a>
                 </div>
 
@@ -380,7 +381,7 @@
                         <div class="img-container">
                             <img src="/Assets/Brands Logos/Breitling Logo.png" alt="Breitling Logo" class="brand-logo">
                         </div>
-                        <h3 class="mt-auto">Breitling</h3>
+                        <h3 class="mt-auto" data-translate="breitling">Breitling</h3>
                     </a>
                 </div>
             </div>
@@ -394,22 +395,22 @@
                         <img src="/Assets/Brands Logos/Vacheron Constantin logo.png" alt="Vacheron Constantin logo"
                             class="brand-logo">
                     </div>
-                    <h3 class="mt-auto = text-center">Vacheron Constantin</h3>
+                    <h3 class="mt-auto = text-center" data-translate="vacheronConstantin">Vacheron Constantin</h3>
                 </a>
             </div>
         </div>
 
         <!-- Shop All Button -->
         <div class="button-container">
-            <a href="/user/brands" class="button">See All</a>
+            <a href="/user/brands" class="button" data-translate="seeAll">See All</a>
         </div>
     </section>
 
 
     <div class="reviews-header">
         <div class="reviews-title">
-            <h2>Client Testimonials</h2>
-            <p class="subtitle">Discover what our distinguished clients have to say about their experience</p>
+            <h2 data-translate="clientTestimonials">Client Testimonials</h2>
+            <p class="subtitle" data-translate="testimonialsSubtitle">Discover what our distinguished clients have to say about their experience</p>
         </div>
     </div>
 
@@ -684,8 +685,8 @@
     </div>
 
     <div class="reviews-footer">
-        <a href="https://www.google.com/maps/place/Luxury+Watch+Store" target="_blank" class="view-all-button">
-            View All Reviews
+        <a href="https://maps.app.goo.gl/biGZG8VET6SSquub8?g_st=aw" target="_blank" class="view-all-button">
+            <span data-translate="viewlocation">View Location</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" />
@@ -695,9 +696,9 @@
 
     <section class="content-section">
         <div class="center">
-            <h2>About Vaultique</h2>
+            <h2 data-translate="aboutVaultique">About Vaultique</h2>
             <div class="text-container">
-                <p>At Vaultique, we understand that a watch is more than just a timepiece—it is a reflection of your
+                <p data-translate="aboutVaultiqueDesc">At Vaultique, we understand that a watch is more than just a timepiece—it is a reflection of your
                     style,
                     personality, and ambitions. Whether you seek a statement piece, a reliable everyday watch, or a
                     timepiece built for adventure
@@ -706,13 +707,16 @@
             </div>
 
             <div class="button-container">
-                <a href="/user/about" class="button">Read more</a>
+                <a href="/user/about" class="button" data-translate="readMore">Read more</a>
             </div>
 
         </div>
     </section>
 
     <%- include('partials/footer') %>
+<!-- ملفات الترجمة -->
+<script src="/Javascript/translations.js"></script>
+<script src="/Javascript/language.js"></script>
 
 </body>
 

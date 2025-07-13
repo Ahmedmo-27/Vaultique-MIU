@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/CSS/Checkout_styles.css" />
     <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
-    <title>Vaultique | Order Review</title>
+    <title data-translate="orderReviewTitle">Vaultique | Order Review</title>
   </head>
   <body>
-    <a href="/" class="logo" id="logo">Vaultique</a>
+    <a href="/" class="logo" id="logo" data-translate="vaultique">Vaultique</a>
     <br />
     <div class="progress-container">
       <div class="progress-bar">
@@ -18,32 +18,32 @@
       <div class="progress-steps">
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Payment</span>
+          <span class="label" data-translate="payment">Payment</span>
         </div>
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label">Shipping</span>
+          <span class="label" data-translate="shipping">Shipping</span>
         </div>
         <div class="step active">
           <span class="circle"></span>
-          <span class="label">Review Order</span>
+          <span class="label" data-translate="reviewOrder">Review Order</span>
         </div>
       </div>
     </div>
 
     <div class="form-container">
-      <h2 class="form-title">Review Your Order</h2>
+      <h2 class="form-title" data-translate="reviewYourOrder">Review Your Order</h2>
 
       <% if (typeof order === 'undefined' || !order) { %>
         <div class="error-message">
-          <h3>No Order Information Found</h3>
-          <p>Please complete the shipping process first.</p>
-          <a href="/user/shipping" class="back-link">← Back to Shipping</a>
+          <h3 data-translate="noOrderInfo">No Order Information Found</h3>
+          <p data-translate="completeShippingFirst">Please complete the shipping process first.</p>
+          <a href="/user/shipping" class="back-link" data-translate="backToShipping">← Back to Shipping</a>
         </div>
       <% } else { %>
         <!-- Order Summary -->
         <div class="order-summary">
-          <h3>Order Summary</h3>
+          <h3 data-translate="orderSummary">Order Summary</h3>
           <div class="order-items">
             <% if (order.items && order.items.length > 0) { %>
               <% order.items.forEach(item => { %>
@@ -53,26 +53,26 @@
                        class="item-image">
                   <div class="item-details">
                     <h4><%= item.productId?.name || 'Unknown Product' %></h4>
-                    <p>Quantity: <%= item.quantity || 0 %></p>
-                    <p>Price: $<%= (item.price || 0).toFixed(2) %></p>
+                    <p data-translate="quantity">Quantity: <%= item.quantity || 0 %></p>
+                    <p data-translate="price">Price: $<%= (item.price || 0).toFixed(2) %></p>
                   </div>
                 </div>
               <% }); %>
             <% } else { %>
-              <p class="no-items">No items in order</p>
+              <p class="no-items" data-translate="noItems">No items in order</p>
             <% } %>
           </div>
           <div class="order-totals">
             <div class="total-line">
-              <span>Subtotal:</span>
+              <span data-translate="subtotal">Subtotal:</span>
               <span>$<%= (orderSummary?.subtotal || 0).toFixed(2) %></span>
             </div>
             <div class="total-line">
-              <span>Shipping:</span>
+              <span data-translate="shipping">Shipping:</span>
               <span>$<%= (orderSummary?.shippingCost || 0).toFixed(2) %></span>
             </div>
             <div class="total-line grand-total">
-              <span>Total:</span>
+              <span data-translate="total">Total:</span>
               <span>$<%= (orderSummary?.total || 0).toFixed(2) %></span>
             </div>
           </div>
@@ -80,44 +80,44 @@
 
         <!-- Shipping Information -->
         <div class="shipping-info">
-          <h3>Shipping Information</h3>
+          <h3 data-translate="shippingInfo">Shipping Information</h3>
           <% if (order.shipping) { %>
-            <p><strong>Name:</strong> <%= order.shipping.name || 'Not provided' %></p>
-            <p><strong>Email:</strong> <%= order.shipping.email || 'Not provided' %></p>
-            <p><strong>Address:</strong> <%= order.shipping.address || 'Not provided' %></p>
-            <p><strong>City:</strong> <%= order.shipping.city || 'Not provided' %></p>
-            <p><strong>State:</strong> <%= order.shipping.state || 'Not provided' %></p>
-            <p><strong>Postal Code:</strong> <%= order.shipping.zipCode || 'Not provided' %></p>
+            <p><strong data-translate="name">Name:</strong> <%= order.shipping.name || 'Not provided' %></p>
+            <p><strong data-translate="email">Email:</strong> <%= order.shipping.email || 'Not provided' %></p>
+            <p><strong data-translate="address">Address:</strong> <%= order.shipping.address || 'Not provided' %></p>
+            <p><strong data-translate="city">City:</strong> <%= order.shipping.city || 'Not provided' %></p>
+            <p><strong data-translate="state">State:</strong> <%= order.shipping.state || 'Not provided' %></p>
+            <p><strong data-translate="postalCode">Postal Code:</strong> <%= order.shipping.zipCode || 'Not provided' %></p>
           <% } else { %>
-            <p>No shipping information available</p>
+            <p data-translate="noShippingInfo">No shipping information available</p>
           <% } %>
         </div>
 
         <!-- Payment Information -->
         <div class="payment-info">
-          <h3>Payment Information</h3>
+          <h3 data-translate="paymentInfo">Payment Information</h3>
           <% if (order.payment) { %>
-            <p><strong>Card Holder:</strong> <%= order.payment.name || 'Not provided' %></p>
-            <p><strong>Card Number:</strong> **** **** **** <%= order.payment.cardNumber || '****' %></p>
-            <p><strong>Bank:</strong> <%= order.payment.bankName || 'Not provided' %></p>
-            <p><strong>Expiry Date:</strong> <%= order.payment.expiry || 'Not provided' %></p>
+            <p><strong data-translate="cardHolder">Card Holder:</strong> <%= order.payment.name || 'Not provided' %></p>
+            <p><strong data-translate="cardNumber">Card Number:</strong> **** **** **** <%= order.payment.cardNumber || '****' %></p>
+            <p><strong data-translate="bank">Bank:</strong> <%= order.payment.bankName || 'Not provided' %></p>
+            <p><strong data-translate="expiryDate">Expiry Date:</strong> <%= order.payment.expiry || 'Not provided' %></p>
           <% } else { %>
-            <p>No payment information available</p>
+            <p data-translate="noPaymentInfo">No payment information available</p>
           <% } %>
         </div>
 
         <!-- Order Confirmation -->
         <div class="order-confirmation">
           <form id="order-confirmation-form">
-            <button type="submit" class="submit-btn">Place Order</button>
+            <button type="submit" class="submit-btn" data-translate="placeOrder">Place Order</button>
           </form>
-          <a href="/user/shipping" class="back-link">← Back to Shipping</a>
+          <a href="/user/shipping" class="back-link" data-translate="backToShipping">← Back to Shipping</a>
         </div>
       <% } %>
     </div>
 
     <div class="login-message-popup" id="login-message-popup">
-      <h2>Order Confirmed!</h2>
+      <h2 data-translate="orderConfirmed">Order Confirmed!</h2>
       <i class="fa-solid fa-circle-check"></i>
     </div>
     <div class="login-message-popup" id="login-message-error-popup">
@@ -305,5 +305,8 @@
         padding: 1rem;
       }
     </style>
+                          <!-- ملفات الترجمة -->
+  <script src="/Javascript/translations.js"></script>
+  <script src="/Javascript/language.js"></script>
   </body>
 </html> 
