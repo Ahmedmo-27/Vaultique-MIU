@@ -200,19 +200,19 @@ class Chatbot {
         // لوجيك ساعات العمل نهايه
 
         // لوجيك  بدايه
-        const QLKeywords = ["where", "what", "how"];
-        const HLKeywords2 = ["location", "place", "branch" , "shop"];
-        const haslocationEn = QLKeywords.some(word => message.includes(word));
-        const haslocationEn2 = HLKeywords2.some(word => message.includes(word));
-        const QLKeywordsar = ["ازاي", "كيف", "كيفية"];
-        const HLKeywordsar2 = ["الوصول", "اللوكيشن", "الفرع" , "المكان" ,"مكان"];
-        const haslocationAr = QLKeywordsar.some(word => message.includes(word));
-        const haslocationAr2 = HLKeywordsar2.some(word => message.includes(word));
+        const QLKeywordsEn = ["where", "what", "how"];
+        const HLKeywordsEn = ["location", "place", "branch", "shop", "address", "spot"];
+        const haslocationEn = QLKeywordsEn.some(word => message.includes(word));
+        const haslocationEn2 = HLKeywordsEn.some(word => message.includes(word));
+        const QLKeywordsAr = ["ازاي", "كيف", "كيفية", "فين", "ممكن", "ايه", "إيه", "وين" , "أين" , "اين"];
+        const HLKeywordsAr = ["الوصول","اللوكيشن","الفرع","المكان","مكان","فين","عنوان","توصل","موقع","موقعكم","مكانكم","فينكم","عنوانكم","عنوانكو","موقعكو","مكانكو"];
+        const haslocationAr = QLKeywordsAr.some(word => message.includes(word));
+        const haslocationAr2 = HLKeywordsAr.some(word => message.includes(word));
         // لوجيك  نهايه
 
         // لوجيك منتج بدايه
         const productInquiryKeywords = ["product", "watch", "item", "do you have", "can i see", "tell me about", "details", "interested in", "looking for", "specific", "buy", "order"];
-        const productInquiryKeywordsAr = ["منتج", "ساعة", "الساعات", "هل يوجد", "عندكم", "هل متوفر", "ممكن أشوف", "ابغى", "أريد", "بكم", "بكام", "تفاصيل", "أطلب", "اطلب"];
+        const productInquiryKeywordsAr = ["منتج", "ساعة", "الساعات", "هل يوجد", "عندكم", "هل متوفر", "ممكن أشوف", "ابغى", "أريد", "بكم", "بكام", "تفاصيل", "أطلب", "اطلب" , "اي"];
         const hasProductInquiryEn = productInquiryKeywords.some(word => message.includes(word));
         const hasProductInquiryAr = productInquiryKeywordsAr.some(word => message.includes(word));        
         // لوجيك منتج نهايه
@@ -223,6 +223,7 @@ class Chatbot {
         const endChatKeywordsAr = ["شكراً", "شكرا", "سلام", "مع السلامة", "باي", "اشوفك", "خلصت", "تمام كده"];
         const hasEndChatAr = endChatKeywordsAr.some(word => message.includes(word));
         // لوجيك توديع نهايه
+        
 
 
         // Simple keyword-based responses
