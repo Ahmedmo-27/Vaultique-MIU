@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "prod-install": "npm install --omit=dev",
     "install:ci": "npm ci --omit=dev",
+    "build": "echo 'No build step required for backend'",
     "seed": "node seed/Products-Seed.js",
     "seed:brands": "node seed/Brands-Seed.js",
     "seed:collections": "node seed/Collections-Seed.js",
