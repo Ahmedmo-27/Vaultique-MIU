@@ -2,15 +2,11 @@ trigger:
 - main
 
 pool:
-  name: Default  # This must match the name of the pool where your self-hosted agent is registered
+  name: Default  # Replace with your agent pool name if different
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
-
 - script: |
+    node -v
     npm install
     npm run build
-  displayName: 'npm install and build'
+  displayName: 'Use local Node.js and build'
