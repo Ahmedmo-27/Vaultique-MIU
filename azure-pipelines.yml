@@ -2,11 +2,27 @@ trigger:
 - main
 
 pool:
-  name: Default  # Replace with your agent pool name if different
+  name: Default  # Make sure this matches your self-hosted agent pool name
+
+variables:
+  NPM_CACHE_FOLDER: $(Pipeline.Workspace)/.npm  # Custom cache path
 
 steps:
+# 🗃️ Step 1: Restore npm cache if available
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | package-lock.json'
+    restoreKeys: |
+      npm | "$(Agent.OS)"
+    path: $(NPM_CACHE_FOLDER)
+  displayName: 'Restore npm cache'
+
+# 📦 Step 2: Install dependencies using cache path
 - script: |
-    node -v
-    npm install
+    npm ci --cache $(NPM_CACHE_FOLDER)
+  displayName: 'Install dependencies'
+
+# 🏗️ Step 3: Build the project
+- script: |
     npm run build
-  displayName: 'Use local Node.js and build'
+  displayName: 'Build the project'
