@@ -2,41 +2,48 @@ trigger:
   - main
 
 pool:
-  name: Default  # ✅ Must match your self-hosted agent pool name exactly
+  name: Default
 
 variables:
-  NPM_CACHE_FOLDER: $(Pipeline.Workspace)/.npm  # ✅ Local path for npm cache
+  NPM_CACHE_FOLDER: $(Pipeline.Workspace)/.npm
 
 steps:
-# 🔄 Step 0: Checkout repository (you can disable clean if safe)
+# Step 0: Checkout repository with shallow clone
 - checkout: self
   clean: true
-  displayName: '📥 Checkout source code (force clean)'
+  fetchDepth: 1
+  displayName: 'Checkout source code (shallow clone)'
 
-# 🗃️ Step 1: Restore npm cache
+# Step 1: Restore npm cache with strict versioning
 - task: Cache@2
   inputs:
-    key: 'npm | "$(Agent.OS)" | package-lock.json'
+    key: 'npm | "$(Agent.OS)" | "$(node -v)" | package-lock.json'
     restoreKeys: |
-      npm | "$(Agent.OS)"
+      npm | "$(Agent.OS)" | "$(node -v)"
     path: $(NPM_CACHE_FOLDER)
     cacheHitVar: CACHE_RESTORED
-  displayName: '📦 Restore npm cache'
+  displayName: 'Restore npm cache (version-locked)'
 
-# 📦 Step 2: Install dependencies with offline cache
+# Debug step: Verify cache status
+- script: |
+    echo "Cache restored status: $(CACHE_RESTORED)"
+    ls -la $(NPM_CACHE_FOLDER) || echo "No cache directory found"
+  displayName: 'Debug: Verify cache restoration'
+
+# Step 2: Install dependencies with offline cache
 - script: |
     npm ci --cache $(NPM_CACHE_FOLDER) --prefer-offline
-  displayName: '📥 Install dependencies (cached)'
+  displayName: 'Install dependencies (cached)'
 
-# 🏗️ Step 3: Build the project
+# Step 3: Build the project
 - script: |
     npm run build
-  displayName: '🏗️ Build the project'
+  displayName: 'Build the project'
 
-# 🗃️ Step 4: Save npm cache (only if it wasn't restored)
+# Step 4: Save npm cache only if missed earlier
 - task: Cache@2
   condition: ne(variables.CACHE_RESTORED, 'true')
   inputs:
-    key: 'npm | "$(Agent.OS)" | package-lock.json'
+    key: 'npm | "$(Agent.OS)" | "$(node -v)" | package-lock.json'
     path: $(NPM_CACHE_FOLDER)
-  displayName: '🆕 Save npm cache if not restored'
+  displayName: 'Save npm cache if not restored'
