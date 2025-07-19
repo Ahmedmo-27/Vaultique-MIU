@@ -5,7 +5,7 @@ pool:
   name: Default
 
 variables:
-  NPM_CACHE_FOLDER: $(Pipeline.Workspace)/.npm
+  NPM_CACHE_FOLDER: $(Pipeline.Workspace)\.npm  # Backslash for Windows
 
 steps:
 # Step 0: Checkout repository with shallow clone
@@ -24,11 +24,12 @@ steps:
     cacheHitVar: CACHE_RESTORED
   displayName: 'Restore npm cache (version-locked)'
 
-# Debug step: Verify cache status
+# Debug step: Windows-compatible cache verification
 - script: |
     echo "Cache restored status: $(CACHE_RESTORED)"
-    ls -la $(NPM_CACHE_FOLDER) || echo "No cache directory found"
+    dir $(NPM_CACHE_FOLDER) || echo "No cache directory found"
   displayName: 'Debug: Verify cache restoration'
+  failOnStderr: false  # Prevents failure if directory doesn't exist
 
 # Step 2: Install dependencies with offline cache
 - script: |
