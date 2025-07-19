@@ -2,12 +2,15 @@ trigger:
 - main
 
 pool:
-  name: Default  # Make sure this matches your self-hosted agent pool name
+  name: Default  # ✅ Make sure this matches your self-hosted agent pool name exactly
 
 variables:
-  NPM_CACHE_FOLDER: $(Pipeline.Workspace)/.npm  # Custom cache path
+  NPM_CACHE_FOLDER: $(Pipeline.Workspace)/.npm  # ✅ Local path for npm cache
 
 steps:
+# 🔄 Step 0: Checkout your repository
+- checkout: self
+
 # 🗃️ Step 1: Restore npm cache if available
 - task: Cache@2
   inputs:
@@ -20,9 +23,16 @@ steps:
 # 📦 Step 2: Install dependencies using cache path
 - script: |
     npm ci --cache $(NPM_CACHE_FOLDER)
-  displayName: 'Install dependencies'
+  displayName: 'Install dependencies with cache'
 
 # 🏗️ Step 3: Build the project
 - script: |
     npm run build
   displayName: 'Build the project'
+
+# 📦 Step 4: Save npm cache for future runs
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | package-lock.json'
+    path: $(NPM_CACHE_FOLDER)
+  displayName: 'Save npm cache'
