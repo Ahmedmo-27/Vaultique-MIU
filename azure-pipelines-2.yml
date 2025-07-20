@@ -2,12 +2,12 @@ trigger:
   - main
 
 pool:
-  name: Default  # Self-hosted agent pool
+  name: Default
 
 variables:
-  LOCAL_NPM_CACHE: C:\npm_cache  # Persistent on agent
-  PIPELINE_NPM_CACHE: $(Pipeline.Workspace)\.npm  # Pipeline-managed
-  NPM_CONFIG_CACHE: $(LOCAL_NPM_CACHE)  # Forces npm to use local cache
+  LOCAL_NPM_CACHE: C:\npm_cache
+  PIPELINE_NPM_CACHE: $(Pipeline.Workspace)\.npm
+  NPM_CONFIG_CACHE: $(LOCAL_NPM_CACHE)
 
 steps:
 # Step 1: Checkout
@@ -16,17 +16,20 @@ steps:
   fetchDepth: 1
   displayName: 'Checkout code'
 
-# Step 2: Try local cache first (fastest path)
+# Step 2: Check for local cache (updated condition)
+- script: |
+    if exist "$(LOCAL_NPM_CACHE)" (
+      echo "##vso[task.setvariable variable=LOCAL_CACHE_EXISTS]true"
+    )
+  displayName: 'Check local cache existence'
+
+# Step 3: Try local cache if exists
 - script: |
     npm ci --prefer-offline --no-audit --cache $(LOCAL_NPM_CACHE)
   displayName: 'Install (local cache)'
-  condition: |
-    and(
-      succeeded(),
-      exists('$(LOCAL_NPM_CACHE)')
-    )
+  condition: eq(variables.LOCAL_CACHE_EXISTS, 'true')
 
-# Step 3: Fallback to pipeline cache
+# Step 4: Fallback to pipeline cache
 - task: Cache@2
   inputs:
     key: 'npm | "$(Agent.OS)" | "$(node -v)" | package-lock.json'
@@ -35,31 +38,28 @@ steps:
     path: $(PIPELINE_NPM_CACHE)
     cacheHitVar: CACHE_RESTORED
   displayName: 'Restore pipeline cache'
-  condition: |
-    and(
-      succeeded(),
-      not(exists('$(LOCAL_NPM_CACHE)'))
-    )
+  condition: ne(variables.LOCAL_CACHE_EXISTS, 'true')
 
-# Step 4: Install using pipeline cache
+# Step 5: Install using pipeline cache
 - script: |
     npm ci --prefer-offline --no-audit --cache $(PIPELINE_NPM_CACHE)
   displayName: 'Install (pipeline cache)'
-  condition: |
-    and(
-      succeeded(),
-      not(exists('$(LOCAL_NPM_CACHE)'))
-    )
+  condition: ne(variables.LOCAL_CACHE_EXISTS, 'true')
 
-# Step 5: Update caches if needed
+# Step 6: Build
+- script: |
+    npm run build
+  displayName: 'Build project'
+
+# Step 7: Update caches if needed
 - script: |
     robocopy $(PIPELINE_NPM_CACHE) $(LOCAL_NPM_CACHE) /MIR /NP /NFL /NDL
-  displayName: 'Sync local cache from pipeline'
+  displayName: 'Sync local cache'
   condition: |
     and(
       succeeded(),
       ne(variables.CACHE_RESTORED, 'true'),
-      not(exists('$(LOCAL_NPM_CACHE)'))
+      ne(variables.LOCAL_CACHE_EXISTS, 'true')
     )
 
 - task: Cache@2
@@ -71,10 +71,5 @@ steps:
     and(
       succeeded(),
       ne(variables.CACHE_RESTORED, 'true'),
-      not(exists('$(LOCAL_NPM_CACHE)'))
+      ne(variables.LOCAL_CACHE_EXISTS, 'true')
     )
-
-# Step 6: Build
-- script: |
-    npm run build
-  displayName: 'Build project'
