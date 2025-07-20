@@ -1,0 +1,80 @@
+trigger:
+  - main
+
+pool:
+  name: Default  # Self-hosted agent pool
+
+variables:
+  LOCAL_NPM_CACHE: C:\npm_cache  # Persistent on agent
+  PIPELINE_NPM_CACHE: $(Pipeline.Workspace)\.npm  # Pipeline-managed
+  NPM_CONFIG_CACHE: $(LOCAL_NPM_CACHE)  # Forces npm to use local cache
+
+steps:
+# Step 1: Checkout
+- checkout: self
+  clean: true
+  fetchDepth: 1
+  displayName: 'Checkout code'
+
+# Step 2: Try local cache first (fastest path)
+- script: |
+    npm ci --prefer-offline --no-audit --cache $(LOCAL_NPM_CACHE)
+  displayName: 'Install (local cache)'
+  condition: |
+    and(
+      succeeded(),
+      exists('$(LOCAL_NPM_CACHE)')
+    )
+
+# Step 3: Fallback to pipeline cache
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | "$(node -v)" | package-lock.json'
+    restoreKeys: |
+      npm | "$(Agent.OS)" | "$(node -v)"
+    path: $(PIPELINE_NPM_CACHE)
+    cacheHitVar: CACHE_RESTORED
+  displayName: 'Restore pipeline cache'
+  condition: |
+    and(
+      succeeded(),
+      not(exists('$(LOCAL_NPM_CACHE)'))
+    )
+
+# Step 4: Install using pipeline cache
+- script: |
+    npm ci --prefer-offline --no-audit --cache $(PIPELINE_NPM_CACHE)
+  displayName: 'Install (pipeline cache)'
+  condition: |
+    and(
+      succeeded(),
+      not(exists('$(LOCAL_NPM_CACHE)'))
+    )
+
+# Step 5: Update caches if needed
+- script: |
+    robocopy $(PIPELINE_NPM_CACHE) $(LOCAL_NPM_CACHE) /MIR /NP /NFL /NDL
+  displayName: 'Sync local cache from pipeline'
+  condition: |
+    and(
+      succeeded(),
+      ne(variables.CACHE_RESTORED, 'true'),
+      not(exists('$(LOCAL_NPM_CACHE)'))
+    )
+
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | "$(node -v)" | package-lock.json'
+    path: $(PIPELINE_NPM_CACHE)
+  displayName: 'Save pipeline cache'
+  condition: |
+    and(
+      succeeded(),
+      ne(variables.CACHE_RESTORED, 'true'),
+      not(exists('$(LOCAL_NPM_CACHE)'))
+    )
+
+# Step 6: Build
+- script: |
+    npm run build
+  displayName: 'Build project'
