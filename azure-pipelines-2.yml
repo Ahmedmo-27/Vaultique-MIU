@@ -51,9 +51,14 @@ steps:
     npm run build
   displayName: 'Build project'
 
-# Step 7: Update caches if needed
+# Step 7: cache sync with error handling
 - script: |
-    robocopy $(PIPELINE_NPM_CACHE) $(LOCAL_NPM_CACHE) /MIR /NP /NFL /NDL
+    robocopy $(PIPELINE_NPM_CACHE) $(LOCAL_NPM_CACHE) /MIR /NP /NFL /NDL /R:1 /W:1
+    if %ERRORLEVEL% LEQ 3 (
+      exit 0
+    ) else (
+      exit %ERRORLEVEL%
+    )
   displayName: 'Sync local cache'
   condition: |
     and(
@@ -61,6 +66,7 @@ steps:
       ne(variables.CACHE_RESTORED, 'true'),
       ne(variables.LOCAL_CACHE_EXISTS, 'true')
     )
+  failOnStderr: false
 
 - task: Cache@2
   inputs:
