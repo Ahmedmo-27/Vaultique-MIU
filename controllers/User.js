@@ -53,12 +53,24 @@ router.get('/products/:id', async (req, res) => {
       inWishlist = user.wishlist.some(item => item.product && item.product._id.toString() === product._id.toString());
     }
 
+    // Fetch similar products (same collection or brand, excluding current product)
+    const similarProducts = await Product.find({
+      $or: [
+        { Vcollection: product.Vcollection },
+        { brand: product.brand }
+      ],
+      _id: { $ne: product._id }
+    })
+      .limit(8)
+      .lean();
+
     res.render('Product Page', {
       title: product.name,
       product: {
         ...product.toObject(),
         inWishlist
       },
+      similarProducts,
       user: req.user || null
     });
   } catch (error) {

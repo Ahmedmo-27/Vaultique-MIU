@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/CSS/nav-bar.css" />
     <link rel="stylesheet" href="/CSS/product-type.css" />
     <link rel="stylesheet" href="/CSS/footer.css" />
+    <link rel="stylesheet" href="/CSS/Products.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -86,7 +87,6 @@
         </div>
       </section>
     </div>
-  </div>
 
   <% if (product.video) { %>
     <div class="container2">
@@ -141,6 +141,42 @@
     </div>
   </div>
 
+
+  <% if (similarProducts && similarProducts.length > 0) { %>
+    <section class="you-might-also-like">
+      <h2 data-translate="youMightAlsoLike">You Might Also Like</h2>
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow left" aria-label="Previous" onclick="scrollCarousel(-1)"><span>&#8592;</span></button>
+        <div class="carousel-track" id="similarProductsCarousel">
+          <% similarProducts.forEach((product) => { %>
+            <div class="product-card carousel-card">
+              <div class="product-image-container">
+                <a href="/user/product?id=<%= product._id %>">
+                  <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                </a>
+                <div class="hover-buttons">
+                  <button class="quick-view" data-product-id="<%= product._id %>" data-translate="quickView">Quick View</button>
+                  <button class="compare" data-product-id="<%= product._id %>" data-translate="compare">Compare</button>
+                </div>
+              </div>
+              <div class="product-details">
+                <a href="/user/product?id=<%= product._id %>">
+                  <h4><%= product.name %></h4>
+                </a>
+                <p class="price">€<%= product.price.toLocaleString() %></p>
+                <% if (product.stock || (product.stockCount && product.stockCount > 0)) { %>
+                  <p class="stock in-stock" data-translate="inStock">In Stock</p>
+                <% } else { %>
+                  <p class="stock out-of-stock" data-translate="outOfStock">Out of Stock</p>
+                <% } %>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        <button class="carousel-arrow right" aria-label="Next" onclick="scrollCarousel(1)"><span>&#8594;</span></button>
+      </div>
+    </section>
+  <% } %>
   <%- include('partials/footer') %>
 
   <script>
@@ -530,7 +566,24 @@
       }
     }
   </style>
-  </main>
+  <script>
+    // Carousel logic for similar products (5 per slide)
+    let carouselIndex = 0;
+    const productsPerPage = 5;
+    function scrollCarousel(direction) {
+      const track = document.getElementById('similarProductsCarousel');
+      const cards = track.querySelectorAll('.carousel-card');
+      const cardWidth = cards[0]?.offsetWidth || 220;
+      const gap = parseInt(getComputedStyle(track).gap) || 24;
+      const totalProducts = cards.length;
+      const maxIndex = Math.max(0, Math.ceil(totalProducts / productsPerPage) - 1);
+      carouselIndex += direction;
+      if (carouselIndex < 0) carouselIndex = 0;
+      if (carouselIndex > maxIndex) carouselIndex = maxIndex;
+      const scrollTo = (cardWidth + gap) * productsPerPage * carouselIndex;
+      track.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    }
+  </script>
                 <!-- ملفات الترجمة -->
                 <script src="/Javascript/translations.js"></script>
                 <script src="/Javascript/language.js"></script>
