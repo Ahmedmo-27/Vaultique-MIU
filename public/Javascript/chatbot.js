@@ -224,7 +224,146 @@ class Chatbot {
         const hasEndChatAr = endChatKeywordsAr.some(word => message.includes(word));
         // لوجيك توديع نهايه
         
+        // --- NEW NAVIGATION INTENTS BEGIN ---
+        // Helper for navigation button
+        function navBtn(text, url) {
+            return `<button class="chatbot-nav-btn" onclick="window.location.href='${url}'">${text}</button>`;
+        }
 
+        // Navigation keywords and logic
+        const navCases = [
+            // Home
+            {
+                en: ["home", "main page", "homepage", "start page", "go home"],
+                ar: ["الرئيسية", "الصفحة الرئيسية", "ابدأ", "اذهب للرئيسية"],
+                url: "/user/home",
+                label: { en: "Go to Home", ar: "الذهاب للرئيسية" },
+            },
+            // Shop All
+            {
+                en: ["shop all", "all products", "browse products", "see products", "shop"],
+                ar: ["تسوق الكل", "كل المنتجات", "تصفح المنتجات", "تسوق"],
+                url: "/user/products",
+                label: { en: "Shop All Products", ar: "تسوق كل المنتجات" },
+            },
+            // Brands
+            {
+                en: ["brands", "brand list", "show brands", "see brands"],
+                ar: ["الماركات", "العلامات التجارية", "عرض الماركات", "شوف الماركات"],
+                url: "/user/brands",
+                label: { en: "Browse Brands", ar: "تصفح الماركات" },
+            },
+            // Collections
+            {
+                en: ["collections", "show collections", "see collections", "collection list"],
+                ar: ["المجموعات", "عرض المجموعات", "تصفح المجموعات"],
+                url: "/user/collections",
+                label: { en: "Browse Collections", ar: "تصفح المجموعات" },
+            },
+            // Cart
+            {
+                en: ["cart", "my cart", "shopping cart", "go to cart"],
+                ar: ["عربة التسوق", "سلة المشتريات", "الكارت", "اذهب للسلة"],
+                url: "/user/cart",
+                label: { en: "View Cart", ar: "عرض السلة" },
+            },
+            // Wishlist
+            {
+                en: ["wishlist", "my wishlist", "wish list", "favorites"],
+                ar: ["قائمة الرغبات", "المفضلة", "عرض الرغبات"],
+                url: "/user/wishlist",
+                label: { en: "View Wishlist", ar: "عرض قائمة الرغبات" },
+            },
+            // Compare
+            {
+                en: ["compare", "compare products", "product comparison"],
+                ar: ["مقارنة", "مقارنة المنتجات", "قارن المنتجات"],
+                url: "/user/compare",
+                label: { en: "Compare Products", ar: "مقارنة المنتجات" },
+            },
+            // Configurator
+            {
+                en: ["configure", "configurator", "customize", "customizer"],
+                ar: ["تخصيص", "كونفيجوراتور", "مُخصص", "تعديل المنتج"],
+                url: "/user/Configurator",
+                label: { en: "Go to Configurator", ar: "الذهاب للمُخصص" },
+            },
+            // Recommendation System
+            {
+                en: ["recommendation", "quiz", "suggestion", "find my watch", "recommend a watch"],
+                ar: ["توصية", "اختبار", "اقتراح", "ساعدني أختار", "اختيار ساعة"],
+                url: "/user/Recommendation-System",
+                label: { en: "Take the Quiz", ar: "ابدأ الاختبار" },
+            },
+            // Account
+            {
+                en: ["account", "my account", "profile", "account details", "settings"],
+                ar: ["الحساب", "حسابي", "الملف الشخصي", "إعدادات الحساب"],
+                url: "/user/account-details",
+                label: { en: "Account Details", ar: "تفاصيل الحساب" },
+            },
+            // Orders
+            {
+                en: ["orders", "my orders", "order history", "track order"],
+                ar: ["الطلبات", "طلباتي", "تتبع الطلبات", "سجل الطلبات"],
+                url: "/user/account-details#orders",
+                label: { en: "View Orders", ar: "عرض الطلبات" },
+            },
+            // Refunds
+            {
+                en: ["refund", "refunds", "my refunds", "request refund"],
+                ar: ["استرجاع", "الاسترجاع", "استرداد", "طلب استرجاع"],
+                url: "/user/account-details#refunds",
+                label: { en: "View Refunds", ar: "عرض الاسترجاعات" },
+            },
+            // Payment Methods
+            {
+                en: ["payment", "payment methods", "my cards", "add card"],
+                ar: ["الدفع", "طرق الدفع", "بطاقاتي", "إضافة بطاقة"],
+                url: "/user/account-details#payment-methods",
+                label: { en: "Payment Methods", ar: "طرق الدفع" },
+            },
+            // Reviews
+            {
+                en: ["reviews", "my reviews", "product reviews"],
+                ar: ["تقييمات", "تقييماتي", "مراجعات المنتجات"],
+                url: "/user/account-details#reviews",
+                label: { en: "My Reviews", ar: "تقييماتي" },
+            },
+            // FAQ
+            {
+                en: ["faq", "questions", "frequently asked", "help center"],
+                ar: ["الأسئلة الشائعة", "الاسئلة الشائعة", "مساعدة", "مركز المساعدة"],
+                url: "/FAQ",
+                label: { en: "FAQ", ar: "الأسئلة الشائعة" },
+            },
+            // Contact
+            {
+                en: ["contact", "contact us", "support", "customer service", "help"],
+                ar: ["اتصل بنا", "تواصل معنا", "الدعم", "خدمة العملاء"],
+                url: "/user/contact-us",
+                label: { en: "Contact Us", ar: "اتصل بنا" },
+            },
+            // About
+            {
+                en: ["about", "about us", "company info", "who are you"],
+                ar: ["عن الشركة", "معلومات عنا", "من أنتم", "عن فولتيك"],
+                url: "/about",
+                label: { en: "About Us", ar: "عن الشركة" },
+            },
+        ];
+
+        // Check navigation cases
+        for (const nav of navCases) {
+            const lang = this.currentLanguage === 'ar' ? 'ar' : 'en';
+            const keywords = nav[lang];
+            if (keywords && keywords.some(word => message.includes(word))) {
+                response = `${this.currentLanguage === 'ar' ? 'يمكنك الذهاب مباشرة:' : 'You can go directly:'}<br>${navBtn(nav.label[lang], nav.url)}`;
+                this.addMessage(response, 'bot');
+                return;
+            }
+        }
+        // --- NEW NAVIGATION INTENTS END ---
 
         // Simple keyword-based responses
         if (hasGreetingEn || hasGreetingAr) {
@@ -291,9 +430,22 @@ class Chatbot {
                 : 'You can browse all available products through the <strong>"Shop All"</strong> page and use filters to find the perfect watch.<br>If you\'re looking for a specific item, let us know the details and we’ll assist you directly.';
         }
         else {
+            // Suggest navigation to main pages if not understood
+            const navSuggestions = [
+                { url: '/user/home', label: { en: 'Home', ar: 'الرئيسية' } },
+                { url: '/user/products', label: { en: 'Shop All', ar: 'تسوق الكل' } },
+                { url: '/user/brands', label: { en: 'Brands', ar: 'الماركات' } },
+                { url: '/user/collections', label: { en: 'Collections', ar: 'المجموعات' } },
+                { url: '/user/cart', label: { en: 'Cart', ar: 'السلة' } },
+                { url: '/user/wishlist', label: { en: 'Wishlist', ar: 'قائمة الرغبات' } },
+                { url: '/user/compare', label: { en: 'Compare', ar: 'مقارنة' } },
+                { url: '/user/account-details', label: { en: 'Account', ar: 'الحساب' } },
+                { url: '/user/contact-us', label: { en: 'Contact', ar: 'اتصل بنا' } },
+                { url: '/FAQ', label: { en: 'FAQ', ar: 'الأسئلة الشائعة' } },
+            ];
             response = this.currentLanguage === 'ar'
-                ? "لم أتمكن من فهم سؤالك تمامًا، لكن يسعدني مساعدتك!<br>يمكنك سؤالي عن: الأسعار، الشحن، الضمان، المنتجات، أو أي استفسار آخر."
-                : "I didn’t quite understand your message, but I’m here to help!<br>You can ask me about: prices, shipping, warranty, products, or any other question.";
+                ? `لم أتمكن من فهم سؤالك تمامًا، لكن يمكنك الذهاب مباشرة لأي صفحة من هنا:<br>${navSuggestions.map(s => navBtn(s.label.ar, s.url)).join(' ')}`
+                : `I didn’t quite understand your message, but you can go directly to any page from here:<br>${navSuggestions.map(s => navBtn(s.label.en, s.url)).join(' ')}`;
         }
 
         this.addMessage(response, 'bot');
@@ -365,3 +517,13 @@ document.addEventListener('DOMContentLoaded', () => {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = Chatbot;
 } 
+
+// Add CSS for chatbot-nav-btn if not present
+(function addChatbotNavBtnStyle() {
+    if (!document.getElementById('chatbot-nav-btn-style')) {
+        const style = document.createElement('style');
+        style.id = 'chatbot-nav-btn-style';
+        style.innerHTML = `.chatbot-nav-btn {margin: 6px 4px 0 0; padding: 6px 16px; border-radius: 6px; border: none; background: #222; color: #fff; font-size: 1em; cursor: pointer; transition: background 0.2s;} .chatbot-nav-btn:hover {background: #444;}`;
+        document.head.appendChild(style);
+    }
+})(); 
