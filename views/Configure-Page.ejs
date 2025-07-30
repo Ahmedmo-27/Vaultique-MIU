@@ -556,6 +556,9 @@ body {
                             <button id="virtual-try-on" class="btn" data-translate="virtualTryOn">
                                 <i class="fas fa-vr-cardboard"></i> <span data-translate="virtualTryOn">Virtual Try-On</span>
                             </button>
+                            <button id="detector" class="btn" data-translate="detector">
+                                <i class="fas fa-search"></i> <span data-translate="detector">Detector</span>
+                            </button>
                         </div>
                     </div>
 
@@ -783,6 +786,7 @@ body {
                 rotateBtn: document.getElementById('toggle-rotate'),
                 fullscreenBtn: document.getElementById('fullscreen'),
                 tryOnBtn: document.getElementById('virtual-try-on'),
+                detectorBtn: document.getElementById('detector'),
                 modal: document.getElementById('qrModal'),
                 closeBtn: document.querySelector('.close-modal'),
                 modelSelect: document.getElementById('model-selector'),
@@ -944,6 +948,13 @@ body {
                         elements.modelViewer.requestFullscreen();
                     });
                 }
+
+                if (elements.detectorBtn) {
+                    elements.detectorBtn.addEventListener('click', () => {
+                        // Navigate to wrist detector page
+                        window.location.href = '/wrist-detector';
+                    });
+                }
             }
 
             // Customization handlers
@@ -1076,6 +1087,8 @@ body {
                     `;
                 }
             }
+
+            
 
             function updateTotalPrice() {
                 let totalPrice = state.currentPrice;

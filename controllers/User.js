@@ -2504,6 +2504,11 @@ protectedRoutes.get('/order-success', async (req, res) => {
     }
 });
 
+router.get('/wrist-detector', (req, res) => {
+    res.render('wrist-detector');
+});
+
+
 // Review Order page route
 router.get('/review', async (req, res) => {
   try {

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="wristDetectorTitle">Vaultique | Wrist Detector</title>
+    <link rel="stylesheet" href="/CSS/nav-bar.css">
+    <link rel="stylesheet" href="/CSS/footer.css">
+    <link rel="stylesheet" href="/CSS/Loading Screen.css">
+    <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/Javascript/nav-bar.js"></script>
+    <script src="/Javascript/Loading Screen.js"></script>
+    <script src="/Javascript/Light-Mode.js"></script>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #7c3aed;
+        --accent: #ec4899;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text: #1e293b;
+        --text-light: #64748b;
+        --border-radius: 16px;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        --gap: 2rem;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: var(--bg);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        color: var(--text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+
+    h2 {
+        font-size: 2rem;
+        color: var(--text);
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    h4 {
+        font-size: 1.2rem;
+    }
+
+    p {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Header Section */
+    .detector-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+    }
+
+    .detector-header h1 {
+        margin-bottom: 1.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .detector-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: 2px;
+    }
+
+    .detector-header p {
+        font-size: 1.1rem;
+        max-width: 700px;
+        margin: 0 auto 2rem;
+    }
+
+    /* Cards Grid */
+    .detector-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--gap);
+        margin-bottom: 4rem;
+    }
+
+    .detector-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        transition: var(--transition);
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .detector-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .detector-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .detector-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+
+    .detector-card h3 {
+        margin-bottom: 1.25rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    .detector-card h3::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: 1px;
+    }
+
+    .detector-card p {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1.75rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        z-index: -1;
+        transition: var(--transition);
+        opacity: 1;
+    }
+
+    .btn:hover::before {
+        opacity: 0.9;
+        transform: scale(1.05);
+    }
+
+    .btn-primary {
+        color: white;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+    }
+
+    .btn-secondary::before {
+        background: white;
+    }
+
+    .btn-secondary:hover {
+        color: white;
+    }
+
+    .btn-secondary:hover::before {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    .btn-icon {
+        font-size: 1.1rem;
+    }
+
+    /* Features Section */
+    .features-section {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        padding: 3rem 2rem;
+        margin-bottom: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .features-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .features-section h2 {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .features-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: 2px;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.25rem;
+        padding: 1.5rem;
+        background: rgba(37, 99, 235, 0.03);
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .feature-item:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-sm);
+        background: rgba(37, 99, 235, 0.05);
+    }
+
+    .feature-icon {
+        font-size: 1.75rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        flex-shrink: 0;
+        margin-top: 0.25rem;
+    }
+
+    .feature-content h4 {
+        margin-bottom: 0.75rem;
+        color: var(--text);
+    }
+
+    .feature-content p {
+        font-size: 0.95rem;
+        color: var(--text-light);
+    }
+
+    /* Camera Section */
+    .camera-section {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .camera-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .camera-section h2 {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .camera-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: 2px;
+    }
+
+    .camera-placeholder {
+        width: 100%;
+        max-width: 600px;
+        height: 350px;
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        border-radius: var(--border-radius);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 2.5rem auto;
+        color: #94a3b8;
+        font-size: 1.1rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .camera-placeholder:hover {
+        border-color: var(--primary);
+    }
+
+    .camera-placeholder i {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        color: #cbd5e1;
+        transition: var(--transition);
+    }
+
+    .camera-placeholder:hover i {
+        color: var(--primary);
+    }
+
+    .camera-placeholder p {
+        max-width: 300px;
+    }
+
+    .camera-active {
+        border: none;
+        background: #000;
+    }
+
+    .camera-active i, .camera-active p {
+        display: none;
+    }
+
+    #camera-feed {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+    }
+
+    .camera-controls {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    /* Loading Animation */
+    .loading-spinner {
+        display: none;
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(37, 99, 235, 0.2);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: spin 1s ease-in-out infinite;
+        margin: 2rem auto;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Results Section */
+    .results-section {
+        display: none;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        padding: 3rem 2rem;
+        margin-top: 3rem;
+        text-align: center;
+    }
+
+    .results-section h2 {
+        margin-bottom: 1.5rem;
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .result-item {
+        background: rgba(37, 99, 235, 0.03);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+    }
+
+    .result-item h4 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .result-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .result-unit {
+        font-size: 1rem;
+        color: var(--text-light);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 1.5rem 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+        }
+
+        .detector-header {
+            margin-bottom: 3rem;
+        }
+
+        .detector-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .features-section, .camera-section {
+            padding: 2rem 1.5rem;
+        }
+
+        .camera-placeholder {
+            height: 280px;
+            margin: 1.5rem auto;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .camera-controls {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+    /* Animation Classes */
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+</style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <%- include('partials/loading-screen') %>
+    <!-- Nav-Bar -->
+    <%- include('partials/navigation') %>
+
+    <div class="app" id="wrist-detector-app">
+    <main class="main" id="main-content" role="main">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="container">
+            
+
+            <div class="detector-grid">
+                <div class="detector-card fade-in" style="animation-delay: 0.1s;">
+                    <div class="detector-icon">
+                        <i class="fas fa-ruler-combined"></i>
+                    </div>
+                    <h3 data-translate="sizeMeasurement">Precision Measurement</h3>
+                    <p data-translate="sizeMeasurementDesc">Our computer vision technology measures your wrist with millimeter accuracy for the perfect fit.</p>
+                    <button class="btn btn-primary" id="measure-btn">
+                        <i class="fas fa-play btn-icon"></i>
+                        <span data-translate="startMeasurement">Measure Now</span>
+                    </button>
+                </div>
+
+                <div class="detector-card fade-in" style="animation-delay: 0.2s;">
+                    <div class="detector-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 data-translate="watchRecommendation">Smart Recommendations</h3>
+                    <p data-translate="watchRecommendationDesc">Get personalized watch suggestions based on your wrist size, style, and preferences.</p>
+                    <button class="btn btn-primary" id="recommend-btn">
+                        <i class="fas fa-magic btn-icon"></i>
+                        <span data-translate="getRecommendations">Find Your Watch</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="features-section fade-in" style="animation-delay: 0.3s;">
+                <h2 data-translate="featuresTitle">Why Choose Our Wrist Detector</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 data-translate="cameraDetection">99% Accuracy</h4>
+                            <p data-translate="cameraDetectionDesc">Industry-leading precision with our advanced measurement algorithms.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 data-translate="aiAnalysis">Instant Results</h4>
+                            <p data-translate="aiAnalysisDesc">Get your measurements and recommendations in seconds.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 data-translate="preciseMeasurements">Mobile Friendly</h4>
+                            <p data-translate="preciseMeasurementsDesc">Works perfectly on any smartphone or tablet with a camera.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 data-translate="personalizedFit">Personalized</h4>
+                            <p data-translate="personalizedFitDesc">Tailored suggestions based on your unique wrist shape and size.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="camera-section fade-in" style="animation-delay: 0.4s;">
+                <h2 data-translate="cameraSectionTitle">Measure Your Wrist</h2>
+                <p>Position your wrist in the frame as shown below for accurate measurement</p>
+                
+                <div class="camera-placeholder" id="camera-placeholder">
+                    <i class="fas fa-hand-paper"></i>
+                    <p data-translate="cameraPlaceholder">Click "Start Camera" to begin measurement</p>
+                    <video id="camera-feed" autoplay playsinline></video>
+                </div>
+                
+                <div class="camera-controls">
+                    <button class="btn btn-primary pulse" id="start-camera">
+                        <i class="fas fa-camera btn-icon"></i>
+                        <span data-translate="startCamera">Start Camera</span>
+                    </button>
+                    <button class="btn btn-secondary" id="capture-btn" disabled>
+                        <i class="fas fa-camera-retro btn-icon"></i>
+                        <span data-translate="captureImage">Capture</span>
+                    </button>
+                    <button class="btn btn-secondary" id="analyze-btn" disabled>
+                        <i class="fas fa-search btn-icon"></i>
+                        <span data-translate="analyzeWrist">Analyze</span>
+                    </button>
+                </div>
+                
+                <div class="loading-spinner" id="loading-spinner"></div>
+            </div>
+
+            <div class="results-section" id="results-section">
+                <h2>Your Wrist Measurement Results</h2>
+                <p>Based on our analysis, here are your precise wrist measurements</p>
+                
+                <div class="results-grid">
+                    <div class="result-item">
+                        <h4>Wrist Circumference</h4>
+                        <div class="result-value">17.2 <span class="result-unit">cm</span></div>
+                    </div>
+                    <div class="result-item">
+                        <h4>Wrist Width</h4>
+                        <div class="result-value">5.3 <span class="result-unit">cm</span></div>
+                    </div>
+                    <div class="result-item">
+                        <h4>Recommended Size</h4>
+                        <div class="result-value">Medium</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="view-recommendations" style="margin-top: 2rem;">
+                    <i class="fas fa-watch btn-icon"></i>
+                    <span>View Watch Recommendations</span>
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Camera functionality
+            const startCameraBtn = document.getElementById('start-camera');
+            const captureBtn = document.getElementById('capture-btn');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const cameraPlaceholder = document.getElementById('camera-placeholder');
+            const measureBtn = document.getElementById('measure-btn');
+            const recommendBtn = document.getElementById('recommend-btn');
+
+            let stream = null;
+            let video = null;
+
+            // Start camera functionality
+            startCameraBtn.addEventListener('click', async () => {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            facingMode: 'environment',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        } 
+                    });
+                    
+                    // Create video element
+                    video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.autoplay = true;
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.objectFit = 'cover';
+                    video.style.borderRadius = '14px';
+                    
+                    // Replace placeholder with video
+                    cameraPlaceholder.innerHTML = '';
+                    cameraPlaceholder.appendChild(video);
+                    
+                    // Enable buttons
+                    captureBtn.disabled = false;
+                    startCameraBtn.textContent = 'Stop Camera';
+                    startCameraBtn.style.background = '#e74c3c';
+                    
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    alert('Unable to access camera. Please ensure camera permissions are granted.');
+                }
+            });
+
+            // Capture image functionality
+            captureBtn.addEventListener('click', () => {
+                if (video) {
+                    // Create canvas to capture frame
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0);
+                    
+                    // Show captured image
+                    const img = document.createElement('img');
+                    img.src = canvas.toDataURL('image/jpeg');
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '14px';
+                    
+                    cameraPlaceholder.innerHTML = '';
+                    cameraPlaceholder.appendChild(img);
+                    
+                    // Enable analyze button
+                    analyzeBtn.disabled = false;
+                    captureBtn.textContent = 'Recapture';
+                }
+            });
+
+            // Analyze wrist functionality
+            analyzeBtn.addEventListener('click', () => {
+                // Simulate analysis
+                cameraPlaceholder.innerHTML = `
+                    <div style="text-align: center; color: #27ae60;">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>Analysis Complete!</h3>
+                        <p>Wrist circumference: 7.2 inches</p>
+                        <p>Recommended case size: 40-42mm</p>
+                    </div>
+                `;
+                
+                // Show recommendations
+                setTimeout(() => {
+                    alert('Analysis complete! Check your personalized recommendations.');
+                }, 1000);
+            });
+
+            // Measurement button
+            measureBtn.addEventListener('click', () => {
+                // Scroll to camera section
+                document.querySelector('.camera-section').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            });
+
+            // Recommendation button
+            recommendBtn.addEventListener('click', () => {
+                // Redirect to products page with wrist size filter
+                window.location.href = '/products?wrist-size=recommended';
+            });
+
+            // Toggle camera on/off
+            startCameraBtn.addEventListener('click', function() {
+                if (stream) {
+                    // Stop camera
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                    video = null;
+                    
+                    // Reset UI
+                    cameraPlaceholder.innerHTML = `
+                        <div>
+                            <i class="fas fa-camera" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+                            <p>Click "Start Camera" to begin wrist detection</p>
+                        </div>
+                    `;
+                    
+                    captureBtn.disabled = true;
+                    analyzeBtn.disabled = true;
+                    this.textContent = 'Start Camera';
+                    this.style.background = '#3498db';
+                }
+            });
+        });
+    </script>
+    <!-- ملفات الترجمة -->
+    <script src="/Javascript/translations.js"></script>
+    <script src="/Javascript/language.js"></script>
+</body>
+
+</html>
