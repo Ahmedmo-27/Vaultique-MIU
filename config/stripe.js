@@ -1,21 +1,20 @@
 const stripe = require('stripe');
-const config = require('./env');
+
 
 // Initialize Stripe with secret key
-const stripeInstance = stripe(config.stripe.secretKey);
+const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 // Validate Stripe configuration
-if (!config.stripe.secretKey) {
+if (!process.env.STRIPE_SECRET_KEY) {
   console.warn('Warning: STRIPE_SECRET_KEY is not set. Stripe functionality will be disabled.');
 }
 
-if (!config.stripe.publishableKey) {
+if (!process.env.STRIPE_PUBLISHABLE_KEY) {
   console.warn('Warning: STRIPE_PUBLISHABLE_KEY is not set. Stripe Elements will not work.');
 }
 
 module.exports = {
   stripe: stripeInstance,
-  config: config.stripe,
   
   // Helper function to create payment intent
   async createPaymentIntent(amount, currency = 'usd', metadata = {}) {
