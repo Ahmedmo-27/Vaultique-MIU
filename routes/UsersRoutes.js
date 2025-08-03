@@ -50,6 +50,35 @@ router.get('/', async (req, res) => {
   }
 });
 
+// In routes/UsersRoutes.js - Add this BEFORE the /:id route (around line 50):
+
+// Wrist detector route - must come before /:id route
+router.get('/wrist-detector', (req, res) => {
+  try {
+      // Ensure user data is properly handled
+      const userData = req.user ? {
+          _id: req.user._id,
+          email: req.user.email,
+          role: req.user.role
+      } : null;
+      
+      res.render('wrist-detector', {
+          user: userData,
+          isAuthenticated: !!req.user
+      });
+  } catch (error) {
+      console.error('Error rendering wrist-detector page:', error);
+      res.status(500).render('error', {
+          message: 'An error occurred while loading the wrist detector page'
+      });
+  }
+});
+
+// Then the existing /:id route (around line 53):
+router.get('/:id', async (req, res) => {
+// ... existing code
+});
+
 router.get('/:id', async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

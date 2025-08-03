@@ -20,7 +20,6 @@ Vaultique is a sophisticated e-commerce platform specializing in luxury watches,
 - **Google OAuth**: Seamless Google Sign-in integration
 - **QR Code Generation**: Product identification and sharing
 - **3D Product Visualization**: Interactive 3D models using Three.js
-- **Real-time Chat**: Stream Chat integration for customer support
 - **Payment Processing**: Secure payment gateway integration
 - **Shipping Management**: Comprehensive shipping and tracking system
 - **Refund System**: Automated refund processing
@@ -55,7 +54,6 @@ Vaultique is a sophisticated e-commerce platform specializing in luxury watches,
 ### External Services
 - **SMS**: Twilio for notifications
 - **Email**: Nodemailer for email services
-- **Chat**: Stream Chat for real-time messaging
 - **File Upload**: Multer for file handling
 - **QR Codes**: qrcode library
 
@@ -72,7 +70,6 @@ Vaultique is a sophisticated e-commerce platform specializing in luxury watches,
 - **npm**: >= 8.0.0 or yarn >= 1.22.0
 - **Twilio Account**: For SMS functionality
 - **Google OAuth Credentials**: For Google Sign-in
-- **Stream Chat Account**: For real-time chat features
 
 ## 🔧 Installation
 
@@ -117,10 +114,6 @@ EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_email_password
-
-# Stream Chat (Optional)
-STREAM_API_KEY=your_stream_api_key
-STREAM_API_SECRET=your_stream_api_secret
 
 # Cookie Domain (Optional)
 COOKIE_DOMAIN=localhost
