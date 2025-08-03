@@ -30,6 +30,7 @@ const brandsRoutes = require('./routes/BrandsRoutes');
 const cartRoutes = require('./routes/CartRoutes');
 const shippingRoutes = require('./routes/ShippingRoutes');
 const paymentRoutes = require('./routes/PaymentRoutes');
+const stripePaymentRoutes = require('./routes/StripePaymentRoutes');
 const configuratorRoutes = require('./routes/ConfiguratorRoutes');
 const configuratorController = require('./controllers/Configurator');
 const refundRoutes = require('./routes/refundRoutes');
@@ -374,6 +375,8 @@ app.use('/brands', brandsRoutes);
 app.use('/cart', cartRoutes);
 app.use('/api/shipping', shippingRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/stripe', stripePaymentRoutes);
+app.use('/payment', paymentRoutes);
 
 // Admin routes
 app.use('/admin', adminRoutes);

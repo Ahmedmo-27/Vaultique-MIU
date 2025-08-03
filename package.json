@@ -55,6 +55,7 @@
     "nodemailer": "^6.9.7",
     "qrcode": "^1.5.3",
     "stream-chat": "^9.1.1",
+    "stripe": "^14.25.0",
     "three": "^0.160.0",
     "twilio": "^4.19.0",
     "validator": "^13.11.0"
