@@ -4,14 +4,16 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
+    <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/stylepayment.css" />
-    <title data-translate="paymentTitle"> Vaultique | Secure Checkout </title>
+    <link rel="stylesheet" href="/CSS/stripe-payment.css" />
+    <title data-translate="paymentTitle">Vaultique | Secure Checkout</title>
   </head>
   <body>
     <br />
     <a href="/" class="logo" id="logo" data-translate="vaultique">Vaultique</a>
     <br />
+    
     <div class="progress-container">
       <div class="progress-bar">
         <div class="progress"></div>
@@ -32,350 +34,136 @@
       </div>
     </div>
 
-    <div class="form-container">
-      <h2 class="form-title" data-translate="payment">Payment</h2>
-
-      <!-- Guest Checkout Notice -->
-      <% if (!isAuthenticated) { %>
-        <div class="guest-notice">
-          <i class="fas fa-info-circle"></i>
-          <p data-translate="guestNotice">You're checking out as a guest. <a href="/user/LoginSignup" data-translate="signIn">Sign in</a> to save your payment information for future purchases.</p>
-        </div>
-      <% } %>
-
-      <!-- Cart Summary -->
-      <div class="cart-summary">
-        <h3 data-translate="orderSummary">Order Summary</h3>
-        <div class="cart-summary-item">
-          <span data-translate="subtotal">Subtotal:</span>
-          <span>$<%= cart.subtotal.toFixed(2) %></span>
-        </div>
-        <div class="cart-summary-item">
-          <span data-translate="shipping">Shipping:</span>
-          <span>$<%= cart.shippingCost.toFixed(2) %></span>
-        </div>
-        <div class="cart-summary-item cart-summary-total">
-          <span data-translate="total">Total:</span>
-          <span>$<%= cart.total.toFixed(2) %></span>
-        </div>
+    <div class="payment-container">
+      <div class="payment-header">
+        <h1>Secure Payment</h1>
+        <p>Complete your purchase with confidence</p>
       </div>
 
-      <!-- Payment Methods -->
-      <div class="payment-methods">
-        <h3 data-translate="selectPaymentMethod">Select Payment Method</h3>
-        <div class="payment-method">
-          <input type="radio" id="credit-card" name="payment-method" value="credit-card" checked>
-          <label for="credit-card" data-translate="creditCard">
-            <i class="fas fa-credit-card"></i>
-            Credit Card
-          </label>
-        </div>
-      </div>
-
-      <form id="payment-form" class="checkout-form">
-        <!-- Add hidden input for authentication status -->
-        <input type="hidden" id="isAuthenticated" value="<%= isAuthenticated %>">
-        
-        <div class="input-line">
-          <label for="name" data-translate="fullName">FULL NAME</label>
-          <input
-            type="text"
-            name="name"
-            id="name"
-            placeholder="Your name and surname"
-            value="<%= paymentInfo ? paymentInfo.name : '' %>"
-            <%= isAuthenticated && paymentInfo && paymentInfo.name ? 'disabled' : 'required' %>
-            data-translate="enterFullName"
-          />
-        </div>
-        <div class="input-line">
-          <% if (isAuthenticated && paymentInfo && paymentInfo.card_number) { %>
-            <span>
-              **** **** **** <%= paymentInfo.card_number.slice(-4) %>
-            </span>
-            <input type="hidden" name="card-number" value="<%= paymentInfo.card_number %>">
-          <% } else { %>
-            <label for="card-number" data-translate="creditCardNumber">Credit Card Number</label>
-            <input
-              type="text"
-              name="card-number"
-              id="card-number"
-              placeholder="1234 5678 9012 3456"
-              value="<%= paymentInfo && paymentInfo.card_number ? paymentInfo.card_number : '' %>"
-              maxlength="19"
-              required
-              data-translate="enterCardNumber"
-            />
-          <% } %>
-        </div>
-
-        <div class="input-line">
-          <label for="bank-name" data-translate="bankName">BANK NAME</label>
-          <input
-            type="text"
-            name="bank-name"
-            id="bank-name"
-            placeholder="Your bank name"
-            value="<%= paymentInfo ? paymentInfo.bank_name : '' %>"
-            <%= isAuthenticated && paymentInfo && paymentInfo.bank_name ? 'disabled' : 'required' %>
-            data-translate="enterBankName"
-          />
-        </div>
-
-        <div class="input-container">
-          <div class="input-line">
-            <label for="cvv" data-translate="cvv">CVV</label>
-            <input
-              type="text"
-              name="cvv"
-              id="cvv"
-              placeholder="123"
-              value=""
-              maxlength="4"
-              class="cvv-input"
-              required
-              data-translate="enterCVV"
-            />
-            <p class="error" id="cvvError" data-translate="cvvError">
-              Please enter a valid 3 or 4 digit CVV
-            </p>
-          </div>
-
-          <div class="input-line">
-            <label for="expiry" data-translate="expiry">Expiry (MM/YY)</label>
-            <input
-              type="text"
-              name="expiry"
-              id="expiry"
-              placeholder="MM/YY"
-              value="<%= paymentInfo ? paymentInfo.expiry : '' %>"
-              maxlength="5"
-              class="expiry-input"
-              <%= isAuthenticated && paymentInfo && paymentInfo.expiry ? 'disabled' : 'required' %>
-              data-translate="enterExpiry"
-            />
-            <p class="error" id="expiryError" data-translate="expiryError">
-              Please enter a valid expiry date in MM/YY format
-            </p>
-          </div>
-        </div>
-
-        <button type="button" class="flip-card-btn" id="flip-card-btn" data-translate="viewCardDetails">
-          View Card Details
-        </button>
-
-        <!-- 3D Flip Card Component -->
-        <div class="card-flip-container">
-          <div id="flip-card">
-            <div id="flip-front">
-              <div class="card-header">
-                <div class="bank-name" id="display-bank-name" data-translate="bankName">BANK NAME</div>
-                <div class="card-holder" id="display-card-holder" data-translate="fullName">
-                  FULL NAME
+      <div class="payment-content">
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <h3>Order Summary</h3>
+          <div class="summary-items">
+            <% if (cart && cart.items) { %>
+              <% cart.items.forEach(item => { %>
+                <div class="summary-item">
+                  <img src="<%= item.productDetails.image %>" alt="<%= item.productDetails.name %>">
+                  <div class="item-details">
+                    <h4><%= item.productDetails.name %></h4>
+                    <p><%= item.productDetails.brand %></p>
+                    <p>Qty: <%= item.quantity %></p>
+                  </div>
+                  <div class="item-price">$<%= (item.price * item.quantity).toFixed(2) %></div>
                 </div>
-              </div>
-              <div class="card-number" id="display-card-number">
-                ################
-              </div>
-              <div class="card-footer">
-                <div class="expiry-date" id="display-expiry">MM/YY</div>
-              </div>
+              <% }); %>
+            <% } %>
+          </div>
+          
+          <div class="summary-totals">
+            <div class="total-line">
+              <span>Subtotal:</span>
+              <span>$<%= (cart?.subtotal || 0).toFixed(2) %></span>
             </div>
-            <div id="flip-back">
-              <div class="card-stripe"></div>
-              <div class="card-signature" data-translate="authorizedSignature">Authorized Signature</div>
-              <div class="card-cvv" id="display-cvv" data-translate="cvv">CVV</div>
+            <div class="total-line">
+              <span>Shipping:</span>
+              <span>$<%= (cart?.shippingCost || 0).toFixed(2) %></span>
+            </div>
+            <div class="total-line">
+              <span>Tax:</span>
+              <span>$<%= (cart?.tax || 0).toFixed(2) %></span>
+            </div>
+            <div class="total-line total">
+              <span>Total:</span>
+              <span>$<%= (cart?.total || 0).toFixed(2) %></span>
             </div>
           </div>
         </div>
 
-        <!-- Complete Purchase Button -->
-        <button type="submit" class="complete-purchase-btn" data-translate="completePurchase">
-          Complete purchase
-        </button>
+        <!-- Payment Form -->
+        <div class="payment-form-container">
+          <h3>Payment Information</h3>
+          
+          <!-- Guest Checkout Notice -->
+          <% if (!isAuthenticated) { %>
+            <div class="guest-notice">
+              <i class="fas fa-info-circle"></i>
+              <p>You're checking out as a guest. <a href="/user/LoginSignup">Sign in</a> to save your payment information for future purchases.</p>
+            </div>
+          <% } %>
+          
+          <!-- Saved Payment Methods (for logged-in users) -->
+          <% if (isAuthenticated) { %>
+            <div class="saved-payment-methods">
+              <h4>Saved Payment Methods</h4>
+              <div id="saved-payment-methods">
+                <p>Loading saved payment methods...</p>
+              </div>
+              <div class="divider">
+                <span>or</span>
+              </div>
+            </div>
+          <% } %>
 
-        <!-- Back to Cart Link -->
-        <a href="/cart" class="back-to-cart" data-translate="backToCart">
+          <!-- Stripe Payment Form -->
+          <form id="payment-form">
+            <div id="payment-element">
+              <!-- Stripe Elements will be mounted here -->
+            </div>
+            
+            <div id="payment-error" class="error-message" style="display: none;"></div>
+            <div id="payment-success" class="success-message" style="display: none;"></div>
+            
+            <button type="submit" id="submit-payment" class="pay-button">
+              <span class="button-text">Pay $<%= (cart?.total || 0).toFixed(2) %></span>
+              <div class="spinner" id="spinner" style="display: none;"></div>
+            </button>
+          </form>
+
+          <!-- Loading Message -->
+          <div id="loading-message" class="loading-message" style="display: none;"></div>
+
+          <!-- Security Notice -->
+          <div class="security-notice">
+            <i class="fas fa-shield-alt"></i>
+            <p>Your payment information is secured by Stripe's industry-standard encryption. We never store your card details.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back to Cart Link -->
+      <div class="back-to-cart">
+        <a href="/cart" class="back-link">
           <i class="fas fa-arrow-left"></i> Back to Cart
         </a>
-      </form>
-    </div>
-
-    <!-- Add Popup Elements -->
-    <div id="login-message-popup" class="popup" style="display: none;">
-      <div class="popup-content">
-        <h2></h2>
       </div>
     </div>
 
-    <div id="login-message-error-popup" class="popup error" style="display: none;">
-      <div class="popup-content">
-        <h2></h2>
-      </div>
-    </div>
+    <!-- Hidden inputs for authentication status -->
+    <input type="hidden" id="isAuthenticated" value="<%= !!isAuthenticated %>">
+    <% if (isAuthenticated) { %>
+      <input type="hidden" id="userId" value="<%= user._id %>">
+    <% } %>
 
-    <script src="/Javascript/Checkout_scripting.js"></script>
+    <!-- Stripe Configuration -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Real-time card preview
-        const updateCardPreview = () => {
-          const bankNameEl = document.getElementById('display-bank-name');
-          const cardHolderEl = document.getElementById('display-card-holder');
-          const cardNumberEl = document.getElementById('display-card-number');
-          const expiryEl = document.getElementById('display-expiry');
-          const cvvEl = document.getElementById('display-cvv');
-
-          if (bankNameEl) bankNameEl.textContent = document.getElementById('bank-name')?.value || 'BANK NAME';
-          if (cardHolderEl) cardHolderEl.textContent = document.getElementById('name')?.value || 'FULL NAME';
-          if (cardNumberEl) cardNumberEl.textContent = document.getElementById('card-number')?.value || '################';
-          if (expiryEl) expiryEl.textContent = document.getElementById('expiry')?.value || 'MM/YY';
-          if (cvvEl) cvvEl.textContent = document.getElementById('cvv')?.value || 'CVV';
-        };
-
-        // Add event listeners for real-time updates
-        ['name', 'card-number', 'bank-name', 'expiry', 'cvv'].forEach(id => {
-          const element = document.getElementById(id);
-          if (element) {
-            element.addEventListener('input', updateCardPreview);
-          }
-        });
-
-        // Card flip functionality
-        const flipCardBtn = document.getElementById('flip-card-btn');
-        const flipCard = document.getElementById('flip-card');
-        if (flipCardBtn && flipCard) {
-          flipCardBtn.addEventListener('click', () => {
-            flipCard.classList.toggle('flipped');
-          });
-        }
-
-        // Form submission
-        const paymentForm = document.getElementById('payment-form');
-        if (paymentForm) {
-          paymentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Get form values
-            const isAuthenticated = document.getElementById('isAuthenticated')?.value === 'true';
-            const name = document.getElementById('name')?.value;
-            const cardNumberInput = document.getElementById('card-number');
-            const cardNumber = isAuthenticated ? 
-              cardNumberInput?.getAttribute('data-masked-number') || cardNumberInput?.value.replace(/\s/g, '') :
-              cardNumberInput?.value.replace(/\s/g, '');
-            const bankName = document.getElementById('bank-name')?.value;
-            const expiry = document.getElementById('expiry')?.value;
-            const cvv = document.getElementById('cvv')?.value;
-
-            console.log('Form values:', {
-              name,
-              cardNumber,
-              bankName,
-              expiry,
-              cvv,
-              isAuthenticated
-            });
-
-
-            if (isAuthenticated) {
-              // Skip validation for authenticated users
-              return;
-            }
-
-            // Validate required fields
-            if (!isAuthenticated && (!name || !cardNumber || !bankName || !expiry || !cvv)) {
-              alert('Please fill in all required fields');
-              return;
-            }
-
-            // Skip card number validation for authenticated users
-            if (!isAuthenticated && !/^\d{16}$/.test(cardNumber)) {
-              alert('Please enter a valid 16-digit card number');
-              return;
-            }
-
-            // Validate expiry date
-            if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(expiry)) {
-              alert('Please enter a valid expiry date (MM/YY)');
-              return;
-            }
-
-            // Validate CVV
-            if (!/^\d{3,4}$/.test(cvv)) {
-              alert('Please enter a valid 3 or 4 digit CVV');
-              return;
-            }
-
-            try {
-              const requestData = {
-                name,
-                card_number: cardNumber,
-                bank_name: bankName,
-                expiry,
-                cvv
-              };
-              console.log('Sending payment request with data:', requestData);
-
-              const response = await fetch('/api/payment/process', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-              });
-
-              console.log('Response status:', response.status);
-              const responseText = await response.text();
-              console.log('Raw response:', responseText);
-
-              let data;
-              try {
-                data = JSON.parse(responseText);
-                console.log('Parsed response data:', data);
-              } catch (e) {
-                console.error('Error parsing response:', e);
-                throw new Error('Invalid response from server');
-              }
-
-              if (data.success) {
-                const successPopup = document.getElementById('login-message-popup');
-                if (successPopup) {
-                  successPopup.style.display = 'flex';
-                  successPopup.querySelector('h2').textContent = 'Payment information saved successfully!';
-                  
-                  // Wait for 2 seconds before redirecting
-                  setTimeout(() => {
-                    window.location.href = '/user/shipping';
-                  }, 2000);
-                }
-              } else {
-                const errorPopup = document.getElementById('login-message-error-popup');
-                if (errorPopup) {
-                  errorPopup.style.display = 'flex';
-                  errorPopup.querySelector('h2').textContent = data.message || 'Payment failed. Please try again.';
-                  
-                  setTimeout(() => {
-                    errorPopup.style.display = 'none';
-                  }, 3000);
-                }
-              }
-            } catch (error) {
-              console.error('Payment error:', error);
-              const errorPopup = document.getElementById('login-message-error-popup');
-              if (errorPopup) {
-                errorPopup.style.display = 'flex';
-                errorPopup.querySelector('h2').textContent = 'An error occurred. Please try again.';
-                
-                setTimeout(() => {
-                  errorPopup.style.display = 'none';
-                }, 3000);
-              }
-            }
-          });
+      const stripePublishableKey = '<%= stripePublishableKey %>';
+    </script>
+    
+    <!-- Load Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/Javascript/stripe-payment.js"></script>
+    
+    <script>
+      // Initialize payment when page loads
+      document.addEventListener('DOMContentLoaded', async function() {
+        try {
+          // Create payment intent
+          await window.stripePayment.createPaymentIntent();
+        } catch (error) {
+          console.error('Error initializing payment:', error);
         }
       });
     </script>
-                  <!-- ملفات الترجمة -->
-  <script src="/Javascript/translations.js"></script>
-  <script src="/Javascript/language.js"></script>
   </body>
 </html>

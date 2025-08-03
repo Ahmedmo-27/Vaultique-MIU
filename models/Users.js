@@ -119,48 +119,14 @@ const UserSchema = new mongoose.Schema({
     }
   }],
   Payment: [{
-    cardNumber: {
-      type: String,
-      trim: true,
-      validate: {
-        validator: function (v) {
-          return !v || /^\d{13,19}$/.test(v);
-        },
-        message: (props) => `${props.value} is not a valid card number!`,
-      },
-      select: false,
-    },
-    cardHolder: {
-      type: String,
-      trim: true,
-    },
-    expiryDate: {
-      type: String,
-      trim: true,
-      validate: {
-        validator: function (v) {
-          return !v || /^(0[1-9]|1[0-2])\/(\d{2})$/.test(v);
-        },
-        message: (props) => `${props.value} is not a valid expiry date! Use MM/YY.`,
-      },
-    },
-    cvv: {
-      type: String,
-      trim: true,
-      select: false,
-      validate: {
-        validator: function (v) {
-          return !v || /^\d{3,4}$/.test(v);
-        },
-        message: (props) => `${props.value} is not a valid CVV!`,
-      },
-    },
-    paymentType: {
-      type: String,
-      enum: ['Credit Card', 'Debit Card', 'PayPal', 'credit', 'debit'],
-      default: 'Credit Card',
-    },
+    cardHolder: { type: String },
+    cardNumber: { type: String },
+    bankName: { type: String },
+    expiryDate: { type: String },
+    paymentType: { type: String },
+    lastUsed: { type: Date, default: Date.now }
   }],
+  stripeCustomerId: { type: String }, // Stripe customer ID for payment processing
   orders: [
     {
       orderId: {

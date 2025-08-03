@@ -5,6 +5,7 @@ const { encryptData, decryptData } = require('../utils/securityUtils');
 const { validatePaymentInput, validatePaymentMiddleware } = require('../middleware/paymentValidation');
 const { AppError } = require('../utils/securityUtils');
 const rateLimit = require('express-rate-limit');
+const config = require('../config/env');
 
 // Rate limiting for payment attempts
 const paymentLimiter = rateLimit({
@@ -16,83 +17,60 @@ const paymentLimiter = rateLimit({
   })
 });
 
-// Process payment
+// Render Stripe payment page
+exports.renderPaymentPage = async (req, res, next) => {
+  try {
+    // Check if cart exists and has items
+    if (!req.session.cart?.items?.length) {
+      return res.redirect('/cart');
+    }
+
+    // Calculate totals if not already calculated
+    if (!req.session.cart.subtotal) {
+      req.session.cart.subtotal = req.session.cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+    if (!req.session.cart.total) {
+      req.session.cart.total = req.session.cart.subtotal + (req.session.cart.shippingCost || 0) + (req.session.cart.tax || 0);
+    }
+
+    // Get user's saved payment info if logged in
+    let paymentInfo = null;
+    if (req.user) {
+      const user = await User.findById(req.user._id);
+      if (user.Payment && user.Payment.length > 0) {
+        paymentInfo = user.Payment[user.Payment.length - 1]; // Get most recent payment method
+      }
+    }
+
+    res.render('Payment', {
+      user: req.user,
+      isAuthenticated: !!req.user,
+      cart: req.session.cart,
+      paymentInfo: paymentInfo,
+      stripePublishableKey: config.stripe.publishableKey
+    });
+  } catch (error) {
+    console.error('Error rendering payment page:', error);
+    next(new AppError('Error loading payment page', 500));
+  }
+};
+
+// Legacy payment processing (redirects to Stripe)
 exports.processPayment = [
   paymentLimiter,
-  validatePaymentInput,
-  validatePaymentMiddleware,
   async (req, res, next) => {
     try {
-      console.log('Processing payment request:', {
-        hasUser: !!req.user,
-        hasSession: !!req.session,
-        hasCart: !!req.session?.cart,
-        cartItems: req.session?.cart?.items?.length
-      });
-
-      const {
-        name,
-        card_number,
-        bank_name,
-        expiry,
-        cvv
-      } = req.body;
-
-      // Check if cart exists and has items
-      if (!req.session.cart?.items?.length) {
-        return res.status(400).json({
-          success: false,
-          message: 'Cart is empty'
-        });
-      }
-
-      // Store payment info in session
-      req.session.paymentInfo = {
-        name,
-        cardNumber: card_number.startsWith('*') ? card_number : card_number.replace(/\s/g, '').slice(-4), // Handle masked numbers
-        bankName: bank_name,
-        expiry,
-        paymentType: 'credit'
-      };
-
-      // If user is logged in, save payment info to their account
-      if (req.user) {
-        await User.findByIdAndUpdate(req.user._id, {
-          $push: {
-            Payment: {
-              cardHolder: name,
-              cardNumber: card_number.startsWith('*') ? card_number : card_number.replace(/\s/g, '').slice(-4), // Handle masked numbers
-              bankName: bank_name,
-              expiryDate: expiry,
-              paymentType: 'credit',
-              lastUsed: new Date()
-            }
-          }
-        });
-        console.log('Payment info saved for user:', req.user._id);
-      }
-
-      // Save session
-      await new Promise((resolve, reject) => {
-        req.session.save((err) => {
-          if (err) {
-            console.error('Error saving session:', err);
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
-
-      console.log('Payment processed successfully');
+      console.log('Legacy payment endpoint called - redirecting to Stripe');
+      
+      // Redirect to Stripe payment page
       res.json({
         success: true,
-        message: 'Payment processed successfully',
-        redirect: '/user/shipping'
+        message: 'Redirecting to secure payment',
+        redirect: '/payment'
       });
     } catch (error) {
-      console.error('Error processing payment:', error);
-      next(new AppError('Error processing payment', 500));
+      console.error('Error in legacy payment processing:', error);
+      next(new AppError('Payment processing error', 500));
     }
   }
 ];
@@ -104,25 +82,27 @@ exports.getPaymentInfo = async (req, res, next) => {
       throw new AppError('User not authenticated', 401);
     }
 
-    const user = await User.findById(req.user._id).select('paymentInfo');
+    const user = await User.findById(req.user._id).select('Payment');
     
-    if (!user.paymentInfo) {
+    if (!user.Payment || user.Payment.length === 0) {
       return res.status(200).json({
         success: true,
         data: {}
       });
     }
 
-    // Decrypt sensitive data
-    const decryptedPaymentInfo = {
-      ...user.paymentInfo.toObject(),
-      cardNumber: decryptData(user.paymentInfo.cardNumber),
-      expiry: decryptData(user.paymentInfo.expiry)
-    };
+    // Return the most recent payment method
+    const latestPayment = user.Payment[user.Payment.length - 1];
     
     res.status(200).json({
       success: true,
-      data: decryptedPaymentInfo
+      data: {
+        cardHolder: latestPayment.cardHolder,
+        cardNumber: latestPayment.cardNumber,
+        bankName: latestPayment.bankName,
+        expiryDate: latestPayment.expiryDate,
+        paymentType: latestPayment.paymentType
+      }
     });
   } catch (error) {
     next(error);
@@ -146,16 +126,18 @@ exports.updatePaymentInfo = [
         expiry
       } = req.body;
 
-      // Encrypt sensitive data
-      const encryptedCardNumber = encryptData(card_number.replace(/\s/g, '').slice(-4));
-      const encryptedExpiry = encryptData(expiry);
-
+      // For Stripe integration, we don't store card details
+      // This is now handled by Stripe's secure system
       await User.findByIdAndUpdate(req.user._id, {
-        $set: {
-          'paymentInfo.name': name,
-          'paymentInfo.cardNumber': encryptedCardNumber,
-          'paymentInfo.bankName': bank_name,
-          'paymentInfo.expiry': encryptedExpiry
+        $push: {
+          Payment: {
+            cardHolder: name,
+            cardNumber: card_number.replace(/\s/g, '').slice(-4), // Only store last 4 digits
+            bankName: bank_name,
+            expiryDate: expiry,
+            paymentType: 'credit',
+            lastUsed: new Date()
+          }
         }
       });
 
@@ -177,22 +159,12 @@ exports.getPaymentHistory = async (req, res, next) => {
     }
 
     const orders = await Order.find({ userId: req.user._id })
-      .select('orderNumber paymentInfo status createdAt')
+      .select('orderNumber payment status createdAt total')
       .sort({ createdAt: -1 });
-
-    // Decrypt sensitive data in payment history
-    const decryptedOrders = orders.map(order => ({
-      ...order.toObject(),
-      paymentInfo: {
-        ...order.paymentInfo,
-        cardNumber: decryptData(order.paymentInfo.cardNumber),
-        expiry: decryptData(order.paymentInfo.expiry)
-      }
-    }));
 
     res.status(200).json({
       success: true,
-      data: decryptedOrders
+      data: orders
     });
   } catch (error) {
     next(error);

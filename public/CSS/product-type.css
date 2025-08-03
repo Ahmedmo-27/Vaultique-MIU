@@ -17,7 +17,7 @@ body {
 /* Main Content */
 .product-container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 100px auto;
   padding: 2rem;
   padding-top: calc(110px + 2rem); /* Account for fixed header height */
   display: grid;

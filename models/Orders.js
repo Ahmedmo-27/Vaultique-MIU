@@ -49,14 +49,32 @@ const orderSchema = new mongoose.Schema({
     zipCode: { type: String, required: true }
   },
   payment: {
-    name: { type: String, required: true }, // cardholder full name
-    cardNumber: { type: String, required: true }, // last 4 digits only
-    bankName: { type: String, required: true },
-    expiry: { type: String, required: true }
+    // Legacy payment fields (for backward compatibility)
+    name: { type: String }, // cardholder full name
+    cardNumber: { type: String }, // last 4 digits only
+    bankName: { type: String },
+    expiry: { type: String },
+    
+    // Stripe payment fields
+    stripePaymentIntentId: { type: String },
+    stripeCustomerId: { type: String },
+    stripeChargeId: { type: String },
+    amount: { type: Number },
+    currency: { type: String, default: 'usd' },
+    status: { type: String },
+    
+    // Refund information
+    refundId: { type: String },
+    refundAmount: { type: Number },
+    refundReason: { type: String },
+    
+    // Payment method information
+    paymentMethodId: { type: String },
+    paymentMethodType: { type: String }
   },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'],
     default: 'pending'
   },
   total: {

@@ -3,7 +3,10 @@ const router = express.Router();
 const paymentController = require('../controllers/Payment');
 const { optionalJWT } = require('../middleware/jwt');
 
-// Process payment
+// Render Stripe payment page
+router.get('/', optionalJWT, paymentController.renderPaymentPage);
+
+// Process payment (legacy - redirects to Stripe)
 router.post('/process', optionalJWT, paymentController.processPayment);
 
 // Get payment information

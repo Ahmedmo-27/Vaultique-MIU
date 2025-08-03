@@ -11,6 +11,33 @@ const { generateOrderNumber } = require('../utils/orderUtils');
 const { sendOrderConfirmationEmail } = require('../utils/emailService');
 const Gender = require('../models/Gender');
 
+// Helper function to normalize image paths
+const normalizeImagePath = (path) => {
+    return path ? (path.startsWith('/') ? path : `/${path}`) : '';
+};
+
+// Helper function to process featured items/models
+const processFeaturedItems = (items, type = 'featuredItems') => {
+    if (!items || !Array.isArray(items)) {
+        console.warn(`No ${type} found or invalid format`);
+        return [];
+    }
+    
+    return items.map(item => {
+        // Handle Mongoose subdocuments by extracting the actual data
+        // Mongoose subdocuments have the actual data in the _doc property
+        const itemData = item._doc || item;
+        
+        return {
+            name: itemData.name,
+            image: normalizeImagePath(itemData.image),
+            tagline: itemData.tagline,
+            description: itemData.description,
+            _id: itemData._id
+        };
+    });
+};
+
 // Helper function to render notification
 const renderNotification = (res, type, message, title = 'Notification', status = 500) => {
   res.status(status).render('error', {
@@ -130,21 +157,33 @@ router.get('/Brands', async (req, res) => {
         // Fetch all brands from database
         const brands = await Brand.find();
         
-        // Sort brands according to the custom order
+        // Sort brands according to the custom order and process their data
         const sortedBrands = brandOrder
             .map(name => brands.find(brand => brand.name === name))
-            .filter(brand => brand !== undefined); // Remove any undefined if brand not found
+            .filter(brand => brand !== undefined) // Remove any undefined if brand not found
+            .map(brand => ({
+                ...brand.toObject(),
+                logo: normalizeImagePath(brand.logo),
+                coverImage: normalizeImagePath(brand.coverImage),
+                coverImage2: normalizeImagePath(brand.coverImage2),
+                heroVideo: normalizeImagePath(brand.heroVideo),
+                featuredModels: processFeaturedItems(brand.featuredModels, 'featuredModels')
+            }));
+        
+        // Validate that we have brands to display
+        if (sortedBrands.length === 0) {
+            console.warn('No brands found in database');
+            return renderNotification(res, 'warning', 'No brands are currently available.', 'No Brands Found', 404);
+        }
         
         // Render the Brands-Page template with the sorted brands
         res.render('Brands-Page', { 
-            brands: sortedBrands
+            brands: sortedBrands,
+            totalBrands: sortedBrands.length
         });
     } catch (error) {
         console.error('Error loading Brands Page:', error);
-        res.status(500).render('error', {
-            message: 'Failed to load Brands Page. Please try again later.',
-            error: process.env.NODE_ENV === 'development' ? error : {}
-        });
+        renderNotification(res, 'error', 'Failed to load Brands Page. Please try again later.', 'Error Loading Brands');
     }
 });
 
@@ -162,13 +201,18 @@ router.get('/brands/:brandSlug', async (req, res) => {
 
         if (!brand) {
             console.log(`Brand not found with slug: ${brandSlug}`);
-            return res.status(404).render('error', {
-                title: 'Brand Not Found',
-                message: 'The requested brand does not exist.',
-                type: 'error',
-                show: true
-            });
+            return renderNotification(res, 'error', 'The requested brand does not exist.', 'Brand Not Found', 404);
         }
+
+        // Convert brand to plain object and process featured models
+        const brandData = brand.toObject();
+        const featuredModels = processFeaturedItems(brand.featuredModels, 'featuredModels');
+        
+        // Normalize brand image paths
+        brandData.logo = normalizeImagePath(brandData.logo);
+        brandData.coverImage = normalizeImagePath(brandData.coverImage);
+        brandData.coverImage2 = normalizeImagePath(brandData.coverImage2);
+        brandData.heroVideo = normalizeImagePath(brandData.heroVideo);
 
         // Build filter query
         const filterQuery = { brand: brand._id };
@@ -267,8 +311,9 @@ router.get('/brands/:brandSlug', async (req, res) => {
         };
 
         res.render('Brand-Page', {
-            title: brand.name,
-            brand,
+            title: brandData.name,
+            brand: brandData,
+            featuredModels,
             products: productsWithWishlist,
             pagination: {
                 currentPage: page,
@@ -1789,29 +1834,32 @@ router.get('/for-him', async (req, res) => {
         if (!genderContent) {
             console.error('Gender content not found for for-him');
         } else {
-            // Ensure paths are correct
-            if (genderContent.heroVideo && !genderContent.heroVideo.startsWith('/')) {
-                genderContent.heroVideo = `/${genderContent.heroVideo}`;
-            }
-            if (genderContent.coverImage && !genderContent.coverImage.startsWith('/')) {
-                genderContent.coverImage = `/${genderContent.coverImage}`;
-            }
-            // Ensure featured items paths are correct
-            if (genderContent.featuredItems) {
-                genderContent.featuredItems = genderContent.featuredItems.map(item => ({
-                    ...item,
-                    image: item.image ? (item.image.startsWith('/') ? item.image : `/${item.image}`) : ''
-                }));
-            }
+            // Convert to plain object and normalize all image paths using helper function
+            const genderData = genderContent.toObject();
+            genderData.heroVideo = normalizeImagePath(genderData.heroVideo);
+            genderData.coverImage = normalizeImagePath(genderData.coverImage);
+            genderData.logo = normalizeImagePath(genderData.logo);
+            
+            // Process featured items
+            genderData.featuredItems = processFeaturedItems(genderContent.featuredItems, 'featuredItems');
+            
             console.log('Found gender content:', {
-                name: genderContent.name,
-                hasVideo: !!genderContent.heroVideo,
-                hasCoverImage: !!genderContent.coverImage,
-                hasHeader: !!genderContent.header,
-                hasDescription: !!genderContent.description,
-                featuredItemsCount: genderContent.featuredItems?.length || 0,
-                featuredItems: genderContent.featuredItems?.map(m => ({ name: m.name, image: m.image }))
+                name: genderData.name,
+                hasVideo: !!genderData.heroVideo,
+                hasCoverImage: !!genderData.coverImage,
+                hasHeader: !!genderData.header,
+                hasDescription: !!genderData.description,
+                featuredItemsCount: genderData.featuredItems?.length || 0,
+                featuredItems: genderData.featuredItems?.map(m => ({ name: m.name, image: m.image }))
             });
+            
+            // Log any missing featured items for debugging
+            if (!genderData.featuredItems || genderData.featuredItems.length === 0) {
+                console.warn(`No featured items found for gender: ${genderData.name}`);
+            }
+            
+            // Update genderContent reference for template
+            genderContent = genderData;
         }
 
         // Check wishlist status for each product if user is logged in
@@ -1842,7 +1890,7 @@ router.get('/for-him', async (req, res) => {
         res.render('Gender', {
             title: 'For Him',
             products: productsWithWishlist,
-            featuredModels: genderContent?.featuredItems || [], // Changed from featuredModels to featuredItems
+            featuredItems: genderContent?.featuredItems || [], // Fixed: use featuredItems consistently
             pagination: {
                 currentPage: page,
                 totalPages,
@@ -1954,29 +2002,32 @@ router.get('/for-her', async (req, res) => {
         if (!genderContent) {
             console.error('Gender content not found for for-her');
         } else {
-            // Ensure paths are correct
-            if (genderContent.heroVideo && !genderContent.heroVideo.startsWith('/')) {
-                genderContent.heroVideo = `/${genderContent.heroVideo}`;
-            }
-            if (genderContent.coverImage && !genderContent.coverImage.startsWith('/')) {
-                genderContent.coverImage = `/${genderContent.coverImage}`;
-            }
-            // Ensure featured models paths are correct
-            if (genderContent.featuredModels) {
-                genderContent.featuredModels = genderContent.featuredModels.map(model => ({
-                    ...model,
-                    image: model.image ? (model.image.startsWith('/') ? model.image : `/${model.image}`) : ''
-                }));
-            }
+            // Convert to plain object and normalize all image paths using helper function
+            const genderData = genderContent.toObject();
+            genderData.heroVideo = normalizeImagePath(genderData.heroVideo);
+            genderData.coverImage = normalizeImagePath(genderData.coverImage);
+            genderData.logo = normalizeImagePath(genderData.logo);
+            
+            // Process featured items (Gender model uses featuredItems, not featuredModels)
+            genderData.featuredItems = processFeaturedItems(genderContent.featuredItems, 'featuredItems');
+            
             console.log('Found gender content:', {
-                name: genderContent.name,
-                hasVideo: !!genderContent.heroVideo,
-                hasCoverImage: !!genderContent.coverImage,
-                hasHeader: !!genderContent.header,
-                hasDescription: !!genderContent.description,
-                featuredModelsCount: genderContent.featuredModels?.length || 0,
-                featuredModels: genderContent.featuredModels?.map(m => ({ name: m.name, image: m.image }))
+                name: genderData.name,
+                hasVideo: !!genderData.heroVideo,
+                hasCoverImage: !!genderData.coverImage,
+                hasHeader: !!genderData.header,
+                hasDescription: !!genderData.description,
+                featuredItemsCount: genderData.featuredItems?.length || 0,
+                featuredItems: genderData.featuredItems?.map(m => ({ name: m.name, image: m.image }))
             });
+            
+            // Log any missing featured items for debugging
+            if (!genderData.featuredItems || genderData.featuredItems.length === 0) {
+                console.warn(`No featured items found for gender: ${genderData.name}`);
+            }
+            
+            // Update genderContent reference for template
+            genderContent = genderData;
         }
 
         // Check wishlist status for each product if user is logged in
@@ -2007,7 +2058,7 @@ router.get('/for-her', async (req, res) => {
         res.render('Gender', {
             title: 'For Her',
             products: productsWithWishlist,
-            featuredModels: genderContent?.featuredModels || [],
+            featuredItems: genderContent?.featuredItems || [], // Fixed: use featuredItems consistently
             pagination: {
                 currentPage: page,
                 totalPages,

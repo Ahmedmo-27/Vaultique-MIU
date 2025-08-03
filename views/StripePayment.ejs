@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment - Vaultique</title>
+    <link rel="stylesheet" href="/CSS/stylepayment.css">
+    <link rel="stylesheet" href="/CSS/stripe-payment.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1>Secure Payment</h1>
+            <p>Complete your purchase with confidence</p>
+        </div>
+
+        <div class="payment-content">
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-items">
+                    <% if (cart && cart.items) { %>
+                        <% cart.items.forEach(item => { %>
+                            <div class="summary-item">
+                                <img src="<%= item.productDetails.image %>" alt="<%= item.productDetails.name %>">
+                                <div class="item-details">
+                                    <h4><%= item.productDetails.name %></h4>
+                                    <p><%= item.productDetails.brand %></p>
+                                    <p>Qty: <%= item.quantity %></p>
+                                </div>
+                                <div class="item-price">$<%= (item.price * item.quantity).toFixed(2) %></div>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+                
+                <div class="summary-totals">
+                    <div class="total-line">
+                        <span>Subtotal:</span>
+                        <span>$<%= (cart?.subtotal || 0).toFixed(2) %></span>
+                    </div>
+                    <div class="total-line">
+                        <span>Shipping:</span>
+                        <span>$<%= (cart?.shippingCost || 0).toFixed(2) %></span>
+                    </div>
+                    <div class="total-line">
+                        <span>Tax:</span>
+                        <span>$<%= (cart?.tax || 0).toFixed(2) %></span>
+                    </div>
+                    <div class="total-line total">
+                        <span>Total:</span>
+                        <span>$<%= (cart?.total || 0).toFixed(2) %></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <div class="payment-form-container">
+                <h3>Payment Information</h3>
+                
+                <!-- Saved Payment Methods (for logged-in users) -->
+                <% if (user) { %>
+                    <div class="saved-payment-methods">
+                        <h4>Saved Payment Methods</h4>
+                        <div id="saved-payment-methods">
+                            <p>Loading saved payment methods...</p>
+                        </div>
+                        <div class="divider">
+                            <span>or</span>
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- Stripe Payment Form -->
+                <form id="payment-form">
+                    <div id="payment-element">
+                        <!-- Stripe Elements will be mounted here -->
+                    </div>
+                    
+                    <div id="payment-error" class="error-message" style="display: none;"></div>
+                    <div id="payment-success" class="success-message" style="display: none;"></div>
+                    
+                    <button type="submit" id="submit-payment" class="pay-button">
+                        <span class="button-text">Pay $<%= (cart?.total || 0).toFixed(2) %></span>
+                        <div class="spinner" id="spinner" style="display: none;"></div>
+                    </button>
+                </form>
+
+                <!-- Loading Message -->
+                <div id="loading-message" class="loading-message" style="display: none;"></div>
+
+                <!-- Security Notice -->
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <p>Your payment information is secured by Stripe's industry-standard encryption. We never store your card details.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Cart Link -->
+        <div class="back-to-cart">
+            <a href="/cart" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Cart
+            </a>
+        </div>
+    </div>
+
+    <!-- Hidden inputs for authentication status -->
+    <input type="hidden" id="isAuthenticated" value="<%= !!user %>">
+    <% if (user) { %>
+        <input type="hidden" id="userId" value="<%= user._id %>">
+    <% } %>
+
+    <!-- Stripe Configuration -->
+    <script>
+        const stripePublishableKey = '<%= stripePublishableKey %>';
+    </script>
+    
+    <!-- Load Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/Javascript/stripe-payment.js"></script>
+    
+    <script>
+        // Initialize payment when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Create payment intent
+                await window.stripePayment.createPaymentIntent();
+            } catch (error) {
+                console.error('Error initializing payment:', error);
+            }
+        });
+    </script>
+</body>
+</html> 
