@@ -3,13 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= user?.Name || 'User' %> | Account Details</title>
+    
+    <!-- SEO Meta Tags -->
+    <title><%= user?.Name || 'User' %> | Vaultique Account Details & Profile</title>
+    <meta name="description" content="Manage your Vaultique account details, orders, wishlist, and preferences. View order history, update personal information, and manage your luxury watch collection.">
+    <meta name="keywords" content="Vaultique account, user profile, order history, wishlist management, account settings, luxury watch account, Vaultique profile">
+    <meta name="author" content="Vaultique">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="<%= user?.Name || 'User' %> | Vaultique Account Details & Profile">
+    <meta property="og:description" content="Manage your Vaultique account details, orders, wishlist, and preferences. View order history and update personal information.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vaultique.com/user/account">
+    <meta property="og:image" content="/Assets/Images/LogoV.jpg">
+    <meta property="og:site_name" content="Vaultique">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= user?.Name || 'User' %> | Vaultique Account Details & Profile">
+    <meta name="twitter:description" content="Manage your Vaultique account details, orders, wishlist, and preferences. View order history and update personal information.">
+    <meta name="twitter:image" content="/Assets/Images/LogoV.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vaultique.com/user/account">
+    
     <link rel="icon" type="image/x-icon" href="/Assets/Images/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/Account-Details.css">
     <link rel="stylesheet" href="/CSS/footer.css">
+    
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Vaultique Account Details",
+        "description": "User account management page for Vaultique luxury watch platform",
+        "url": "https://vaultique.com/user/account",
+        "mainEntity": {
+            "@type": "Person",
+            "name": "<%= user?.Name || 'User' %>",
+            "email": "<%= user?.email || '' %>",
+            "memberOf": {
+                "@type": "Organization",
+                "name": "Vaultique"
+            }
+        }
+    }
+    </script>
+    
     <script src="/Javascript/Loading Screen.js"></script>
     <script src="/Javascript/nav-bar.js"></script>
     <script src="/Javascript/Account-Details.js"></script>

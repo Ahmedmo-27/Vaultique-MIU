@@ -1,7 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Vaultique | <%= title %></title>
+        <!-- SEO Meta Tags -->
+        <title>Vaultique | <%= title %> Luxury Watch Collection</title>
+        <meta name="description" content="Discover exclusive <%= title.toLowerCase() %> luxury watch collection at Vaultique. Handcrafted Swiss timepieces designed for <%= title.toLowerCase() %> featuring premium materials and elegant design. Limited editions available.">
+        <meta name="keywords" content="<%= title.toLowerCase() %> watches, luxury watches, Swiss watches, <%= title.toLowerCase() %> timepieces, premium watches, luxury <%= title.toLowerCase() %> collection">
+        <meta name="author" content="Vaultique">
+        <meta name="robots" content="index, follow">
+        
+        <!-- Open Graph Meta Tags -->
+        <meta property="og:title" content="<%= title %> Luxury Watch Collection | Vaultique">
+        <meta property="og:description" content="Discover exclusive <%= title.toLowerCase() %> luxury watch collection. Handcrafted Swiss timepieces designed for <%= title.toLowerCase() %> with premium materials and elegant design.">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://vaultique.com/user/<%= title.toLowerCase().replace(' ', '-') %>">
+        <meta property="og:image" content="<%= genderContent?.coverImage || '/Assets/Images/LogoV.jpg' %>">
+        <meta property="og:site_name" content="Vaultique">
+        <meta property="og:locale" content="en_US">
+        
+        <!-- Twitter Card Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="<%= title %> Luxury Watch Collection | Vaultique">
+        <meta name="twitter:description" content="Discover exclusive <%= title.toLowerCase() %> luxury watch collection. Handcrafted Swiss timepieces designed for <%= title.toLowerCase() %>.">
+        <meta name="twitter:image" content="<%= genderContent?.coverImage || '/Assets/Images/LogoV.jpg' %>">
+        
+        <!-- Canonical URL -->
+        <link rel="canonical" href="https://vaultique.com/user/<%= title.toLowerCase().replace(' ', '-') %>">
+        
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/CSS/Loading Screen.css">
@@ -12,6 +36,48 @@
         <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
         <link rel="stylesheet" href="/CSS/notifications.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        
+        <!-- JSON-LD Schema Markup -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "<%= title %> Watch Collection",
+            "description": "<%= genderContent?.description || title + ' luxury watch collection featuring handcrafted Swiss timepieces designed specifically for ' + title.toLowerCase() + ' with premium materials and elegant design' %>",
+            "url": "https://vaultique.com/user/<%= title.toLowerCase().replace(' ', '-') %>",
+            "image": "<%= genderContent?.coverImage || '/Assets/Images/LogoV.jpg' %>",
+            "mainEntity": {
+                "@type": "ItemList",
+                "name": "<%= title %> Luxury Watch Collection",
+                "description": "<%= genderContent?.description || title + ' luxury watch collection' %>",
+                "numberOfItems": "<%= products ? products.length : 0 %>",
+                "itemListElement": [
+                    <% if (products && products.length > 0) { %>
+                        <% products.slice(0, 5).forEach((product, index) => { %>
+                            {
+                                "@type": "ListItem",
+                                "position": <%= index + 1 %>,
+                                "item": {
+                                    "@type": "Product",
+                                    "name": "<%= product.name %>",
+                                    "description": "<%= product.description || product.name + ' luxury watch for ' + title.toLowerCase() %>",
+                                    "image": "<%= product.image %>",
+                                    "category": "<%= title %> Watches",
+                                    "offers": {
+                                        "@type": "Offer",
+                                        "price": "<%= product.price %>",
+                                        "priceCurrency": "EUR",
+                                        "availability": "<%= product.stock || product.stockCount > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' %>"
+                                    }
+                                }
+                            }<%= index < Math.min(4, products.length - 1) ? ',' : '' %>
+                        <% }); %>
+                    <% } %>
+                ]
+            }
+        }
+        </script>
+        
         <script src="/Javascript/Loading Screen.js"></script>
         <script src="/Javascript/nav-bar.js"></script>
         <script src="/Javascript/Page-Handler.js"></script>

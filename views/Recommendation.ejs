@@ -3,7 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title><%= title || 'Discover Your Watch Personality' %></title>
+  
+  <!-- SEO Meta Tags -->
+  <title><%= title || 'Vaultique | Watch Recommendation System - Find Your Perfect Timepiece' %></title>
+  <meta name="description" content="Discover your perfect luxury watch with Vaultique's intelligent recommendation system. Take our personalized quiz to find the ideal Swiss timepiece that matches your style and preferences.">
+  <meta name="keywords" content="watch recommendation, luxury watch quiz, Swiss watch finder, personalized watch selection, watch personality quiz, luxury timepiece recommendation, Vaultique quiz">
+  <meta name="author" content="Vaultique">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Vaultique | Watch Recommendation System - Find Your Perfect Timepiece">
+  <meta property="og:description" content="Discover your perfect luxury watch with Vaultique's intelligent recommendation system. Take our personalized quiz to find the ideal Swiss timepiece.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vaultique.com/user/Recommendation-System">
+  <meta property="og:image" content="/Assets/Images/LogoV.jpg">
+  <meta property="og:site_name" content="Vaultique">
+  <meta property="og:locale" content="en_US">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Vaultique | Watch Recommendation System - Find Your Perfect Timepiece">
+  <meta name="twitter:description" content="Discover your perfect luxury watch with Vaultique's intelligent recommendation system. Take our personalized quiz to find the ideal Swiss timepiece.">
+  <meta name="twitter:image" content="/Assets/Images/LogoV.jpg">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://vaultique.com/user/Recommendation-System">
   
   <!-- Preconnect to external resources -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -20,7 +44,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   
-  <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg"> 
+  <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
+  
+  <!-- JSON-LD Schema Markup -->
+  <script type="application/ld+json">
+  {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Vaultique Watch Recommendation System",
+      "description": "Intelligent watch recommendation system that helps users find their perfect luxury timepiece",
+      "url": "https://vaultique.com/user/Recommendation-System",
+      "applicationCategory": "RecommendationSystem",
+      "operatingSystem": "Web Browser",
+      "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock"
+      },
+      "featureList": [
+          "Personalized Quiz",
+          "Style Analysis",
+          "Watch Recommendations",
+          "Interactive Questions",
+          "Results Summary"
+      ],
+      "author": {
+          "@type": "Organization",
+          "name": "Vaultique"
+      }
+  }
+  </script>
 </head>
 <body class="dark-mode">    
 

@@ -3,19 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
+    
+    <!-- SEO Meta Tags -->
+    <title data-translate="wishlistTitle">Vaultique | My Wishlist - Favorite Luxury Watches</title>
+    <meta name="description" content="View and manage your favorite luxury Swiss watches in your Vaultique wishlist. Save premium timepieces for later and keep track of your dream watch collection.">
+    <meta name="keywords" content="wishlist, favorite watches, luxury watch wishlist, Swiss watch favorites, Vaultique wishlist, premium watch collection">
+    <meta name="author" content="Vaultique">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Vaultique | My Wishlist - Favorite Luxury Watches">
+    <meta property="og:description" content="View and manage your favorite luxury Swiss watches in your Vaultique wishlist. Save premium timepieces for later and keep track of your dream watch collection.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vaultique.com/user/wishlist">
+    <meta property="og:image" content="/Assets/Images/LogoV.jpg">
+    <meta property="og:site_name" content="Vaultique">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vaultique | My Wishlist - Favorite Luxury Watches">
+    <meta name="twitter:description" content="View and manage your favorite luxury Swiss watches in your Vaultique wishlist. Save premium timepieces for later and keep track of your dream watch collection.">
+    <meta name="twitter:image" content="/Assets/Images/LogoV.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vaultique.com/user/wishlist">
+    
+    <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css" />
     <link rel="stylesheet" href="/CSS/Products.css" />
     <link rel="stylesheet" href="/CSS/footer.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="/Javascript/Light-Mode.js"></script>
     <script src="/Javascript/Loading Screen.js"></script>
     <script src="/Javascript/nav-bar.js"></script>
-    <title data-translate="wishlistTitle">My Wishlist</title>
+    
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Vaultique Wishlist",
+        "description": "User wishlist for favorite luxury Swiss watches on Vaultique",
+        "url": "https://vaultique.com/user/wishlist",
+        "numberOfItems": "<%= wishlistItems ? wishlistItems.length : 0 %>",
+        "itemListElement": [
+            <% if (wishlistItems && wishlistItems.length > 0) { %>
+                <% wishlistItems.slice(0, 10).forEach((product, index) => { %>
+                    {
+                        "@type": "ListItem",
+                        "position": <%= index + 1 %>,
+                        "item": {
+                            "@type": "Product",
+                            "name": "<%= product.name %>",
+                            "description": "<%= product.description || product.name + ' luxury watch' %>",
+                            "brand": {
+                                "@type": "Brand",
+                                "name": "<%= product.brand || 'Vaultique' %>"
+                            },
+                            "image": "<%= product.image %>",
+                            "offers": {
+                                "@type": "Offer",
+                                "price": "<%= product.price %>",
+                                "priceCurrency": "EUR",
+                                "availability": "<%= product.stock || product.stockCount > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' %>",
+                                "seller": {
+                                    "@type": "Organization",
+                                    "name": "Vaultique"
+                                }
+                            }
+                        }
+                    }<%= index < Math.min(9, wishlistItems.length - 1) ? ',' : '' %>
+                <% }); %>
+            <% } %>
+        ]
+    }
+    </script>
   </head>
 
   <body>

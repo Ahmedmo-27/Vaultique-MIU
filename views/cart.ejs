@@ -4,7 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title data-translate="cartTitle">Vaultique | Cart</title>
+    
+    <!-- SEO Meta Tags -->
+    <title data-translate="cartTitle">Vaultique | Shopping Cart - Luxury Swiss Watches</title>
+    <meta name="description" content="View and manage your shopping cart at Vaultique. Secure checkout for luxury Swiss watches, limited editions, and bespoke timepieces. Enjoy exclusive craftsmanship and premium service.">
+    <meta name="keywords" content="shopping cart, luxury watches, Swiss watches, checkout, premium timepieces, Vaultique cart">
+    <meta name="author" content="Vaultique">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Vaultique | Shopping Cart - Luxury Swiss Watches">
+    <meta property="og:description" content="View and manage your shopping cart at Vaultique. Secure checkout for luxury Swiss watches, limited editions, and bespoke timepieces.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vaultique.com/user/cart">
+    <meta property="og:image" content="/Assets/Images/LogoV.jpg">
+    <meta property="og:site_name" content="Vaultique">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vaultique | Shopping Cart - Luxury Swiss Watches">
+    <meta name="twitter:description" content="View and manage your shopping cart at Vaultique. Secure checkout for luxury Swiss watches, limited editions, and bespoke timepieces.">
+    <meta name="twitter:image" content="/Assets/Images/LogoV.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vaultique.com/user/cart">
+    
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/CSS/cart (2).css">
@@ -12,12 +37,24 @@
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/footer.css">
     <link rel="stylesheet" href="/CSS/notifications.css">
+    <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
+    
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Vaultique Shopping Cart",
+        "description": "View and manage your shopping cart at Vaultique. Secure checkout for luxury Swiss watches, limited editions, and bespoke timepieces.",
+        "url": "https://vaultique.com/user/cart"
+    }
+    </script>
+    
     <script src="/Javascript/Loading Screen.js"></script>
     <script src="/Javascript/nav-bar.js"></script>
     <script src="/Javascript/cart (2).js"></script>
     <script src="/Javascript/notifications.js"></script>
     <script src="/Javascript/Light-Mode.js"></script>
-    <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
 </head>
 <body>
     <%- include('partials/loading-screen') %>
@@ -65,7 +102,7 @@
                         <div class="empty-cart">
                             <i class="fas fa-shopping-cart"></i>
                             <p data-translate="cartEmpty">Your cart is empty. Add items to your cart to see them here.</p>
-                            <a href="/products" class="continue-shopping" data-translate="continueShopping">Continue Shopping</a>
+                            <a href="/user/products" class="continue-shopping" data-translate="continueShopping">Continue Shopping</a>
                         </div>
                     <% } %>
                 </div>

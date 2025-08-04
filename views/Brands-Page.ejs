@@ -4,7 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-translate="brandsTitle">Vaultique | Brands</title>
+    
+    <!-- SEO Meta Tags -->
+    <title data-translate="brandsTitle">Vaultique | Luxury Watch Brands - Premium Swiss Manufacturers</title>
+    <meta name="description" content="Discover exclusive luxury watch brands at Vaultique. From Rolex to Audemars Piguet, explore premium Swiss watch manufacturers and their iconic timepieces. Authentic luxury watch brands.">
+    <meta name="keywords" content="luxury watch brands, Swiss watch brands, Rolex, Audemars Piguet, Cartier, Omega, premium watch manufacturers, luxury watch brands list, Vaultique brands">
+    <meta name="author" content="Vaultique">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Vaultique | Luxury Watch Brands - Premium Swiss Manufacturers">
+    <meta property="og:description" content="Discover exclusive luxury watch brands at Vaultique. From Rolex to Audemars Piguet, explore premium Swiss watch manufacturers and their iconic timepieces.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vaultique.com/user/brands">
+    <meta property="og:image" content="/Assets/Images/LogoV.jpg">
+    <meta property="og:site_name" content="Vaultique">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vaultique | Luxury Watch Brands - Premium Swiss Manufacturers">
+    <meta name="twitter:description" content="Discover exclusive luxury watch brands at Vaultique. From Rolex to Audemars Piguet, explore premium Swiss watch manufacturers.">
+    <meta name="twitter:image" content="/Assets/Images/LogoV.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vaultique.com/user/brands">
+    
       <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/footer.css">
@@ -12,6 +37,40 @@
     <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/arrow.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Vaultique Luxury Watch Brands",
+        "description": "Exclusive collection of premium Swiss watch brands and manufacturers",
+        "url": "https://vaultique.com/user/brands",
+        "mainEntity": {
+            "@type": "ItemList",
+            "name": "Luxury Watch Brands",
+            "description": "Premium Swiss watch brands and manufacturers",
+            "numberOfItems": "<%= brands ? brands.length : 0 %>",
+            "itemListElement": [
+                <% if (brands && brands.length > 0) { %>
+                    <% brands.slice(0, 5).forEach((brand, index) => { %>
+                        {
+                            "@type": "ListItem",
+                            "position": <%= index + 1 %>,
+                            "item": {
+                                "@type": "Brand",
+                                "name": "<%= brand.name %>",
+                                "description": "<%= brand.description || brand.name + ' luxury watch brand' %>",
+                                "url": "https://vaultique.com/user/brands/<%= brand.slug %>",
+                                "logo": "<%= brand.coverImage || '/Assets/Images/LogoV.jpg' %>"
+                            }
+                        }<%= index < Math.min(4, brands.length - 1) ? ',' : '' %>
+                    <% }); %>
+                <% } %>
+            ]
+        }
+    }
+    </script>
 
     <script src="/Javascript/Loading Screen.js"></script>
     <script src="/Javascript/Brands-Page.js"></script>

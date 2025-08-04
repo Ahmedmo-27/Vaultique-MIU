@@ -3,7 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
+    
+    <!-- SEO Meta Tags -->
+    <title><%= product.name %> | <%= product.brand || 'Vaultique' %> Luxury Watch</title>
+    <meta name="description" content="<%= product.name %> - Handcrafted luxury watch featuring <%= product.movement || 'Swiss movement' %> and <%= product.caseMaterial || 'premium materials' %>. Limited edition timepiece with <%= product.waterResistance || 'water resistance' %>. Shop now at Vaultique.">
+    <meta name="keywords" content="<%= product.name %>, luxury watch, <%= product.brand || 'Swiss watch' %>, <%= product.movement || 'automatic watch' %>, <%= product.caseMaterial || 'premium watch' %>, limited edition">
+    <meta name="author" content="Vaultique">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="<%= product.name %> | <%= product.brand || 'Vaultique' %> Luxury Watch">
+    <meta property="og:description" content="<%= product.name %> - Handcrafted luxury watch with <%= product.movement || 'Swiss movement' %>. Limited edition timepiece available at Vaultique.">
+    <meta property="og:type" content="product">
+    <meta property="og:url" content="https://vaultique.com/user/product?id=<%= product._id %>">
+    <meta property="og:image" content="<%= product.image %>">
+    <meta property="og:site_name" content="Vaultique">
+    <meta property="og:locale" content="en_US">
+    <meta property="product:price:amount" content="<%= product.price %>">
+    <meta property="product:price:currency" content="EUR">
+    <meta property="product:availability" content="<%= product.stock || product.stockCount > 0 ? 'in stock' : 'out of stock' %>">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= product.name %> | <%= product.brand || 'Vaultique' %> Luxury Watch">
+    <meta name="twitter:description" content="<%= product.name %> - Handcrafted luxury watch with <%= product.movement || 'Swiss movement' %>. Limited edition timepiece.">
+    <meta name="twitter:image" content="<%= product.image %>">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vaultique.com/user/product?id=<%= product._id %>">
+    
+    <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css" />
     <link rel="stylesheet" href="/CSS/product-type.css" />
@@ -13,11 +42,64 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
+    
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "<%= product.name %>",
+        "description": "<%= product.description || product.name + ' - Handcrafted luxury watch with premium materials and Swiss precision' %>",
+        "brand": {
+            "@type": "Brand",
+            "name": "<%= product.brand || 'Vaultique' %>"
+        },
+        "category": "Luxury Watch",
+        "image": "<%= product.image %>",
+        "offers": {
+            "@type": "Offer",
+            "price": "<%= product.price %>",
+            "priceCurrency": "EUR",
+            "availability": "<%= product.stock || product.stockCount > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' %>",
+            "seller": {
+                "@type": "Organization",
+                "name": "Vaultique"
+            }
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "<%= product.rating || 4.5 %>",
+            "reviewCount": "<%= product.reviewCount || 10 %>"
+        },
+        "additionalProperty": [
+            {
+                "@type": "PropertyValue",
+                "name": "Movement",
+                "value": "<%= product.movement || 'Swiss Automatic' %>"
+            },
+            {
+                "@type": "PropertyValue",
+                "name": "Case Material",
+                "value": "<%= product.caseMaterial || 'Premium Materials' %>"
+            },
+            {
+                "@type": "PropertyValue",
+                "name": "Water Resistance",
+                "value": "<%= product.waterResistance || '30m' %>"
+            },
+            {
+                "@type": "PropertyValue",
+                "name": "Strap Material",
+                "value": "<%= product.strapMaterial || 'Premium Leather' %>"
+            }
+        ]
+    }
+    </script>
+    
     <script src="/Javascript/Light-Mode.js"></script>
     <script src="/Javascript/Loading Screen.js"></script>
     <script src="/Javascript/nav-bar.js"></script>
     <script src="/Javascript/image-zoom.js"></script>
-    <title><%= product.name %></title>
   </head>
 
   <body>

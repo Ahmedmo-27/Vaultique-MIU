@@ -4,7 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-translate="vaultiquetitle">Vaultique | Collections</title>
+    
+    <!-- SEO Meta Tags -->
+    <title data-translate="vaultiquetitle">Vaultique | Luxury Watch Collections - Premium Swiss Timepieces</title>
+    <meta name="description" content="Explore Vaultique's exclusive luxury watch collections. Discover handcrafted Swiss timepieces from premium brands. Each collection showcases unique design, craftsmanship, and heritage.">
+    <meta name="keywords" content="luxury watch collections, Swiss watch collections, premium timepiece collections, luxury watch brands, watch collections, Vaultique collections">
+    <meta name="author" content="Vaultique">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Vaultique | Luxury Watch Collections - Premium Swiss Timepieces">
+    <meta property="og:description" content="Explore Vaultique's exclusive luxury watch collections. Discover handcrafted Swiss timepieces from premium brands.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vaultique.com/user/collections">
+    <meta property="og:image" content="/Assets/Images/LogoV.jpg">
+    <meta property="og:site_name" content="Vaultique">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vaultique | Luxury Watch Collections - Premium Swiss Timepieces">
+    <meta name="twitter:description" content="Explore Vaultique's exclusive luxury watch collections. Discover handcrafted Swiss timepieces from premium brands.">
+    <meta name="twitter:image" content="/Assets/Images/LogoV.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vaultique.com/user/collections">
+    
     <link rel="stylesheet" href="/CSS/Loading Screen.css">
     <link rel="stylesheet" href="/CSS/nav-bar.css">
     <link rel="stylesheet" href="/CSS/footer.css">
@@ -12,6 +37,39 @@
     <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/arrow.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Vaultique Watch Collections",
+        "description": "Exclusive luxury watch collections featuring handcrafted Swiss timepieces from premium brands",
+        "url": "https://vaultique.com/user/collections",
+        "mainEntity": {
+            "@type": "ItemList",
+            "name": "Luxury Watch Collections",
+            "description": "Curated collections of premium Swiss timepieces",
+            "numberOfItems": "<%= collections ? collections.length : 0 %>",
+            "itemListElement": [
+                <% if (collections && collections.length > 0) { %>
+                    <% collections.slice(0, 5).forEach((collection, index) => { %>
+                        {
+                            "@type": "ListItem",
+                            "position": <%= index + 1 %>,
+                            "item": {
+                                "@type": "Collection",
+                                "name": "<%= collection.name %>",
+                                "description": "<%= collection.description || collection.name + ' luxury watch collection' %>",
+                                "url": "https://vaultique.com/user/collections/<%= collection.slug %>"
+                            }
+                        }<%= index < Math.min(4, collections.length - 1) ? ',' : '' %>
+                    <% }); %>
+                <% } %>
+            ]
+        }
+    }
+    </script>
 
     <script src="/Javascript/Loading Screen.js"></script>
     <script src="/Javascript/nav-bar.js"></script>
