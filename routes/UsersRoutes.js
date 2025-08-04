@@ -481,53 +481,8 @@ router.post('/api/update-phone', authenticateJWT, async (req, res) => {
   }
 });
 
-// Get order details
-router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
-    try {
-        const { orderId } = req.params;
-        const userId = req.user._id;
-
-        if (!orderId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Order ID is required'
-            });
-        }
-
-        // Find the order directly from the Order model
-        const order = await Order.findById(orderId)
-            .populate({
-                path: 'items.productId',
-                model: 'Product'
-            });
-
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'Order not found'
-            });
-        }
-
-        // Verify the order belongs to the user
-        if (order.userId && order.userId.toString() !== userId.toString()) {
-            return res.status(403).json({
-                success: false,
-                message: 'Not authorized to view this order'
-            });
-        }
-
-        res.json({
-            success: true,
-            data: order
-        });
-    } catch (error) {
-        console.error('Error fetching order details:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch order details'
-        });
-    }
-});
+// Get order details - This route is handled in controllers/User.js
+// Removed duplicate route to avoid conflicts
 
 
 module.exports = router;

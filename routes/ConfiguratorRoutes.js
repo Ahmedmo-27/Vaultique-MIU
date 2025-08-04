@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Brand = require('../models/Brands');
 const Product = require('../models/Products');
+const configuratorController = require('../controllers/Configurator');
+
+// Render configurator page
+router.get('/', configuratorController.renderConfigurator);
 
 // Get all available watch models with their 3D models
 router.get('/models', async (req, res) => {

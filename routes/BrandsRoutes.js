@@ -40,18 +40,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get brand by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const brand = await Brand.findById(req.params.id);
-    if (!brand) return res.status(404).json({ success: false, message: 'Brand not found' });
-    res.json({ success: true, data: brand });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Get brand by name (API endpoint)
+// Get brand by name (API endpoint) - must come before /:brandSlug route
 router.get('/name/:name', async (req, res) => {
   try {
     const rawName = decodeURIComponent(req.params.name);
@@ -106,13 +95,8 @@ router.get('/name/:name', async (req, res) => {
   }
 });
 
-// Get brand by slug and render brand page
-router.get('/:brandSlug', async (req, res) => {
-  // Skip this route if the request is for /name/:name
-  if (req.params.brandSlug === 'name') {
-    return next();
-  }
-
+// Get brand by slug and render brand page - must come before /:id route
+router.get('/:brandSlug', async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -277,18 +261,29 @@ router.get('/:brandSlug', async (req, res) => {
         itemsPerPage: limit
       },
       filters: currentFilters,
-      sort,
       collections,
-      user: req.user || null
+      sort
     });
-  } catch (err) {
-    console.error('Error loading brand page:', err);
+
+  } catch (error) {
+    console.error('Error in brand page route:', error);
     res.status(500).render('error', {
-      title: 'Error',
+      title: 'Server Error',
       message: 'An error occurred while loading the brand page.',
       type: 'error',
       show: true
     });
+  }
+});
+
+// Get brand by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const brand = await Brand.findById(req.params.id);
+    if (!brand) return res.status(404).json({ success: false, message: 'Brand not found' });
+    res.json({ success: true, data: brand });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
