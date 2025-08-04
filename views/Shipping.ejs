@@ -22,15 +22,15 @@
       <div class="progress-steps">
         <div class="step completed">
           <span class="circle">&#10003;</span>
-          <span class="label" data-translate="payment">Payment</span>
-        </div>
-        <div class="step completed">
-          <span class="circle">&#10003;</span>
-          <span class="label" data-translate="shipping">Shipping</span>
+          <span class="label" data-translate="cart">Cart</span>
         </div>
         <div class="step active">
           <span class="circle"></span>
-          <span class="label" data-translate="leaveReview">Leave a review!</span>
+          <span class="label" data-translate="shipping">Shipping</span>
+        </div>
+        <div class="step">
+          <span class="circle"></span>
+          <span class="label" data-translate="payment">Payment</span>
         </div>
       </div>
     </div>
@@ -139,7 +139,7 @@
           </div>
         <% } %>
 
-        <button type="submit" class="submit-btn" data-translate="completeOrder">Complete Order</button>
+        <button type="submit" class="submit-btn" data-translate="continueToPayment">Continue to Payment</button>
       </form>
     </div>
 
@@ -217,7 +217,7 @@
             if (data.success) {
               // Show success message
               const successPopup = document.getElementById('login-message-popup');
-              successPopup.querySelector('h2').textContent = 'Order Created Successfully!';
+              successPopup.querySelector('h2').textContent = 'Shipping information saved successfully!';
               successPopup.style.display = 'flex';
               
               // Redirect after 2 seconds
@@ -247,6 +247,11 @@
             }, 3000);
           }
         });
+        
+        // Initialize progress bar to show we're on the shipping step
+        if (typeof updateProgress === 'function') {
+          updateProgress(1); // Set to shipping step (index 1)
+        }
       });
     </script>
                   <!-- ملفات الترجمة -->

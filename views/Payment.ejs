@@ -48,10 +48,9 @@
             <% if (cart && cart.items) { %>
               <% cart.items.forEach(item => { %>
                 <div class="summary-item">
-                  <img src="<%= item.productDetails.image %>" alt="<%= item.productDetails.name %>">
+                  <img src="<%= item.image %>" alt="<%= item.name %>">
                   <div class="item-details">
-                    <h4><%= item.productDetails.name %></h4>
-                    <p><%= item.productDetails.brand %></p>
+                    <h4><%= item.name %></h4>
                     <p>Qty: <%= item.quantity %></p>
                   </div>
                   <div class="item-price">$<%= (item.price * item.quantity).toFixed(2) %></div>
@@ -153,17 +152,5 @@
     <!-- Load Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
     <script src="/Javascript/stripe-payment.js"></script>
-    
-    <script>
-      // Initialize payment when page loads
-      document.addEventListener('DOMContentLoaded', async function() {
-        try {
-          // Create payment intent
-          await window.stripePayment.createPaymentIntent();
-        } catch (error) {
-          console.error('Error initializing payment:', error);
-        }
-      });
-    </script>
   </body>
 </html>

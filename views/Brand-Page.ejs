@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title data-translate="brandPageTitle">Vaultique | <%= brand.name %></title>
+        <title>Vaultique | <%= brand.name %></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/CSS/Loading Screen.css">
@@ -42,9 +42,9 @@
                         <div class="slide" data-index="<%= index %>" data-model="<%= index + 1 %>">
                             <div class="slide-content">
                                 <div class="watch-info">
-                                    <h1 class="watch-title" data-translate="modelName"><%= model.name %></h1>
-                                    <h2 class="watch-tagline" data-translate="modelTagline"><%= model.tagline %></h2>
-                                    <p class="watch-description" data-translate="modelDescription"><%= model.description %></p>
+                                    <h1 class="watch-title"><%= model.name %></h1>
+                                    <h2 class="watch-tagline"><%= model.tagline %></h2>
+                                    <p class="watch-description"><%= model.description %></p>
                                 </div>
                                 <div class="watch-image-container">
                                     <img src="<%= model.image %>" alt="<%= model.name %>" class="watch-image" onerror="this.style.display='none'">
@@ -81,11 +81,11 @@
         <div class="image" style="margin-bottom: -90px;">
             <img src="<%= brand.coverImage || '/placeholder.svg' %>" alt="<%= brand.name %> Cover Image" id="brandCoverImage">
             <div class="brand-logo">
-                <h1 id="brandLogo" data-translate="brandName"><%= brand.name %></h1>
+                <h1 id="brandLogo"><%= brand.name %></h1>
             </div>
             <div class="text-overlay">
-                <h2 id="brandHeader" data-translate="brandHeader"><%= brand.header %></h2>
-                <p id="brandDescription" data-translate="brandDescription"><%= brand.description %></p>
+                <h2 id="brandHeader"><%= brand.header %></h2>
+                <p id="brandDescription"><%= brand.description %></p>
             </div>
         </div>
 
@@ -141,7 +141,7 @@
 
                 <label data-translate="brand">Brand:</label>
                 <select id="brand" name="brand" class="tag">
-                    <option value="<%= brand.name %>" <%= filters.brand === brand.name ? 'selected' : '' %> data-translate="brandName"><%= brand.name %></option>
+                    <option value="<%= brand.name %>" <%= filters.brand === brand.name ? 'selected' : '' %>><%= brand.name %></option>
                 </select>
      
 
