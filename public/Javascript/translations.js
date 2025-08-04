@@ -1,4 +1,4 @@
-const translations = {
+window.translations = {
   en: {
     // Logo
     logo: 'Vaultique',

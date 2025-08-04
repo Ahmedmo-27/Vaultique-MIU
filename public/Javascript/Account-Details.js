@@ -336,12 +336,20 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log('Order details button clicked for order:', orderId);
       
       try {
+        console.log('Fetching order details for:', orderId);
         const response = await fetch(`/user/orders/${orderId}`);
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch order details');
+          const errorText = await response.text();
+          console.error('Response error text:', errorText);
+          throw new Error(`Failed to fetch order details: ${response.status} ${response.statusText}`);
         }
         
         const data = await response.json();
+        console.log('Response data:', data);
+        
         if (!data.success) {
           throw new Error(data.message || 'Failed to load order details');
         }
@@ -354,9 +362,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create order details content
         const content = `
           <div class="order-info">
-            <h4>Order #${order._id}</h4>
+            <h4>Order #${order.orderNumber}</h4>
             <p><strong>Status:</strong> <span class="status-${order.status.toLowerCase()}">${order.status}</span></p>
-            <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+            <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
             <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery || 'Not available'}</p>
           </div>
           
@@ -364,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <h5>Order Summary</h5>
             <div class="summary-grid">
               <div><strong>Subtotal:</strong></div>
-              <div>$${order.total.toFixed(2)}</div>
+              <div>$${order.subtotal?.toFixed(2) || order.total.toFixed(2)}</div>
               <div><strong>Shipping:</strong></div>
               <div>$${order.shippingCost?.toFixed(2) || '0.00'}</div>
               <div><strong>Tax:</strong></div>
@@ -433,53 +441,51 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log('Track order button clicked for order:', orderId);
       
       // Find the order in the user's orders
-      const order = userData.orders.find(o => o._id === orderId);
+      const order = userData.orders.find(o => o.orderId === orderId);
       if (!order) {
         console.error('Order not found:', orderId);
         return;
       }
 
-      // Create tracking content
+      // Create tracking content based on available data
       const content = `
-        <h4>Order #${order._id} - Tracking Information</h4>
+        <h4>Order #${order.orderId} - Tracking Information</h4>
         
         <div class="tracking-progress">
-          <div class="tracking-step ${order.status === 'Placed' ? 'completed' : ''}">
+          <div class="tracking-step ${order.status === 'pending' || order.status === 'confirmed' ? 'completed' : ''}">
             <div class="step-icon"><i class="fas fa-check"></i></div>
             <div class="step-label">Order Placed</div>
-            <div class="step-date">${new Date(order.createdAt).toLocaleDateString()}</div>
+            <div class="step-date">${new Date(order.orderDate).toLocaleDateString()}</div>
           </div>
-          <div class="tracking-step ${order.status === 'Processing' ? 'completed' : ''}">
-            <div class="step-icon"><i class="fas fa-check"></i></div>
+          <div class="tracking-step ${order.status === 'processing' ? 'completed' : ''}">
+            <div class="step-icon"><i class="fas fa-cog"></i></div>
             <div class="step-label">Processing</div>
-            <div class="step-date">${order.processingDate ? new Date(order.processingDate).toLocaleDateString() : ''}</div>
+            <div class="step-date">${order.status === 'processing' ? new Date(order.orderDate).toLocaleDateString() : ''}</div>
           </div>
-          <div class="tracking-step ${order.status === 'Shipped' ? 'active' : ''}">
+          <div class="tracking-step ${order.status === 'shipped' ? 'active' : ''}">
             <div class="step-icon"><i class="fas fa-truck"></i></div>
             <div class="step-label">Shipped</div>
-            <div class="step-date">${order.shippingDate ? new Date(order.shippingDate).toLocaleDateString() : ''}</div>
+            <div class="step-date">${order.status === 'shipped' ? new Date(order.orderDate).toLocaleDateString() : ''}</div>
           </div>
-          <div class="tracking-step ${order.status === 'Delivered' ? 'completed' : ''}">
+          <div class="tracking-step ${order.status === 'delivered' ? 'completed' : ''}">
             <div class="step-icon"><i class="fas fa-home"></i></div>
             <div class="step-label">Delivered</div>
-            <div class="step-date">${order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : ''}</div>
+            <div class="step-date">${order.status === 'delivered' ? new Date(order.orderDate).toLocaleDateString() : ''}</div>
           </div>
         </div>
         
         <div class="tracking-details">
-          <h4>Shipping Details</h4>
-          <div><strong>Carrier:</strong></div>
-          <div>${order.shipping?.carrier || 'Standard Shipping'}</div>
-          <div><strong>Tracking Number:</strong></div>
-          <div>${order.shipping?.trackingNumber || 'Not available'}</div>
-          <div><strong>Shipped From:</strong></div>
-          <div>${order.shipping?.origin || 'Our Warehouse'}</div>
-          <div><strong>Destination:</strong></div>
-          <div>${order.shipping?.address}, ${order.shipping?.city}, ${order.shipping?.state} ${order.shipping?.zipCode}</div>
-          <div><strong>Last Update:</strong></div>
-          <div>${order.shipping?.lastUpdate ? new Date(order.shipping.lastUpdate).toLocaleDateString() : 'N/A'}</div>
+          <h4>Order Summary</h4>
+          <div><strong>Order Number:</strong></div>
+          <div>${order.orderId}</div>
+          <div><strong>Order Date:</strong></div>
+          <div>${new Date(order.orderDate).toLocaleDateString()}</div>
           <div><strong>Status:</strong></div>
-          <div>${order.shipping?.status || order.status}</div>
+          <div>${order.status}</div>
+          <div><strong>Total:</strong></div>
+          <div>$${order.total}</div>
+          <div><strong>Items:</strong></div>
+          <div>${order.items ? order.items.length : 0} item(s)</div>
         </div>
       `;
 
