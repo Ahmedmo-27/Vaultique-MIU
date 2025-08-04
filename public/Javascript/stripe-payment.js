@@ -70,7 +70,7 @@ async function createPaymentIntent() {
 // Create payment element
 async function createPaymentElement(clientSecret) {
   try {
-    const { elements } = await stripe.elements({
+    elements = stripe.elements({
       clientSecret: clientSecret,
       appearance: {
         theme: 'stripe',
@@ -281,6 +281,9 @@ function showSuccess(message) {
 document.addEventListener('DOMContentLoaded', async function() {
   try {
     await initializeStripe();
+    
+    // Create payment intent automatically
+    await createPaymentIntent();
     
     // Load saved payment methods if user is logged in
     if (document.getElementById('isAuthenticated')?.value === 'true') {

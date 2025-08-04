@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Product = require('../models/Products');
 const Brand = require('../models/Brands');
 const Collection = require('../models/Collections');
@@ -10,6 +11,7 @@ const Cart = require('../models/cart');
 const { generateOrderNumber } = require('../utils/orderUtils');
 const { sendOrderConfirmationEmail } = require('../utils/emailService');
 const Gender = require('../models/Gender');
+const config = require('../config/env');
 
 // Helper function to normalize image paths
 const normalizeImagePath = (path) => {
@@ -137,205 +139,6 @@ router.get('/Collections', async (req, res) => {
     }
 })
 
-// Brands Page Route with Custom Order
-router.get('/Brands', async (req, res) => {
-    try {
-        // Define the exact brand order you want
-        const brandOrder = [
-            "Rolex", 
-            "Omega",
-            "Cartier",
-            "Patek Philippe",
-            "Audemars Piguet",
-            "A.Lange & Söhne",
-            "Vacheron Constantin",
-            "Jacob & Co",
-            "Richard Mille",
-            "Breitling"
-        ];
-        
-        // Fetch all brands from database
-        const brands = await Brand.find();
-        
-        // Sort brands according to the custom order and process their data
-        const sortedBrands = brandOrder
-            .map(name => brands.find(brand => brand.name === name))
-            .filter(brand => brand !== undefined) // Remove any undefined if brand not found
-            .map(brand => ({
-                ...brand.toObject(),
-                logo: normalizeImagePath(brand.logo),
-                coverImage: normalizeImagePath(brand.coverImage),
-                coverImage2: normalizeImagePath(brand.coverImage2),
-                heroVideo: normalizeImagePath(brand.heroVideo),
-                featuredModels: processFeaturedItems(brand.featuredModels, 'featuredModels')
-            }));
-        
-        // Validate that we have brands to display
-        if (sortedBrands.length === 0) {
-            console.warn('No brands found in database');
-            return renderNotification(res, 'warning', 'No brands are currently available.', 'No Brands Found', 404);
-        }
-        
-        // Render the Brands-Page template with the sorted brands
-        res.render('Brands-Page', { 
-            brands: sortedBrands,
-            totalBrands: sortedBrands.length
-        });
-    } catch (error) {
-        console.error('Error loading Brands Page:', error);
-        renderNotification(res, 'error', 'Failed to load Brands Page. Please try again later.', 'Error Loading Brands');
-    }
-});
-
-// Brand Detail Page Route
-router.get('/brands/:brandSlug', async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
-
-        const brandSlug = req.params.brandSlug;
-        console.log(`Searching for brand with slug: ${brandSlug}`);
-
-        let brand = await Brand.findOne({ slug: brandSlug });
-
-        if (!brand) {
-            console.log(`Brand not found with slug: ${brandSlug}`);
-            return renderNotification(res, 'error', 'The requested brand does not exist.', 'Brand Not Found', 404);
-        }
-
-        // Convert brand to plain object and process featured models
-        const brandData = brand.toObject();
-        const featuredModels = processFeaturedItems(brand.featuredModels, 'featuredModels');
-        
-        // Normalize brand image paths
-        brandData.logo = normalizeImagePath(brandData.logo);
-        brandData.coverImage = normalizeImagePath(brandData.coverImage);
-        brandData.coverImage2 = normalizeImagePath(brandData.coverImage2);
-        brandData.heroVideo = normalizeImagePath(brandData.heroVideo);
-
-        // Build filter query
-        const filterQuery = { brand: brand._id };
-        
-        // Apply other filters if present
-        if (req.query.Vcollection && req.query.Vcollection !== 'All') {
-            filterQuery.Vcollection = req.query.Vcollection;
-        }
-        if (req.query.gender && req.query.gender !== 'All') {
-            filterQuery.gender = req.query.gender;
-        }
-        if (req.query.strapMaterial && req.query.strapMaterial !== 'All') {
-            filterQuery.strapMaterial = req.query.strapMaterial;
-        }
-        if (req.query.movement && req.query.movement !== 'All') {
-            filterQuery.movement = req.query.movement;
-        }
-        if (req.query.waterResistance && req.query.waterResistance !== 'All') {
-            filterQuery.waterResistance = req.query.waterResistance;
-        }
-        if (req.query.caseMaterial && req.query.caseMaterial !== 'All') {
-            filterQuery.caseMaterial = req.query.caseMaterial;
-        }
-        if (req.query.dialColor && req.query.dialColor !== 'All') {
-            filterQuery.dialColor = req.query.dialColor;
-        }
-
-        // Price range
-        if (req.query.minPrice) {
-            filterQuery.price = { ...filterQuery.price, $gte: parseFloat(req.query.minPrice) };
-        }
-        if (req.query.maxPrice) {
-            filterQuery.price = { ...filterQuery.price, $lte: parseFloat(req.query.maxPrice) };
-        }
-
-        // Stock filter
-        if (req.query.inStock === 'true') {
-            filterQuery.stock = true;
-        }
-
-        // Get sort option
-        const sort = req.query.sort || 'default';
-        let sortQuery = {};
-        switch (sort) {
-            case 'price-asc':
-                sortQuery = { price: 1 };
-                break;
-            case 'price-desc':
-                sortQuery = { price: -1 };
-                break;
-            case 'new':
-                sortQuery = { createdAt: -1 };
-                break;
-            case 'popularity':
-                sortQuery = { popularityScore: -1 };
-                break;
-            default:
-                sortQuery = { createdAt: -1 };
-        }
-
-        // Get products with pagination
-        const products = await Product.find(filterQuery)
-            .sort(sortQuery)
-            .skip(skip)
-            .limit(limit);
-
-        // Get total count for pagination
-        const totalProducts = await Product.countDocuments(filterQuery);
-        const totalPages = Math.ceil(totalProducts / limit);
-
-        // Get all collections for filter
-        const collections = await Collection.find().sort('name');
-
-        // Get wishlist status for each product if user is logged in
-        let productsWithWishlist = products;
-        if (req.user) {
-            const user = await User.findById(req.user._id).populate('wishlist');
-            productsWithWishlist = products.map(product => ({
-                ...product.toObject(),
-                inWishlist: user.wishlist.some(item => item._id.toString() === product._id.toString())
-            }));
-        }
-
-        // Current filters for maintaining state
-        const currentFilters = {
-            Vcollection: req.query.Vcollection || 'All',
-            gender: req.query.gender || 'All',
-            strapMaterial: req.query.strapMaterial || 'All',
-            movement: req.query.movement || 'All',
-            waterResistance: req.query.waterResistance || 'All',
-            caseMaterial: req.query.caseMaterial || 'All',
-            dialColor: req.query.dialColor || 'All',
-            minPrice: req.query.minPrice || '0',
-            maxPrice: req.query.maxPrice || '50000000',
-            inStock: req.query.inStock || 'false'
-        };
-
-        res.render('Brand-Page', {
-            title: brandData.name,
-            brand: brandData,
-            featuredModels,
-            products: productsWithWishlist,
-            pagination: {
-                currentPage: page,
-                totalPages,
-                totalProducts,
-                itemsPerPage: limit
-            },
-            filters: currentFilters,
-            sort,
-            collections,
-            user: req.user || null
-        });
-    } catch (error) {
-        console.error('Error loading brand page:', error);
-        res.status(500).render('error', {
-            title: 'Error',
-            message: 'An error occurred while loading the brand page.',
-            type: 'error',
-            show: true
-        });
-    }
-});
 
 async function handleUserQuestion(userQuestion) {
   // 1. First check if it's a product-related question
@@ -663,6 +466,188 @@ router.get('/products', async (req, res) => {
   }
 });
 
+// Brands Page Route with Custom Order
+router.get('/Brands', async (req, res) => {
+  try {
+      // Define the exact brand order you want
+      const brandOrder = [
+          "Rolex", 
+          "Omega",
+          "Cartier",
+          "Patek Philippe",
+          "Audemars Piguet",
+          "A.Lange & Söhne",
+          "Vacheron Constantin",
+          "Jacob & Co",
+          "Richard Mille",
+          "Breitling"
+      ];
+      
+      // Fetch all brands from database
+      const brands = await Brand.find();
+      
+      // Sort brands according to the custom order
+      const sortedBrands = brandOrder
+          .map(name => brands.find(brand => brand.name === name))
+          .filter(brand => brand !== undefined); // Remove any undefined if brand not found
+      
+      // Render the Brands-Page template with the sorted brands
+      res.render('Brands-Page', { 
+          brands: sortedBrands
+      });
+  } catch (error) {
+      console.error('Error loading Brands Page:', error);
+      res.status(500).render('error', {
+          message: 'Failed to load Brands Page. Please try again later.',
+          error: process.env.NODE_ENV === 'development' ? error : {}
+      });
+  }
+});
+
+// Brand Detail Page Route
+router.get('/brands/:brandSlug', async (req, res) => {
+  try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const brandSlug = req.params.brandSlug;
+      console.log(`Searching for brand with slug: ${brandSlug}`);
+
+      let brand = await Brand.findOne({ slug: brandSlug });
+
+      if (!brand) {
+          console.log(`Brand not found with slug: ${brandSlug}`);
+          return res.status(404).render('error', {
+              title: 'Brand Not Found',
+              message: 'The requested brand does not exist.',
+              type: 'error',
+              show: true
+          });
+      }
+
+      // Build filter query
+      const filterQuery = { brand: brand._id };
+      
+      // Apply other filters if present
+      if (req.query.Vcollection && req.query.Vcollection !== 'All') {
+          filterQuery.Vcollection = req.query.Vcollection;
+      }
+      if (req.query.gender && req.query.gender !== 'All') {
+          filterQuery.gender = req.query.gender;
+      }
+      if (req.query.strapMaterial && req.query.strapMaterial !== 'All') {
+          filterQuery.strapMaterial = req.query.strapMaterial;
+      }
+      if (req.query.movement && req.query.movement !== 'All') {
+          filterQuery.movement = req.query.movement;
+      }
+      if (req.query.waterResistance && req.query.waterResistance !== 'All') {
+          filterQuery.waterResistance = req.query.waterResistance;
+      }
+      if (req.query.caseMaterial && req.query.caseMaterial !== 'All') {
+          filterQuery.caseMaterial = req.query.caseMaterial;
+      }
+      if (req.query.dialColor && req.query.dialColor !== 'All') {
+          filterQuery.dialColor = req.query.dialColor;
+      }
+
+      // Price range
+      if (req.query.minPrice) {
+          filterQuery.price = { ...filterQuery.price, $gte: parseFloat(req.query.minPrice) };
+      }
+      if (req.query.maxPrice) {
+          filterQuery.price = { ...filterQuery.price, $lte: parseFloat(req.query.maxPrice) };
+      }
+
+      // Stock filter
+      if (req.query.inStock === 'true') {
+          filterQuery.stock = true;
+      }
+
+      // Get sort option
+      const sort = req.query.sort || 'default';
+      let sortQuery = {};
+      switch (sort) {
+          case 'price-asc':
+              sortQuery = { price: 1 };
+              break;
+          case 'price-desc':
+              sortQuery = { price: -1 };
+              break;
+          case 'new':
+              sortQuery = { createdAt: -1 };
+              break;
+          case 'popularity':
+              sortQuery = { popularityScore: -1 };
+              break;
+          default:
+              sortQuery = { createdAt: -1 };
+      }
+
+      // Get products with pagination
+      const products = await Product.find(filterQuery)
+          .sort(sortQuery)
+          .skip(skip)
+          .limit(limit);
+
+      // Get total count for pagination
+      const totalProducts = await Product.countDocuments(filterQuery);
+      const totalPages = Math.ceil(totalProducts / limit);
+
+      // Get all collections for filter
+      const collections = await Collection.find().sort('name');
+
+      // Get wishlist status for each product if user is logged in
+      let productsWithWishlist = products;
+      if (req.user) {
+          const user = await User.findById(req.user._id).populate('wishlist');
+          productsWithWishlist = products.map(product => ({
+              ...product.toObject(),
+              inWishlist: user.wishlist.some(item => item._id.toString() === product._id.toString())
+          }));
+      }
+
+      // Current filters for maintaining state
+      const currentFilters = {
+          Vcollection: req.query.Vcollection || 'All',
+          gender: req.query.gender || 'All',
+          strapMaterial: req.query.strapMaterial || 'All',
+          movement: req.query.movement || 'All',
+          waterResistance: req.query.waterResistance || 'All',
+          caseMaterial: req.query.caseMaterial || 'All',
+          dialColor: req.query.dialColor || 'All',
+          minPrice: req.query.minPrice || '0',
+          maxPrice: req.query.maxPrice || '50000000',
+          inStock: req.query.inStock || 'false'
+      };
+
+      res.render('Brand-Page', {
+          title: brand.name,
+          brand,
+          products: productsWithWishlist,
+          pagination: {
+              currentPage: page,
+              totalPages,
+              totalProducts,
+              itemsPerPage: limit
+          },
+          filters: currentFilters,
+          sort,
+          collections,
+          user: req.user || null
+      });
+  } catch (error) {
+      console.error('Error loading brand page:', error);
+      res.status(500).render('error', {
+          title: 'Error',
+          message: 'An error occurred while loading the brand page.',
+          type: 'error',
+          show: true
+      });
+  }
+});
+
 // Collection-specific products page
 router.get('/collections/:collectionSlug', async (req, res) => {
   try {
@@ -949,7 +934,22 @@ router.post('/cart/add', async (req, res) => {
         }
         existingItem.quantity = newQuantity;
       } else {
-        cart.items.push({ product: productId, productId: productId, name: product.name, image: product.image, price: product.price, quantity });
+        cart.items.push({ 
+          product: productId, 
+          productId: productId, 
+          name: product.name, 
+          image: product.image, 
+          price: product.price, 
+          quantity,
+          brand: product.brand,
+          strapMaterial: product.strapMaterial,
+          movement: product.movement,
+          waterResistance: product.waterResistance,
+          caseMaterial: product.caseMaterial,
+          dialColor: product.dialColor,
+          gender: product.gender,
+          Vcollection: product.Vcollection
+        });
       }
       cart.subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       cart.shippingCost = cart.shippingMethod === 'fast' ? 40 : 20;
@@ -1431,17 +1431,19 @@ protectedRoutes.get('/account-details', async (req, res) => {
                 ]
             })
             .populate({
-                path: 'orders.orderId',
-                model: 'Order',
-                populate: {
-                    path: 'items.productId',
-                    model: 'Product'
-                }
+                path: 'orders.items.product',
+                model: 'Product'
             })
             .lean();
 
         if (!user) {
             return res.redirect('/user/LoginSignup');
+        }
+
+        // Debug: Log user orders
+        console.log('User orders found:', user.orders ? user.orders.length : 0);
+        if (user.orders && user.orders.length > 0) {
+            console.log('First order:', user.orders[0]);
         }
 
         // Remove sensitive payment info for multiple payment methods
@@ -1462,31 +1464,24 @@ protectedRoutes.get('/account-details', async (req, res) => {
         if (user.orders) {
             user.orders = user.orders.map(order => {
                 if (!order.orderId) return null;
-                const orderData = order.orderId;
                 return {
-                    orderId: orderData._id.toString(),
-                    orderNumber: orderData.orderNumber,
-                    status: orderData.status,
-                    orderDate: orderData.createdAt,
-                    total: orderData.total,
-                    shippingCost: orderData.shippingCost,
-                    tax: orderData.tax,
-                    items: orderData.items.map(item => {
-                        if (!item.productId) return null;
+                    orderId: order.orderId,
+                    orderNumber: order.orderId, // The orderId is actually the order number
+                    status: order.status,
+                    orderDate: order.orderDate,
+                    total: order.total,
+                    items: order.items.map(item => {
+                        if (!item.product) return null;
                         return {
                             product: {
-                                _id: item.productId._id,
-                                name: item.productId.name,
-                                image: item.productId.image,
-                                price: item.price
+                                _id: item.product._id,
+                                name: item.product.name,
+                                image: item.product.image,
+                                price: item.product.price
                             },
-                            productDetails: item.productDetails,
-                            quantity: item.quantity,
-                            price: item.price
+                            quantity: item.quantity
                         };
-                    }).filter(Boolean),
-                    shipping: orderData.shipping,
-                    payment: orderData.payment
+                    }).filter(Boolean)
                 };
             }).filter(Boolean);
         }
@@ -1504,82 +1499,20 @@ protectedRoutes.get('/account-details', async (req, res) => {
     }
 });
 
-// Get order details by ID
-router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.orderId)
-      .populate({
-        path: 'items.productId',
-        select: 'name image price brand Vcollection',
-        populate: [
-          { path: 'brand', select: 'name' },
-          { path: 'Vcollection', select: 'name' }
-        ]
-      })
-      .lean();
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found'
-      });
-    }
-
-    // Check if the order belongs to the user or if the user is an admin
-    if (order.userId && order.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to view this order'
-      });
-    }
-
-    // Format the order data for the frontend
-    const formattedOrder = {
-      ...order,
-      items: order.items.map(item => ({
-        ...item,
-        product: item.productId ? {
-          _id: item.productId._id,
-          name: item.productId.name,
-          image: item.productId.image,
-          price: item.productId.price,
-          brand: item.productId.brand?.name || 'Unknown Brand',
-          collection: item.productId.Vcollection?.name || 'Unknown Collection'
-        } : null,
-        total: item.price * item.quantity
-      })),
-      subtotal: order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-      shippingCost: order.shippingCost || 0,
-      tax: order.tax || 0,
-      total: order.total || 0,
-      status: order.status || 'pending',
-      orderDate: order.createdAt,
-      estimatedDelivery: order.estimatedDelivery || null
-    };
-
-    res.json({
-      success: true,
-      data: formattedOrder
-    });
-  } catch (error) {
-    console.error('Error fetching order details:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching order details',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-});
-
 // Helper function to sanitize payment info
 const sanitizePaymentInfo = (paymentInfo) => {
   if (!paymentInfo) return null;
   
+  // Handle array of payment methods - get the most recent one
+  const payment = Array.isArray(paymentInfo) ? paymentInfo[paymentInfo.length - 1] : paymentInfo;
+  
+  if (!payment) return null;
+  
   return {
-    name: paymentInfo.name,
-    card_number: paymentInfo.cardNumber ? `**** **** **** ${paymentInfo.cardNumber.slice(-4)}` : null,
-    bank_name: paymentInfo.bankName,
-    expiry: paymentInfo.expiryDate
+    name: payment.cardHolder,
+    card_number: payment.cardNumber ? `**** **** **** ${payment.cardNumber.slice(-4)}` : null,
+    bank_name: payment.bankName,
+    expiry: payment.expiryDate
   };
 };
 
@@ -1620,18 +1553,41 @@ router.get('/payment', async (req, res) => {
     // Get user's saved payment info if authenticated
     let paymentInfo = null;
     if (req.user) {
-      const user = await User.findById(req.user._id).select('Payment');
-      if (user?.Payment) {
-        paymentInfo = sanitizePaymentInfo(user.Payment);
+      try {
+        const user = await User.findById(req.user._id).select('Payment');
+        if (user?.Payment && user.Payment.length > 0) {
+          paymentInfo = sanitizePaymentInfo(user.Payment);
+        }
+      } catch (dbError) {
+        console.error('Database error while fetching payment info:', dbError);
+        // Continue without payment info rather than failing the entire request
       }
     }
 
+    // Ensure cart has required properties
+    const safeCart = {
+      items: cart.items || [],
+      subtotal: cart.subtotal || 0,
+      shippingCost: cart.shippingCost || 0,
+      tax: cart.tax || 0,
+      total: cart.total || 0
+    };
+
+    console.log('Rendering Payment page with data:', {
+      cartItems: safeCart.items.length,
+      subtotal: safeCart.subtotal,
+      total: safeCart.total,
+      hasPaymentInfo: !!paymentInfo,
+      isAuthenticated: !!req.user
+    });
+
     res.render('Payment', {
       title: 'Secure Checkout',
-      cart,
+      cart: safeCart,
       paymentInfo,
       isAuthenticated: !!req.user,
-      user: req.user || null
+      user: req.user || null,
+      stripePublishableKey: config.stripe.publishableKey
     });
   } catch (error) {
     console.error('Error loading payment page:', error);
@@ -2211,11 +2167,8 @@ router.get('/shipping', async (req, res) => {
             return res.redirect('/user/cart');
         }
 
-        // Check if payment info exists
-        if (!req.session.paymentInfo) {
-            console.log('No payment info found in session');
-            return res.redirect('/user/payment');
-        }
+        // Payment info will be collected after shipping
+        // No need to check for payment info here
 
         // Get user's saved addresses if authenticated
         let savedAddresses = [];
@@ -2291,13 +2244,8 @@ protectedRoutes.post('/shipping/process', async (req, res) => {
             });
         }
 
-        // Check if payment info exists
-        if (!req.session.paymentInfo) {
-            return res.status(400).json({
-                success: false,
-                message: 'Payment information is required'
-            });
-        }
+        // Payment info will be collected in the next step
+        // No need to check for payment info here
 
         // Save address if requested and user is authenticated
         if (saveAddress && req.user) {
@@ -2311,108 +2259,15 @@ protectedRoutes.post('/shipping/process', async (req, res) => {
             });
         }
 
-        // Validate cart items and prices
-        const cartItems = req.session.cart.items;
-        for (const item of cartItems) {
-            const product = await Product.findById(item.product);
-            if (!product) {
-                throw new Error(`Product ${item.name} not found`);
-            }
-            
-            // Update stock count
-            product.stockCount -= item.quantity;
-            // Update stock status based on count
-            product.stock = product.stockCount > 0;
-            
-            await product.save();
-        }
-
-        // Create order number
-        const orderNumber = generateOrderNumber();
-
-        // Create new order with both shipping and payment info
-        const order = new Order({
-            userId: req.user ? req.user._id : null,
-            orderNumber,
-            items: await Promise.all(cartItems.map(async item => {
-                const product = await Product.findById(item.product);
-                // Fetch the full brand name
-                let brandName = product.brand;
-                if (product.brand) {
-                    const brandDoc = await Brand.findOne({ _id: product.brand });
-                    if (brandDoc && brandDoc.name) {
-                        brandName = brandDoc.name;
-                    }
-                }
-                return {
-                    productId: item.product,
-                    productDetails: {
-                        name: product.name,
-                        image: product.image,
-                        brand: brandName,
-                        price: product.price,
-                        strapMaterial: product.strapMaterial,
-                        movement: product.movement,
-                        waterResistance: product.waterResistance,
-                        caseMaterial: product.caseMaterial,
-                        dialColor: product.dialColor,
-                        gender: product.gender,
-                        Vcollection: product.Vcollection
-                    },
-                    quantity: item.quantity,
-                    price: item.price
-                };
-            })),
-            subtotal: req.session.cart.subtotal,
-            shippingCost: req.session.cart.shippingCost,
-            total: req.session.cart.total,
-            shipping: {
-                name: fullName,
-                email,
-                address,
-                city,
-                state,
-                zipCode
-            },
-            payment: {
-                name: req.session.paymentInfo.name,
-                cardNumber: req.session.paymentInfo.cardNumber,
-                bankName: req.session.paymentInfo.bankName,
-                expiry: req.session.paymentInfo.expiry
-            },
-            status: 'pending'
-        });
-
-        // Save the order
-        await order.save();
-
-        // Add order to user's orders array if authenticated
-        if (req.user && req.user._id) {
-            const user = await User.findById(req.user._id);
-            if (user) {
-                user.orders.push({
-                    orderId: order._id.toString(),
-                    orderDate: order.createdAt,
-                    status: 'Pending',
-                    total: order.total,
-                    items: order.items.map(item => ({
-                        product: item.productId,
-                        quantity: item.quantity
-                    }))
-                });
-                await user.save();
-            }
-        }
-
-        // Store order info in session
-        req.session.orderInfo = {
-            orderId: order._id,
-            orderNumber: order.orderNumber
+        // Save shipping info to session for later use
+        req.session.shippingInfo = {
+            name: fullName,
+            email,
+            address,
+            city,
+            state,
+            zipCode
         };
-
-        // Clear cart and payment info from session
-        req.session.cart = null;
-        req.session.paymentInfo = null;
 
         // Save session
         await new Promise((resolve, reject) => {
@@ -2428,9 +2283,8 @@ protectedRoutes.post('/shipping/process', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Order created successfully',
-            redirect: '/user/review',
-            orderId: order._id
+            message: 'Shipping information saved successfully!',
+            redirect: '/payment'
         });
     } catch (error) {
         console.error('Error processing shipping:', error);
@@ -2559,6 +2413,242 @@ router.get('/wrist-detector', (req, res) => {
     res.render('wrist-detector');
 });
 
+// Get order details by ID - must come before /products/:id to avoid route conflicts
+router.get('/orders/:orderId', authenticateJWT, async (req, res) => {
+  try {
+    console.log('Fetching order details for orderId:', req.params.orderId);
+    
+    // Try to find order by Mongoose ID first, then by orderNumber
+    let order = null;
+    
+    // Check if the orderId is a valid Mongoose ObjectId
+    const isObjectId = mongoose.Types.ObjectId.isValid(req.params.orderId);
+    console.log('Is ObjectId check result:', isObjectId, 'for orderId:', req.params.orderId);
+    
+    if (isObjectId) {
+      console.log('Searching by Mongoose ID:', req.params.orderId);
+      try {
+        order = await Order.findById(req.params.orderId)
+          .populate({
+            path: 'items.productId',
+            select: 'name image price brand Vcollection',
+            populate: [
+              { path: 'brand', select: 'name' },
+              { path: 'Vcollection', select: 'name' }
+            ]
+          })
+          .lean();
+        console.log('Order found by ID:', !!order);
+      } catch (idError) {
+        console.log('Error searching by ID:', idError.message);
+        // Continue to search by orderNumber
+      }
+    }
+    
+    // If not found by ID, try by orderNumber
+    if (!order) {
+      console.log('Searching by orderNumber:', req.params.orderId);
+      try {
+        order = await Order.findOne({ orderNumber: req.params.orderId })
+          .populate({
+            path: 'items.productId',
+            select: 'name image price brand Vcollection',
+            populate: [
+              { path: 'brand', select: 'name' },
+              { path: 'Vcollection', select: 'name' }
+            ]
+          })
+          .lean();
+        console.log('Order found by orderNumber:', !!order);
+      } catch (orderNumberError) {
+        console.log('Error searching by orderNumber:', orderNumberError.message);
+      }
+    }
+
+    if (!order) {
+      console.log('Order not found for orderId:', req.params.orderId);
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+    
+    console.log('Order found:', {
+      orderId: order._id,
+      orderNumber: order.orderNumber,
+      userId: order.userId,
+      itemCount: order.items?.length || 0
+    });
+
+    // Check if the order belongs to the user or if the user is an admin
+    if (order.userId && order.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to view this order'
+      });
+    }
+
+    console.log('Processing order data:', {
+      hasItems: !!order.items,
+      itemsLength: order.items?.length || 0,
+      itemsType: typeof order.items
+    });
+
+    // Format the order data for the frontend
+    const formattedOrder = {
+      ...order,
+      items: (order.items || []).map(item => {
+        if (!item) return null;
+        return {
+          ...item,
+          product: item.productId ? {
+            _id: item.productId._id,
+            name: item.productId.name,
+            image: item.productId.image,
+            price: item.productId.price,
+            brand: item.productId.brand?.name || 'Unknown Brand',
+            collection: item.productId.Vcollection?.name || 'Unknown Collection'
+          } : null,
+          total: (item.price || 0) * (item.quantity || 1)
+        };
+      }).filter(Boolean),
+      subtotal: (order.items || []).reduce((sum, item) => {
+        if (!item) return sum;
+        return sum + ((item.price || 0) * (item.quantity || 1));
+      }, 0),
+      shippingCost: order.shippingCost || 0,
+      tax: order.tax || 0,
+      total: order.total || 0,
+      status: order.status || 'pending',
+      orderDate: order.createdAt,
+      estimatedDelivery: order.estimatedDelivery || null
+    };
+
+    res.json({
+      success: true,
+      data: formattedOrder
+    });
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching order details',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Buy again route - must come before /products/:id to avoid route conflicts
+router.post('/orders/:orderId/buy-again', authenticateJWT, async (req, res) => {
+  try {
+    console.log('Buy again request for orderId:', req.params.orderId);
+    
+    // Try to find order by Mongoose ID first, then by orderNumber
+    let order = null;
+    
+    // Check if the orderId is a valid Mongoose ObjectId
+    const isObjectId = mongoose.Types.ObjectId.isValid(req.params.orderId);
+    
+    if (isObjectId) {
+      try {
+        order = await Order.findById(req.params.orderId)
+          .populate('items.productId')
+          .lean();
+      } catch (idError) {
+        console.log('Error searching by ID:', idError.message);
+      }
+    }
+    
+    // If not found by ID, try by orderNumber
+    if (!order) {
+      try {
+        order = await Order.findOne({ orderNumber: req.params.orderId })
+          .populate('items.productId')
+          .lean();
+      } catch (orderNumberError) {
+        console.log('Error searching by orderNumber:', orderNumberError.message);
+      }
+    }
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    // Check if the order belongs to the user
+    if (order.userId && order.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to access this order'
+      });
+    }
+
+    // Add all items from the order to the cart
+    if (!req.session.cart) {
+      req.session.cart = {
+        items: [],
+        subtotal: 0,
+        shippingCost: 0,
+        total: 0
+      };
+    }
+
+    let addedItems = 0;
+    for (const item of order.items) {
+      if (item.productId) {
+        // Check if item already exists in cart
+        const existingItem = req.session.cart.items.find(cartItem => 
+          cartItem.productId.toString() === item.productId._id.toString()
+        );
+
+        if (existingItem) {
+          existingItem.quantity += item.quantity;
+        } else {
+          req.session.cart.items.push({
+            productId: item.productId._id,
+            quantity: item.quantity,
+            price: item.price,
+            productDetails: {
+              name: item.productId.name,
+              image: item.productId.image,
+              brand: item.productId.brand,
+              price: item.productId.price
+            }
+          });
+        }
+        addedItems++;
+      }
+    }
+
+    // Recalculate cart totals
+    req.session.cart.subtotal = req.session.cart.items.reduce((sum, item) => {
+      return sum + (item.price * item.quantity);
+    }, 0);
+    req.session.cart.total = req.session.cart.subtotal + req.session.cart.shippingCost;
+
+    // Save session
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    res.json({
+      success: true,
+      message: `Added ${addedItems} items to cart`,
+      cartCount: req.session.cart.items.length
+    });
+  } catch (error) {
+    console.error('Error in buy again:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error adding items to cart'
+    });
+  }
+});
 
 // Review Order page route
 router.get('/review', async (req, res) => {

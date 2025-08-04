@@ -1,4 +1,5 @@
 const stripe = require('../config/stripe');
+const config = require('../config/env');
 const Order = require('../models/Orders');
 const User = require('../models/Users');
 const { generateOrderNumber } = require('../utils/orderUtils');
@@ -41,25 +42,45 @@ exports.createPaymentIntent = [
       const tax = req.session.cart.tax || 0;
       const total = subtotal + shippingCost + tax;
 
-      // Create metadata for the payment intent
-      const metadata = {
-        orderNumber: generateOrderNumber(),
-        userId: req.user?._id?.toString() || 'guest',
-        itemCount: req.session.cart.items.length.toString(),
-        subtotal: subtotal.toString(),
-        shippingCost: shippingCost.toString(),
-        tax: tax.toString()
-      };
+             // Create metadata for the payment intent
+       const metadata = {
+         orderNumber: generateOrderNumber(),
+         userId: req.user?._id?.toString() || 'guest',
+         itemCount: req.session.cart.items.length.toString(),
+         subtotal: subtotal.toString(),
+         shippingCost: shippingCost.toString(),
+         tax: tax.toString()
+       };
+       
+       console.log('Creating payment intent with metadata:', {
+         userId: metadata.userId,
+         orderNumber: metadata.orderNumber,
+         isAuthenticated: !!req.user,
+         userEmail: req.user?.email
+       });
 
       // Create payment intent
       const paymentIntent = await stripe.createPaymentIntent(
         total,
-        stripe.config.currency,
+        'usd', // Default currency
         metadata
       );
 
       // Store payment intent ID in session
       req.session.paymentIntentId = paymentIntent.id;
+      
+      // Save session explicitly
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) {
+            console.error('Error saving session:', err);
+            reject(err);
+          } else {
+            console.log('Session saved with payment intent ID:', paymentIntent.id);
+            resolve();
+          }
+        });
+      });
 
       console.log('Payment intent created:', paymentIntent.id);
       res.json({
@@ -251,6 +272,13 @@ exports.processRefund = async (req, res, next) => {
 
 // Webhook handler for Stripe events
 exports.handleWebhook = async (req, res, next) => {
+  console.log('Webhook received:', {
+    method: req.method,
+    url: req.url,
+    headers: req.headers,
+    bodyLength: req.body?.length
+  });
+  
   const sig = req.headers['stripe-signature'];
   let event;
 
@@ -258,8 +286,10 @@ exports.handleWebhook = async (req, res, next) => {
     event = stripe.stripe.webhooks.constructEvent(
       req.body,
       sig,
-      stripe.config.webhookSecret
+      config.stripe.webhookSecret
     );
+    
+    console.log('Webhook event verified:', event.type);
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -289,11 +319,38 @@ exports.handleWebhook = async (req, res, next) => {
 
 // Helper function to create order from successful payment
 async function createOrderFromPayment(req, paymentIntent) {
+  // Transform cart items to match Order model structure
+  const transformedItems = req.session.cart.items.map(item => ({
+    productId: item.productId || item.product,
+    productDetails: {
+      name: item.name,
+      image: item.image,
+      brand: item.brand || 'Unknown',
+      price: item.price,
+      strapMaterial: item.strapMaterial || 'N/A',
+      movement: item.movement || 'N/A',
+      waterResistance: item.waterResistance || 'N/A',
+      caseMaterial: item.caseMaterial || 'N/A',
+      dialColor: item.dialColor || 'N/A',
+      gender: item.gender || 'Unisex',
+      Vcollection: item.Vcollection || 'N/A'
+    },
+    quantity: item.quantity,
+    price: item.price
+  }));
+
   const orderData = {
     userId: req.user?._id || null,
     orderNumber: paymentIntent.metadata.orderNumber,
-    items: req.session.cart.items,
-    shipping: req.session.shippingInfo,
+    items: transformedItems,
+    shipping: req.session.shippingInfo || {
+      name: 'Guest User',
+      email: 'guest@example.com',
+      address: 'Address not provided',
+      city: 'City not provided',
+      state: 'State not provided',
+      zipCode: 'ZIP not provided'
+    },
     payment: {
       stripePaymentIntentId: paymentIntent.id,
       stripeCustomerId: paymentIntent.customer,
@@ -310,6 +367,32 @@ async function createOrderFromPayment(req, paymentIntent) {
   const order = new Order(orderData);
   await order.save();
 
+  // Add order to user's orders array if user is logged in
+  if (req.user && req.user._id) {
+    try {
+      const user = await User.findById(req.user._id);
+      if (user) {
+        // Add order to user's orders array
+        user.orders.push({
+          orderId: order.orderNumber,
+          orderDate: new Date(),
+          status: 'Completed',
+          total: order.total,
+          items: order.items.map(item => ({
+            product: item.productId,
+            quantity: item.quantity
+          }))
+        });
+                      await user.save();
+              console.log('Order added to user\'s orders array from createOrderFromPayment:', order.orderNumber);
+              console.log('User orders count after update:', user.orders.length);
+      }
+    } catch (userUpdateError) {
+      console.error('Error adding order to user\'s orders array from createOrderFromPayment:', userUpdateError);
+      // Don't fail the order creation if user update fails
+    }
+  }
+
   console.log('Order created from payment:', order.orderNumber);
   return order;
 }
@@ -320,25 +403,124 @@ async function handlePaymentSucceeded(paymentIntent) {
     console.log('Payment succeeded:', paymentIntent.id);
     
     // Find the order by payment intent ID
-    const order = await Order.findOne({ 'payment.stripePaymentIntentId': paymentIntent.id });
+    let order = await Order.findOne({ 'payment.stripePaymentIntentId': paymentIntent.id });
     
     if (order) {
-      // Update order status
-      await Order.findByIdAndUpdate(order._id, {
-        status: 'confirmed',
-        'payment.status': 'succeeded',
-        updatedAt: new Date()
-      });
-      
-      console.log('Order confirmed:', order.orderNumber);
-      
-      // Here you could add additional logic like:
-      // - Send confirmation email
-      // - Update inventory
-      // - Send notifications
+      // Update order status if it's not already confirmed
+      if (order.status !== 'confirmed') {
+        await Order.findByIdAndUpdate(order._id, {
+          status: 'confirmed',
+          'payment.status': 'succeeded',
+          updatedAt: new Date()
+        });
+        
+        console.log('Order confirmed via webhook:', order.orderNumber);
+      } else {
+        console.log('Order already confirmed:', order.orderNumber);
+      }
     } else {
-      console.log('Order not found for payment intent:', paymentIntent.id);
+      console.log('Order not found for payment intent, creating order via webhook:', paymentIntent.id);
+      
+             // Create order from webhook if it doesn't exist
+       // This can happen if the payment success route didn't create the order
+       try {
+         // Try to get user information from metadata
+         let shippingInfo = {
+           name: 'Guest User',
+           email: 'guest@example.com',
+           address: 'Address not provided',
+           city: 'City not provided',
+           state: 'State not provided',
+           zipCode: 'ZIP not provided'
+         };
+         
+         // If we have a userId in metadata, try to get user info
+         if (paymentIntent.metadata?.userId && paymentIntent.metadata.userId !== 'guest') {
+           try {
+             const user = await User.findById(paymentIntent.metadata.userId);
+             if (user) {
+               if (user.addresses && user.addresses.length > 0) {
+                 const defaultAddress = user.addresses[0]; // Use first address as default
+                 shippingInfo = {
+                   name: user.Name,
+                   email: user.email,
+                   address: defaultAddress.street || 'Address not provided',
+                   city: defaultAddress.city || 'City not provided',
+                   state: defaultAddress.state || 'State not provided',
+                   zipCode: defaultAddress.postalCode || 'ZIP not provided'
+                 };
+               } else {
+                 shippingInfo = {
+                   name: user.Name || 'Guest User',
+                   email: user.email || 'guest@example.com',
+                   address: 'Address not provided',
+                   city: 'City not provided',
+                   state: 'State not provided',
+                   zipCode: 'ZIP not provided'
+                 };
+               }
+             }
+           } catch (userError) {
+             console.error('Error fetching user info for webhook order:', userError);
+           }
+         }
+         
+         const orderData = {
+           userId: paymentIntent.metadata?.userId || null,
+           orderNumber: paymentIntent.metadata?.orderNumber || `ORD-${Date.now()}`,
+           items: [], // We can't reconstruct items from webhook, will be empty
+           shipping: shippingInfo,
+          payment: {
+            stripePaymentIntentId: paymentIntent.id,
+            amount: paymentIntent.amount / 100,
+            currency: paymentIntent.currency,
+            status: paymentIntent.status
+          },
+          total: paymentIntent.amount / 100,
+          shippingCost: 0,
+          tax: 0,
+          status: 'confirmed'
+        };
+
+        order = new Order(orderData);
+        await order.save();
+        
+        // Add order to user's orders array if we have a userId
+        if (paymentIntent.metadata?.userId && paymentIntent.metadata.userId !== 'guest') {
+          try {
+            const user = await User.findById(paymentIntent.metadata.userId);
+            if (user) {
+              // Add order to user's orders array
+              user.orders.push({
+                orderId: order.orderNumber,
+                orderDate: new Date(),
+                status: 'Completed',
+                total: order.total,
+                items: order.items.map(item => ({
+                  product: item.productId,
+                  quantity: item.quantity
+                }))
+              });
+              await user.save();
+              console.log('Order added to user\'s orders array via webhook:', order.orderNumber);
+              console.log('User orders count after update:', user.orders.length);
+            }
+          } catch (userUpdateError) {
+            console.error('Error adding order to user\'s orders array via webhook:', userUpdateError);
+            // Don't fail the order creation if user update fails
+          }
+        }
+        
+        console.log('Order created via webhook:', order.orderNumber);
+      } catch (createError) {
+        console.error('Error creating order via webhook:', createError);
+      }
     }
+    
+    // Here you could add additional logic like:
+    // - Send confirmation email
+    // - Update inventory
+    // - Send notifications
   } catch (error) {
     console.error('Error handling payment success:', error);
   }

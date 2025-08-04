@@ -34,6 +34,7 @@ const stripePaymentRoutes = require('./routes/StripePaymentRoutes');
 const configuratorRoutes = require('./routes/ConfiguratorRoutes');
 const configuratorController = require('./controllers/Configurator');
 const refundRoutes = require('./routes/refundRoutes');
+const Order = require('./models/Orders');
 const app = express();
 const qr = require('qrcode');
 
@@ -174,7 +175,9 @@ app.use(
           "https://apis.google.com",
           "https://kit.fontawesome.com",
           "https://cdn.jsdelivr.net",
-          "https://ajax.googleapis.com"
+          "https://ajax.googleapis.com",
+          "https://js.stripe.com",
+          "https://api.stripe.com"
         ],
         scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: [
@@ -201,11 +204,13 @@ app.use(
           "blob:",
           "data:",
           "https://accounts.google.com",
-          "https://oauth2.googleapis.com"
+          "https://oauth2.googleapis.com",
+          "https://api.stripe.com"
         ],
         frameSrc: [
           "'self'",
-          "https://accounts.google.com"
+          "https://accounts.google.com",
+          "https://js.stripe.com"
         ]
       }
     },
@@ -377,6 +382,7 @@ app.use('/api/shipping', shippingRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/stripe', stripePaymentRoutes);
 app.use('/payment', paymentRoutes);
+app.use('/configurator', configuratorRoutes);
 
 // Admin routes
 app.use('/admin', adminRoutes);
@@ -387,9 +393,6 @@ app.get('/api/admin/analytics/sales', isAdmin, adminController.getSalesAnalytics
 app.get('/api/admin/analytics/users', isAdmin, adminController.getUserAnalytics);
 app.get('/api/admin/analytics/products', isAdmin, adminController.getProductAnalytics);
 
-// Configurator routes
-app.get('/configurator', configuratorController.renderConfigurator);
-app.use('/api/configurator', configuratorRoutes);
 
 // Refund routes
 app.use('/refunds', refundRoutes);
