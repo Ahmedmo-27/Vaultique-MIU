@@ -1786,7 +1786,7 @@ router.get('/for-him', async (req, res) => {
         const brands = await Brand.find().sort({ name: 1 });
 
         // Get gender content
-        const genderContent = await Gender.findOne({ slug: 'for-him' });
+        let genderContent = await Gender.findOne({ slug: 'for-him' });
         if (!genderContent) {
             console.error('Gender content not found for for-him');
         } else {
@@ -1954,7 +1954,7 @@ router.get('/for-her', async (req, res) => {
         const brands = await Brand.find().sort({ name: 1 });
 
         // Get gender content
-        const genderContent = await Gender.findOne({ slug: 'for-her' });
+        let genderContent = await Gender.findOne({ slug: 'for-her' });
         if (!genderContent) {
             console.error('Gender content not found for for-her');
         } else {
