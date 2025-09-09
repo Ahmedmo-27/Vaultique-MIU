@@ -427,14 +427,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Keep all your existing event listeners
-  registerLink.addEventListener("click", function (event) {
-      event.preventDefault();
-      flipContainer.classList.add("flipped");
-      // Reset multi-step form to step 1
-      step1.style.display = "flex";
-      step2.style.display = "none";
-      step3.style.display = "none";
-  });
+  if (registerLink) {
+    console.log('Register link found and adding event listener');
+    registerLink.addEventListener("click", function (event) {
+        console.log('Register link clicked!');
+        event.preventDefault();
+        flipContainer.classList.add("flipped");
+        // Reset multi-step form to step 1
+        step1.style.display = "flex";
+        step2.style.display = "none";
+        step3.style.display = "none";
+    });
+  } else {
+    console.error('Register link not found!');
+  }
 
   loginLink.addEventListener("click", function (event) {
       event.preventDefault();
