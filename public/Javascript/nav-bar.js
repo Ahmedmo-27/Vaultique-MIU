@@ -250,13 +250,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function expandSearch() {
     if (buttonCount === 0) {
-      if (window.innerWidth < 700) {
-        searchDiv.style.width = '200px';
-        searchField.style.width = '200px';
+      // Calculate responsive width based on screen size
+      let searchWidth;
+      if (window.innerWidth < 480) {
+        // Very small screens - minimal width
+        searchWidth = '120px';
+      } else if (window.innerWidth < 768) {
+        // Small screens - compact width
+        searchWidth = '150px';
+      } else if (window.innerWidth < 1024) {
+        // Medium screens - moderate width
+        searchWidth = '180px';
       } else {
-        searchDiv.style.width = '200px';
-        searchField.style.width = '200px';
+        // Large screens - standard width
+        searchWidth = '200px';
       }
+      
+      searchDiv.style.width = searchWidth;
+      searchField.style.width = searchWidth;
       searchDiv.style.border = '1px solid black';
       buttonCount++;
       searchField.focus();
@@ -271,13 +282,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function expandSearch2() {
     if (buttonCount2 === 0) {
-      if (window.innerWidth < 700) {
-        searchDiv2.style.width = '200px';
-        searchField2.style.width = '200px';
+      // Calculate responsive width based on screen size
+      let searchWidth;
+      if (window.innerWidth < 480) {
+        // Very small screens - minimal width
+        searchWidth = '120px';
+      } else if (window.innerWidth < 768) {
+        // Small screens - compact width
+        searchWidth = '150px';
+      } else if (window.innerWidth < 1024) {
+        // Medium screens - moderate width
+        searchWidth = '180px';
       } else {
-        searchDiv2.style.width = '200px';
-        searchField2.style.width = '200px';
+        // Large screens - standard width
+        searchWidth = '200px';
       }
+      
+      searchDiv2.style.width = searchWidth;
+      searchField2.style.width = searchWidth;
       searchDiv2.style.border = '1px solid black';
       buttonCount2++;
       searchField2.focus();
@@ -289,6 +311,40 @@ document.addEventListener('DOMContentLoaded', function () {
       resetSearchUI();
     }
   }
+
+  // Handle window resize to adjust search field width dynamically
+  window.addEventListener('resize', function() {
+    // Only adjust if search field is currently expanded
+    if (buttonCount === 1) {
+      let searchWidth;
+      if (window.innerWidth < 480) {
+        searchWidth = '120px';
+      } else if (window.innerWidth < 768) {
+        searchWidth = '150px';
+      } else if (window.innerWidth < 1024) {
+        searchWidth = '180px';
+      } else {
+        searchWidth = '200px';
+      }
+      searchDiv.style.width = searchWidth;
+      searchField.style.width = searchWidth;
+    }
+    
+    if (buttonCount2 === 1) {
+      let searchWidth;
+      if (window.innerWidth < 480) {
+        searchWidth = '120px';
+      } else if (window.innerWidth < 768) {
+        searchWidth = '150px';
+      } else if (window.innerWidth < 1024) {
+        searchWidth = '180px';
+      } else {
+        searchWidth = '200px';
+      }
+      searchDiv2.style.width = searchWidth;
+      searchField2.style.width = searchWidth;
+    }
+  });
 
   // Helper function to debounce user input
   function debounce(func, wait) {

@@ -551,7 +551,9 @@ header:hover .side-icon {
     position: relative;
     justify-content: center;
     align-items: center;
-    transition: width 0.5s ease;
+    transition: width 0.3s ease;
+    min-width: 40px;
+    max-width: 200px;
 }
 
 .search-button-scrolled {
@@ -566,11 +568,13 @@ header:hover .side-icon {
     flex-direction: row-reverse;
     justify-content: center;
     align-items: center;
-    transition: width 0.5s ease;
+    transition: width 0.3s ease;
+    min-width: 40px;
+    max-width: 200px;
 }
 
 .searchField {
-    padding: 10px;
+    padding: 8px 10px;
     color: #F6E8C0;
     border-color: transparent;
     background-color: transparent;
@@ -578,7 +582,9 @@ header:hover .side-icon {
     width: 0px;
     padding-right: 40px;
     box-sizing: border-box;
-    transition: width 0.5s ease;
+    transition: width 0.3s ease;
+    font-size: 14px;
+    outline: none;
 }
 
 .searchField:focus {
@@ -1122,11 +1128,39 @@ body.dark-mode {
     padding: 8px;
     width: 0;
     transition: width 0.3s ease;
+    font-size: 14px;
 }
 
 #search-button.active #searchField,
 #search-button2.active #searchField2 {
     width: 200px;
+}
+
+/* Responsive search field sizing */
+@media (max-width: 480px) {
+    #search-button.active #searchField,
+    #search-button2.active #searchField2 {
+        width: 120px;
+    }
+    
+    .searchField {
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    #search-button.active #searchField,
+    #search-button2.active #searchField2 {
+        width: 150px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    #search-button.active #searchField,
+    #search-button2.active #searchField2 {
+        width: 180px;
+    }
 }
 
 /* Exit Button */
