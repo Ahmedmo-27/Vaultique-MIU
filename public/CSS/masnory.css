@@ -1,9 +1,4 @@
-/* Base styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Base styles - removed global reset to avoid conflicts with nav-bar.css */
 
 /* body {
     font-family: 'Montserrat', sans-serif;

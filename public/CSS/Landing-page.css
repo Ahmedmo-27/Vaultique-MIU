@@ -233,40 +233,7 @@ p::-webkit-scrollbar {
 }
 
 /* Responsive styles */
-@media screen and (max-width: 1090px) {
-    header {
-        width: 100%;
-    }
-
-    .side-icon {
-        display: block;
-    }
-
-    .logo {
-        margin-right: 0;
-    }
-
-    .responsive {
-        margin-right: 70px;
-    }
-
-    .navigation {
-        display: none;
-        position: absolute;
-        top: 50px;
-        left: 0;
-        background: white;
-        padding: 10px;
-        z-index: 999;
-    }
-
-    .navigation a {
-        display: block;
-        color: black;
-        text-decoration: none;
-        padding: 5px 0;
-    }
-}
+/* Removed conflicting navigation styles - handled by nav-bar.css */
 
 @media (max-width: 768px) {
     h1, h2 {
