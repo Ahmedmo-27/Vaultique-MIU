@@ -35,7 +35,7 @@ window.translations = {
     products: 'Products',
 
     // Collections Menu
-    colly: 'collections',
+    collections: 'collections',
     classicDress: 'Classic & Dress',
     casualEveryday: 'Casual & Everyday',
     sportsAdventure: 'Sports & Adventure',
@@ -43,7 +43,7 @@ window.translations = {
     luxuryHeritage: 'Luxury & Heritage',
 
     // Brands Menu
-    brandy: 'brands',
+    brands: 'brands',
     rolex: 'Rolex',
     cartier: 'Cartier',
     patekPhilippe: 'Patek Philippe',
@@ -129,11 +129,11 @@ window.translations = {
     luxuryHeritageDesc5: 'these timepieces represent exclusivity and prestige.',
 
     // Footer
-    brand: 'Classic & Dress',
-    savoirFaire: 'Casual & Everyday',
-    collections: 'Sports & Adventure',
-    friendsPartners: 'Aviation & Travel',
-    storeLocator: 'Luxury & Heritage',
+    classicDress: 'Classic & Dress',
+    casualEveryday: 'Casual & Everyday',
+    sportsAdventure: 'Sports & Adventure',
+    aviationTravel: 'Aviation & Travel',
+    luxuryHeritage: 'Luxury & Heritage',
     followUs: 'Follow us',
     Support: 'Support',
     contact: 'Contact',
@@ -646,7 +646,7 @@ window.translations = {
     products: 'المنتجات',
 
     // Collections Menu
-    colly: 'المجموعات',
+    collections: 'المجموعات',
     classicDress: 'كلاسيكية وفساتين',
     casualEveryday: 'كاجوال ويومي',
     sportsAdventure: 'رياضة ومغامرة',
@@ -654,7 +654,7 @@ window.translations = {
     luxuryHeritage: 'فاخر وتراثي',
 
     // Brands Menu
-    brandy: 'براندات',
+    brands: 'براندات',
     rolex: 'رولكس',
     cartier: 'كارتييه',
     patekPhilippe: 'باتيك فيليب',
@@ -740,11 +740,11 @@ window.translations = {
     luxuryHeritageDesc5: 'تمثل هذه الساعات الفخامة والامتياز.',
 
     // Footer
-    brand: 'كلاسيكي وأنيق',
-    savoirFaire: 'عادي ويومي',
-    collections: 'رياضي والمغامرة',
-    friendsPartners: 'طيران وسفر',
-    storeLocator: 'فاخر وتراثي',
+    classicDress: 'كلاسيكي وأنيق',
+    casualEveryday: 'عادي ويومي',
+    sportsAdventure: 'رياضي والمغامرة',
+    aviationTravel: 'طيران وسفر',
+    luxuryHeritage: 'فاخر وتراثياً',
     followUs: 'تابعونا',
     Support: 'الدعم',
     contact: 'اتصل بنا',
