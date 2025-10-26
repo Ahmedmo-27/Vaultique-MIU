@@ -553,7 +553,6 @@ body {
                             <label for="model-selector" data-translate="selectWatchModel">Select Watch Model:</label>
                             <select id="model-selector" class="model-selector">
                                 <option value="/Assets/3D Models/Omega Sea Master.glb" data-translate="omega">Omega</option>
-                                <option value="/Assets/3D Models/Rolex Daytona.glb" data-translate="rolex">Rolex</option>
                                 <option value="/Assets/3D Models/Santos.glb" data-translate="cartier">Cartier</option>
                                 <option value="/Assets/3D Models/Audemars Piguet Royal Oak.gltf" data-translate="audemars">Audemars</option>
                             </select>
@@ -682,9 +681,9 @@ body {
 
                     <div class="customization-column">
                         <div class="watch-details">
-                            <h2 id="details-heading" data-translate="modelName">Daytona</h2>
+                            <h2 id="details-heading" data-translate="modelName">Omega Sea Master</h2>
                             <p id="watch-description" data-translate="modelDescription">
-                                <%= locals.watch?.description || 'The Cosmograph Daytona is designed for those with a passion for driving and speed. Introduced in 1963, this iconic chronograph allows drivers to measure elapsed time and read average speeds on its signature tachymetric bezel.' %>
+                                <%= locals.watch?.description || 'The Omega Sea Master is a professional diving watch that is designed for those who are passionate about diving and the ocean. It is a true icon in the world of luxury diving watches, it offers exceptional precision and reliability.' %>
                             </p>
                         </div>
 
@@ -693,7 +692,7 @@ body {
                             <div class="summary-details">
                                 <div class="summary-row">
                                     <span class="summary-label" data-translate="model">Model</span>
-                                    <span class="summary-value" id="summary-model">Daytona</span>
+                                    <span class="summary-value" id="summary-model">Omega Sea Master</span>
                                 </div>
                                 <div class="summary-row">
                                     <span class="summary-label" data-translate="strap">Strap</span>
@@ -714,7 +713,7 @@ body {
                                 <div class="summary-row summary-total">
                                     <span class="summary-label" data-translate="totalPrice">Total Price</span>
                                     <span id="summary-price" class="summary-value price">
-                                        $<%= (locals.watch?.basePrice || 8500).toLocaleString() %>
+                                        $<%= (locals.watch?.basePrice || 7500).toLocaleString() %>
                                     </span>
                                 </div>
                             </div>
@@ -826,14 +825,6 @@ body {
                         waterResistance: "50m Water Resistant",
                         powerReserve: "60h Power Reserve",
                         price: 9200
-                    },
-                    "Rolex": {
-                        name: "Daytona",
-                        description: "The Cosmograph Daytona is the ultimate tool for high-performance timing. Born to satisfy the demands of professional racing drivers, it remains the benchmark for those who appreciate the fusion of high technology with traditional craftsmanship.",
-                        movement: "4130 Calibre",
-                        waterResistance: "100m Water Resistant",
-                        powerReserve: "72h Power Reserve",
-                        price: 8500
                     }
                 }
             };
@@ -898,7 +889,6 @@ body {
             function preloadAllModels() {
                 const modelPaths = [
                     '/Assets/3D Models/Omega Sea Master.glb',
-                    '/Assets/3D Models/Rolex Daytona.glb',
                     '/Assets/3D Models/Santos.glb',
                     '/Assets/3D Models/Audemars Piguet Royal Oak.gltf'
                 ];
