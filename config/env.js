@@ -20,4 +20,11 @@ module.exports = {
   frontendUrl: process.env.FRONTEND_URL || 'https://vaultique.up.railway.app/user/home',
   cookieDomain: process.env.COOKIE_DOMAIN,
   isProduction: process.env.NODE_ENV === 'production',
+  // Stripe configuration
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY,
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    currency: process.env.STRIPE_CURRENCY || 'usd'
+  }
 };
