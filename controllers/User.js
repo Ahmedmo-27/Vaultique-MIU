@@ -1508,9 +1508,16 @@ const sanitizePaymentInfo = (paymentInfo) => {
   
   if (!payment) return null;
   
+  const normalizedCardNumber = payment.cardNumber !== undefined && payment.cardNumber !== null
+    ? String(payment.cardNumber).replace(/\s/g, '')
+    : null;
+  const maskedCardNumber = normalizedCardNumber
+    ? `**** **** **** ${normalizedCardNumber.slice(-4)}`
+    : null;
+  
   return {
     name: payment.cardHolder,
-    card_number: payment.cardNumber ? `**** **** **** ${payment.cardNumber.slice(-4)}` : null,
+    card_number: maskedCardNumber,
     bank_name: payment.bankName,
     expiry: payment.expiryDate
   };
