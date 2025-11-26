@@ -112,19 +112,19 @@
           <div class="summary-totals">
             <div class="total-line">
               <span>Subtotal:</span>
-              <span>$<%= (cart?.subtotal || 0).toFixed(2) %></span>
+              <span>$<%= Number(cart?.subtotal || 0).toFixed(2) %></span>
             </div>
             <div class="total-line">
               <span>Shipping:</span>
-              <span>$<%= (cart?.shippingCost || 0).toFixed(2) %></span>
+              <span>$<%= Number(cart?.shippingCost || 0).toFixed(2) %></span>
             </div>
             <div class="total-line">
               <span>Tax:</span>
-              <span>$<%= (cart?.tax || 0).toFixed(2) %></span>
+              <span>$<%= Number(cart?.tax || 0).toFixed(2) %></span>
             </div>
             <div class="total-line total">
               <span>Total:</span>
-              <span>$<%= (cart?.total || 0).toFixed(2) %></span>
+              <span>$<%= Number(cart?.total || 0).toFixed(2) %></span>
             </div>
           </div>
         </div>
@@ -164,7 +164,7 @@
             <div id="payment-success" class="success-message" style="display: none;" aria-live="polite"></div>
             
             <button type="submit" id="submit-payment" class="pay-button">
-              <span class="button-text">Pay $<%= (cart?.total || 0).toFixed(2) %></span>
+              <span class="button-text">Pay $<%= Number(cart?.total || 0).toFixed(2) %></span>
               <div class="spinner" id="spinner" style="display: none;"></div>
             </button>
           </form>

@@ -177,7 +177,8 @@ app.use(
           "https://cdn.jsdelivr.net",
           "https://ajax.googleapis.com",
           "https://js.stripe.com",
-          "https://api.stripe.com"
+          "https://api.stripe.com",
+          "https://static.cloudflareinsights.com"
         ],
         scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: [

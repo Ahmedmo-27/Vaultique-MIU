@@ -1519,30 +1519,31 @@ const sanitizePaymentInfo = (paymentInfo) => {
 // Payment route
 router.get('/payment', async (req, res) => {
   try {
+    const sessionCart = req.session?.cart;
     console.log('Payment route - Cart state:', {
-      hasCart: !!req.session.cart,
-      cartItems: req.session.cart?.items,
-      itemsLength: req.session.cart?.items?.length
+      hasSession: !!req.session,
+      hasCart: !!sessionCart,
+      itemsLength: sessionCart?.items?.length
     });
 
     // Check if cart exists and has items
-    if (!req.session.cart) {
+    if (!sessionCart?.items) {
       console.log('No cart found in session');
       return res.redirect('/user/cart');
     }
 
-    if (!Array.isArray(req.session.cart.items)) {
-      console.log('Cart items is not an array:', req.session.cart.items);
+    if (!Array.isArray(sessionCart.items)) {
+      console.log('Cart items is not an array:', sessionCart.items);
       return res.redirect('/user/cart');
     }
 
-    if (req.session.cart.items.length === 0) {
+    if (sessionCart.items.length === 0) {
       console.log('Cart is empty');
       return res.redirect('/user/cart');
     }
 
     // Get cart data
-    const cart = req.session.cart;
+    const cart = sessionCart;
     console.log('Cart data:', {
       items: cart.items,
       subtotal: cart.subtotal,
@@ -1566,11 +1567,11 @@ router.get('/payment', async (req, res) => {
 
     // Ensure cart has required properties
     const safeCart = {
-      items: cart.items || [],
-      subtotal: cart.subtotal || 0,
-      shippingCost: cart.shippingCost || 0,
-      tax: cart.tax || 0,
-      total: cart.total || 0
+      items: Array.isArray(cart.items) ? cart.items : [],
+      subtotal: Number(cart.subtotal || 0),
+      shippingCost: Number(cart.shippingCost || 0),
+      tax: Number(cart.tax || 0),
+      total: Number(cart.total || 0)
     };
 
     console.log('Rendering Payment page with data:', {
