@@ -33,6 +33,13 @@
     <link rel="icon" type="image/x-icon" href="/Assets/Images/LogoV.jpg">
     <link rel="stylesheet" href="/CSS/stylepayment.css" />
     <link rel="stylesheet" href="/CSS/stripe-payment.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     
     <!-- JSON-LD Schema Markup -->
     <script type="application/ld+json">
@@ -57,19 +64,19 @@
     
     <div class="progress-container">
       <div class="progress-bar">
-        <div class="progress"></div>
+        <div class="progress" style="width: 33%;"></div>
       </div>
       <div class="progress-steps">
-        <div class="step completed">
-          <span class="circle">&#10003;</span>
+        <div class="step active" aria-current="step">
+          <span class="circle">1</span>
           <span class="label" data-translate="payment">Payment</span>
         </div>
-        <div class="step completed">
-          <span class="circle">&#10003;</span>
+        <div class="step">
+          <span class="circle">2</span>
           <span class="label" data-translate="shipping">Shipping</span>
         </div>
-        <div class="step active">
-          <span class="circle"></span>
+        <div class="step">
+          <span class="circle">3</span>
           <span class="label" data-translate="leaveReview">Leave a review!</span>
         </div>
       </div>
@@ -86,7 +93,7 @@
         <div class="order-summary">
           <h3>Order Summary</h3>
           <div class="summary-items">
-            <% if (cart && cart.items) { %>
+            <% if (cart && cart.items && cart.items.length) { %>
               <% cart.items.forEach(item => { %>
                 <div class="summary-item">
                   <img src="<%= item.image %>" alt="<%= item.name %>">
@@ -97,6 +104,8 @@
                   <div class="item-price">$<%= (item.price * item.quantity).toFixed(2) %></div>
                 </div>
               <% }); %>
+            <% } else { %>
+              <p class="empty-cart-message">Your cart is empty. <a href="/cart">Continue shopping</a>.</p>
             <% } %>
           </div>
           
@@ -151,8 +160,8 @@
               <!-- Stripe Elements will be mounted here -->
             </div>
             
-            <div id="payment-error" class="error-message" style="display: none;"></div>
-            <div id="payment-success" class="success-message" style="display: none;"></div>
+            <div id="payment-error" class="error-message" style="display: none;" aria-live="assertive"></div>
+            <div id="payment-success" class="success-message" style="display: none;" aria-live="polite"></div>
             
             <button type="submit" id="submit-payment" class="pay-button">
               <span class="button-text">Pay $<%= (cart?.total || 0).toFixed(2) %></span>
