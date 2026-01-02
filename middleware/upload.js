@@ -1,12 +1,16 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 // Get project root directory
 const projectRoot = path.resolve(__dirname, '..');
 
-// Create required upload directories
+// Create required upload directories (only when running locally or on writable FS)
 const createUploadDirectories = () => {
+    // Avoid creating directories under the function bundle on serverless platforms (read-only)
+    if (process.env.VERCEL === '1') return;
+
     const baseDir = path.join(projectRoot, 'public', 'Assets');
     const subDirs = ['Images', 'Videos', '3D Models'];
 
@@ -24,7 +28,7 @@ const createUploadDirectories = () => {
     });
 };
 
-// Create directories when module is loaded
+// Create directories when module is loaded (no-op on Vercel)
 createUploadDirectories();
 
 // File filter
@@ -85,8 +89,9 @@ const fileFilter = (req, file, cb) => {
 // Configure storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        // Default to project public/Assets
         let uploadPath = path.join(__dirname, '..', 'public', 'Assets');
-        
+
         // Determine the appropriate subdirectory based on field name
         if (file.fieldname === 'logo') {
             uploadPath = path.join(uploadPath, 'Brands Logos');
@@ -102,12 +107,35 @@ const storage = multer.diskStorage({
             uploadPath = path.join(uploadPath, 'Videos');
         }
 
-        // Create directory if it doesn't exist
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
+        // Try to create the directory; if that fails (read-only FS), fall back to OS temp directory
+        try {
+            if (!fs.existsSync(uploadPath)) {
+                fs.mkdirSync(uploadPath, { recursive: true });
+            }
+            return cb(null, uploadPath);
+        } catch (err) {
+            // Fallback: use OS temp directory which is writable in serverless
+            const tempBase = path.join(os.tmpdir(), 'vaultique_uploads');
+            let tempPath = tempBase;
+            if (file.fieldname === 'logo') {
+                tempPath = path.join(tempBase, 'Brands Logos');
+            } else if (file.fieldname === 'coverImage' || file.fieldname === 'coverImage2') {
+                tempPath = path.join(tempBase, 'Images');
+            } else if (file.fieldname === 'heroVideo' || file.fieldname === 'video') {
+                tempPath = path.join(tempBase, 'Videos');
+            } else if (file.fieldname === 'model3d') {
+                tempPath = path.join(tempBase, '3D Models');
+            } else {
+                tempPath = path.join(tempBase, 'Images');
+            }
+            try {
+                if (!fs.existsSync(tempPath)) fs.mkdirSync(tempPath, { recursive: true });
+                return cb(null, tempPath);
+            } catch (e) {
+                // Last resort: return OS tmpdir root
+                return cb(null, os.tmpdir());
+            }
         }
-
-        cb(null, uploadPath);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
