@@ -1,4 +1,5 @@
 # Ignore large static assets from function bundles
 public/Assets/**
 !public/Assets/Images/LogoV.jpg
+!public/Assets/Brands Logos/**
 public/Assets
