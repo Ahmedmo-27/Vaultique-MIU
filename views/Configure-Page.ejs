@@ -767,6 +767,17 @@ body {
     </div>
 
     <script>
+        // Client-side asset URL helper injected from server `assetBaseUrl`
+        const ASSET_BASE_URL =JSON.stringify(assetBaseUrl || '');
+        function assetUrl(p) {
+            if (!p) return p;
+            if (typeof p === 'string' && (p.startsWith('http://') || p.startsWith('https://'))) return p;
+            if (typeof p === 'string' && p.startsWith('/')) {
+                return ASSET_BASE_URL.replace(/\/$/, '') + encodeURI(p);
+            }
+            return ASSET_BASE_URL.replace(/\/$/, '') + '/' + encodeURI(p.replace(/^public\//, '').replace(/^\/+/, ''));
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             // Constants and configuration
             const CONFIG = {
