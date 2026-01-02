@@ -38,9 +38,18 @@ const configuratorController = require('./controllers/Configurator');
 const refundRoutes = require('./routes/refundRoutes');
 const Order = require('./models/Orders');
 const app = express();
+const connectDB = require('./config/db');
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('MongoDB connection failed:', err);
+    res.status(500).send('Database unavailable');
+  }
+});
 const qr = require('qrcode');
 
-// Trust proxy for Railway deployment
 app.set('trust proxy', true);
 
 // Set EJS as the view engine
@@ -69,57 +78,7 @@ const cacheControl = (req, res, next) => {
   next();
 };
 
-// Enhanced MongoDB Connection with better error handling and performance settings
-const connectDB = async () => {
-  try {
-    console.log('Attempting to connect to MongoDB...');
-    const conn = await mongoose.connect(config.mongodbUri, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-      family: 4,
-      dbName: 'test',
-      // Performance optimization: Add connection pool settings
-      maxPoolSize: 50,
-      minPoolSize: 10,
-      maxIdleTimeMS: 30000,
-      connectTimeoutMS: 10000,
-      // Performance optimization: Add write concern settings
-      w: 'majority',
-      wtimeoutMS: 2500,
-      // Performance optimization: Add read preference
-      readPreference: 'secondaryPreferred'
-    });
-    console.log(`Connected to MongoDB at ${config.mongodbUri}`);
-    console.log('MongoDB connection state:', mongoose.connection.readyState);
 
-    // Test session store connection
-    const sessionStore = MongoStore.create({
-      mongoUrl: config.mongodbUri,
-      dbName: 'test',
-      collectionName: 'sessions',
-      ttl: 7 * 24 * 60 * 60, // 7 days
-      autoRemove: 'native',
-      touchAfter: 24 * 3600 // 24 hours
-    });
-
-    // Test session store
-    sessionStore.on('connected', () => {
-      console.log('Session store connected successfully');
-    });
-
-    sessionStore.on('error', (error) => {
-      console.error('Session store error:', error);
-    });
-
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-    console.error('Please make sure MongoDB is running and .env file is properly configured');
-    process.exit(1);
-  }
-};
-
-// Connect to MongoDB
-connectDB();
 
 // Global rate limiter
 const globalLimiter = rateLimit({

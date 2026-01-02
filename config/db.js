@@ -1,21 +1,31 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 
-const connectWithRetry = async () => {
-  const options = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000,
-    maxPoolSize: 10,
-  };
+const MONGODB_URI = process.env.MONGODB_URI;
 
-  try {
-    await mongoose.connect(process.env.MONGODB_URI, options);
-    console.log('Connected to MongoDB');
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-    console.log('Retrying connection in 5 seconds...');
-    setTimeout(connectWithRetry, 5000);
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI is not defined');
+}
+
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      bufferCommands: false,
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 10000,
+    }).then((mongoose) => mongoose);
   }
-};
 
-module.exports = connectWithRetry;
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+module.exports = connectDB;
