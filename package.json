@@ -31,10 +31,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "connect-mongo": "^5.1.0",
-    "cookie": "^1.0.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -59,8 +59,7 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",
-    "prettier": "^3.1.1",
-    "supertest": "^6.3.3"
+    "prettier": "^3.1.1"
   },
   "engines": {
     "node": ">=18.0.0"
