@@ -177,7 +177,7 @@ app.use(
           "https://accounts.google.com",
           "https://oauth2.googleapis.com",
           "https://api.stripe.com",
-          // Allow connections to asset base if needed
+          "https://ajax.googleapis.com",
           assetBaseUrl
         ],
         frameSrc: [
