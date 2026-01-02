@@ -63,12 +63,12 @@ async function uploadFile(localPath, key) {
   // Build public URL from configured assetBaseUrl if available, otherwise try endpoint
   const base = config.assetBaseUrl || (endpoint ? endpoint.replace(/\/$/, '') : undefined);
   if (base) {
-    return `${base}/${key.replace(/^\/+/, '')}`;
+    return encodeURI(`${base}/${key.replace(/^\/+/, '')}`);
   }
 
   // Fallback URL pattern for R2-style endpoints
   if (endpoint) {
-    return `${endpoint.replace(/\/$/, '')}/${bucket}/${key.replace(/^\/+/, '')}`;
+    return encodeURI(`${endpoint.replace(/\/$/, '')}/${bucket}/${key.replace(/^\/+/, '')}`);
   }
 
   return null;

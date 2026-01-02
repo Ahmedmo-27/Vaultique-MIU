@@ -13,7 +13,7 @@
         <meta property="og:description" content="Explore the exclusive <%= brand.name %> luxury watch collection. Handcrafted Swiss timepieces with premium materials and innovative design.">
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://vaultique.live/user/brands/<%= brand.slug %>">
-        <meta property="og:image" content="<%= brand.coverImage || '/Assets/Images/LogoV.jpg' %>">
+        <meta property="og:image" content="<%= assetUrl(brand.coverImage || '/Assets/Images/LogoV.jpg') %>">
         <meta property="og:site_name" content="Vaultique">
         <meta property="og:locale" content="en_US">
         
@@ -21,7 +21,7 @@
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="<%= brand.name %> Luxury Watch Collection | Vaultique">
         <meta name="twitter:description" content="Explore the exclusive <%= brand.name %> luxury watch collection. Handcrafted Swiss timepieces with premium materials.">
-        <meta name="twitter:image" content="<%= brand.coverImage || '/Assets/Images/LogoV.jpg' %>">
+        <meta name="twitter:image" content="<%= assetUrl(brand.coverImage || '/Assets/Images/LogoV.jpg') %>">
         
         <!-- Canonical URL -->
         <link rel="canonical" href="https://vaultique.live/user/brands/<%= brand.slug %>">
@@ -45,7 +45,7 @@
             "name": "<%= brand.name %>",
             "description": "<%= brand.description || brand.name + ' luxury watch collection featuring handcrafted Swiss timepieces with premium materials and innovative design' %>",
             "url": "https://vaultique.live/user/brands/<%= brand.slug %>",
-            "logo": "<%= brand.coverImage || '/Assets/Images/LogoV.jpg' %>",
+            "logo": "<%= assetUrl(brand.coverImage || '/Assets/Images/LogoV.jpg') %>",
             "brand": {
                 "@type": "Brand",
                 "name": "<%= brand.name %>"

@@ -13,7 +13,7 @@
         <meta property="og:description" content="Discover exclusive <%= title.toLowerCase() %> luxury watch collection. Handcrafted Swiss timepieces designed for <%= title.toLowerCase() %> with premium materials and elegant design.">
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://vaultique.live/user/<%= title.toLowerCase().replace(' ', '-') %>">
-        <meta property="og:image" content="<%= genderContent?.coverImage || '/Assets/Images/LogoV.jpg' %>">
+        <meta property="og:image" content="<%= assetUrl(genderContent?.coverImage || '/Assets/Images/LogoV.jpg') %>">
         <meta property="og:site_name" content="Vaultique">
         <meta property="og:locale" content="en_US">
         
@@ -21,7 +21,7 @@
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="<%= title %> Luxury Watch Collection | Vaultique">
         <meta name="twitter:description" content="Discover exclusive <%= title.toLowerCase() %> luxury watch collection. Handcrafted Swiss timepieces designed for <%= title.toLowerCase() %>.">
-        <meta name="twitter:image" content="<%= genderContent?.coverImage || '/Assets/Images/LogoV.jpg' %>">
+        <meta name="twitter:image" content="<%= assetUrl(genderContent?.coverImage || '/Assets/Images/LogoV.jpg') %>">
         
         <!-- Canonical URL -->
         <link rel="canonical" href="https://vaultique.live/user/<%= title.toLowerCase().replace(' ', '-') %>">
@@ -45,7 +45,7 @@
             "name": "<%= title %> Watch Collection",
             "description": "<%= genderContent?.description || title + ' luxury watch collection featuring handcrafted Swiss timepieces designed specifically for ' + title.toLowerCase() + ' with premium materials and elegant design' %>",
             "url": "https://vaultique.live/user/<%= title.toLowerCase().replace(' ', '-') %>",
-            "image": "<%= genderContent?.coverImage || '/Assets/Images/LogoV.jpg' %>",
+            "image": "<%= assetUrl(genderContent?.coverImage || '/Assets/Images/LogoV.jpg') %>",
             "mainEntity": {
                 "@type": "ItemList",
                 "name": "<%= title %> Luxury Watch Collection",

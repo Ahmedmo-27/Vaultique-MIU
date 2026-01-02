@@ -13,7 +13,7 @@
         <meta property="og:description" content="Discover the exclusive <%= collection.name %> luxury watch collection. Handcrafted Swiss timepieces with premium materials and timeless design.">
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://vaultique.live/user/collections/<%= collection.slug %>">
-        <meta property="og:image" content="<%= collection.coverImage || '/Assets/Images/LogoV.jpg' %>">
+        <meta property="og:image" content="<%= assetUrl(collection.coverImage || '/Assets/Images/LogoV.jpg') %>">
         <meta property="og:site_name" content="Vaultique">
         <meta property="og:locale" content="en_US">
         
@@ -21,7 +21,7 @@
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="<%= collection.name %> Luxury Watch Collection | Vaultique">
         <meta name="twitter:description" content="Discover the exclusive <%= collection.name %> luxury watch collection. Handcrafted Swiss timepieces with premium materials.">
-        <meta name="twitter:image" content="<%= collection.coverImage || '/Assets/Images/LogoV.jpg' %>">
+        <meta name="twitter:image" content="<%= assetUrl(collection.coverImage || '/Assets/Images/LogoV.jpg') %>">
         
         <!-- Canonical URL -->
         <link rel="canonical" href="https://vaultique.live/user/collections/<%= collection.slug %>">
@@ -45,7 +45,7 @@
             "name": "<%= collection.name %> Collection",
             "description": "<%= collection.description || collection.name + ' luxury watch collection featuring handcrafted Swiss timepieces with premium materials and timeless design' %>",
             "url": "https://vaultique.live/user/collections/<%= collection.slug %>",
-            "image": "<%= collection.coverImage || '/Assets/Images/LogoV.jpg' %>",
+            "image": "<%= assetUrl(collection.coverImage || '/Assets/Images/LogoV.jpg') %>",
             "mainEntity": {
                 "@type": "ItemList",
                 "name": "<%= collection.name %> Watch Collection",

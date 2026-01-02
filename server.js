@@ -9,6 +9,8 @@ const helmet = require('helmet');
 const session = require('express-session');
 const { optionalJWT, isAdmin } = require('./middleware/jwt');
 const config = require('./config/env');
+// Asset base URL (allow overriding via ASSET_BASE_URL env var)
+const assetBaseUrl = process.env.ASSET_BASE_URL;
 const { removeCookie } = require('./utils/cookieManager');
 const { sessionMiddleware, sessionCleanup, sessionSecurity } = require('./config/session');
 const { errorHandler } = require('./utils/securityUtils');
@@ -200,7 +202,14 @@ app.use(
           "blob:",
           "https://*.googleusercontent.com",
           // Allow images served from the configured asset base
-          config.assetBaseUrl
+          assetBaseUrl
+        ],
+        // Allow media (video/audio) to be loaded from the configured asset base
+        mediaSrc: [
+          "'self'",
+          "blob:",
+          "data:",
+          assetBaseUrl
         ],
         connectSrc: [
           "'self'",
@@ -210,7 +219,7 @@ app.use(
           "https://oauth2.googleapis.com",
           "https://api.stripe.com",
           // Allow connections to asset base if needed
-          config.assetBaseUrl
+          assetBaseUrl
         ],
         frameSrc: [
           "'self'",
@@ -236,7 +245,35 @@ app.use((req, res, next) => {
 // Static File Serving Configuration
 const publicPath = path.join(__dirname, 'public');
 
-// Primary static file serving
+// Asset handling: serve `.js` and `.css` locally; redirect all other
+// asset requests to the configured cloud asset base. This middleware runs
+// before static serving so non-JS/CSS local assets are not served from disk.
+const assetRedirect = (req, res, next) => {
+  const ext = path.extname(req.path || '').toLowerCase();
+  // Allow local serving for JS and CSS files
+  if (ext === '.js' || ext === '.css') {
+    return next();
+  }
+
+  // If the request targets common asset directories, redirect to cloud
+  const assetPathPattern = /^\/(Assets|assets|public)(\/|$)/i;
+  if (assetPathPattern.test(req.path)) {
+    if (assetBaseUrl) {
+      const base = assetBaseUrl.replace(/\/$/, '');
+      const suffix = req.originalUrl || req.url || req.path; // preserve encoding
+      const target = base + suffix;
+      return res.redirect(302, target);
+    }
+    // Explicitly refuse to serve local assets when no cloud asset base is set
+    return res.status(503).send('Assets are served from cloud storage only. Asset base URL not configured.');
+  }
+
+  next();
+};
+
+app.use(assetRedirect);
+
+// Primary static file serving (non-asset public files and JS/CSS)
 app.use(express.static(publicPath, {
   setHeaders: (res, path) => {
     if (path.endsWith('.js')) {
@@ -246,21 +283,6 @@ app.use(express.static(publicPath, {
     }
   }
 }));
-
-// Assets directory with case-insensitive handling
-app.get('/Assets/*', (req, res, next) => {
-  // Redirect asset requests to the configured external asset base (CDN/R2)
-  const base = (config && config.assetBaseUrl) ? config.assetBaseUrl.replace(/\/$/, '') : 'https://pub-5c45b2d6c709448fad2407ee4892de0b.r2.dev';
-  const target = base + req.path;
-  res.redirect(302, target);
-});
-
-// Fallback static file handlers (case-insensitive)
-app.use('/css', express.static(path.join(publicPath, 'CSS')));
-app.use('/javascript', express.static(path.join(publicPath, 'Javascript')));
-app.use('/assets', express.static(path.join(publicPath, 'Assets')));
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/public/assets', express.static(path.join(__dirname, 'public/Assets')));
 
 // Middleware
 app.use(express.json({ limit: '10mb' })); // Add request size limit
@@ -309,17 +331,14 @@ app.use((req, res, next) => {
   res.locals.user = req.user;
   res.locals.isAuthenticated = req.isAuthenticated ? req.isAuthenticated() : false;
   // Asset helpers for views
-  res.locals.assetBaseUrl = config.assetBaseUrl;
+  res.locals.assetBaseUrl = assetBaseUrl;
   res.locals.assetUrl = function (p) {
     if (!p) return p;
-    // If already an absolute URL, return as-is
     if (typeof p === 'string' && (p.startsWith('http://') || p.startsWith('https://'))) return p;
-    // If starts with '/', treat as root asset path
     if (typeof p === 'string' && p.startsWith('/')) {
-      return (config.assetBaseUrl ? config.assetBaseUrl.replace(/\/$/, '') : '') + p;
+      return assetBaseUrl.replace(/\/$/, '') + encodeURI(p);
     }
-    // Otherwise, assume it's a path under Assets
-    return (config.assetBaseUrl ? config.assetBaseUrl.replace(/\/$/, '') : '') + '/' + p.replace(/^public\//, '').replace(/^\/+/, '');
+    return assetBaseUrl.replace(/\/$/, '') + '/' + encodeURI(p.replace(/^public\//, '').replace(/^\/+/, ''));
   };
   next();
 });

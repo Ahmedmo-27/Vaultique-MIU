@@ -213,7 +213,7 @@
                                     <% if (order.items && order.items.length > 0) { %>
                                         <% order.items.forEach(item => { %>
                                             <div class="order-product-detail">
-                                                <img src="<%= item.product && item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" 
+                                                <img src="<%= assetUrl(item.product && item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg') %>" 
                                                      alt="<%= item.product && item.product.name ? item.product.name : 'Product' %>">
                                                 <div>
                                                     <h5><%= item.product && item.product.name %></h5>
@@ -258,7 +258,7 @@
                                         </svg>
                                     </div>
                                     <a href="/user/product?id=<%- product._id %>">
-                                        <img src="<%= product.image ? (product.image.startsWith('/') ? product.image : `/Assets/Images/Watches/${product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" alt="<%- product.name %>" loading="lazy">
+                                        <img src="<%= assetUrl(product.image ? (product.image.startsWith('/') ? product.image : `/Assets/Images/Watches/${product.image}`) : '/Assets/Images/product-placeholder.jpg') %>" alt="<%- product.name %>" loading="lazy">
                                     </a>
                                     <div class="hover-buttons">
                                         <button class="quick-view" data-product-id="<%= product._id %>">Quick View</button>
@@ -382,7 +382,7 @@
                                 <div class="review-card">
                                     <div class="review-header">
                                         <div class="review-product">
-                                            <img src="<%= review.product.image || '/Assets/Images/product-placeholder.jpg' %>" alt="<%= review.product.name || 'Product' %>">
+                                            <img src="<%= assetUrl(review.product.image || '/Assets/Images/product-placeholder.jpg') %>" alt="<%= review.product.name || 'Product' %>">
                                             <h5><%= review.product.name || 'Unknown Product' %></h5>
                                         </div>
                                         <div class="review-rating">
@@ -435,7 +435,7 @@
                         <section class="product-gallery">
                             <div class="all_image">
                                 <div class="main-image">
-                                    <img src="<%= item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" 
+                                    <img src="<%= assetUrl(item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg') %>" 
                                          alt="<%= item.product.name %>">
                                 </div>
                             </div>
@@ -506,7 +506,7 @@
                                     <% if (order.items && order.items.length > 0) { %>
                                         <% order.items.forEach(item => { %>
                                             <div class="order-item">
-                                                <img src="<%= item.product && item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg' %>" 
+                                                <img src="<%= assetUrl(item.product && item.product.image ? (item.product.image.startsWith('/') ? item.product.image : `/Assets/Images/Watches/${item.product.image}`) : '/Assets/Images/product-placeholder.jpg') %>" 
                                                      alt="<%= item.product && item.product.name ? item.product.name : 'Product' %>">
                                                 <div class="item-details">
                                                     <h5><%= item.product && item.product.name %></h5>

@@ -20,7 +20,7 @@ module.exports = {
   frontendUrl: process.env.FRONTEND_URL,
   cookieDomain: process.env.COOKIE_DOMAIN,
   isProduction: process.env.NODE_ENV === 'production',
-  assetBaseUrl: process.env.ASSET_BASE_URL || 'https://pub-5c45b2d6c709448fad2407ee4892de0b.r2.dev',
+  assetBaseUrl: process.env.ASSET_BASE_URL,
   // Stripe configuration
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY,

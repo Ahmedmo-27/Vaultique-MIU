@@ -62,7 +62,7 @@
                                 "name": "<%= brand.name %>",
                                 "description": "<%= brand.description || brand.name + ' luxury watch brand' %>",
                                 "url": "https://vaultique.live/user/brands/<%= brand.slug %>",
-                                "logo": "<%= brand.coverImage || '/Assets/Images/LogoV.jpg' %>"
+                                "logo": "<%= assetUrl(brand.coverImage || '/Assets/Images/LogoV.jpg') %>"
                             }
                         }<%= index < Math.min(4, brands.length - 1) ? ',' : '' %>
                     <% }); %>

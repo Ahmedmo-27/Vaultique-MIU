@@ -48,7 +48,7 @@
             <% if (order.items && order.items.length > 0) { %>
               <% order.items.forEach(item => { %>
                 <div class="order-item">
-                  <img src="<%= item.productId?.image || '/Assets/Images/default-product.jpg' %>" 
+                  <img src="<%= assetUrl(item.productId?.image || '/Assets/Images/default-product.jpg') %>" 
                        alt="<%= item.productId?.name || 'Product' %>" 
                        class="item-image">
                   <div class="item-details">

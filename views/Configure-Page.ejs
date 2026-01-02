@@ -63,7 +63,7 @@
             "Material Selection",
             "Price Calculation"
         ],
-        "screenshot": "/Assets/Images/LogoV.jpg",
+        "screenshot": '/Assets/Images/LogoV.jpg',
         "softwareVersion": "1.0",
         "author": {
             "@type": "Organization",
@@ -884,13 +884,16 @@ body {
                     });
                 });
             }
+            const omegaPath = assetUrl('/Assets/3D Models/Omega Sea Master.glb');
+            const cartierPath = assetUrl('/Assets/3D Models/Santos.glb');
+            const audemarsPath = assetUrl('/Assets/3D Models/Audemars Piguet Royal Oak.gltf');
 
             // Preload all models in background
             function preloadAllModels() {
                 const modelPaths = [
-                    '/Assets/3D Models/Omega Sea Master.glb',
-                    '/Assets/3D Models/Santos.glb',
-                    '/Assets/3D Models/Audemars Piguet Royal Oak.gltf'
+                    omegaPath,
+                    cartierPath,
+                    audemarsPath
                 ];
 
                 console.log('🔄 Starting intelligent model preloading...');
