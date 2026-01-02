@@ -198,7 +198,9 @@ app.use(
           "'self'",
           "data:",
           "blob:",
-          "https://*.googleusercontent.com"
+          "https://*.googleusercontent.com",
+          // Allow images served from the configured asset base
+          config.assetBaseUrl
         ],
         connectSrc: [
           "'self'",
@@ -206,7 +208,9 @@ app.use(
           "data:",
           "https://accounts.google.com",
           "https://oauth2.googleapis.com",
-          "https://api.stripe.com"
+          "https://api.stripe.com",
+          // Allow connections to asset base if needed
+          config.assetBaseUrl
         ],
         frameSrc: [
           "'self'",
@@ -245,67 +249,10 @@ app.use(express.static(publicPath, {
 
 // Assets directory with case-insensitive handling
 app.get('/Assets/*', (req, res, next) => {
-    const assetPath = path.join(publicPath, req.path);
-    const ext = path.extname(assetPath).toLowerCase();
-    
-    // Set appropriate MIME type based on file extension
-    const mimeTypes = {
-        '.jpg': 'image/jpeg',
-        '.jpeg': 'image/jpeg',
-        '.png': 'image/png',
-        '.gif': 'image/gif',
-        '.avif': 'image/avif',
-        '.webp': 'image/webp',
-        '.mp4': 'video/mp4',
-        '.webm': 'video/webm',
-        '.glb': 'model/gltf-binary',
-        '.gltf': 'model/gltf+json'
-    };
-    
-    res.set('Content-Type', mimeTypes[ext] || 'application/octet-stream');
-    
-    // Add specific caching for 3D models
-    if (ext === '.glb' || ext === '.gltf') {
-        res.set('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
-        res.set('Access-Control-Allow-Origin', '*');
-        res.set('Access-Control-Allow-Methods', 'GET, HEAD');
-    }
-    
-    // Try multiple paths for the asset
-    const tryPaths = [
-        assetPath, // Original path
-        path.join(publicPath, 'Assets/Images', path.basename(req.path)), // Images directory
-        path.join(publicPath, 'Assets/Videos', path.basename(req.path)), // Videos directory
-        path.join(publicPath, 'Assets/3D Models', path.basename(req.path)), // 3D Models directory
-        path.join(publicPath, 'Assets/Brands Logos', path.basename(req.path)), // Brands Logos directory
-        path.join(path.dirname(assetPath), path.basename(assetPath).toLowerCase()) // Lowercase version
-    ];
-
-    const tryNextPath = (index) => {
-        if (index >= tryPaths.length) {
-            console.error(`All attempts failed for asset: ${req.path}`);
-            next();
-            return;
-        }
-
-        // Check if the path exists and is a file (not a directory)
-        fs.stat(tryPaths[index], (err, stats) => {
-            if (err || !stats.isFile()) {
-                console.error(`Attempt ${index + 1} failed for ${tryPaths[index]}:`, err?.message || 'Not a file');
-                tryNextPath(index + 1);
-                return;
-            }
-
-            res.sendFile(tryPaths[index], err => {
-                if (err) {
-                    console.error(`Error sending file ${tryPaths[index]}:`, err.message);
-                    tryNextPath(index + 1);
-                }
-            });
-        });
-    };
-
-    tryNextPath(0);
+  // Redirect asset requests to the configured external asset base (CDN/R2)
+  const base = (config && config.assetBaseUrl) ? config.assetBaseUrl.replace(/\/$/, '') : 'https://pub-5c45b2d6c709448fad2407ee4892de0b.r2.dev';
+  const target = base + req.path;
+  res.redirect(302, target);
 });
 
 // Fallback static file handlers (case-insensitive)
@@ -361,6 +308,19 @@ app.use(sessionSecurity);
 app.use((req, res, next) => {
   res.locals.user = req.user;
   res.locals.isAuthenticated = req.isAuthenticated ? req.isAuthenticated() : false;
+  // Asset helpers for views
+  res.locals.assetBaseUrl = config.assetBaseUrl;
+  res.locals.assetUrl = function (p) {
+    if (!p) return p;
+    // If already an absolute URL, return as-is
+    if (typeof p === 'string' && (p.startsWith('http://') || p.startsWith('https://'))) return p;
+    // If starts with '/', treat as root asset path
+    if (typeof p === 'string' && p.startsWith('/')) {
+      return (config.assetBaseUrl ? config.assetBaseUrl.replace(/\/$/, '') : '') + p;
+    }
+    // Otherwise, assume it's a path under Assets
+    return (config.assetBaseUrl ? config.assetBaseUrl.replace(/\/$/, '') : '') + '/' + p.replace(/^public\//, '').replace(/^\/+/, '');
+  };
   next();
 });
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/Admin');
 const { authenticateJWT, isAdmin } = require('../middleware/jwt');
-const { upload, handleMulterError } = require('../middleware/upload');
+const { upload, handleMulterError, uploadToR2Middleware } = require('../middleware/upload');
 const multer = require('multer');
 const path = require('path');
 
@@ -33,6 +33,7 @@ router.post('/products/create',
         { name: 'model3D', maxCount: 1 }
     ]),
     handleMulterError,
+    uploadToR2Middleware,
     adminController.createProduct
 );
 router.get('/products/:id', adminController.getProductById);
@@ -44,6 +45,7 @@ router.put('/products/:id',
         { name: 'model3D', maxCount: 1 }
     ]),
     handleMulterError,
+    uploadToR2Middleware,
     adminController.updateProduct
 );
 router.delete('/products/:id', adminController.deleteProduct);
@@ -90,7 +92,7 @@ router.post('/collections', upload.fields([
     { name: 'featuredItems[0][image]', maxCount: 1 },
     { name: 'featuredItems[1][image]', maxCount: 1 },
     { name: 'featuredItems[2][image]', maxCount: 1 }
-]), adminController.createCollection);
+]), handleMulterError, uploadToR2Middleware, adminController.createCollection);
 router.get('/collections/:id', adminController.getCollection);
 router.get('/collections/:id/edit', adminController.renderEditCollection);
 router.post('/collections/:id', upload.fields([
@@ -100,7 +102,7 @@ router.post('/collections/:id', upload.fields([
     { name: 'featuredItems[0][image]', maxCount: 1 },
     { name: 'featuredItems[1][image]', maxCount: 1 },
     { name: 'featuredItems[2][image]', maxCount: 1 }
-]), adminController.updateCollection);
+]), handleMulterError, uploadToR2Middleware, adminController.updateCollection);
 router.delete('/collections/:id', adminController.deleteCollection);
 
 // Todo routes
@@ -120,12 +122,12 @@ router.post('/brands', isAdmin, upload.fields([
     { name: 'featuredModels[0][image]', maxCount: 1 },
     { name: 'featuredModels[1][image]', maxCount: 1 },
     { name: 'featuredModels[2][image]', maxCount: 1 }
-]), adminController.createBrand);
+]), handleMulterError, uploadToR2Middleware, adminController.createBrand);
 router.get('/brands/:id', isAdmin, adminController.getBrand);
 router.get('/brands/:id/edit', isAdmin, adminController.renderEditBrand);
 router.post('/brands/:id', isAdmin, upload.fields([
     { name: 'logo', maxCount: 1 }
-]), adminController.updateBrand);
+]), handleMulterError, uploadToR2Middleware, adminController.updateBrand);
 router.delete('/brands/:id', isAdmin, adminController.deleteBrand);
 
 // Order routes

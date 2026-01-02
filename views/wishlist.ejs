@@ -299,7 +299,7 @@
         // Function to show the quick view modal
         function showQuickView(product) {
           // Populate modal content
-          document.getElementById('quickViewMainImage').src = product.image.startsWith('/') ? product.image : `/public/Assets/Images/Watches/${product.image}`;
+          document.getElementById('quickViewMainImage').src = product.image.startsWith('/') ? product.image : `/Assets/Images/Watches/${product.image}`;
           document.getElementById('quickViewMainImage').alt = product.name;
           document.getElementById('quickViewProductName').textContent = product.name;
           document.getElementById('quickViewPrice').textContent = `$${product.price.toLocaleString()}`;

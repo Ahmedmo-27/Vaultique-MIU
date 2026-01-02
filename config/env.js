@@ -17,9 +17,10 @@ module.exports = {
   mongodbUri: process.env.MONGODB_URI,
   jwtSecret: process.env.JWT_SECRET,
   sessionSecret: process.env.SESSION_SECRET,
-  frontendUrl: process.env.FRONTEND_URL || 'https://vaultique.up.railway.app/user/home',
+  frontendUrl: process.env.FRONTEND_URL,
   cookieDomain: process.env.COOKIE_DOMAIN,
   isProduction: process.env.NODE_ENV === 'production',
+  assetBaseUrl: process.env.ASSET_BASE_URL || 'https://pub-5c45b2d6c709448fad2407ee4892de0b.r2.dev',
   // Stripe configuration
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY,

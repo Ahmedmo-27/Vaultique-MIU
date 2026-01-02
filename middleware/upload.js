@@ -2,6 +2,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const config = require('../config/env');
+const { uploadFile } = require('../utils/r2');
 
 // Get project root directory
 const projectRoot = path.resolve(__dirname, '..');
@@ -182,3 +184,53 @@ const handleMulterError = (err, req, res, next) => {
 };
 
 module.exports = { upload, handleMulterError }; 
+
+// Middleware to upload saved files to R2 (if configured) and adjust req.files entries
+const uploadToR2Middleware = async (req, res, next) => {
+    if (!req.files) return next();
+
+    const publicBase = path.join(__dirname, '..', 'public');
+
+    const promises = [];
+    try {
+        for (const fieldName of Object.keys(req.files)) {
+            for (const file of req.files[fieldName]) {
+                // Build a logical key under Assets preserving subdirectory from filename
+                // Determine subfolder used by multer destination logic
+                let sub = 'Assets/Images';
+                if (file.fieldname === 'heroVideo' || file.fieldname === 'video') sub = 'Assets/Videos';
+                if (file.fieldname === 'model3d') sub = 'Assets/3D Models';
+                if (file.fieldname === 'logo') sub = 'Assets/Brands Logos';
+
+                const key = path.posix.join(sub, file.filename);
+
+                // Attempt upload if R2 client is configured
+                const p = (async () => {
+                    try {
+                        const remote = await uploadFile(file.path, key);
+                        // Set file.path to a public-like local path so existing controller logic
+                        // that does `.replace(/^.*?public/, '')` produces `/Assets/...` which
+                        // will be redirected by the server to the asset base URL.
+                        file.path = path.join(publicBase, key).replace(/\\/g, '/');
+                        file.remoteUrl = remote;
+                        // Remove local file to avoid storing it on the server
+                        try { fs.unlinkSync(file.path); } catch (e) {}
+                    } catch (err) {
+                        console.error('R2 upload failed for', file.path, err.message);
+                        // leave file on disk and allow fallback to local serving
+                    }
+                })();
+
+                promises.push(p);
+            }
+        }
+
+        await Promise.all(promises);
+        return next();
+    } catch (err) {
+        console.error('Error in uploadToR2Middleware:', err);
+        return next();
+    }
+};
+
+module.exports.uploadToR2Middleware = uploadToR2Middleware;
